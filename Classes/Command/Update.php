@@ -56,7 +56,6 @@ class Update extends \Library\IRC\Command\Base {
 		elseif(preg_match("/error/i", $update)){
 			$this->bot->log('Bot Updating Ran into an Error');
 			$this->say('UPDATE: There was an Error Updating the Bot');
-			$this->say($update);
 		}
 		else{
 			$this->bot->log('Bot Updated Successfully');
@@ -107,10 +106,10 @@ class Version extends \Library\IRC\Command\Base {
 		$botversion = $this->bot->botVersion;
 		
 		if($latestversion > $botversion){
-			$updated = chr(3) . "07Out of Date";
+			$updated = chr(3) . "07Out of Date!";
 		}
 		elseif($latestversion = $botversion){
-			$updated = chr(3) . "03Up to Date";
+			$updated = chr(3) . "03Up to Date!";
 		} 
 		else{
 			$updated = chr(3) . "04You Broke Something :'(";
