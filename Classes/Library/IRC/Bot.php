@@ -124,6 +124,12 @@ class Bot {
      * @var type
      */
     private $logFileHandler = null;
+	
+	/**
+     * Version of the Bot.
+     * @var string
+     */
+    public $botVersion = "1.0.0.0";
 
     /**
      * Creates a new IRCBot.

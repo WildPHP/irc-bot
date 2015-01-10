@@ -64,3 +64,59 @@ class Update extends \Library\IRC\Command\Base {
 		}
 	}
 }
+
+class Version extends \Library\IRC\Command\Base {
+    /**
+     * The command's help text.
+     *
+     * @var string
+     */
+    protected $help = 'Checks the Latest Version of the Bot and the Version of this.';
+
+    /**
+     * How to use the command.
+     *
+     * @var string
+     */
+    protected $usage = 'version';
+	
+	/**
+     * Verify the user before executing this command.
+     *
+     * @var bool
+     */
+    protected $verify = true;
+
+    /**
+     * The number of arguments the command needs.
+     *
+     * @var integer
+     */
+    protected $numberOfArguments = 0;
+
+    /**
+     * Updates Bot
+	 */
+	 
+	public function command() {
+
+		$jsonfile = "http://wildphp.github.io/Wild-IRC-Bot/data/updater.json";
+		$jsondata = json_decode($jsonfile);
+		
+		$latestversion = $jsondata[0]->version;
+		$botversion = $this->bot->botVersion;
+		
+		if($latestversion > $botversion){
+			$updated = "Out of Date";
+		}
+		elseif($latestversion = $botversion){
+			$updated = "Up to Date";
+		} 
+		else{
+			$updated = "You Broke Something :'(";
+		}
+		
+		$this->say('The Latest Bot Version is ' . $latestversion . '. You\'re Bot is Version is ' . $botversion . ".");
+		$this->say('Your Bot is ' . $updated);
+	}
+}
