@@ -95,7 +95,7 @@ class Version extends \Library\IRC\Command\Base {
     protected $numberOfArguments = 0;
 
     /**
-     * Updates Bot
+     * Checks Version of Bot and Latest Version
 	 */
 	 
 	public function command() {
@@ -107,13 +107,13 @@ class Version extends \Library\IRC\Command\Base {
 		$botversion = $this->bot->botVersion;
 		
 		if($latestversion > $botversion){
-			$updated = "Out of Date";
+			$updated = chr(3) . "07Out of Date";
 		}
 		elseif($latestversion = $botversion){
-			$updated = "Up to Date";
+			$updated = chr(3) . "03Up to Date";
 		} 
 		else{
-			$updated = "You Broke Something :'(";
+			$updated = chr(3) . "04You Broke Something :'(";
 		}
 		
 		$this->say('The Latest Bot Version is ' . $latestversion . '. You\'re Bot is Version is ' . $botversion . ".");
