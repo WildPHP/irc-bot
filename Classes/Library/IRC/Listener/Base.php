@@ -18,13 +18,6 @@ abstract class Base
     abstract function execute($data);
 
     /**
-     * Returns keywords that listener is listening to.
-     *
-     * @return array
-     */
-    abstract function getKeywords();
-
-    /**
      * Sends PRIVMSG to source with $msg
      *
      * @param string $msg
