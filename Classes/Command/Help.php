@@ -59,7 +59,7 @@ class Help extends \Library\IRC\Command\Base
                 if (trim(ucfirst(strtolower($command))) == $name)
                 {
 		    // We found it!
-                    if (empty($details->getHelp()))
+                    if (!$details->getHelp())
                     {
                         // But it doesn't have any help... :(
                         $this->say('No help available for command ' . $name);
