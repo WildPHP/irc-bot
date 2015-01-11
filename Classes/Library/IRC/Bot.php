@@ -51,10 +51,11 @@ class Bot {
     private $name = '';
 
     /**
-     * The nick of the bot.
+     * The nick of the bot. Two instances, one for the original nick and one for the current nick.
      * @var string
      */
     private $nick = '';
+    private $nickToUse = '';
 
     /**
      * The IRC password for the bot. 
@@ -67,6 +68,12 @@ class Bot {
      * @var integer
      */
     private $maxReconnects = 0;
+    
+    /**
+     * The current log object; usually an instance of LogManager.
+     * @var object
+     */
+    public $log;
 
     /**
      * Complete file path to the log file.
@@ -76,22 +83,10 @@ class Bot {
     private $logFile = '';
 
     /**
-     * The nick of the bot.
-     * @var string
-     */
-    private $nickToUse = '';
-
-    /**
      * Defines the prefix for all commands interacting with the bot.
      * @var String
      */
-    public $commandPrefix = '';
-
-    /**
-     * All of the messages both server and client
-     * @var array
-     */
-    private $ex = array ( );
+    public $commandPrefix = '!';
 
     /**
      * The nick counter, used to generate a available nick.
@@ -106,30 +101,28 @@ class Bot {
     private $numberOfReconnects = 0;
 
     /**
-     * All available commands.
-     * Commands are type of IRCCommand
-     * @var array
+     * The command manager.
+     * @var \Library\IRC\Command\Manager
      */
-    private $commands = array ( );
+    public $commandManager = null;
 
     /**
-     * All available listeners.
-     * Listeners are type of IRCListener
-     * @var array
+     * The listener manager.
+     * @var \Library\IRC\Listener\Manager
      */
-    private $listeners = array ( );
+    public $listenerManager = null;
 
     /**
      * Holds the reference to the file.
      * @var type
      */
     private $logFileHandler = null;
-	
-	/**
-     * Version of the Bot.
+    
+    /**
+     * The NickServ username. Usually NickServ, but exceptions are possible.
      * @var string
      */
-    public $botVersion = "1.0.0.0";
+    public $nickserv = '';
 
     /**
      * Creates a new IRCBot.
@@ -138,56 +131,61 @@ class Bot {
      * @return void
      * @author Daniel Siepmann <coding.layne@me.com>
      */
-    public function __construct( array $configuration = array ( ) ) {
+    public function __construct(array $configuration, \Library\IRC\Log $log) {
 
         $this->connection = new \Library\IRC\Connection\Socket;
+	
+	// Add a new command manager.
+	$this->commandManager = new \Library\IRC\Command\Manager($this);
+	
+	// And a listener manager.
+	$this->listenerManager = new \Library\IRC\Listener\Manager($this);
+	
+	// Setup the log.
+	$this->log = $log;
+	$this->log->setBot($this);
 
-        if (count( $configuration ) === 0) {
-            return;
-        }
+        if (empty($configuration))
+            trigger_error('Cannot start without a configuration. Aborting.', E_USER_ERROR);
 
-        $this->setWholeConfiguration( $configuration );
+	// We need this for the connection.
+        $this->connection->setServer( $configuration['server'] );
+        $this->connection->setPort( $configuration['port'] );
+        $this->connection->setName( $configuration['name'] );
+	
+	// Then come the bits the bot needs itself.
+        $this->setChannel( $configuration['channels'] );
+        $this->setNick( $configuration['nick'] );
+	
+	// We can only set a password if we have one. If we don't, don't bother.
+        if (!empty($configuration['password']))
+            $this->setPassword($configuration['password']);
+	
+	// Nickserv may differ between servers.
+	$this->setNickServ($configuration['nickserv']);
+        $this->setMaxReconnects( $configuration['max_reconnects'] );
+	
+	// Set the command prefix.
+	$this->setCommandPrefix($configuration['command_prefix']);
     }
-
+    
     /**
-     * Cleanup handlers.
+     * Run the bot.
      */
-    public function __destruct() {
-        if ($this->logFileHandler) {
-            fclose( $this->logFileHandler );
-        }
-    }
+    public function run()
+    {
+	if ($this->connection->isConnected())
+	{
+		trigger_error('Cannot start multiple instances of the bot; it is already connected. Ignoring run request.', E_USER_WARNING);
+		return;
+	}
+        $this->log('The following commands are known by the bot: "' . implode( ',', array_keys($this->commandManager->listCommands())) . '".', 'INFO');
+        $this->log('The following listeners are known by the bot: "' . implode( ',', array_keys( $this->listenerManager->listListeners())) . '".', 'INFO');
 
-    /**
-     * Connects the bot to the server.
-     *
-     * @author Super3 <admin@wildphp.com>
-     * @author Daniel Siepmann <coding.layne@me.com>
-     */
-    public function connectToServer() {
-        if (empty( $this->nickToUse )) {
-            $this->nickToUse = $this->nick;
-        }
-
-        if ($this->connection->isConnected()) {
-            $this->connection->disconnect();
-        }
-
-        $this->log( 'The following commands are known by the bot: "' . implode( ',', array_keys( $this->commands ) ) . '".', 'INFO' );
-        $this->log( 'The following listeners are known by the bot: "' . implode( ',', array_keys( $this->listeners ) ) . '".', 'INFO' );
-
-        $this->connection->connect();
-      
-        if (isset($this->password)) {
-            if (strlen($this->password) > 0) {
-                $this->sendDataToServer( 'PASS ' . $this->password );
-            }
-        }        
-
-        $this->sendDataToServer( 'USER ' . $this->nickToUse . ' Layne-Obserdia.de ' . $this->nickToUse . ' :' . $this->name );
-        $this->sendDataToServer( 'NICK ' . $this->nickToUse );
-
-        $this->main();
+	$this->connection->connect();
+	
+	$this->log('Fueling the main loop...', 'STARTUP');
+	$this->main();
     }
 
     /**
@@ -197,24 +195,27 @@ class Bot {
      * @author Daniel Siepmann <coding.layne@me.com>
      */
     private function main() {
-        global $config;
-		$this->commandPrefix = $config['prefix'];
-		do {
+	// And fire up a connection.
+	$this->log('Main loop ignited! GO GO GO!', 'STARTUP');
+        do {
             $command = '';
             $arguments = array ( );
             $data = $this->connection->getData();
 
             // Check for some special situations and react:
             // The nickname is in use, create a now one using a counter and try again.
-            if (stripos( $data, 'Nickname is already in use.' ) !== false && $this->getUserNickName($data) == 'NickServ'){
+            if (stripos($data, 'Nickname is already in use.') !== false && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv)
+	    {
                 $this->nickToUse = $this->nick . (++$this->nickCounter);
                 $this->sendDataToServer( 'NICK ' . $this->nickToUse );
             }
+	    
+	    if (stripos($data, 'This nickname is registered.') !== false && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv)
+		$this->sendDataToServer('PRIVMSG ' . $this->nickserv . ' :IDENTIFY ' . $this->password);
 
-            // We're welcome. Let's join the configured channel/-s.
-            if (stripos( $data, 'Welcome' ) !== false) {
+            // We're welcome without password or identified with password. Lets join.
+            if ((empty($this->password) && stripos( $data, 'Welcome' ) !== false) || (!empty($this->password) && stripos($data, 'You are now identified') && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv))
                 $this->join_channel( $this->channel );
-            }
 
             // Something realy went wrong.
             if (stripos( $data, 'Registration Timeout' ) !== false ||
@@ -237,46 +238,24 @@ class Bot {
             }
 
             // Get the response from irc:
-            $args = explode( ' ', $data );
-            $this->log( $data );
-
+            $args = explode(' ', $data);
+            if (!empty($data))
+                $this->log( $data );
 
             // Play ping pong with server, to stay connected:
             if ($args[0] == 'PING') {
                 $this->sendDataToServer( 'PONG ' . $args[1] );
             }
 	    
-
 	    // Try to flush log buffers, if needed.
 	    $this->log->intervalFlush();
 
             // Nothing new from the server, step over.
             if ($args[0] == 'PING' || !isset($args[1])) {
+                unset($data, $args);
                 continue;
             }
-
-            /* @var $listener \Library\IRC\Listener\Base */
-            foreach ($this->listeners as $listener) {
-                if (is_array($listener->getKeywords())) {
-                    foreach ($listener->getKeywords() as $keyword) {
-                        //compare listeners keyword and 1st arguments of server response
-                        if ($keyword === $args[1]) {
-                            $listener->execute( $data );
-                        }
-                    }
-                }
-                if (method_exists($listener, 'getMessageKeywords') && is_array($listener->getMessageKeywords())) {
-                    foreach ($listener->getMessageKeywords() as $keyword) {
-                        //compare listeners keyword and 1st arguments of server response
-                        if (stripos($data, $keyword)) {
-                            $this->log('Running listener, message contains "' . $keyword . '"');
-                            $listener->execute( $data );
-                            
-                        }
-                    }
-                }
-            }
-
+            
             if (isset($args[3])) {
                 // Explode the server response and get the command.
                 // $source finds the channel or user that the command originated.
@@ -285,83 +264,28 @@ class Bot {
                 
                 // Someone PMed me? Oh noes.
                 if ($source == $this->nickToUse && $args[1] == 'PRIVMSG')
-                    $source = $this->getUserNickName($args[0]);
+                    $source = \Library\FunctionCollection::getUserNickName($args[0]);
 
+                $this->source = $source;
                 $arguments = array_slice( $args, 4 );
-                unset( $args );
 
                 // Check if the response was a command.
                 if (stripos( $command, $this->commandPrefix ) === 0) {
                     $command = ucfirst( substr( $command, strlen($this->commandPrefix) ) );
                     // Command does not exist:
-                    if (!array_key_exists( $command, $this->commands )) {
+                    if (!$this->commandManager->commandExists($command)) {
                         $this->log( 'The following, not existing, command was called: "' . $command . '".', 'MISSING' );
-                        $this->log( 'The following commands are known by the bot: "' . implode( ',', array_keys( $this->commands ) ) . '".', 'MISSING' );
                         continue;
                     }
 
-                    $this->executeCommand( $source, $command, $arguments, $data );
+                    $this->commandManager->executeCommand( $source, $command, $arguments, $data );
                 }
             }
+	    
+	    // Call the listeners!
+	    $this->listenerManager->listenerHook($args, $data);
+            unset($data, $args);
         } while (true);
-    }
-    
-    /**
-     * Get the nickname from the data string.
-     *
-     * @param string $data The data to extract the nickname from.
-     */
-    public function getUserNickName($data) {
-        $result = preg_match('/:([a-zA-Z0-9_]+)!/', $data, $matches);
-
-        if ($result !== false) {
-            return $matches[1];
-        }
-
-        return false;
-    }
-
-    /**
-     * Adds a single command to the bot.
-     *
-     * @param IRCCommand $command The command to add.
-     * @author Daniel Siepmann <coding.layne@me.com>
-     */
-    public function addCommand( \Library\IRC\Command\Base $command ) {
-        $commandName = $this->getClassName($command);
-        $command->setIRCConnection( $this->connection );
-        $command->setIRCBot( $this );
-        $this->commands[$commandName] = $command;
-        $this->log( 'The following Command was added to the Bot: "' . $commandName . '".', 'INFO' );
-    }
-
-    protected function executeCommand( $source, $commandName, array $arguments, $data ) {
-        // Execute command:
-        $command = $this->commands[$commandName];
-        /** @var $command IRCCommand */
-        $command->executeCommand( $arguments, $source, $data );
-    }
-
-    public function addListener( \Library\IRC\Listener\Base $listener) {
-        $listenerName = $this->getClassName($listener);
-        $listener->setIRCConnection( $this->connection );
-        $listener->setIRCBot( $this );
-        $this->listeners[$listenerName] = $listener;
-        $this->log( 'The following Listener was added to the Bot: "' . $listenerName . '".', 'INFO' );
-    }
-
-    /**
-     * Returns class name of $object without namespace
-     *
-     * @param mixed $object
-     * @author Matej Velikonja <matej@velikonja.si>
-     * @return string
-     */
-    private function getClassName( $object) {
-        $objectName = explode( '\\', get_class( $object ) );
-        $objectName = $objectName[count( $objectName ) - 1];
-
-        return $objectName;
     }
 
     /**
@@ -371,7 +295,6 @@ class Bot {
      * @author Daniel Siepmann <coding.layne@me.com>
      */
     public function sendDataToServer( $cmd ) {
-	// Don't log passwords.
 	if (mb_substr($cmd, 0, 4) != 'PASS')
 		$this->log( $cmd, 'COMMAND' );
 	else
@@ -409,25 +332,6 @@ class Bot {
     // Setters
 
     /**
-     * Sets the whole configuration.
-     *
-     * @param array $configuration The whole configuration, you can use the setters, too.
-     * @author Daniel Siepmann <coding.layne@me.com>
-     */
-    private function setWholeConfiguration( array $configuration ) {
-        $this->setServer( $configuration['server'] );
-        $this->setPort( $configuration['port'] );
-        $this->setChannel( $configuration['channel'] );
-        $this->setName( $configuration['name'] );
-        $this->setNick( $configuration['nick'] );
-        if (isset($configuration['password'])) {
-            $this->setPassword($configuration['password']);
-        }
-        $this->setMaxReconnects( $configuration['maxReconnects'] );
-        $this->setLogFile( $configuration['logFile'] );
-    }
-
-    /**
      * Sets the server.
      * E.g. irc.quakenet.org or irc.freenode.org
      * @param string $server The server to set.
@@ -460,7 +364,7 @@ class Bot {
      * @param string $name The name of the bot.
      */
     public function setName( $name ) {
-        $this->name = (string) $name;
+        $this->connection->setName((string) $name);
     }
 
     /**
@@ -469,7 +373,8 @@ class Bot {
      */ 
      
      public function setPassword($password) {
-        $this->password = (string) $password;
+	$this->password = $password;
+        $this->connection->setPassword((string) $password);
      }
 
     /**
@@ -479,7 +384,15 @@ class Bot {
      * @param string $nick The nick of the bot.
      */
     public function setNick( $nick ) {
-        $this->nick = (string) $nick;
+        $this->nickToUse = (string) $nick;
+	$this->connection->setNick($this->nickToUse);
+    }
+    
+    public function setNickServ($nickserv) {
+	$this->nickserv = (string) $nickserv;
+    }
+    public function setCommandPrefix($prefix) {
+	$this->commandPrefix = (string) $prefix;
     }
 
     /**
@@ -496,11 +409,7 @@ class Bot {
      */
     public function setupLogging($log)
     {
-    	if (is_object($log))
-	{
-	    	$this->log = $log;
-		$this->log->setBot($this);
-	}
+
     }
 
     public function getCommands() {
@@ -509,6 +418,25 @@ class Bot {
 
     public function getCommandPrefix() {
         return $this->commandPrefix;
+    }
+    
+    public function getConnection()
+    {
+	return $this->connection;
+    }
+    
+    // Called on shutdown of the bot; doesn't shut it down!
+    public function onShutdown()
+    {	
+    	// It is possible that we have not had a chance to create a log object yet.
+    	// In that case, we're in early initialisation. There's nothing we can do at that point.
+    	if (is_object($this->log))
+    	{
+		$this->log->log('Shutdown function called, closing log...');
+		if ($this->log->hasBuffer())
+			$this->log->flush();
+        	$this->log->close();
+        }
     }
 }
 ?>

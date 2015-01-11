@@ -41,6 +41,30 @@
         public static function removeLineBreaks( $string ) {
             return str_replace( array ( chr( 10 ), chr( 13 ) ), '', $string );
         }
+        /**
+         * Returns class name of $object without namespace
+         *
+         * @param mixed $object
+         * @author Matej Velikonja <matej@velikonja.si>
+         * @return string
+         */
+        public static function getClassName( $object) {
+            $objectName = explode( '\\', get_class( $object ) );
+            $objectName = $objectName[count( $objectName ) - 1];
+    
+            return $objectName;
+        }
+        
+        public static function getUserNickName($data) {
+            $result = preg_match('/:([a-zA-Z0-9_]+)!/', $data, $matches);
+    
+            if ($result !== false) {
+                if (!empty($matches[1]))
+                    return $matches[1];
+            }
+    
+            return false;
+        }
 
     }
 ?>

@@ -47,6 +47,14 @@
          * @var type
          */
         private $socket;
+        
+        /**
+         * The password used for connecting.
+         * @var string
+         */
+        private $password = '';
+        private $name = '';
+        private $nick = '';
 
         /**
          * Close the connection.
@@ -56,13 +64,40 @@
         }
 
         /**
-         * Establishs the connection to the server.
+         * Establishs the connection to the server. If no arguments passed, will use the defaults.
+         * @param string $server The server to connect to.
+         * @param int    $port   The port to use for connecting to the server.
+         * @param string $nick   The nickname used to talk with the server.
+         * @param string $name   The name (ident) used to connect to the server.
+         * @param string $pass   The password to use to log in to the server.
+         * @return boolean True or false, depending on whether the connection succeeded.
          */
-        public function connect() {
-            $this->socket = fsockopen( $this->server, $this->port );
-            if (!$this->isConnected()) {
-                throw new Exception( 'Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".' );
+        public function connect($server = '', $port = '', $nick = '', $name = '', $pass = '') {
+            // Set defaults if no arguments passed.
+            if (empty($server))
+                $server = $this->server;
+            if (empty($port))
+                $port = $this->port;
+            if (empty($nick))
+                $nick = $this->nick;
+            if (empty($name))
+                $name = $this->name;
+            if (empty($pass))
+                $name = $this->password;
+                
+            // Open a connection.
+            $this->socket = fsockopen($server, $port);
+            if (!$this->isConnected())
+            {
+                throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
+                return;
             }
+          
+            if (!empty($pass))
+                $this->sendData('PASS ' . $pass);
+    
+            $this->sendData( 'USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
+            $this->sendData( 'NICK ' . $nick );
         }
 
         /**
@@ -75,6 +110,12 @@
                 return fclose( $this->socket );
             }
             return false;
+        }
+        
+        public function reconnect()
+        {
+            $this->disconnect();
+            $this->connect();
         }
 
         /**
@@ -93,7 +134,7 @@
          * @return string|boolean The data as string, or false if no data is available or an error occured.
          */
         public function getData() {
-            return fgets( $this->socket, 256 );
+            return trim(fgets( $this->socket, 256 ));
         }
 
         /**
@@ -102,10 +143,7 @@
          * @return boolean True if the connection exists. False otherwise.
          */
         public function isConnected() {
-            if (is_resource( $this->socket )) {
-                return true;
-            }
-            return false;
+            return is_resource( $this->socket );
         }
 
         /**
@@ -124,6 +162,33 @@
          */
         public function setPort( $port ) {
             $this->port = (int) $port;
+        }
+        
+        /**
+         * Set the password used for connecting.
+         * @param string $pass The password to set.
+         */
+        public function setPassword($pass)
+        {
+            $this->password = (string) $pass;
+        }
+        
+        /**
+         * Set the hostname used for connecting.
+         * @param string $name The hostname to set.
+         */
+        public function setName($name)
+        {
+            $this->name = (string) $name;
+        }
+        
+        /**
+         * Set the nick used for connecting.
+         * @param string $nick The nickname to set.
+         */
+        public function setNick($nick)
+        {
+            $this->nick = (string) $nick;
         }
 
     }
