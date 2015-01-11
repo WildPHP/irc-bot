@@ -31,7 +31,7 @@ class Youtube extends \Library\IRC\Listener\Base {
 		if (isset($matches[0]))
 		{
 			$ytApi		= sprintf($this->apiUri, $matches[0]);
-			$Ytdata	= $this->fetch($ytApi);
+			$Ytdata	= \Library\FunctionCollection::fetch($ytApi);
 			preg_match("/(?<=<title type=\'text\'>).*(?=<\/title>)/", $Ytdata, $ytTitle); 
 			return $ytTitle[0];
 		}

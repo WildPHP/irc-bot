@@ -23,16 +23,16 @@ abstract class Base
      * @param string $msg
      */
     protected function say($msg, $source) {
-        $this->connection->sendData(
-                'PRIVMSG ' . $source . ' :' . $msg
-        );
+            $message = 'PRIVMSG ' . $source . ' :' . $msg;
+            $this->connection->sendData($message);
+            $this->bot->log($message, 'COMMAND');
     }
 
     /**
      * Set's the IRC Connection, so we can use it to send data to the server.
      * @param \Library\IRC\Connection $ircConnection
      */
-    public function setIRCConnection( \Library\IRC\Connection $ircConnection ) {
+    public function setIRCConnection(\Library\IRC\Connection $ircConnection) {
         $this->connection = $ircConnection;
     }
 
@@ -57,37 +57,4 @@ abstract class Base
 
         return array_map($func, $args);
     }
-	/**
-	 * Fetches data from $uri
-	 *
-	 * @param string $uri
-	 * @return string
-	 */
-	protected function fetch($uri) {
-
-		$this->bot->log("Fetching from URI: " . $uri);
-
-		// create curl resource
-		$ch = curl_init();
-
-		// set url
-		curl_setopt($ch, CURLOPT_URL, $uri);
-		
-		// Set a user agent. Some sites require it (e.g. GitHub API).
-		curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
-
-		//return the transfer as a string
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-
-		// $output contains the output string
-		$output = curl_exec($ch);
-
-		// close curl resource to free up system resources
-		curl_close($ch);
-
-		$this->bot->log("Data fetched: " . $output);
-
-		return $output;
-	}
 }

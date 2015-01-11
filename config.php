@@ -5,6 +5,7 @@ return array(
     'name'     => 'phpbot',
     'password' => '',
     'nick'     => 'phpbot',
+    'nickserv' => 'NickServ', // What is the nickname registration service on this server?
     'channels' => array(
         '#wildphp',
     ),

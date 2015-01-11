@@ -37,7 +37,7 @@
 
         /**
          * Reference to the IRC Bot
-         * @var \Lirary\IRC\Bot
+         * @var \Library\IRC\Bot
          */
         protected $bot = null;
 
@@ -59,7 +59,14 @@
          *
          * @var string
          */
-        private $data;
+        protected $data;
+        
+        /**
+         * Whether the command needs to verify the user is a bot owner.
+         *
+         * @var bool
+         */
+        protected $verify = false;
 
         /**
          * The number of arguments the command needs.
@@ -71,7 +78,7 @@
         protected $numberOfArguments = 0;
         
         /**
-         * The help string, shown to the user when using the help command.
+         * The help string, shown to the user when using the !help command.
          *
          * This is optional to define in the command, but it is recommended you do.
          *
@@ -87,18 +94,6 @@
          * @var string
          */
         protected $usage = '';
-        
-        /**
-         * Verify the user before executing a command.
-         *
-         * Defaults to false to allow everyone to execute commands
-         * which do not have this flag set.
-         *
-         * This is optional to define in the command.
-         *
-         * @var bool
-         */
-        protected $verify = false;
 
         /**
          * Executes the command.
@@ -108,6 +103,8 @@
          * @param string          $data      Original data from server
          */
         public function executeCommand( array $arguments, $source, $data ) {
+            global $config;
+            
             // Set source
             $this->source = $source;
 
@@ -142,7 +139,7 @@
             {
                 if (!((in_array(count($arguments), $this->numberOfArguments)) || (in_array(-1, $this->numberOfArguments) && count($arguments) >= 1)))
                 {
-                    $this->say('Error: illegal amount of arguments. For help, use' . $this->bot->commandPrefix . 'help ' . str_replace('Command\\', '', get_class($this)));
+                    $this->say('Error: illegal amount of arguments. For help, use ' . $this->bot->commandPrefix . 'help ' . str_replace('Command\\', '', get_class($this)));
                     return;
                 }
             }
@@ -161,7 +158,7 @@
             // Execute the command.
             $this->command();
         }
-        
+
         /**
          * Checks the legitimacy of the user running a command.
          *
@@ -170,11 +167,11 @@
         {
             global $config;
             // Get the host.
-            preg_match("/~([^\s]++)++/", $this->data, $hosts);
+            preg_match("/!([^\s]+)/", $this->data, $hosts);
             
             // Check if the user has privileges.
-            $this->bot->log('Requesting privileges for host ' . $hosts[0] . '...');
-            if (!in_array($hosts[0], $config['hosts']))
+            $this->bot->log('Requesting privileges for host ' . $hosts[1] . '...');
+            if (!in_array($hosts[1], $config['hosts']))
             {
                 // Nope. No access for you.
                 $this->bot->log('Failed; this host is not trusted.');
@@ -183,29 +180,23 @@
             else
                 return true;
         }
-
+       
         /**
          * Sends PRIVMSG to source with $msg
          *
          * @param string $msg
          */
        protected function say($msg) {
-            $this->connection->sendData(
-                    'PRIVMSG ' . $this->source . ' :' . $msg
-            );
+            $message = 'PRIVMSG ' . $this->source . ' :' . $msg;
+            $this->connection->sendData($message);
+            $this->bot->log($message, 'COMMAND');
         }
-	
-	/**
-	 * Get help for the command being run.
-	 */
+
         public function getHelp() {
            if (!empty($this->help))
                 return array($this->help, $this->usage);
         }
         
-        /**
-         * Check if the current commands requires verification.
-         */
         public function needsVerification()
         {
                 return !empty($this->verify);
@@ -216,8 +207,6 @@
          * This method is called if the command get's executed.
          */
         public function command() {
-            echo 'fail';
-            flush();
             throw new Exception( 'You have to overwrite the "command" method and the "executeCommand". Call the parent "executeCommand" and execute your custom "command".' );
         }
 
@@ -257,40 +246,6 @@
             }
 
             return null;
-        }
-
-        /**
-         * Fetches data from $uri
-         *
-         * @param string $uri
-         * @return string
-         */
-        protected function fetch($uri) {
-
-            $this->bot->log("Fetching from URI: " . $uri);
-
-            // create curl resource
-            $ch = curl_init();
-
-            // set url
-            curl_setopt($ch, CURLOPT_URL, $uri);
-            
-            // Set a user agent. Some sites require it (e.g. GitHub API).
-            curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
-
-            //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-
-            // $output contains the output string
-            $output = curl_exec($ch);
-
-            // close curl resource to free up system resources
-            curl_close($ch);
-
-            $this->bot->log("Data fetched: " . $output);
-
-            return $output;
         }
     }
 ?>

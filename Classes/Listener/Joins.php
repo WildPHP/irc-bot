@@ -15,30 +15,10 @@ class Joins extends \Library\IRC\Listener\Base {
      */
     public function execute($data) {
         $args = $this->getArguments($data);
+        $user = \Library\FunctionCollection::getUserNickName($args[0]);
 
-        $this->say($this->getUserNickName($args[0]) . ", welcome to channel " . $args[2] . ". Try following commands: " . $this->getCommandsName(), $args[2]);
-    }
-
-    private function getCommandsName() {
-        $commands = $this->bot->getCommands();
-
-        $names = array();
-        /* @var $command \Library\IRC\Command\Base */
-        foreach ($commands as $name => $command) {
-            $names[] = $this->bot->getCommandPrefix() . $name;
-        }
-
-        return implode(", ", $names);
-    }
-
-    private function getUserNickName($data) {
-        $result = preg_match('/:([a-zA-Z0-9_]+)!/', $data, $matches);
-
-        if ($result !== false) {
-            return $matches[1];
-        }
-
-        return false;
+        if ($user != 'FatalException')
+		$this->say('Welcome ' . $user . '!', $args[2]);
     }
 
     /**

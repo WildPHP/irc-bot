@@ -16,7 +16,7 @@ class Log
 	 * @var object
 	 */
 	protected $bot;
-
+	
 	/**
 	 * Use a buffer to temporarily store data in. Useful on systems with slow disk access.
 	 * @var bool
