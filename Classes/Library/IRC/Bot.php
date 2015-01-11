@@ -106,6 +106,12 @@ class Bot {
 	public $commandManager = null;
 
 	/**
+	 * Version of the Bot
+	 * @var string
+	 */
+	public $botVersion = "1.1.0.0"";
+
+	/**
 	 * The listener manager.
 	 * @var \Library\IRC\Listener\Manager
 	 */
