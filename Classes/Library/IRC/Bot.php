@@ -165,7 +165,7 @@ class Bot {
 		$this->setMaxReconnects( $configuration['max_reconnects'] );
 	
 	// Set the command prefix.
-	$this->setCommandPrefix($configuration['command_prefix']);
+	$this->setCommandPrefix($configuration['prefix']);
 	}
 	
 	/**
