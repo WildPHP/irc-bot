@@ -73,9 +73,6 @@
          * @return string
          */
         public static function fetch($uri) {
-    
-            $this->bot->log("Fetching data from URI: " . $uri);
-    
             // create curl resource
             $ch = curl_init();
     
