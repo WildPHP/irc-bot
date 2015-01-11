@@ -265,6 +265,16 @@ class Bot {
                         }
                     }
                 }
+                if (method_exists($listener, 'getMessageKeywords') && is_array($listener->getMessageKeywords())) {
+                    foreach ($listener->getMessageKeywords() as $keyword) {
+                        //compare listeners keyword and 1st arguments of server response
+                        if (stripos($data, $keyword)) {
+                            $this->log('Running listener, message contains "' . $keyword . '"');
+                            $listener->execute( $data );
+                            
+                        }
+                    }
+                }
             }
 
             if (isset($args[3])) {
