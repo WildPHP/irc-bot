@@ -40,6 +40,7 @@ return array(
 		'Command\Help'		=> array(),
 		'Command\Update'	=> array(),
 		'Command\Version'	=> array(),
+		'Command\Raw'		=> array(),
 	),
 	'listeners' => array(
 		'Listener\Joins'	=> array(),
