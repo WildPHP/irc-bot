@@ -37,7 +37,7 @@
 
 		/**
 		 * Reference to the IRC Bot
-		 * @var \Lirary\IRC\Bot
+		 * @var \Library\IRC\Bot
 		 */
 		protected $bot = null;
 
