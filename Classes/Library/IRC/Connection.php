@@ -48,7 +48,7 @@
          * Interaction with the server.
          * For example, send commands or some other data to the server.
          *
-         * @return boolean FALSE on error.
+         * @return boolean|int the number of bytes written, or FALSE on error.
          */
         public function sendData( $data );
 

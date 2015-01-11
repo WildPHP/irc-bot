@@ -119,7 +119,7 @@
          * Interaction with the server.
          * For example, send commands or some other data to the server.
          *
-         * @return int|boolean the number of bytes written, or FALSE on error.
+         * @return boolean|int the number of bytes written, or FALSE on error.
          */
         public function sendData( $data ) {
             return fwrite( $this->socket, $data . "\r\n" );

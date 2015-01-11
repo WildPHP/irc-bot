@@ -71,16 +71,15 @@ class Bot {
     
     /**
      * The current log object; usually an instance of LogManager.
-     * @var object
+     * @var \Library\IRC\Log
      */
     public $log;
-
+    
     /**
-     * Complete file path to the log file.
-     * Configure the path, the filename is generated and added.
+     * The source of the data.
      * @var string
      */
-    private $logFile = '';
+    public $source = '';
 
     /**
      * Defines the prefix for all commands interacting with the bot.
@@ -404,28 +403,24 @@ class Bot {
     }
     
     /**
-     * Setup the LogManager instance pointed at.
-     * @param object $log The LogManager instance.
+     * Returns the current command prefix.
      */
-    public function setupLogging($log)
-    {
-
-    }
-
-    public function getCommands() {
-        return $this->commands;
-    }
-
     public function getCommandPrefix() {
         return $this->commandPrefix;
     }
     
+    /**
+     * Returns the current connection.
+     */
     public function getConnection()
     {
 	return $this->connection;
     }
     
-    // Called on shutdown of the bot; doesn't shut it down!
+    /**
+     * Handles closing log files and, if needed, flushing buffers.
+     * Called at shutdown.
+     */
     public function onShutdown()
     {	
     	// It is possible that we have not had a chance to create a log object yet.
