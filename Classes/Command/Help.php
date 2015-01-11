@@ -32,7 +32,7 @@ class Help extends \Library\IRC\Command\Base
         $command = (!empty($this->arguments[0]) ? preg_replace('/\s\s+/', '', $this->arguments[0]) : '');
         
         // Get all available commands.
-        $commands = $this->bot->getCommands();
+        $commands = $this->bot->commandManager->listCommands();
         
         // Does this user have privileges?
         $view_all = $this->verifyUser();
@@ -51,7 +51,7 @@ class Help extends \Library\IRC\Command\Base
         else
         {
             // Get all commands.
-            $commands = $this->bot->getCommands();
+            $commands = $this->bot->commandManager->listCommands();
             
             // Loop through each to get the one we need.
             foreach ($commands as $name => $details)
@@ -59,7 +59,7 @@ class Help extends \Library\IRC\Command\Base
                 if (trim(ucfirst(strtolower($command))) == $name)
                 {
 		    // We found it!
-                    if (empty($details->getHelp()))
+                    if (!$details->getHelp())
                     {
                         // But it doesn't have any help... :(
                         $this->say('No help available for command ' . $name);
