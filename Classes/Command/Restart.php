@@ -10,53 +10,52 @@ namespace Command;
  * @author Super3 <admin@wildphp.com>
  */
 class Restart extends \Library\IRC\Command\Base {
-    /**
-     * The command's help text.
-     *
-     * @var string
-     */
-    protected $help = 'Reconnect the bot to the network. Does not reload plugins.';
-    
-    /**
-     * How to use the command.
-     *
-     * @var string
-     */
-    protected $usage = 'restart';
-    
-    /**
-     * Verify the user before executing this command.
-     *
-     * @var bool
-     */
-    protected $verify = true;
-    
-    /**
-     * The number of arguments the command needs.
-     *
-     * @var integer
-     */
-    protected $numberOfArguments = array(0, -1);
+	/**
+	 * The command's help text.
+	 *
+	 * @var string
+	 */
+	protected $help = 'Reconnect the bot to the network. Does not reload plugins.';
 
-    /**
-     * Restarts the bot.
-     */
-    public function command() {
-        if (count($this->arguments) == 0) {
-            $message = 'Restarting...';
-        }
-        else {
-            $message = trim(preg_replace('/\s\s+/', ' ',  implode(' ', $this->arguments)));
-        }
-        
-        // Exit from Sever
-        $this->connection->sendData('QUIT :' . $message);
+	/**
+	 * How to use the command.
+	 *
+	 * @var string
+	 */
+	protected $usage = 'restart';
 
-        // Wait 5 Seconds Before Rejoin
-        sleep(5);
+	/**
+	 * Verify the user before executing this command.
+	 *
+	 * @var bool
+	 */
+	protected $verify = true;
 
-        // Reconnect to Server
-        $this->bot->connectToServer();
-    }
+	/**
+	 * The number of arguments the command needs.
+	 *
+	 * @var integer
+	 */
+	protected $numberOfArguments = array(0, -1);
+
+	/**
+	 * Restarts the bot.
+	 */
+	public function command() {
+		if (count($this->arguments) == 0) {
+			$message = 'Restarting...';
+		}
+		else {
+			$message = trim(preg_replace('/\s\s+/', ' ',  implode(' ', $this->arguments)));
+		}
+
+		// Exit from Sever
+		$this->connection->sendData('QUIT :' . $message);
+
+		// Wait 5 Seconds Before Rejoin
+		sleep(5);
+
+		// Reconnect to Server
+		$this->bot->connectToServer();
+	}
 }
-?>

@@ -26,7 +26,7 @@ class Youtube extends \Library\IRC\Listener\Base {
 	}
 
 	private function getYtTitle($data)
-    {
+	{
 		preg_match('#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#', $data, $matches);
 		if (isset($matches[0]))
 		{
@@ -37,7 +37,7 @@ class Youtube extends \Library\IRC\Listener\Base {
 		}
 		return false;
 	}
-    
+	
 
 	/**
 	* Returns keywords that listener is listening to.

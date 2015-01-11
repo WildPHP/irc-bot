@@ -4,18 +4,18 @@ namespace Library\IRC\Listener;
 // This is a manager folks, not a class to toy around with. Non-expandable!
 final class Manager {
 	private $bot = null;
-	
+
 	/**
 	 * The list of commands.
 	 * @var array
 	 */
 	private $listeners = array();
-	
+
 	public function __construct(\Library\IRC\Bot $bot)
 	{
 		$this->bot = $bot;
 	}
-	
+
 	/**
 	 * Adds a single command to the bot.
 	 *
@@ -30,17 +30,16 @@ final class Manager {
 		$this->listeners[$listenerName] = $listener;
 		$this->bot->log( 'The following Listener was added to the Bot: "' . $listenerName . '".', 'INFO' );
 	}
-	
+
 	public function listListeners()
 	{
 		return $this->listeners;
 	}
-	
+
 	public function listenerExists($listener)
 	{
 		return array_key_exists($listener, $this->listeners);
 	}
-	
 
 	public function listenerHook(array $arguments, $data ) {
 		/* @var $listener \Library\IRC\Listener\Base */
@@ -58,13 +57,12 @@ final class Manager {
 					if (stripos($data, $keyword)) {
 						$this->bot->log('Running listener, message contains "' . $keyword . '"', 'LISTENER');
 						$listener->execute( $data );
-						
+
 					}
 				}
 			}
 		}
 	}
 }
-
 
 ?>

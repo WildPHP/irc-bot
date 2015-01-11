@@ -11,44 +11,43 @@ namespace Command;
  * @author Super3 <admin@wildphp.com>
  */
 class Join extends \Library\IRC\Command\Base {
-    /**
-    * The command's help text.
-    *
-    * @var string
-    */
-    protected $help = 'Make the bot join a channel.';
-    
-    /**
-     * How to use the command.
-     *
-     * @var string
-     */
-    protected $usage = 'join [#channel]';
+	/**
+	* The command's help text.
+	*
+	* @var string
+	*/
+	protected $help = 'Make the bot join a channel.';
 
-    /**
-     * The number of arguments the command needs.
-     *
-     * You have to define this in the command.
-     *
-     * @var integer
-     */
-    protected $numberOfArguments = array(1, 2);
-    
-    /**
-     * Verify the user before executing this command.
-     *
-     * @var bool
-     */
-    protected $verify = true;
+	/**
+	 * How to use the command.
+	 *
+	 * @var string
+	 */
+	protected $usage = 'join [#channel]';
 
-    /**
-     * Joins the specified channel.
-     *
-     * IRC-Syntax: JOIN [#channel]
-     */
-    public function command() {
-        
-        $this->connection->sendData('JOIN '.$this->arguments[0] . (!empty($this->arguments[1]) ? ' ' . $this->arguments[1] : ''));
-    }
+	/**
+	 * The number of arguments the command needs.
+	 *
+	 * You have to define this in the command.
+	 *
+	 * @var integer
+	 */
+	protected $numberOfArguments = array(1, 2);
+
+	/**
+	 * Verify the user before executing this command.
+	 *
+	 * @var bool
+	 */
+	protected $verify = true;
+
+	/**
+	 * Joins the specified channel.
+	 *
+	 * IRC-Syntax: JOIN [#channel]
+	 */
+	public function command() {
+
+		$this->connection->sendData('JOIN '.$this->arguments[0] . (!empty($this->arguments[1]) ? ' ' . $this->arguments[1] : ''));
+	}
 }
-?>
