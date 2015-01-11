@@ -83,7 +83,7 @@
             if (empty($name))
                 $name = $this->name;
             if (empty($pass))
-                $name = $this->password;
+                $pass = $this->password;
                 
             // Open a connection.
             $this->socket = fsockopen($server, $port);
@@ -93,6 +93,7 @@
             if (!empty($pass))
                 $this->sendData('PASS ' . $pass);
     
+            echo var_dump($nick, $name);
             $this->sendData( 'USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
             $this->sendData( 'NICK ' . $nick );
         }
