@@ -1,5 +1,4 @@
 <?php
-
 namespace Library\IRC;
 
 /**
@@ -109,7 +108,7 @@ class Log
 	{
 		// No status? Use log.
 		if (empty($status))
-		    $status = 'LOG';
+			$status = 'LOG';
 
 		// Add the date and status to the message.
 		$msg = date('d.m.Y - H:i:s') . "\t  [ " . $status . " ] \t" . \Library\FunctionCollection::removeLineBreaks($data) . "\r\n";
@@ -130,14 +129,14 @@ class Log
 			if (!$isFromChannel)
 				return;
 		}
-        
+		
 		// Are we using a buffer? If so, queue the message; we'll write it later.
-        	if ($this->useBuffer)
-        		$this->buffer = $this->buffer . $msg;
+			if ($this->useBuffer)
+				$this->buffer = $this->buffer . $msg;
 			
 		// Otherwise, we can just write it.
-        	else
-        	{
+			else
+			{
 			if (!fwrite($this->handle, $msg))
 				echo 'Failed to write message to file...';
 		}
@@ -210,4 +209,3 @@ class Log
 			$this->bot = $bot;
 	}
 }
-?>

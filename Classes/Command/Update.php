@@ -11,36 +11,36 @@ namespace Command;
  * @author Tim Vos <timtimss@outlook.com>
  */
 class Update extends \Library\IRC\Command\Base {
-    /**
-     * The command's help text.
-     *
-     * @var string
-     */
-    protected $help = 'Updates the Bot to the Latest Version';
+	/**
+	 * The command's help text.
+	 *
+	 * @var string
+	 */
+	protected $help = 'Updates the Bot to the Latest Version';
 
-    /**
-     * How to use the command.
-     *
-     * @var string
-     */
-    protected $usage = 'update';
+	/**
+	 * How to use the command.
+	 *
+	 * @var string
+	 */
+	protected $usage = 'update';
 	
 	/**
-     * Verify the user before executing this command.
-     *
-     * @var bool
-     */
-    protected $verify = true;
+	 * Verify the user before executing this command.
+	 *
+	 * @var bool
+	 */
+	protected $verify = true;
 
-    /**
-     * The number of arguments the command needs.
-     *
-     * @var integer
-     */
-    protected $numberOfArguments = 0;
+	/**
+	 * The number of arguments the command needs.
+	 *
+	 * @var integer
+	 */
+	protected $numberOfArguments = 0;
 
-    /**
-     * Updates Bot
+	/**
+	 * Updates Bot
 	 */
 	 
 	public function command() {
@@ -65,43 +65,43 @@ class Update extends \Library\IRC\Command\Base {
 }
 
 class Version extends \Library\IRC\Command\Base {
-    /**
-     * The command's help text.
-     *
-     * @var string
-     */
-    protected $help = 'Checks the Latest Version of the Bot and the Version of this.';
+	/**
+	 * The command's help text.
+	 *
+	 * @var string
+	 */
+	protected $help = 'Checks the Latest Version of the Bot and the Version of this.';
 
-    /**
-     * How to use the command.
-     *
-     * @var string
-     */
-    protected $usage = 'version';
-	
-    /**
-     * Location URI API call
-     *
-     * @var string
-     */
-    private $updateUri = "http://wildphp.github.io/Wild-IRC-Bot/data/updater.json";
+	/**
+	 * How to use the command.
+	 *
+	 * @var string
+	 */
+	protected $usage = 'version';
 	
 	/**
-     * Verify the user before executing this command.
-     *
-     * @var bool
-     */
-    protected $verify = true;
+	 * Location URI API call
+	 *
+	 * @var string
+	 */
+	private $updateUri = "http://wildphp.github.io/Wild-IRC-Bot/data/updater.json";
+	
+	/**
+	 * Verify the user before executing this command.
+	 *
+	 * @var bool
+	 */
+	protected $verify = true;
 
-    /**
-     * The number of arguments the command needs.
-     *
-     * @var integer
-     */
-    protected $numberOfArguments = 0;
+	/**
+	 * The number of arguments the command needs.
+	 *
+	 * @var integer
+	 */
+	protected $numberOfArguments = 0;
 
-    /**
-     * Checks Version of Bot and Latest Version
+	/**
+	 * Checks Version of Bot and Latest Version
 	 */
 	 
 	public function command() {
