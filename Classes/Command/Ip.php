@@ -15,21 +15,21 @@ class Ip extends \Library\IRC\Command\Base {
      *
      * @var string
      */
-    protected $help = 'Give the IP of the user issuing the command.';
+    protected $help = 'Return the IP of the given hostname.';
     
     /**
      * How to use the command.
      *
      * @var string
      */
-    protected $usage = 'ip';
+    protected $usage = 'ip [hostname]';
 
     /**
      * The number of arguments the command needs.
      *
      * @var integer
      */
-    protected $numberOfArguments = 0;
+    protected $numberOfArguments = 1;
 
     /**
      * Sends the arguments to the channel. An IP.
@@ -37,13 +37,13 @@ class Ip extends \Library\IRC\Command\Base {
      * IRC-Syntax: PRIVMSG [#channel]or[user] : [message]
      */
     public function command() {
+	$ip = gethostbyname($this->arguments[0]);
 
-        $ip = $this->getUserIp();
-
-        if ($ip) {
-            $this->say('Your IP is: ' . $ip);
+	// gethostbyname() returns the unmodified hostname on failure. That's why we check it like this.
+        if ($ip != $this->arguments[0]) {
+            $this->say('The IP of this host is: ' . $ip);
         } else {
-           $this->say('You don\'t have an IP');
+           $this->say('This host does not have an IP');
         }
     }
 }
