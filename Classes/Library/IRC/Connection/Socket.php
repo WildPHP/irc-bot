@@ -44,7 +44,7 @@
 
         /**
          * The TCP/IP connection.
-         * @var type
+         * @var resource
          */
         private $socket;
         
@@ -88,10 +88,7 @@
             // Open a connection.
             $this->socket = fsockopen($server, $port);
             if (!$this->isConnected())
-            {
                 throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
-                return;
-            }
           
             if (!empty($pass))
                 $this->sendData('PASS ' . $pass);
