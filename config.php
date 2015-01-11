@@ -38,10 +38,11 @@ return array(
         'Command\Quit'    => array(),
         'Command\Restart' => array(),
         'Command\Help'    => array(),
-		'Command\Update'  => array(),
+	'Command\Update'  => array(),
+	'Command\Version' => array(),
     ),
     'listeners' => array(
-        'Listener\Joins' => array(),
+        'Listener\Joins'  => array(),
         'Listener\Youtube' => array(),
     ),
     'hosts' => array(
