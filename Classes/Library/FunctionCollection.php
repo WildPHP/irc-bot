@@ -65,5 +65,36 @@
 	
 			return false;
 		}
+		
+		/**
+		 * Fetches data from $uri
+		 *
+		 * @param string $uri
+		 * @return string
+		 */
+		public static function fetch($uri) {
+			// create curl resource
+			$ch = curl_init();
+	
+			// set url
+			curl_setopt($ch, CURLOPT_URL, $uri);
+			
+			// user agent.
+			curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
+	
+			//return the transfer as a string
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+	
+			// $output contains the output string
+			$output = curl_exec($ch);
+	
+			// close curl resource to free up system resources
+			curl_close($ch);
+	
+			//$this->bot->log("Data fetched: " . $output);
+	
+			return $output;
+		}
 
 	}

@@ -57,7 +57,7 @@ class Imdb extends \Library\IRC\Command\Base {
 		}
 
 		$apiUri  = sprintf($this->apiUri, $imdbTitle);
-		$getJson = $this->fetch($apiUri);
+		$getJson = \Library\FunctionCollection::fetch($apiUri);
 
 		$json = json_decode($getJson, true);
 
