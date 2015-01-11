@@ -38,26 +38,15 @@
     }
 
     spl_autoload_register( 'Autoloader::load' );
-
-    // Create the bot.
-    $bot = new Library\IRC\Bot();
-
-    // Configure the bot.
-    $bot->setServer( $config['server'] );
-    $bot->setPort( $config['port'] );
-    $bot->setChannel( $config['channels'] );
-    $bot->setName( $config['name'] );
-    $bot->setNick( $config['nick']);
-    if ( isset( $config['password'] ) ) {
-        $bot->setPassword ( $config['password'] );
-    }
-    $bot->setMaxReconnects( $config['max_reconnects'] );
     
     // Initialise the LogManager.
     $log = new Library\IRC\Log($config['log']);
+
+    // Create the bot.
+    $bot = new Library\IRC\Bot($config, $log);
     
-    // Attach the LogManager instance to the Bot.
-    $bot->setupLogging($log);
+    // Register the shutdown function.
+    register_shutdown_function(array($bot, 'onShutdown'));
 
     // Add commands to the bot.
     foreach ($config['commands'] as $commandName => $args) {
@@ -65,7 +54,7 @@
 
         $command = $reflector->newInstanceArgs($args);
 
-        $bot->addCommand($command);
+        $bot->commandManager->addCommand($command);
     }
 
     foreach ($config['listeners'] as $listenerName => $args) {
@@ -73,7 +62,7 @@
 
         $listener = $reflector->newInstanceArgs($args);
 
-        $bot->addListener($listener);
+        $bot->listenerManager->addListener($listener);
     }
 
 
@@ -83,7 +72,7 @@
     }
 
 
-    // Connect to the server.
-    $bot->connectToServer();
+    // And fire it up.
+    $bot->run();
 
     // Nothing more possible, the bot runs until script ends.
