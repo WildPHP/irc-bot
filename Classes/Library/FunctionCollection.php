@@ -8,7 +8,7 @@
 	 * and use this script commercially/non-commercially. My only requirement is that
 	 * you keep this header as an attribution to my work. Enjoy!
 	 *
-	 * @license	http://creativecommons.org/licenses/by/3.0/
+	 * @license http://creativecommons.org/licenses/by/3.0/
 	 *
 	 * @package IRCBot
 	 * @subpackage Library
