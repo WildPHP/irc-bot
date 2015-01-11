@@ -51,21 +51,21 @@
 		public static function getClassName( $object) {
 			$objectName = explode( '\\', get_class( $object ) );
 			$objectName = $objectName[count( $objectName ) - 1];
-	
+
 			return $objectName;
 		}
-		
+
 		public static function getUserNickName($data) {
 			$result = preg_match('/:([a-zA-Z0-9_]+)!/', $data, $matches);
-	
+
 			if ($result !== false) {
 				if (!empty($matches[1]))
 					return $matches[1];
 			}
-	
+
 			return false;
 		}
-		
+
 		/**
 		 * Fetches data from $uri
 		 *
@@ -75,25 +75,25 @@
 		public static function fetch($uri) {
 			// create curl resource
 			$ch = curl_init();
-	
+
 			// set url
 			curl_setopt($ch, CURLOPT_URL, $uri);
-			
+
 			// user agent.
 			curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
-	
+
 			//return the transfer as a string
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-	
+
 			// $output contains the output string
 			$output = curl_exec($ch);
-	
+
 			// close curl resource to free up system resources
 			curl_close($ch);
-	
+
 			//$this->bot->log("Data fetched: " . $output);
-	
+
 			return $output;
 		}
 

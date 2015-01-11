@@ -18,7 +18,7 @@ class Poke extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Poke someone.';
-	
+
 	/**
 	 * How to use the command.
 	 *

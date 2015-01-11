@@ -17,7 +17,7 @@ class Part extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Make the bot leave a channel.';
-	 
+
 	/**
 	 * How to use the command.
 	 *
@@ -33,7 +33,7 @@ class Part extends \Library\IRC\Command\Base {
 	 * @var integer
 	 */
 	protected $numberOfArguments = 1;
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *

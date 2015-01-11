@@ -24,7 +24,7 @@ class Update extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $usage = 'update';
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
@@ -42,7 +42,7 @@ class Update extends \Library\IRC\Command\Base {
 	/**
 	 * Updates Bot
 	 */
-	 
+
 	public function command() {
 
 		$this->bot->log('Checking for Bot Update');
@@ -78,14 +78,14 @@ class Version extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $usage = 'version';
-	
+
 	/**
 	 * Location URI API call
 	 *
 	 * @var string
 	 */
 	private $updateUri = "http://wildphp.github.io/Wild-IRC-Bot/data/updater.json";
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
@@ -103,17 +103,17 @@ class Version extends \Library\IRC\Command\Base {
 	/**
 	 * Checks Version of Bot and Latest Version
 	 */
-	 
+
 	public function command() {
 
 		$jsonfile = $this->fetch($this->updateUri);
 		$jsondata = json_decode($jsonfile);
-		
+
 		$latestversion = $jsondata->update[0]->version;
 		$botversion = $this->bot->botVersion;
-		
+
 		$result = version_compare($botversion, $latestversion);
-		
+
 		if($result === -1){
 			$updated = chr(3) . "07Out of Date!";
 		}
@@ -123,7 +123,7 @@ class Version extends \Library\IRC\Command\Base {
 		else{
 			$updated = chr(3) . "04You Broke Something :'(";
 		}
-		
+
 		$this->say('The Latest Bot Version is ' . $latestversion . '. Your Bot is Version is ' . $botversion . ".");
 		$this->say('Your Bot is ' . $updated);
 	}

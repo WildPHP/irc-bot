@@ -37,9 +37,7 @@ If you need support or just want to idle in the channel our IRC Channel is
 A change has been made as of 5/1/2015 which means that `-1` for `$numberOfArguments` will now not work as it used to. `-1` will not accept no arguments, only 1+.
 Please use `$numberOfArguments = [0, -1];` to emulate the same functionality as before.
 
-
 ### Listeners
-
 
 * Joins - Greets users when they join the channel.
 
@@ -85,7 +83,7 @@ Stop
     <wildphp-bot> hello there
     <random-user> !poke #wildphp random-user
     * wildphp-bot pokes random-user
-    
+
 ### Upcoming Features
 
 * Hostname Authentication

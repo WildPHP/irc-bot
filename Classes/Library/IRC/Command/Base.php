@@ -60,7 +60,7 @@
 		 * @var string
 		 */
 		protected $data;
-		
+
 		/**
 		 * Whether the command needs to verify the user is a bot owner.
 		 *
@@ -76,7 +76,7 @@
 		 * @var integer
 		 */
 		protected $numberOfArguments = 0;
-		
+
 		/**
 		 * The help string, shown to the user when using the !help command.
 		 *
@@ -104,13 +104,13 @@
 		 */
 		public function executeCommand( array $arguments, $source, $data ) {
 			global $config;
-			
+
 			// Set source
 			$this->source = $source;
 
 			// Set data
 			$this->data = $data;
-			
+
 			// Do we verify the legitimacy of the user executing?
 			if ($this->needsVerification() && !$this->verifyUser())
 			{
@@ -123,7 +123,7 @@
 			// If a number of arguments is incorrect then run the command, if
 			// not then show the relevant help text.
 			// This is fugly, but it works.
-			
+
 			// If it's an int...
 			if (is_numeric($this->numberOfArguments))
 			{
@@ -133,7 +133,7 @@
 					return;
 				}
 			}
-			
+
 			// But if it's an array... An array means this command can take multiple counts of arguments, and react accordingly.
 			elseif (is_array($this->numberOfArguments))
 			{
@@ -143,7 +143,7 @@
 					return;
 				}
 			}
-			
+
 			// Some safeguarding here.
 			else
 			{
@@ -151,7 +151,7 @@
 				$this->bot->log('This command will not work until fixed.');
 				return;
 			}
-			
+
 			// Set Arguments
 			$this->arguments = $arguments;
 
@@ -168,7 +168,7 @@
 			global $config;
 			// Get the host.
 			preg_match("/!([^\s]+)/", $this->data, $hosts);
-			
+
 			// Check if the user has privileges.
 			$this->bot->log('Requesting privileges for host ' . $hosts[1] . '...');
 			if (!in_array($hosts[1], $config['hosts']))
@@ -180,7 +180,7 @@
 			else
 				return true;
 		}
-	   
+
 		/**
 		 * Sends PRIVMSG to source with $msg
 		 *
@@ -196,7 +196,7 @@
 		   if (!empty($this->help))
 				return array($this->help, $this->usage);
 		}
-		
+
 		public function needsVerification()
 		{
 				return !empty($this->verify);

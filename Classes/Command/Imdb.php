@@ -17,7 +17,7 @@ class Imdb extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Get information about IMDB movies.';
-	
+
 	/**
 	 * How to use the command.
 	 *

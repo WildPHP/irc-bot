@@ -16,21 +16,21 @@ class Restart extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Reconnect the bot to the network. Does not reload plugins.';
-	
+
 	/**
 	 * How to use the command.
 	 *
 	 * @var string
 	 */
 	protected $usage = 'restart';
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
 	 * @var bool
 	 */
 	protected $verify = true;
-	
+
 	/**
 	 * The number of arguments the command needs.
 	 *
@@ -48,7 +48,7 @@ class Restart extends \Library\IRC\Command\Base {
 		else {
 			$message = trim(preg_replace('/\s\s+/', ' ',  implode(' ', $this->arguments)));
 		}
-		
+
 		// Exit from Sever
 		$this->connection->sendData('QUIT :' . $message);
 

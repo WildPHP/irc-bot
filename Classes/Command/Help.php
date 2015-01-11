@@ -8,14 +8,14 @@ class Help extends \Library\IRC\Command\Base
 	 * @var string
 	 */
 	protected $help = 'Show information about commands.';
-	
+
 	/**
 	 * How to use the command.
 	 *
 	 * @var string
 	 */
 	protected $usage = 'help [optional command]';
-	
+
 	/**
 	 * The number of arguments the command needs.
 	 *
@@ -30,13 +30,13 @@ class Help extends \Library\IRC\Command\Base
 	{
 		// We don't want any trailing \n, \r or anything in that area.
 		$command = (!empty($this->arguments[0]) ? preg_replace('/\s\s+/', '', $this->arguments[0]) : '');
-		
+
 		// Get all available commands.
 		$commands = $this->bot->commandManager->listCommands();
-		
+
 		// Does this user have privileges?
 		$view_all = $this->verifyUser();
-		
+
 		// If no command specified we show a list of commands.
 		if (empty($command))
 		{
@@ -46,13 +46,13 @@ class Help extends \Library\IRC\Command\Base
 					$output[] = $name;
 			$this->say('Available commands: ' . implode(', ', $output));
 		}
-			
+
 		// Else a command was specified, so try to load the help for it.
 		else
 		{
 			// Get all commands.
 			$commands = $this->bot->commandManager->listCommands();
-			
+
 			// Loop through each to get the one we need.
 			foreach ($commands as $name => $details)
 			{

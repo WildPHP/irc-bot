@@ -68,13 +68,13 @@ class Bot {
 	 * @var integer
 	 */
 	private $maxReconnects = 0;
-	
+
 	/**
 	 * The current log object; usually an instance of LogManager.
 	 * @var \Library\IRC\Log
 	 */
 	public $log;
-	
+
 	/**
 	 * The source of the data.
 	 * @var string
@@ -116,7 +116,7 @@ class Bot {
 	 * @var type
 	 */
 	private $logFileHandler = null;
-	
+
 	/**
 	 * The NickServ username. Usually NickServ, but exceptions are possible.
 	 * @var string
@@ -133,13 +133,13 @@ class Bot {
 	public function __construct(array $configuration, \Library\IRC\Log $log) {
 
 		$this->connection = new \Library\IRC\Connection\Socket;
-	
+
 	// Add a new command manager.
 	$this->commandManager = new \Library\IRC\Command\Manager($this);
-	
+
 	// And a listener manager.
 	$this->listenerManager = new \Library\IRC\Listener\Manager($this);
-	
+
 	// Setup the log.
 	$this->log = $log;
 	$this->log->setBot($this);
@@ -151,23 +151,23 @@ class Bot {
 		$this->connection->setServer( $configuration['server'] );
 		$this->connection->setPort( $configuration['port'] );
 		$this->connection->setName( $configuration['name'] );
-	
+
 	// Then come the bits the bot needs itself.
 		$this->setChannel( $configuration['channels'] );
 		$this->setNick( $configuration['nick'] );
-	
+
 	// We can only set a password if we have one. If we don't, don't bother.
 		if (!empty($configuration['password']))
 			$this->setPassword($configuration['password']);
-	
+
 	// Nickserv may differ between servers.
 	$this->setNickServ($configuration['nickserv']);
 		$this->setMaxReconnects( $configuration['max_reconnects'] );
-	
+
 	// Set the command prefix.
 	$this->setCommandPrefix($configuration['prefix']);
 	}
-	
+
 	/**
 	 * Run the bot.
 	 */
@@ -182,7 +182,7 @@ class Bot {
 		$this->log('The following listeners are known by the bot: "' . implode( ',', array_keys( $this->listenerManager->listListeners())) . '".', 'INFO');
 
 	$this->connection->connect();
-	
+
 	$this->log('Fueling the main loop...', 'STARTUP');
 	$this->main();
 	}
@@ -208,7 +208,7 @@ class Bot {
 				$this->nickToUse = $this->nick . (++$this->nickCounter);
 				$this->sendDataToServer( 'NICK ' . $this->nickToUse );
 			}
-		
+
 		if (stripos($data, 'This nickname is registered.') !== false && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv)
 		$this->sendDataToServer('PRIVMSG ' . $this->nickserv . ' :IDENTIFY ' . $this->password);
 
@@ -245,7 +245,7 @@ class Bot {
 			if ($args[0] == 'PING') {
 				$this->sendDataToServer( 'PONG ' . $args[1] );
 			}
-		
+
 		// Try to flush log buffers, if needed.
 		$this->log->intervalFlush();
 
@@ -254,13 +254,13 @@ class Bot {
 				unset($data, $args);
 				continue;
 			}
-			
+
 			if (isset($args[3])) {
 				// Explode the server response and get the command.
 				// $source finds the channel or user that the command originated.
 				$source = substr( trim( \Library\FunctionCollection::removeLineBreaks( $args[2] ) ), 0 );
 				$command = substr( trim( \Library\FunctionCollection::removeLineBreaks( $args[3] ) ), 1 );
-				
+
 				// Someone PMed me? Oh noes.
 				if ($source == $this->nickToUse && $args[1] == 'PRIVMSG')
 					$source = \Library\FunctionCollection::getUserNickName($args[0]);
@@ -280,7 +280,7 @@ class Bot {
 					$this->commandManager->executeCommand( $source, $command, $arguments, $data );
 				}
 			}
-		
+
 		// Call the listeners!
 		$this->listenerManager->listenerHook($args, $data);
 			unset($data, $args);
@@ -370,7 +370,7 @@ class Bot {
 	 * Sets the IRC password for the bot
 	 * @param string $password The password for the IRC server.
 	 */ 
-	 
+
 	 public function setPassword($password) {
 	$this->password = $password;
 		$this->connection->setPassword((string) $password);
@@ -386,7 +386,7 @@ class Bot {
 		$this->nickToUse = (string) $nick;
 	$this->connection->setNick($this->nickToUse);
 	}
-	
+
 	public function setNickServ($nickserv) {
 	$this->nickserv = (string) $nickserv;
 	}
@@ -401,14 +401,14 @@ class Bot {
 	public function setMaxReconnects( $maxReconnects ) {
 		$this->maxReconnects = (int) $maxReconnects;
 	}
-	
+
 	/**
 	 * Returns the current command prefix.
 	 */
 	public function getCommandPrefix() {
 		return $this->commandPrefix;
 	}
-	
+
 	/**
 	 * Returns the current connection.
 	 */
@@ -416,7 +416,7 @@ class Bot {
 	{
 	return $this->connection;
 	}
-	
+
 	/**
 	 * Handles closing log files and, if needed, flushing buffers.
 	 * Called at shutdown.

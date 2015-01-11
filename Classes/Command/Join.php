@@ -17,7 +17,7 @@ class Join extends \Library\IRC\Command\Base {
 	* @var string
 	*/
 	protected $help = 'Make the bot join a channel.';
-	
+
 	/**
 	 * How to use the command.
 	 *
@@ -33,7 +33,7 @@ class Join extends \Library\IRC\Command\Base {
 	 * @var integer
 	 */
 	protected $numberOfArguments = array(1, 2);
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
@@ -47,7 +47,7 @@ class Join extends \Library\IRC\Command\Base {
 	 * IRC-Syntax: JOIN [#channel]
 	 */
 	public function command() {
-		
+
 		$this->connection->sendData('JOIN '.$this->arguments[0] . (!empty($this->arguments[1]) ? ' ' . $this->arguments[1] : ''));
 	}
 }

@@ -17,7 +17,7 @@ class Joke extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Return a random joke.';
-	
+
 	/**
 	 * How to use the command.
 	 *
@@ -38,7 +38,6 @@ class Joke extends \Library\IRC\Command\Base {
 	 * IRC-Syntax: PRIVMSG [#channel]or[user] : [message]
 	 */
 	public function command() {
-
 
 		$this->bot->log("Fetching joke.");
 

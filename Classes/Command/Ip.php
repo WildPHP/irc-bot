@@ -16,7 +16,7 @@ class Ip extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Return the IP of the given hostname.';
-	
+
 	/**
 	 * How to use the command.
 	 *

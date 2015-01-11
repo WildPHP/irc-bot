@@ -47,7 +47,7 @@
 		 * @var resource
 		 */
 		private $socket;
-		
+
 		/**
 		 * The password used for connecting.
 		 * @var string
@@ -84,12 +84,12 @@
 				$name = $this->name;
 			if (empty($pass))
 				$pass = $this->password;
-				
+
 			// Open a connection.
 			$this->socket = fsockopen($server, $port);
 			if (!$this->isConnected())
 				throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
-		  
+
 			if (!empty($pass))
 				$this->sendData('PASS ' . $pass);
 
@@ -108,7 +108,7 @@
 			}
 			return false;
 		}
-		
+
 		public function reconnect()
 		{
 			$this->disconnect();
@@ -160,7 +160,7 @@
 		public function setPort( $port ) {
 			$this->port = (int) $port;
 		}
-		
+
 		/**
 		 * Set the password used for connecting.
 		 * @param string $pass The password to set.
@@ -169,7 +169,7 @@
 		{
 			$this->password = (string) $pass;
 		}
-		
+
 		/**
 		 * Set the hostname used for connecting.
 		 * @param string $name The hostname to set.
@@ -178,7 +178,7 @@
 		{
 			$this->name = (string) $name;
 		}
-		
+
 		/**
 		 * Set the nick used for connecting.
 		 * @param string $nick The nickname to set.

@@ -38,13 +38,13 @@
 	}
 
 	spl_autoload_register( 'Autoloader::load' );
-	
+
 	// Initialise the LogManager.
 	$log = new Library\IRC\Log($config['log']);
 
 	// Create the bot.
 	$bot = new Library\IRC\Bot($config, $log);
-	
+
 	// Register the shutdown function.
 	register_shutdown_function(array($bot, 'onShutdown'));
 
@@ -65,12 +65,10 @@
 		$bot->listenerManager->addListener($listener);
 	}
 
-
 	if (function_exists('setproctitle')) {
 		$title = basename(__FILE__, '.php') . ' - ' . $config['nick'];
 		setproctitle($title);
 	}
-
 
 	// And fire it up.
 	$bot->run();

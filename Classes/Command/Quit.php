@@ -23,14 +23,14 @@ class Quit extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $usage = 'quit';
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
 	 * @var bool
 	 */
 	protected $verify = true;
-	
+
 	/**
 	 * The number of arguments the command needs.
 	 *

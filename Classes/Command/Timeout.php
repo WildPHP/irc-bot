@@ -17,7 +17,7 @@ class Timeout extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $help = 'Disconnect the bot for the specified number of seconds.';
-	
+
 	/**
 	 * How to use the command.
 	 *
@@ -33,7 +33,7 @@ class Timeout extends \Library\IRC\Command\Base {
 	 * @var integer
 	 */
 	protected $numberOfArguments = 1;
-	
+
 	/**
 	 * Verify the user before executing this command.
 	 *
