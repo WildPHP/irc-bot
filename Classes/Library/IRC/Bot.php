@@ -137,41 +137,41 @@ class Bot {
 	 * @author Daniel Siepmann <coding.layne@me.com>
 	 */
 	public function __construct(array $configuration, \Library\IRC\Log $log) {
-
 		$this->connection = new \Library\IRC\Connection\Socket;
-
-	// Add a new command manager.
-	$this->commandManager = new \Library\IRC\Command\Manager($this);
-
-	// And a listener manager.
-	$this->listenerManager = new \Library\IRC\Listener\Manager($this);
-
-	// Setup the log.
-	$this->log = $log;
-	$this->log->setBot($this);
-
+	
+		// Add a new command manager.
+		$this->commandManager = new \Library\IRC\Command\Manager($this);
+	
+		// And a listener manager.
+		$this->listenerManager = new \Library\IRC\Listener\Manager($this);
+	
+		// Setup the log.
+		$this->log = $log;
+		$this->log->setBot($this);
+	
+		// No configuration? No bot.
 		if (empty($configuration))
 			trigger_error('Cannot start without a configuration. Aborting.', E_USER_ERROR);
-
-	// We need this for the connection.
+	
+		// We need this for the connection.
 		$this->connection->setServer( $configuration['server'] );
 		$this->connection->setPort( $configuration['port'] );
 		$this->connection->setName( $configuration['name'] );
-
-	// Then come the bits the bot needs itself.
+	
+		// Then come the bits the bot needs itself.
 		$this->setChannel( $configuration['channels'] );
-		$this->setNick( $configuration['nick'] );
-
-	// We can only set a password if we have one. If we don't, don't bother.
+		$this->setNick($configuration['nick']);
+	
+		// We can only set a password if we have one. If we don't, don't bother.
 		if (!empty($configuration['password']))
 			$this->setPassword($configuration['password']);
-
-	// Nickserv may differ between servers.
-	$this->setNickServ($configuration['nickserv']);
+	
+		// Nickserv may differ between servers.
+		$this->setNickServ($configuration['nickserv']);
 		$this->setMaxReconnects( $configuration['max_reconnects'] );
-
-	// Set the command prefix.
-	$this->setCommandPrefix($configuration['prefix']);
+	
+		// Set the command prefix.
+		$this->setCommandPrefix($configuration['prefix']);
 	}
 
 	/**
@@ -179,18 +179,18 @@ class Bot {
 	 */
 	public function run()
 	{
-	if ($this->connection->isConnected())
-	{
-		trigger_error('Cannot start multiple instances of the bot; it is already connected. Ignoring run request.', E_USER_WARNING);
-		return;
-	}
+		if ($this->connection->isConnected())
+		{
+			trigger_error('Cannot start multiple instances of the bot; it is already connected. Ignoring run request.', E_USER_WARNING);
+			return;
+		}
 		$this->log('The following commands are known by the bot: "' . implode( ',', array_keys($this->commandManager->listCommands())) . '".', 'INFO');
 		$this->log('The following listeners are known by the bot: "' . implode( ',', array_keys( $this->listenerManager->listListeners())) . '".', 'INFO');
 
-	$this->connection->connect();
+		$this->connection->connect();
 
-	$this->log('Fueling the main loop...', 'STARTUP');
-	$this->main();
+		$this->log('Fueling the main loop...', 'STARTUP');
+		$this->main();
 	}
 
 	/**
@@ -200,8 +200,8 @@ class Bot {
 	 * @author Daniel Siepmann <coding.layne@me.com>
 	 */
 	private function main() {
-	// And fire up a connection.
-	$this->log('Main loop ignited! GO GO GO!', 'STARTUP');
+		// And fire up a connection.
+		$this->log('Main loop ignited! GO GO GO!', 'STARTUP');
 		do {
 			$command = '';
 			$arguments = array ( );
@@ -210,17 +210,14 @@ class Bot {
 			// Check for some special situations and react:
 			// The nickname is in use, create a now one using a counter and try again.
 			if (stripos($data, 'Nickname is already in use.') !== false && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv)
-		{
+			{
 				$this->nickToUse = $this->nick . (++$this->nickCounter);
 				$this->sendDataToServer( 'NICK ' . $this->nickToUse );
 			}
 
-		if (stripos($data, 'This nickname is registered.') !== false && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv)
-		$this->sendDataToServer('PRIVMSG ' . $this->nickserv . ' :IDENTIFY ' . $this->password);
-
 			// We're welcome without password or identified with password. Lets join.
 			if ((empty($this->password) && stripos( $data, 'Welcome' ) !== false) || (!empty($this->password) && stripos($data, 'You are now identified') && \Library\FunctionCollection::getUserNickName($data) == $this->nickserv))
-				$this->join_channel( $this->channel );
+				$this->join_channel($this->channel);
 
 			// Something realy went wrong.
 			if (stripos( $data, 'Registration Timeout' ) !== false ||
@@ -252,8 +249,8 @@ class Bot {
 				$this->sendDataToServer( 'PONG ' . $args[1] );
 			}
 
-		// Try to flush log buffers, if needed.
-		$this->log->intervalFlush();
+			// Try to flush log buffers, if needed.
+			$this->log->intervalFlush();
 
 			// Nothing new from the server, step over.
 			if ($args[0] == 'PING' || !isset($args[1])) {
@@ -287,8 +284,8 @@ class Bot {
 				}
 			}
 
-		// Call the listeners!
-		$this->listenerManager->listenerHook($args, $data);
+			// Call the listeners!
+			$this->listenerManager->listenerHook($args, $data);
 			unset($data, $args);
 		} while (true);
 	}
@@ -300,10 +297,10 @@ class Bot {
 	 * @author Daniel Siepmann <coding.layne@me.com>
 	 */
 	public function sendDataToServer( $cmd ) {
-	if (mb_substr($cmd, 0, 4) != 'PASS')
-		$this->log( $cmd, 'COMMAND' );
-	else
-		$this->log('PASS *****', 'COMMAND');
+		if (mb_substr($cmd, 0, 4) != 'PASS')
+			$this->log( $cmd, 'COMMAND' );
+		else
+			$this->log('PASS *****', 'COMMAND');
 		$this->connection->sendData( $cmd );
 	}
 
@@ -389,15 +386,32 @@ class Bot {
 	 * @param string $nick The nick of the bot.
 	 */
 	public function setNick( $nick ) {
-		$this->nickToUse = (string) $nick;
-	$this->connection->setNick($this->nickToUse);
+		$this->nickToUse = $this->nick = (string) $nick;
+		$this->connection->setNick($this->nickToUse);
+	}
+	
+	/**
+	 * Get the nick of the bot.
+	 */
+	public function getNick()
+	{
+		return $this->nick;
 	}
 
+	/**
+	 * Set the NickServ username that the bot should use.
+	 * @param string $nickserv The username of NickServ.
+	 */
 	public function setNickServ($nickserv) {
-	$this->nickserv = (string) $nickserv;
+		$this->nickserv = (string) $nickserv;
 	}
+	
+	/**
+	 * Set the command prefix.
+	 * @param string $prefix The command prefix to set.
+	 */
 	public function setCommandPrefix($prefix) {
-	$this->commandPrefix = (string) $prefix;
+		$this->commandPrefix = (string) $prefix;
 	}
 
 	/**
@@ -420,7 +434,7 @@ class Bot {
 	 */
 	public function getConnection()
 	{
-	return $this->connection;
+		return $this->connection;
 	}
 
 	/**
