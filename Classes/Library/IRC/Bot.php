@@ -109,7 +109,7 @@ class Bot {
 	 * Version of the Bot
 	 * @var string
 	 */
-	public $botVersion = "1.1.0.0"";
+	public $botVersion = '1.1.0.0';
 
 	/**
 	 * The listener manager.
