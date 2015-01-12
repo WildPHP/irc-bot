@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Command;
+use \Library\FunctionCollection as func;
 
 /**
  * Leave IRC altogether. This disconnects from the server.

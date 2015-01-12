@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Command;
+use \Library\FunctionCollection as func;
 
 /**
  * Sends the weather condition to the channel.

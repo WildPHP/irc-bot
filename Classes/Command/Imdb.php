@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Command;
+use \Library\FunctionCollection as func;
 
 /**
  * Sends IMDB Info to channel.
@@ -57,7 +58,7 @@ class Imdb extends \Library\IRC\Command\Base {
 		}
 
 		$apiUri  = sprintf($this->apiUri, $imdbTitle);
-		$getJson = \Library\FunctionCollection::fetch($apiUri);
+		$getJson = func::fetch($apiUri);
 
 		$json = json_decode($getJson, true);
 

@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Command;
+use \Library\FunctionCollection as func;
 
 /**
  * Updates Bot to the Latest Version.
@@ -106,7 +107,7 @@ class Version extends \Library\IRC\Command\Base {
 
 	public function command() {
 
-		$jsonfile = $this->fetch($this->updateUri);
+		$jsonfile = func::fetch($this->updateUri);
 		$jsondata = json_decode($jsonfile);
 
 		$latestversion = $jsondata->update[0]->version;

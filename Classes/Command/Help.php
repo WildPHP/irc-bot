@@ -58,7 +58,7 @@ class Help extends \Library\IRC\Command\Base
 			{
 				if (trim(ucfirst(strtolower($command))) == $name)
 				{
-			// We found it!
+					// We found it!
 					if (!$details->getHelp())
 					{
 						// But it doesn't have any help... :(
