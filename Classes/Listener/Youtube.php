@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Listener;
+use \Library\FunctionCollection as func;
 
 /**
 *
@@ -31,7 +32,7 @@ class Youtube extends \Library\IRC\Listener\Base {
 		if (isset($matches[0]))
 		{
 			$ytApi		= sprintf($this->apiUri, $matches[0]);
-			$Ytdata	= \Library\FunctionCollection::fetch($ytApi);
+			$Ytdata	= func::fetch($ytApi);
 			preg_match("/(?<=<title type=\'text\'>).*(?=<\/title>)/", $Ytdata, $ytTitle); 
 			return $ytTitle[0];
 		}
