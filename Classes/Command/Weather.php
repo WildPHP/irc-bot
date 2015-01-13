@@ -124,7 +124,7 @@ class Weather extends \Library\IRC\Command\Base {
 	protected function getWeather($woeid) {
 		$yql = sprintf('select * from weather.forecast where woeid=%d and u="c"', $woeid);
 
-		$response = $this->fetch(sprintf($this->weatherUri, urlencode($yql)));
+		$response = func::fetch(sprintf($this->weatherUri, urlencode($yql)));
 		$jsonResponse = json_decode($response);
 
 		if (!$jsonResponse) {
@@ -153,7 +153,7 @@ class Weather extends \Library\IRC\Command\Base {
 	protected function getLocation($location) {
 		$uri = sprintf($this->locationUri, $location, $this->yahooKey);
 
-		$response = $this->fetch($uri);
+		$response = func::fetch($uri);
 
 		$jsonResponse = json_decode($response);
 
@@ -176,7 +176,7 @@ class Weather extends \Library\IRC\Command\Base {
 	protected function getLocationNameFromIp($ip) {
 		$uri = sprintf($this->ipUri, $ip);
 
-		$response = $this->fetch($uri);
+		$response = func::fetch($uri);
 
 		$jsonResponse = json_decode($response);
 

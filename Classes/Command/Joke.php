@@ -1,6 +1,7 @@
 <?php
 // Namespace
 namespace Command;
+use \Library\FunctionCollection as func;
 
 /**
  * Sends the joke to the channel.
@@ -41,7 +42,7 @@ class Joke extends \Library\IRC\Command\Base {
 
 		$this->bot->log("Fetching joke.");
 
-		$data = $this->fetch("http://api.icndb.com/jokes/random");
+		$data = func::fetch("http://api.icndb.com/jokes/random");
 
 		// ICNDB has escaped slashes in JSON response.
 		$data = stripslashes($data);
