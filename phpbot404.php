@@ -23,10 +23,10 @@
 	// Make autoload working
 	require 'Classes/Autoloader.php';
 
-	if (file_exists(ROOT_DIR . '/config.local.php')) {
-		$config = include_once(ROOT_DIR . '/config.local.php');
-	} else {
+	if (file_exists(ROOT_DIR . '/config.php')) {
 		$config = include_once(ROOT_DIR . '/config.php');
+	} else {
+		die("Please Look at the Installaion Documentation.\n");
 	}
 
 	$timezone = ini_get('date.timezone');
