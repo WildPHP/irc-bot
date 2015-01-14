@@ -57,6 +57,6 @@ class Restart extends \Library\IRC\Command\Base {
 		sleep(5);
 
 		// Reconnect to Server
-		$this->bot->connectToServer();
+		$this->connection->connect();
 	}
 }
