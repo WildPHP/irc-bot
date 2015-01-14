@@ -1,11 +1,6 @@
-# PHP IRC-BOT (WildPHP)
-A IRC Bot built in PHP (using sockets) with OOP. Designed to run off a local LAMP, WAMP, or MAMP stack.
-Includes a custom [Upstart](http://upstart.ubuntu.com/) script to run as Linux daemon.
-
-Web
--------
-* Official Website: [http://wildphp.com](http://wildphp.com), Source Code: [Github](https://github.com/pogosheep/IRC-Bot)
-* Major Contributors: [Super3](http://super3.org), [Pogosheep](http://layne-obserdia.de), [Matejvelikonja](http://velikonja.si)
+# Wild IRC Bot
+A IRC Bot built in PHP (using sockets) with OOP.
+It is designed to run off a local LAMP, WAMP, MAMP stack or just a plain and simple PHP installation.
 
 IRC Community & Support
 -------
@@ -15,67 +10,60 @@ If you need support or just want to idle in the channel our IRC Channel is
 
 ## Features and Functions
 
-### Standard Commands
+### Commands
+Currently the bot commands with many pre-configured commands, we are always increasing the functionality and performance of the commands, along with increasing the amount of commands to be used.
 
-* !say [#channel] [message] - Says message in the specified IRC channel.
-* !say [username] [message] - Says message in the specified IRC user.
-* !join [#channel] - Joins the specified channel.
-* !part [#channel] - Parts the specified channel.
-* !timeout [seconds] - Bot leaves for the specified number of seconds.
-* !restart - Quits and restarts the script.
-* !quit - Quits and stops the script.
+The authentication system allows owners & trusted users to be able to run specific commands that normal users are not able to do.
 
-### Entended Commands
+If you have any commands you have, that you want added, feel free to make a pull request and we will look into it.
 
-* !ip - Returns IP of a user.
-* !weather [location] - Returns weather data for location.
-* !poke [#channel] [username] - Pokes the specified IRC user.
-* !joke - Returns random joke. Fetched from [ICNDb.com](http://www.icndb.com/).
-* !imdb [movie title] - Searches for movie and returns it's information.
-
-### Command Arguments
-A change has been made as of 5/1/2015 which means that `-1` for `$numberOfArguments` will now not work as it used to. `-1` will not accept no arguments, only 1+.
-Please use `$numberOfArguments = [0, -1];` to emulate the same functionality as before.
 
 ### Listeners
 
-* Joins - Greets users when they join the channel.
+Listeners are a plugin that search for a specific input, in the IRC chatroom. Listeners react based on, if this input is found. 
 
-## Install & Run
+For example the join listener, listens for channel joins and sends a welcome message to them.
 
-### Dependecy
+We are re-designing the listener system to make listener writing easier for developers. 
+If you have a listener and want it to be added to the bot by default, send in a pull request and we will look into it.
 
-proctitle (optional) - Changes the process title when running as service.
+## Dependencies, Installation and Running
 
-    pecl install proctitle-alpha
+### Dependecies
+
+The bot itself doesn't require anything to run, but for full functionality we recommend installing these dependencies.
+
+#### Ubuntu & Debian
+    [sudo] apt-get install php-pear php5-curl screen
+    [sudo] pecl install proctitle-alpha
+    
+#### CentOS
+    [sudo] yum install php-pear php5-curl screen
+    [sudo] pecl install proctitle-alpha
+    
+#### Other OS'
+Packages that need to be installed are php-pear and php5-curl
+
 
 ### Config
 
-Copy configuration file and customize its content.
+Rename the configuration file and then edit it, to suit you.
 
-    cp config.php config.local.php
-
-Copy Upstart script to folder and make appropriate changes.
-
-    sudo cp bin/phpbot404.conf /etc/init/
+    cp config.example.php config.php
 
 ### Run
 
-Run as PHP
+Running the bot is very simple. We recommend running it in a screen
+
+We do not recommend running the bot as root/sudo.
+
+Running as screen:
+
+    screen -dm php phpbot404.php
+
+Running without screen
 
     php phpbot404.php
-
-or Upstart service
-
-    start phpbot404
-
-Restart
-
-    restart phpbot404
-
-Stop
-
-    stop phpbot404
 
 ### Sample Usage and Output
 
@@ -84,11 +72,19 @@ Stop
     <random-user> !poke #wildphp random-user
     * wildphp-bot pokes random-user
 
-### Upcoming Features
+### To-Do List
 
-* Hostname Authentication
-* Custom Quit Messages
-* Custom Prefixes
-* More Plugins
-* Bug Fixes
-* Extended Documentation
+* Add User Levels
+* (Fully Functioning) Restart Command
+* More Commands and Listeners
+* Channel Manager
+* In-Channel Add and Remove Command
+* Fix Bugs
+* Renew Upstart Command
+* Add Full Documentation
+
+Extra Information
+-------
+Official Website: [http://wildphp.com](http://wildphp.com)
+
+Major Contributors: [Super3](http://super3.org), [Pogosheep](http://layne-obserdia.de), [Matejvelikonja](http://velikonja.si), [Yoshi2889/NanoSector](https://github.com/Yoshi2889), [TimTims](https://timtims.me)
