@@ -25,6 +25,13 @@ class Say extends \Library\IRC\Command\Base {
 	 * @var string
 	 */
 	protected $usage = 'say [#channel|username] whatever you want to say';
+	
+	/**
+	 * Verify the user before executing this command.
+	 *
+	 * @var bool
+	 */
+	protected $verify = true;
 
 	/**
 	 * The number of arguments the command needs.
