@@ -73,7 +73,7 @@ class Log
 			trigger_error('LogManager: A log file needs to be set to use logging. Aborting.', E_USER_ERROR);
 
 		// Also can't log to a directory we can't write to.
-		if (!is_writable())
+		if (!is_writable($logDir))
 			trigger_error('LogManager: A log file cannot be created in the set directory (' . $logDir . '). Please make it writable. Aborting.', E_USER_ERROR);
 
 		// Start off with the base path to the file.
