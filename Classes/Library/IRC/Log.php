@@ -66,7 +66,7 @@ class Log
 	{
 		$logDir = $config['dir'];
 		if(substr($logDir, 0, 2) === './')
-			$logDir = ROOT_DIR . substr($logDir, 2);
+			$logDir = ROOT_DIR . substr($logDir, 1);
 
 		// Can't log to a file not set.
 		if (empty($config['file']))
