@@ -32,7 +32,7 @@
 	try {
 		$config = Nette\Neon\Neon::decode($config);
 	} catch (Nette\Neon\Exception $e) {
-		die('Configuration syntax error: ' . $e->getMessage());
+		die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 	}
 
 	$timezone = ini_get('date.timezone');
