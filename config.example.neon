@@ -21,7 +21,7 @@ channels:
 
 log:
 	file: log
-	dir: /logs
+	dir: ./logs
 	filter: 
 		- '#wildphp'
 
