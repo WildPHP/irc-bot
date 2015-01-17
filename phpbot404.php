@@ -16,6 +16,7 @@
 	 */
 
 	define('ROOT_DIR', __DIR__);
+	define('CONFIG_FILE', '/config.neon')
 
 	// Configure PHP
 	//ini_set( 'display_errors', 'on' );
@@ -23,11 +24,11 @@
 	// Make autoload working
 	require 'Classes/Autoloader.php';
 
-	if (file_exists(ROOT_DIR . '/config.php')) {
-		$config = include_once(ROOT_DIR . '/config.php');
-	} else {
-		die("Please Look at the Installaion Documentation.\n");
+	if ( !file_exists(ROOT_DIR . CONFIG_FILE) || ($config = file_get_contents(ROOT_DIR . CONFIG_FILE)) === false ) {
+		die('Could not read config file. Please Look at the Installaion Documentation.' . PHP_EOL);
 	}
+
+	$config = Nette\Neon\Neon::decode($config);
 
 	$timezone = ini_get('date.timezone');
 	if (empty($timezone)) {
