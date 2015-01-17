@@ -23,6 +23,7 @@
 
 	// Make autoload working
 	require 'Classes/Autoloader.php';
+	spl_autoload_register( 'Autoloader::load' );
 
 	if ( !file_exists(ROOT_DIR . CONFIG_FILE) || ($config = file_get_contents(ROOT_DIR . CONFIG_FILE)) === false ) {
 		die('Could not read config file. Please Look at the Installaion Documentation.' . PHP_EOL);
@@ -37,8 +38,6 @@
 
 		date_default_timezone_set($config['timezone']);
 	}
-
-	spl_autoload_register( 'Autoloader::load' );
 
 	// Initialise the LogManager.
 	$log = new Library\IRC\Log($config['log']);
