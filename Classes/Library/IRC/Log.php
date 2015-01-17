@@ -64,16 +64,20 @@ class Log
 	 */
 	public function __construct($config)
 	{
+		$logDir = $config['dir'];
+		if(substr($logDir, 0, 2) === './')
+			$logDir = ROOT_DIR . substr($logDir, 1);
+
 		// Can't log to a file not set.
 		if (empty($config['file']))
 			trigger_error('LogManager: A log file needs to be set to use logging. Aborting.', E_USER_ERROR);
 
 		// Also can't log to a directory we can't write to.
-		if (!is_writable($config['dir']))
-			trigger_error('LogManager: A log file cannot be created in the set directory (' . $config['dir'] . '). Please make it writable. Aborting.', E_USER_ERROR);
+		if (!is_writable($logDir))
+			trigger_error('LogManager: A log file cannot be created in the set directory (' . $logDir . '). Please make it writable. Aborting.', E_USER_ERROR);
 
 		// Start off with the base path to the file.
-		$this->logFile = $config['dir'] . '/' . $config['file'];
+		$this->logFile = $logDir . '/' . $config['file'];
 
 		// Now, we're going to count up until we find a file that doesn't yet exist.
 		$i = 0;

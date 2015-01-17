@@ -47,9 +47,9 @@ Packages that need to be installed are php-pear and php5-curl
 
 ### Config
 
-Rename the configuration file and then edit it, to suit you.
+Copy the example configuration file and edit it to suit you. It uses the [Neon](http://ne-on.org/) syntax (borrowed from [Nette Framework](http://nette.org/en/)). It is similar to yaml but less strict and much faster to parse.
 
-    cp config.example.php config.php
+    cp config.example.neon config.neon
 
 ### Run
 
