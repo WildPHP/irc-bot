@@ -16,7 +16,7 @@
 	 */
 
 	define('ROOT_DIR', __DIR__);
-	define('CONFIG_FILE', '/config.neon')
+	define('CONFIG_FILE', '/config.neon');
 
 	// Configure PHP
 	//ini_set( 'display_errors', 'on' );
