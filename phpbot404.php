@@ -29,7 +29,11 @@
 		die('Could not read config file. Please Look at the Installaion Documentation.' . PHP_EOL);
 	}
 
-	$config = Nette\Neon\Neon::decode($config);
+	try {
+		$config = Nette\Neon\Neon::decode($config);
+	} catch (Nette\Neon\Exception $e) {
+		die('Configuration syntax error: ' . $e->getMessage());
+	}
 
 	$timezone = ini_get('date.timezone');
 	if (empty($timezone)) {
