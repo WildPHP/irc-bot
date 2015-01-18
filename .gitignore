@@ -3,6 +3,6 @@ log/*
 .buildpath
 .project
 .settings/
-config.php
+config.neon
 
 .idea
