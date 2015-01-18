@@ -33,11 +33,15 @@
 		 * @author Daniel Siepmann <coding.layne@me.com>
 		 */
 		public static function load( $class ) {
-			$filename = __DIR__ . '/' . str_replace( '\\', '/', $class ) . '.php';
-			if (file_exists($filename)) {
-				return require $filename;
+			$class = str_replace( '\\', '/', $class );
+			$class = str_replace('Nette/', 'Library/', $class);
+			$filename = __DIR__ . '/' . $class . '.php';
+
+			if (!file_exists($filename)) {
+				throw new Exception('File: "' . $filename . '" not found.');
 			}
-			throw new Exception('File: "' . $filename . '" not found.');
+
+			require $filename;
 		}
 
 	}

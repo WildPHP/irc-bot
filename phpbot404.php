@@ -16,17 +16,23 @@
 	 */
 
 	define('ROOT_DIR', __DIR__);
+	define('CONFIG_FILE', '/config.neon');
 
 	// Configure PHP
 	//ini_set( 'display_errors', 'on' );
 
 	// Make autoload working
 	require 'Classes/Autoloader.php';
+	spl_autoload_register( 'Autoloader::load' );
 
-	if (file_exists(ROOT_DIR . '/config.local.php')) {
-		$config = include_once(ROOT_DIR . '/config.local.php');
-	} else {
-		$config = include_once(ROOT_DIR . '/config.php');
+	if ( !file_exists(ROOT_DIR . CONFIG_FILE) || ($config = file_get_contents(ROOT_DIR . CONFIG_FILE)) === false ) {
+		die('Could not read config file. Please Look at the Installaion Documentation.' . PHP_EOL);
+	}
+
+	try {
+		$config = Nette\Neon\Neon::decode($config);
+	} catch (Nette\Neon\Exception $e) {
+		die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 	}
 
 	$timezone = ini_get('date.timezone');
@@ -37,8 +43,6 @@
 		date_default_timezone_set($config['timezone']);
 	}
 
-	spl_autoload_register( 'Autoloader::load' );
-
 	// Initialise the LogManager.
 	$log = new Library\IRC\Log($config['log']);
 
@@ -48,21 +52,20 @@
 	// Register the shutdown function.
 	register_shutdown_function(array($bot, 'onShutdown'));
 
-	// Add commands to the bot.
-	foreach ($config['commands'] as $commandName => $args) {
-		$reflector = new ReflectionClass($commandName);
+	// Add commands and listeners to the bot.
+	foreach (array_merge($config['commands'], $config['listeners']) as $className => $args) {
+		$reflector = new ReflectionClass($className);
+		if(!isset($args))
+			$args = array();
 
-		$command = $reflector->newInstanceArgs($args);
-
-		$bot->commandManager->addCommand($command);
-	}
-
-	foreach ($config['listeners'] as $listenerName => $args) {
-		$reflector = new ReflectionClass($listenerName);
-
-		$listener = $reflector->newInstanceArgs($args);
-
-		$bot->listenerManager->addListener($listener);
+		$instance = $reflector->newInstanceArgs($args);
+		if(array_key_exists($className, $config['commands'])) {
+			$bot->commandManager->addCommand($instance);
+		} else if(array_key_exists($className, $config['listeners'])) {
+			$bot->listenerManager->addListener($instance);
+		} else {
+			$bot->log('Command/Listener loader found invalid class ( ' . $className . ' ). Skipping.', 'STARTUP');
+		}
 	}
 
 	if (function_exists('setproctitle')) {
