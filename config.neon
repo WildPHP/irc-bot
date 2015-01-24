@@ -1,0 +1,82 @@
+# This is the bot configuration file.
+# It uses neon (http://ne-on.org/) syntax.
+# You can use tabs or spaces for indentation.
+# Strings with special characters need to be in single (') or double (") quotes.
+
+# IRC server connection details
+server: irc.freenode.org
+port: 6667
+password: '8Kk8yhcEm3GH0Sm01u92'
+nick: FatalException
+name: FatalException
+nickserv: NickServ
+
+# General bot settings
+timezone: Europe/Amsterdam
+max_reconnects: 1
+prefix: '!!'
+
+channels:
+	- '#wildphp'
+	- '#NanoPlayground'
+
+log:
+	# Base log file name.
+	file: log
+	
+	# Directory to store log files in.
+	dir: ./logs
+	
+	# Channels to filter output from.
+	filter:
+	#	- '#example'
+	#	- '#example2'
+	#	- '#etc'
+	
+	# The maximum log file size. The current file will get cut off and closed,
+	# and a new file will be created once this size is met.
+	# This only works without a buffer on.
+	# Set to "no" or 0 to disable. Otherwise, size is in KB.
+	maxsize: 0
+	
+	# This function enables a buffer in the log system.
+	# This is only useful if you have limited disk I/O.
+	# It will use more memory. 
+	use_buffer: no
+
+# Load and configure the bot commands
+commands: 
+	Command\Say:
+	Command\Joke:
+	Command\Ip:
+	Command\Imdb:
+	Command\Poke:
+	Command\Topic:
+	Command\Join:
+	Command\Part:
+	Command\Timeout:
+	Command\Quit:
+	Command\Restart:
+	Command\Help:
+	Command\Update:
+	Command\Version:
+	Command\Raw:
+	
+	# Custom commands.
+	Command\Wiki:
+	Command\Issue:
+	Command\Exec:
+	Command\Ping:
+
+# Load and configure listeners
+listeners:
+	Listener\Joins:
+	Listener\Youtube:
+	
+	# Custom listeners.
+	Listener\GitHub:
+	Listener\SlapBack:
+
+# Set up the 'masters' of the bot here using 'ident@hostmask' syntax
+hosts:
+	- '~Yoshi2889@simplemachines/support/NanoSector'
