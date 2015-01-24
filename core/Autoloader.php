@@ -17,25 +17,15 @@ namespace WildPHP\core;
 
 class Autoloader
 {
-	public $fixes = array(
-		'Nette\\Neon\\Neon' => 'Neon',
-		'Nette\\Neon\\Encoder' => 'Neon\\',
-			
-		'\\' => '/',
-	);
 	static function load($class)
 	{
 		$fixes = array(
 			'WildPHP\\' => '',
-			'Nette\\Neon' => 'Neon',
-				
 			'\\' => '/',
 		);
 		
 		// We'll be checking for the last bit of the class string.
 		$class = str_replace(array_keys($fixes), array_values($fixes), $class);
-		
-		echo var_dump($class);
 		
 		// Check for lib/Class.php...
 		if (file_exists(WPHP_ROOT . '/' . $class . '.php'))
