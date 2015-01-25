@@ -68,10 +68,8 @@ class Bot
 		do
 		{
 			$data = $this->connection->getData();
-			
-			if (!empty($data))
-				echo $data;
+			echo $data . PHP_EOL;
 		}
-		while (true);
+		while ($this->connection->isConnected());
 	}
 }
