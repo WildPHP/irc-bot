@@ -23,12 +23,18 @@ namespace WildPHP\Core;
 class Configuration
 {
 	private $config = array();
-	
+
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var object
+	 */
+	protected $bot;
+
 	/**
 	 * Loads the config file and parses it.
 	 * @param string $config The path to the config file.
 	 */
-	public function __construct($config)
+	public function __construct($bot, $config)
 	{
 		try {
 			// Open the file and surpress errors; we'll do our own error handling here.
@@ -40,23 +46,27 @@ class Configuration
 		} catch (Nette\Neon\Exception $e) {
 			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
+
+		$this->bot = $bot;
 	}
-	
+
 	/**
 	 * Returns an item stored in the configuration.
 	 * @param string $key The key of the configuration item to get.
 	 */
 	public function get($key)
 	{
+		$pieces = explode('.', $key);
+
 		// We can only return something that exists.
 		if (array_key_exists($key, $this->config))
 			return $this->config[$key];
-		
+
 		// All else fails. No working around that; it doesn't exist. DEAL WITH IT :D
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Updates/Creates an item stored in the configuration.
 	 * @param string $key   The key of the configuration item to update.

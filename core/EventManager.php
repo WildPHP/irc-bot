@@ -23,19 +23,28 @@ class EventManager
 {
 	// All available events. Used to determine if the event we're registering to is valid.
 	private $available = array();
-	
+
 	// The event database.
 	// Events are stored as 'event' => array('function', 'function')
 	private $eventDb = array();
-	
+
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var object
+	 */
+	protected $bot;
+
 	// Construct the class.
-	public function __construct()
+	public function __construct($bot)
 	{
 		// Register some default events.
 		$this->register(array('onConnect', 'onDataReceive', 'onDataSend',
 			'onSay'));
+
+		// Set the bot.
+		$this->bot = $bot;
 	}
-	
+
 	/**
 	 * Register a new event. Pass an array for multiple.
 	 * @param string|array $event The event name.
@@ -45,10 +54,10 @@ class EventManager
 	{
 		if (empty($event))
 			return false;
-		
+
 		if (!is_array($event))
 			$event = array($event);
-			
+
 		foreach ($event as $e)
 		{
 			if (!$this->eventExists($e))
@@ -60,10 +69,10 @@ class EventManager
 			else
 				trigger_error('The following Event has already been registered: ' . $e . '. Ignoring duplicate register request.', E_USER_NOTICE);
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Checks if an event exists.
 	 * @param string $event The event to check.
@@ -73,10 +82,10 @@ class EventManager
 	{
 		if (empty($event))
 			return false;
-		
+
 		return in_array($event, $this->available);
 	}
-	
+
 	/**
 	 * Hook into an event.
 	 * @param string $event The event to hook into.
@@ -88,48 +97,45 @@ class EventManager
 	{
 		if (empty($event) || empty($hook))
 			return false;
-		
+
 		// If we have not registered this event, say so.
 		if (!$this->eventExists($event))
 			trigger_error('The requested Event was not found: ' . $event . '. Your hook will be added but might not work until this Event becomes available.', E_USER_WARNING);
-			
+
 		// Already added this hook?
 		if (in_array($hook, $this->eventDb[$event]))
 		{
 			trigger_error('A request to add a duplicate hook to event ' . $event . ' was ignored.', E_USER_WARNING);
 			return false;
 		}
-		
+
 		// Add it on the event train.
 		$this->eventDb[$event][] = $hook;
 		return true;
 	}
-	
+
 	/**
 	 * Calls an event.
 	 * @param string $event The event to call.
 	 * @param mixed  $data Data to send along with the event, to the hooks. Defaults to null.
-	 * @return bool Boolean determining if the event call succeeded. 
+	 * @return bool Boolean determining if the event call succeeded.
 	 */
 	public function call($event, $data = null)
 	{
 		if (empty($event))
 			return false;
-		
+
 		if (!$this->eventExists($event))
-		{
-			trigger_error('Call to undefined event ' . $event . ', please register events before calling them.', E_USER_WARNING);
-			return false;
-		}
-		
+			throw new Exception('Call to undefined event ' . $event . ', please register events before calling them.', E_USER_WARNING);
+
 		// Do we have any event hooks to call? If not, the call succeeded.
 		if (empty($this->eventDb[$event]))
 			return true;
-		
+
 		// So we have hooks. We might have data.
 		if (!empty($data) && !is_array($data))
 			$data = array($data);
-		
+
 		// Loop through each hook, see what we should do.
 		foreach ($this->eventDb[$event] as $hook)
 		{
@@ -139,7 +145,4 @@ class EventManager
 				call_user_func($hook);
 		}
 	}
-	
-	/**
-	 */
 }

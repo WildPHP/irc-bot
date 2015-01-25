@@ -49,6 +49,20 @@ class ConnectionManager
 	private $nick = '';
 
 	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var object
+	 */
+	protected $bot;
+
+	/**
+	 * Sets up the class.
+	 */
+	public function __construct($bot)
+	{
+		$this->bot = $bot;
+	}
+
+	/**
 	 * Close the connection.
 	 */
 	public function __destruct() {
@@ -87,7 +101,7 @@ class ConnectionManager
 
 		$this->sendData('USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
 		$this->sendData('NICK ' . $nick);
-		
+
 		echo 'Connection to server ' . $server . ':' . $port . ' set up with nick ' . $nick . '; ready to use.';
 	}
 

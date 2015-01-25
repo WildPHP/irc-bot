@@ -25,7 +25,7 @@ namespace WildPHP\Core;
  */
 class Bot
 {
-	
+
 	protected $configuration;
 	protected $moduleManager;
 	protected $eventManager;
@@ -37,40 +37,40 @@ class Bot
 	public function __construct($config_file = WPHP_CONFIG)
 	{
 		// Load the configuration in memory.
-		$this->configuration = new Configuration($config_file);
-		
+		$this->configuration = new Configuration($this, $config_file);
+
 		// And we'd like an event manager.
-		$this->eventManager = new EventManager();
-		
+		$this->eventManager = new EventManager($this);
+
 		// And fire up any existing modules.
-		$this->moduleManager = new ModuleManager();
-		
+		$this->moduleManager = new ModuleManager($this);
+
 		// Set up a connection.
-		$this->connection = new ConnectionManager();
+		$this->connection = new ConnectionManager($this);
 	}
-	
+
 	/**
 	 * Set up the connection for the bot.
 	 */
 	public function connect()
 	{
-		
+
 		// For that, we need to set the connection parameters.
 		// First up, server.
 		$this->connection->setServer($this->configuration->get('server'));
 		$this->connection->setPort($this->configuration->get('port'));
-		
+
 		// Then we insert the details for the bot.
 		$this->connection->setNick($this->configuration->get('nick'));
 		$this->connection->setName($this->configuration->get('nick'));
-		
+
 		// Optionally, a password, too.
 		$this->connection->setPassword($this->configuration->get('password'));
-		
+
 		// And start the connection.
 		$this->connection->connect();
 	}
-	
+
 	public function start()
 	{
 		do

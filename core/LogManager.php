@@ -74,7 +74,7 @@ class LogManager
 	 * Set up the class.
 	 * @param array $config The configuration variables.
 	 */
-	public function __construct($logDir = WPHP_LOG_DIR)
+	public function __construct($bot, $logDir = WPHP_LOG_DIR)
 	{
 		// Can't log to a file not set.
 		if (empty($config['file']))
@@ -109,6 +109,9 @@ class LogManager
 		// Well this went great...
 		else
 			trigger_error('LogManager: Cannot create file ' . $this->logFile . '. Aborting.', E_USER_ERROR);
+
+		// Set up the bot.
+		$this->bot = $bot;
 	}
 
 	/**

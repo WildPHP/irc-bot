@@ -25,7 +25,13 @@ class ModuleManager
 	private $module_dir;
 	protected $modules = array();
 
-	public function __construct($dir = WPHP_MODULE_DIR)
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var object
+	 */
+	protected $bot;
+
+	public function __construct($bot, $dir = WPHP_MODULE_DIR)
 	{
 		$this->module_dir = $dir;
 		// Scan the modules directory for any available modules
@@ -34,30 +40,32 @@ class ModuleManager
 			if (is_dir($this->module_dir . $file) && $file != '.' && $file != '..')
 				$this->modules[] = $file;
 		}
-		
+
 		spl_autoload_register('WildPHP\\core\\ModuleManager::autoLoad');
+
+		$this->bot = $bot;
 	}
-	
+
 	// Load a module. Resolve its dependencies. Recurse over dependencies
 	public function loadModule($module)
 	{
 		$module_full = 'WildPHP\\modules\\' . $module;
-		
+
 		if (class_exists($module_full))
 			$modules[$module] = new $module_full();
 	}
-	
+
 	// Create an index of all hooks the modules provide.
 	private function index()
 	{
 	}
-	
+
 	// Resolve dependencies for a module
 	private function resolveDependencies($module)
 	{
-		
+
 	}
-	
+
 	// The autoloader for modules
 	static function autoLoad($class)
 	{
