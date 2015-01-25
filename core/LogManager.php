@@ -1,14 +1,26 @@
 <?php
-namespace Library\IRC;
 
-/**
- * The Log Manager for the bot.
- *
- * @package IRCBot
- * @subpackage Library
- *
- */
-class Log
+/*
+	WildPHP - a modular and easily extendable IRC bot written in PHP
+	Copyright (C) 2015 WildPHP
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+namespace WildPHP\Core;
+
+class LogManager
 {
 	/**
 	 * The Bot object. Used to interact with the main thread.
@@ -62,12 +74,8 @@ class Log
 	 * Set up the class.
 	 * @param array $config The configuration variables.
 	 */
-	public function __construct($config)
+	public function __construct($logDir = WPHP_LOG_DIR)
 	{
-		$logDir = $config['dir'];
-		if(substr($logDir, 0, 2) === './')
-			$logDir = ROOT_DIR . substr($logDir, 1);
-
 		// Can't log to a file not set.
 		if (empty($config['file']))
 			trigger_error('LogManager: A log file needs to be set to use logging. Aborting.', E_USER_ERROR);
@@ -115,7 +123,7 @@ class Log
 			$status = 'LOG';
 
 		// Add the date and status to the message.
-		$msg = date('d.m.Y - H:i:s') . "\t  [ " . $status . " ] \t" . \Library\FunctionCollection::removeLineBreaks($data) . "\r\n";
+		$msg = date('d.m.Y - H:i:s') . "\t  [ " . $status . " ] \t" . $data . PHP_EOL;
 
 		// Print the message to the console.
 		echo $msg;

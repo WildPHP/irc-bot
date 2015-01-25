@@ -25,31 +25,6 @@ log:
 	filter: 
 		- '#wildphp'
 
-# Load and configure the bot commands
-commands: 
-	Command\Say:
-	Command\Weather:
-		yahooKey: a
-	Command\Joke:
-	Command\Ip:
-	Command\Imdb:
-	Command\Poke:
-	Command\Topic:
-	Command\Join:
-	Command\Part:
-	Command\Timeout:
-	Command\Quit:
-	Command\Restart:
-	Command\Help:
-	Command\Update:
-	Command\Version:
-	Command\Raw:
-
-# Load and configure listeners
-listeners:
-	Listener\Joins:
-	Listener\Youtube:
-
 # Set up the 'masters' of the bot here using 'ident@hostmask' syntax
 hosts:
 	- ~notident@example.com
