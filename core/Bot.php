@@ -52,7 +52,6 @@ class Bot
 		// Plug in the log.
 		$this->log = new LogManager($this);
 		register_shutdown_function(array($this->log, 'logShutdown'));
-		$this->log('Test', 'ING');
 	}
 
 	/**
