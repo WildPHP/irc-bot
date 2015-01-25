@@ -35,7 +35,43 @@ class Bot
 	 */
 	public function __construct($config_file = WPHP_CONFIG)
 	{
+		// Load the configuration in memory.
 		$this->configuration = new Configuration($config_file);
+		
+		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager();
+		
+		// Set up a connection.
+		$this->connection = new ConnectionManager();
+		
+		// For that, we need to set the connection parameters.
+		// First up, server.
+		$this->connection->setServer($this->configuration->get('server'));
+		$this->connection->setPort($this->configuration->get('port'));
+		
+		// Then we insert the details for the bot.
+		$this->connection->setNick($this->configuration->get('nick'));
+		$this->connection->setName($this->configuration->get('nick'));
+		
+		// Optionally, a password, too.
+		$this->connection->setPassword($this->configuration->get('password'));
+		
+		// And start the connection.
+		$this->connection->connect();
+		
+		// Now let the main loop take over.
+		$this->start();
+	}
+	
+	public function start()
+	{
+		do
+		{
+			$data = $this->connection->getData();
+			
+			if (!empty($data))
+				echo $data;
+		}
+		while (true);
 	}
 }

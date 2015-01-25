@@ -24,6 +24,10 @@ class Configuration
 {
 	private $config = array();
 	
+	/**
+	 * Loads the config file and parses it.
+	 * @param string $config The path to the config file.
+	 */
 	public function __construct($config)
 	{
 		try {
@@ -36,5 +40,30 @@ class Configuration
 		} catch (Nette\Neon\Exception $e) {
 			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
+	}
+	
+	/**
+	 * Returns an item stored in the configuration.
+	 * @param string $key The key of the configuration item to get.
+	 */
+	public function get($key)
+	{
+		// We can only return something that exists.
+		if (array_key_exists($key, $this->config))
+			return $this->config[$key];
+		
+		// All else fails. No working around that; it doesn't exist. DEAL WITH IT :D
+		else
+			return false;
+	}
+	
+	/**
+	 * Updates/Creates an item stored in the configuration.
+	 * @param string $key   The key of the configuration item to update.
+	 * @param string $value The value to update it to.
+	 */
+	public function set($key, $value)
+	{
+		$this->config[$key] = $value;
 	}
 }

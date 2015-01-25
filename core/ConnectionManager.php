@@ -85,8 +85,10 @@ class ConnectionManager
 		if (!empty($pass))
 			$this->sendData('PASS ' . $pass);
 
-		$this->sendData( 'USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
-		$this->sendData( 'NICK ' . $nick );
+		$this->sendData('USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
+		$this->sendData('NICK ' . $nick);
+		
+		echo 'Connection to server ' . $server . ':' . $port . ' set up with nick ' . $nick . '; ready to use.';
 	}
 
 	/**
@@ -95,9 +97,8 @@ class ConnectionManager
 	 * @return boolean True if the connection was closed. False otherwise.
 	 */
 	public function disconnect() {
-		if ($this->socket) {
+		if ($this->isConnected())
 			return fclose( $this->socket );
-		}
 		return false;
 	}
 
