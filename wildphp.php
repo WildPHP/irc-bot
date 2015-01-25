@@ -24,7 +24,7 @@ use WildPHP\Core\Bot;
 // Define global constants
 define('WPHP_ROOT_DIR', __DIR__ . '/');
 define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
-define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'modules/');
+define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'logs/');
 define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
 
 

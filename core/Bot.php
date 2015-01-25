@@ -30,6 +30,7 @@ class Bot
 	protected $moduleManager;
 	protected $eventManager;
 	protected $connection;
+	protected $log;
 
 	/**
 	 * @param string $config_file Optionally load a custom config file
@@ -47,6 +48,9 @@ class Bot
 
 		// Set up a connection.
 		$this->connection = new ConnectionManager($this);
+
+		// Plug in the log.
+		$this->log = new LogManager($this);
 	}
 
 	/**
@@ -79,5 +83,15 @@ class Bot
 			echo $data . PHP_EOL;
 		}
 		while ($this->connection->isConnected());
+	}
+
+	public function getConfiguration($item)
+	{
+		return $this->configuration->get($item);
+	}
+
+	public function log($data, $level)
+	{
+		$this->log->log($data, $level);
 	}
 }
