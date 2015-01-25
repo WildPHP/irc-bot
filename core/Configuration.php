@@ -27,7 +27,12 @@ class Configuration
 	public function __construct($config)
 	{
 		try {
-			$this->config = \Nette\Neon\Neon::decode(file_get_contents($config));
+			// Open the file and surpress errors; we'll do our own error handling here.
+			$data = @file_get_contents($config);
+			if (!empty($data) && is_string($data))
+				$this->config = \Nette\Neon\Neon::decode(file_get_contents($config));
+			else
+				die('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.' . PHP_EOL);
 		} catch (Nette\Neon\Exception $e) {
 			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}

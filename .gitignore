@@ -4,5 +4,5 @@ log/*
 .project
 .settings/
 config.neon
-
+*.komodoproject
 .idea
