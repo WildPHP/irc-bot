@@ -28,6 +28,7 @@ class Bot
 	
 	protected $configuration;
 	protected $moduleManager;
+	protected $eventManager;
 	protected $connection;
 
 	/**
@@ -38,9 +39,18 @@ class Bot
 		// Load the configuration in memory.
 		$this->configuration = new Configuration($config_file);
 		
+		// And we'd like an event manager.
+		$this->eventManager = new EventManager();
+		
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager();
-		
+	}
+	
+	/**
+	 * Set up the connection for the bot.
+	 */
+	public function connect()
+	{
 		// Set up a connection.
 		$this->connection = new ConnectionManager();
 		
@@ -58,9 +68,6 @@ class Bot
 		
 		// And start the connection.
 		$this->connection->connect();
-		
-		// Now let the main loop take over.
-		$this->start();
 	}
 	
 	public function start()

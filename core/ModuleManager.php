@@ -41,8 +41,15 @@ class ModuleManager
 	// Load a module. Resolve its dependencies. Recurse over dependencies
 	public function loadModule($module)
 	{
-		$module = 'WildPHP\\modules\\' . $module;
-		$instance = new $module;
+		$module_full = 'WildPHP\\modules\\' . $module;
+		
+		if (class_exists($module_full))
+			$modules[$module] = new $module_full();
+	}
+	
+	// Create an index of all hooks the modules provide.
+	private function index()
+	{
 	}
 	
 	// Resolve dependencies for a module
