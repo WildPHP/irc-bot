@@ -65,19 +65,13 @@ class LogManager
 	private $logFile = '';
 
 	/**
-	 * Filter the output to only log a specific channel.
-	 * @var array
-	 */
-	private $filterChannels = array();
-
-	/**
 	 * Set up the class.
 	 * @param array $logDir The
 	 */
 	public function __construct($bot, $logDir = WPHP_LOG_DIR)
 	{
 		// Fetch the configuration.
-		$config = $bot->configuration->get('log');
+		$config = $bot->getConfiguration('log');
 
 		// Can't log to a file not set.
 		if (empty($config['file']))
@@ -100,10 +94,6 @@ class LogManager
 
 		// And fix up the final log name.
 		$this->logFile = $this->logFile . $i . '.log';
-
-		// Are we only logging output from channels?
-		if (!empty($config['filter']))
-			$this->filterChannels = $config['filter'];
 
 		// Ready!
 		if ($this->handle = fopen($this->logFile, 'w'))
@@ -134,27 +124,13 @@ class LogManager
 		// Print the message to the console.
 		echo $msg;
 
-		// If we're filtering channel messages, do so now.
-		if (!empty($this->filterChannels))
-		{
-			$isFromChannel = false;
-			foreach ($this->filterChannels as $channel)
-			{
-				if (stripos($data, 'PRIVMSG ' . $channel . ' :') !== false)
-					$isFromChannel = true;
-			}
-
-			if (!$isFromChannel)
-				return;
-		}
-
 		// Are we using a buffer? If so, queue the message; we'll write it later.
-			if ($this->useBuffer)
-				$this->buffer = $this->buffer . $msg;
+		if ($this->useBuffer)
+			$this->buffer = $this->buffer . $msg;
 
 		// Otherwise, we can just write it.
-			else
-			{
+		else
+		{
 			if (!fwrite($this->handle, $msg))
 				echo 'Failed to write message to file...';
 		}
@@ -219,11 +195,13 @@ class LogManager
 	}
 
 	/**
-	 * Set the bot instance.
+	 * Cleanup the log on stop.
 	 */
-	public function setBot($bot)
+	public function logShutdown()
 	{
-		if (is_object($bot))
-			$this->bot = $bot;
+		$this->log('Shutdown function called, closing log...');
+		if ($this->hasBuffer())
+			$this->flush();
+		$this->close();
 	}
 }
