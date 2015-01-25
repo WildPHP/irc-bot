@@ -36,6 +36,6 @@ class Bot
 	public function __construct($config_file = WPHP_CONFIG)
 	{
 		$this->configuration = new Configuration($config_file);
-		$this->moduleManager = new moduleManager();
+		$this->moduleManager = new ModuleManager();
 	}
 }

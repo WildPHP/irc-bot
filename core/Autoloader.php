@@ -25,19 +25,36 @@ class Autoloader
 	static function load($class)
 	{
 		$fixes = array(
-			'WildPHP\\' => '',
-			'\\' => '/',
+				'WildPHP' => '.',
+				'Core' => 'core',
 		);
+
+		// Split $class to the "path" and "classname" parts
+		$class = explode('\\', $class);
+		$classpath = $class;
+		array_pop($classpath);
+		$classname = end($class) . '.php';
+
+		// Apply fixes to path
+		$classpath = str_replace(array_keys($fixes), array_values($fixes), $classpath);
+
+		// Assemble path
+		$classpath = implode('/', $classpath) . '/';
+
+		$path = array(
+			WPHP_ROOT_DIR . $classpath . $classname,			// Try to load the class from project root
+			WPHP_ROOT_DIR . 'lib/' . $classpath . $classname	// Check for files in lib/classpath/classname.php
+		);
+
+		foreach ($path as $p) {
+			if(file_exists($p))
+			{
+				echo '[AUTOLOAD] Loaded "' . $p . '"' . PHP_EOL;
+				require $p;
+				return true;
+			}
+		}
 		
-		// We'll be checking for the last bit of the class string.
-		$class = str_replace(array_keys($fixes), array_values($fixes), $class);
-		
-		// Check for lib/Class.php...
-		if (file_exists(WPHP_ROOT_DIR . '/' . $class . '.php'))
-			require_once(WPHP_ROOT_DIR . '/' . $class . '.php');
-			
-		// lib/Class/Class.php maybe?
-		elseif (file_exists(WPHP_ROOT_DIR . '/lib/' . $class . '.php'))
-			require_once(WPHP_ROOT_DIR . '/lib/' . $class . '.php');
+		return false;
 	}
 }

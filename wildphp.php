@@ -19,19 +19,17 @@
 */
 
 namespace WildPHP;
-use WildPHP\Core;
+use WildPHP\Core\Bot;
 
 // Define global constants
 define('WPHP_ROOT_DIR', __DIR__ . '/');
-define('WPHP_MODULE_DIR', WPHP_ROOT . 'modules/');
-define('WPHP_LOG_DIR', WPHP_ROOT . 'modules/');
-define('WPHP_CONFIG', WPHP_ROOT . 'config.neon');
+define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
+define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'modules/');
+define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
 
 
 // Register the autoloader
-require_once(__DIR__ . 'core/Autoloader.php');
-		spl_autoload_register('WildPHP\Core\Autoloader::load');
-
-require_once WPHP_ROOT_DIR . 'core/WildPHP.php'
+require_once(WPHP_ROOT_DIR . 'core/Autoloader.php');
+spl_autoload_register('WildPHP\Core\Autoloader::load');
 
 $bot = new Bot();
