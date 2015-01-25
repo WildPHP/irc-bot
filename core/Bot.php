@@ -44,6 +44,9 @@ class Bot
 		
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager();
+		
+		// Set up a connection.
+		$this->connection = new ConnectionManager();
 	}
 	
 	/**
@@ -51,8 +54,6 @@ class Bot
 	 */
 	public function connect()
 	{
-		// Set up a connection.
-		$this->connection = new ConnectionManager();
 		
 		// For that, we need to set the connection parameters.
 		// First up, server.
