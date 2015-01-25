@@ -22,8 +22,6 @@ channels:
 log:
 	file: log
 	dir: ./logs
-	filter: 
-		- '#wildphp'
 
 # Set up the 'masters' of the bot here using 'ident@hostmask' syntax
 hosts:
