@@ -25,7 +25,7 @@ use WildPHP\Core\Bot;
 if(function_exists('posix_getuid()') && posix_getuid() === 0)
 {
 	echo 'Running wildphp as root is not allowed.';
-	exit 128;
+	exit(128);
 }
 
 // Define global constants
