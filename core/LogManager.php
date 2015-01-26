@@ -77,9 +77,18 @@ class LogManager
 		if (empty($config['file']))
 			trigger_error('LogManager: A log file needs to be set to use logging. Aborting.', E_USER_ERROR);
 
+		// Check for log dir and create it if necessary
+		if (!file_exists($logDir))
+			if(!mkdir($logDir, 0775))
+				throw new RuntimeException('Log directory (' . $logDir . ') does not exist. Attempt to create it failed.');
+
+		// Check if the log dir is in fact a directory
+		if (!is_dir($logDir))
+			throw new RuntimeException($logDir . ': ' . __CLASS__ . ' expected directory.');
+
 		// Also can't log to a directory we can't write to.
 		if (!is_writable($logDir))
-			trigger_error('LogManager: A log file cannot be created in the set directory (' . $logDir . '). Please make it writable. Aborting.', E_USER_ERROR);
+			throw new RuntimeException('Log directory (' . $logDir . ') has insufficient write permissions.');
 
 		// Start off with the base path to the file.
 		$this->logFile = $logDir . '/' . $config['file'];
