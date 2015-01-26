@@ -21,6 +21,13 @@
 namespace WildPHP;
 use WildPHP\Core\Bot;
 
+// Check if we are running as root and quit
+if(function_exists('posix_getuid()') && posix_getuid() === 0)
+{
+	echo 'Running wildphp as root is not allowed.';
+	exit 128;
+}
+
 // Define global constants
 define('WPHP_ROOT_DIR', __DIR__ . '/');
 define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
