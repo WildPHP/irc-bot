@@ -22,9 +22,9 @@ namespace WildPHP;
 use WildPHP\Core\Bot;
 
 // Check if we are running as root and quit
-if(function_exists('posix_getuid()') && posix_getuid() === 0)
+if(function_exists('posix_getuid') && posix_getuid() === 0)
 {
-	echo 'Running wildphp as root is not allowed.';
+	echo 'Running wildphp as root is not allowed.' . PHP_EOL;
 	exit(128);
 }
 
