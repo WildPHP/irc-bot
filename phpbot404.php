@@ -53,15 +53,7 @@
 	register_shutdown_function(array($bot, 'onShutdown'));
 
 	// Add commands and listeners to the bot.
-	$modules = array();
-
-	if (!empty($config['commands']))
-		$modules = $config['commands'];
-
-	if (!empty($config['listeners']))
-		$modules = array_merge($modules, $config['listeners']);
-
-	foreach ($modules as $className => $args) {
+	foreach (array_merge((array) $config['commands'], (array) $config['listeners']) as $className => $args) {
 		$reflector = new ReflectionClass($className);
 		if(!isset($args))
 			$args = array();
