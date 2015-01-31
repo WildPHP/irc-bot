@@ -141,12 +141,8 @@ class EventManager
 		if (!$this->eventExists($event))
 			return false;
 
-		if (!empty($hook))
+		if (!empty($hook) && in_array($hook, $this->eventDb[$event]))
 		{
-			// Does the hook exist?
-			if (!in_array($hook, $this->eventDb[$event]))
-				return;
-
 			$key = array_search($hook, $event);
 			unset($this->eventDb[$event][$key]);
 		}

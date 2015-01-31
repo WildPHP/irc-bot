@@ -43,4 +43,21 @@ class TestModule
 		$this->bot->log('Running command "' . $data['string'] . '"');
 		eval($data['string']);
 	}
+
+	private function createCommand($command, $function)
+	{
+		try
+		{
+			$this->bot->registerEvent('command_' . $command, array('hook_once' => true));
+			$this->bot->hookEvent('command_' . $command, $function);
+		}
+		catch (\Exception $e)
+		{
+			$this->bot->log('An error occurred while adding the command: ' . $e->getMessage());
+		}
+	}
+	private function removeCommand($command)
+	{
+		$this->bot->unhookEvent('command_' . $command);
+	}
 }
