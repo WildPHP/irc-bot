@@ -80,8 +80,8 @@ class ConnectionManager
 		if (!$this->isConnected())
 			throw new Exception('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
 
-		if (!empty($this->pass))
-			$this->sendData('PASS ' . $this->pass);
+		if (!empty($this->password))
+			$this->sendData('PASS ' . $this->password);
 
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
 		$this->sendData('NICK ' . $this->nick);
