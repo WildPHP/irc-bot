@@ -119,7 +119,7 @@ class EventManager
 			trigger_error('A request to add a duplicate hook to event ' . $event . ' was ignored.', E_USER_WARNING);
 			return false;
 		}
-		
+
 		// Add it on the event train.
 		$this->eventDb[$event][] = $hook;
 		return true;
@@ -160,7 +160,7 @@ class EventManager
 	 * @param string $property The property to get from the event.
 	 * @return mixed The event data, or false upon nonexisting value/error.
 	 */
-	public function getProperty(string $event, string $property)
+	public function getProperty($event, $property)
 	{
 		if (empty($event) || empty($property))
 			return false;
