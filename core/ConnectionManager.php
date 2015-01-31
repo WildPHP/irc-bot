@@ -71,38 +71,22 @@ class ConnectionManager
 
 	/**
 	 * Establishs the connection to the server. If no arguments passed, will use the defaults.
-	 * @param string $server The server to connect to.
-	 * @param int	$port   The port to use for connecting to the server.
-	 * @param string $nick   The nickname used to talk with the server.
-	 * @param string $name   The name (ident) used to connect to the server.
-	 * @param string $pass   The password to use to log in to the server.
 	 * @return boolean True or false, depending on whether the connection succeeded.
 	 */
-	public function connect($server = '', $port = '', $nick = '', $name = '', $pass = '') {
-		// Set defaults if no arguments passed.
-		if (empty($server))
-			$server = $this->server;
-		if (empty($port))
-			$port = $this->port;
-		if (empty($nick))
-			$nick = $this->nick;
-		if (empty($name))
-			$name = $this->name;
-		if (empty($pass))
-			$pass = $this->password;
-
+	public function connect()
+	{
 		// Open a connection.
-		$this->socket = fsockopen($server, $port);
+		$this->socket = fsockopen($this->server, $this->port);
 		if (!$this->isConnected())
-			throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
+			throw new Exception('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
 
-		if (!empty($pass))
-			$this->sendData('PASS ' . $pass);
+		if (!empty($this->pass))
+			$this->sendData('PASS ' . $this->pass);
 
-		$this->sendData('USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
-		$this->sendData('NICK ' . $nick);
+		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
+		$this->sendData('NICK ' . $this->nick);
 
-		$this->bot->log('Connection to server ' . $server . ':' . $port . ' set up with nick ' . $nick . '; ready to use.', 'CONNECT');
+		$this->bot->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.', 'CONNECT');
 	}
 
 	/**
