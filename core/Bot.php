@@ -38,24 +38,25 @@ class Bot
 	 */
 	public function __construct($config_file = WPHP_CONFIG)
 	{
+
 		// Load the configuration in memory.
 		$this->configuration = new Configuration($this, $config_file);
+
+		// Plug in the log.
+		$this->log = new LogManager($this);
+		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->register(array('onConnect', 'onDataReceive'));
+		$this->eventManager->register(array('onConnect', 'onDataReceive', 'onSay'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
 
 		// Set up a connection.
 		$this->connection = new ConnectionManager($this);
-
-		// Plug in the log.
-		$this->log = new LogManager($this);
-		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// And the parser.
 		$this->parser = new \IRCParser\IRCParser($this);
@@ -115,6 +116,12 @@ class Bot
 				continue;
 			}
 
+			// Got a command?
+			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
+			{
+				$this->eventManager->call('command_' . $data['bot_command'], $data);
+			}
+
 			$this->eventManager->call('onDataReceive', $data);
 		}
 		while (true);
@@ -132,10 +139,14 @@ class Bot
 	{
 		$this->eventManager->hook($event, $hook);
 	}
-
-	public function registerEvent($event)
+	public function unhookEvent($event, $hook = '')
 	{
-		$this->eventManager->register($event);
+		$this->eventManager->unhook($event, $hook);
+	}
+
+	public function registerEvent($event, $properties = array())
+	{
+		$this->eventManager->register($event, $properties);
 	}
 
 	/**
@@ -159,6 +170,26 @@ class Bot
 		$this->connection->sendData($data);
 	}
 
+	/**
+	 * Shortcut classes
+	 */
+	public function say($to, $text)
+	{
+		if (empty($to) || empty($text))
+			return false;
+
+		$this->eventManager->call('onSay', array('to' => $to, 'text' => &$text));
+
+		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
+	}
+
+	// Quit the bot, disconnet and stop.
+	public function stop($message = '')
+	{
+		$this->sendData('QUIT :' . (!empty($message) ? (string) $message : 'WildPHP <http://wildphp.com>'));
+		$this->connection->disconnect();
+		exit;
+	}
 
 	public function log($data, $level = 'LOG')
 	{

@@ -68,6 +68,7 @@ class EventManager
 				// And it's registered.
 				$this->available[$e] = $properties;
 				$this->eventDb[$e] = array();
+				$this->bot->log('Event ' . $e . ' registered.', 'EVENTMGR');
 			}
 			else
 				trigger_error('The following Event has already been registered: ' . $e . '. Ignoring duplicate register request.', E_USER_NOTICE);
@@ -123,6 +124,43 @@ class EventManager
 		// Add it on the event train.
 		$this->eventDb[$event][] = $hook;
 		return true;
+	}
+
+	/**
+	 * Remove a hook from an event.
+	 * @param string $event The event to manipulate.
+	 * @param string $hook  The hook to remove. Leave empty to remove all hooks.
+	 * @return bool Boolean determining if the operation succeeded.
+	 */
+	public function unhook($event, $hook = '')
+	{
+		if (empty($event))
+			return false;
+
+		// Check if the event exists.
+		if (!$this->eventExists($event))
+			return false;
+
+		if (!empty($hook))
+		{
+			// Does the hook exist?
+			if (!in_array($hook, $this->eventDb[$event]))
+				return;
+
+			$key = array_search($hook, $event);
+			unset($this->eventDb[$event][$key]);
+		}
+		else
+			$this->eventDb[$event] = array();
+	}
+
+	/**
+	 * Returns available events with their hooks.
+	 * @return array The events with their hooks.
+	 */
+	public function getEvents()
+	{
+		return $this->eventDb;
 	}
 
 	/**

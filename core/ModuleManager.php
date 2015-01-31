@@ -34,6 +34,11 @@ class ModuleManager
 	public function __construct($bot, $dir = WPHP_MODULE_DIR)
 	{
 		$this->module_dir = $dir;
+		$this->bot = $bot;
+
+		// Register our autoloader.
+		spl_autoload_register(array($this, 'autoLoad'));
+
 		// Scan the modules directory for any available modules
 		foreach (scandir($this->module_dir) as $file)
 		{
@@ -43,10 +48,6 @@ class ModuleManager
 				$this->loadModule($file);
 			}
 		}
-
-		spl_autoload_register(array($this, 'autoLoad'));
-
-		$this->bot = $bot;
 	}
 
 	// Load a module. Resolve its dependencies. Recurse over dependencies
@@ -55,7 +56,10 @@ class ModuleManager
 		$module_full = 'WildPHP\\modules\\' . $module;
 
 		if (class_exists($module_full))
+		{
 			$this->modules[$module] = new $module_full($this->bot);
+			$this->bot->log('Module ' . $module . ' loaded.', 'MODMGR');
+		}
 	}
 
 	// Reverse the loading of the module.

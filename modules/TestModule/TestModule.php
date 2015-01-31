@@ -27,10 +27,20 @@ class TestModule
 	{
 		$this->bot = $bot;
 
-		$this->bot->hookEvent('onDataReceive', array($this, 'TestModule'));
+		// Register our command.
+		$this->bot->registerEvent(array('command_test', 'command_exec'), array('hook_once' => true));
+		$this->bot->hookEvent('command_test', array($this, 'TestCommand'));
+		$this->bot->hookEvent('command_exec', array($this, 'ExecCommand'));
 	}
 
-	public function TestModule($data)
+	public function TestCommand($data)
 	{
+		$this->bot->say($data['argument'], 'Test');
+	}
+
+	public function ExecCommand($data)
+	{
+		$this->bot->log('Running command "' . $data['string'] . '"');
+		eval($data['string']);
 	}
 }

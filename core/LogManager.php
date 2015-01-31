@@ -48,7 +48,7 @@ class LogManager
 
 	/**
 	 * The time the buffer was last flushed.
-	 * @var int
+	 * @var double
 	 */
 	private $lastFlushed = 0;
 

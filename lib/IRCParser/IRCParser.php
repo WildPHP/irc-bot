@@ -54,7 +54,7 @@ class IRCParser
 
 			// Can we also parse a username out of it?
 			if (preg_match('/:([a-zA-Z0-9_]+)!/', $message, $username))
-				$data['from'] = $username[1];
+				$data['from_user'] = $username[1];
 		}
 
 		// Parse the command. And optional parameters.
@@ -88,10 +88,12 @@ class IRCParser
 			if (substr($data['string'], 0, strlen($prefix)) == $prefix)
 			{
 				// Get the command.
-				if (preg_match('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', $data['string'], $botcmd))
+				if (preg_match('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', strtolower($data['string']), $botcmd))
 				{
 					$this->bot->log('Command detected: ' . $botcmd[1], 'COMMAND');
 					$data['bot_command'] = $botcmd[1];
+					$data['string'] = trim(preg_replace('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', '', $data['string']));
+					break;
 				}
 			}
 		}
