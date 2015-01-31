@@ -1,5 +1,0 @@
-31.01.2015 - 15:19:20	  [ LOG ] 	Using log file /home/rkerkhof/Documents/Projects/WildPHP-New/logs//log9.log
-31.01.2015 - 15:19:21	  [ CONNECT ] 	Connection to server irc.freenode.org:6667 set up with nick phpbot; ready to use.
-31.01.2015 - 15:19:21	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Looking up your hostname...
-31.01.2015 - 15:19:21	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Checking Ident
-31.01.2015 - 15:19:21	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Found your hostname
