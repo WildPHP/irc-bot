@@ -70,7 +70,6 @@ class IRCParser
 			$data['command'] = '';
 			foreach ($commands as $command)
 			{
-				echo var_dump($command, strlen($command), substr($message, strlen($command)) == $command);
 				if (substr($message, strlen($command)) == $command)
 					$data['command'] = $command;
 			}
