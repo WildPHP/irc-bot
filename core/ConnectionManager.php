@@ -102,7 +102,7 @@ class ConnectionManager
 		$this->sendData('USER ' . $nick . ' Layne-Obserdia.de ' . $nick . ' :' . $name);
 		$this->sendData('NICK ' . $nick);
 
-		echo 'Connection to server ' . $server . ':' . $port . ' set up with nick ' . $nick . '; ready to use.';
+		$this->bot->log('Connection to server ' . $server . ':' . $port . ' set up with nick ' . $nick . '; ready to use.', 'CONNECT');
 	}
 
 	/**
@@ -138,7 +138,7 @@ class ConnectionManager
 	 * @return string|boolean The data as string, or false if no data is available or an error occured.
 	 */
 	public function getData() {
-		return trim(fgets( $this->socket, 256 ));
+		return trim(fgets($this->socket));
 	}
 
 	/**

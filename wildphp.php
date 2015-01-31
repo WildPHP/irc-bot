@@ -40,3 +40,5 @@ require_once(WPHP_ROOT_DIR . 'core/Autoloader.php');
 spl_autoload_register('WildPHP\Core\Autoloader::load');
 
 $bot = new Bot();
+$bot->connect();
+$bot->start();

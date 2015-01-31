@@ -38,10 +38,13 @@ class ModuleManager
 		foreach (scandir($this->module_dir) as $file)
 		{
 			if (is_dir($this->module_dir . $file) && $file != '.' && $file != '..')
+			{
 				$this->modules[] = $file;
+				$this->loadModule($file);
+			}
 		}
 
-		spl_autoload_register('WildPHP\\core\\ModuleManager::autoLoad');
+		spl_autoload_register(array($this, 'autoLoad'));
 
 		$this->bot = $bot;
 	}
@@ -52,22 +55,18 @@ class ModuleManager
 		$module_full = 'WildPHP\\modules\\' . $module;
 
 		if (class_exists($module_full))
-			$modules[$module] = new $module_full();
+			$this->modules[$module] = new $module_full($this->bot);
 	}
 
-	// Create an index of all hooks the modules provide.
-	private function index()
+	// Reverse the loading of the module.
+	public function unloadModule($module)
 	{
-	}
-
-	// Resolve dependencies for a module
-	private function resolveDependencies($module)
-	{
-
+		if (!empty($this->modules[$module]))
+			unset($this->modules[$module]);
 	}
 
 	// The autoloader for modules
-	static function autoLoad($class)
+	public function autoLoad($class)
 	{
 		$class = str_replace('WildPHP\\modules\\', '', $class);
 		require_once($this->module_dir . $class . '/' . $class . '.php');

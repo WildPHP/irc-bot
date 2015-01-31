@@ -22,5 +22,15 @@ namespace WildPHP\Modules;
 
 class TestModule
 {
-	
+	private $bot;
+	public function __construct($bot)
+	{
+		$this->bot = $bot;
+
+		$this->bot->hookEvent('onDataReceive', array($this, 'TestModule'));
+	}
+
+	public function TestModule($data)
+	{
+	}
 }

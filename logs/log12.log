@@ -1,0 +1,106 @@
+31.01.2015 - 15:23:00	  [ LOG ] 	Using log file /home/rkerkhof/Documents/Projects/WildPHP-New/logs//log12.log
+31.01.2015 - 15:23:00	  [ CONNECT ] 	Connection to server irc.freenode.org:6667 set up with nick phpbot; ready to use.
+31.01.2015 - 15:23:00	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Looking up your hostname...
+31.01.2015 - 15:23:00	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Checking Ident
+31.01.2015 - 15:23:00	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** Found your hostname
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net NOTICE * :*** No Ident response
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 001 phpbot :Welcome to the freenode Internet Relay Chat Network phpbot
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 002 phpbot :Your host is holmes.freenode.net[83.170.73.249/6667], running version ircd-seven-1.1.3
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 003 phpbot :This server was created Wed Sep 17 2014 at 17:57:00 UTC
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 004 phpbot holmes.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 005 phpbot CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 005 phpbot CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 005 phpbot EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 251 phpbot :There are 177 users and 86537 invisible on 27 servers
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 252 phpbot 24 :IRC Operators online
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 253 phpbot 18 :unknown connection(s)
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 254 phpbot 50950 :channels formed
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 255 phpbot :I have 9811 clients and 1 servers
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 265 phpbot 9811 10706 :Current local users 9811, max 10706
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 266 phpbot 86714 105669 :Current global users 86714, max 105669
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 250 phpbot :Highest connection count: 10707 (10706 clients) (372984 connections received)
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 375 phpbot :- holmes.freenode.net Message of the Day -
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Welcome to holmes.freenode.net in London, UK! Massive thanks to
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- UK2 (http://www.uk2.net) for sponsoring this server.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- HOLMES, ROBERT (1928-1986). An English television scriptwriter,
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- most notably remembered for his work on the sci-fi series;
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Doctor Who.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Welcome to freenode - supporting the free and open source
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- software communities since 1998.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- **************************************************************
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-                       SECURITY ALERT
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Over the weekend of 13th-14th September freenode staff noticed
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- some compromised binaries present on a number of servers.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- The servers in question have been removed from the network and
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- shut down.  However, it's possible that network traffic  -
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- including SSL traffic - has been sniffed and passwords
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- exposed.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- We therefore recommend that all users change their nickserv
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- password(s) to a new value which is not shared with any
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- other service.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- You can do this with /msg nickserv set password newpasshere
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Please note that investigation is ongoing to discover the root
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- cause of the attack, and until this investigation is complete
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- we cannot be 100% certain that all traces of the compromises
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- have been removed. We may have to ask you to change your
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- passwords again after analysis has completed.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- Further details will appear on https://blog.freenode.net/
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- **************************************************************
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- By connecting to freenode you indicate that you have read and
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- accept our policies as set out on http://www.freenode.net
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- freenode runs an open proxy scanner. Please join #freenode for
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- any network-related questions or queries, where a number of
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- volunteer staff and helpful users will be happy to assist you.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- together with like-minded FOSS enthusiasts for talks and
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- real-life collaboration.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- We would like to thank Private Internet Access
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- (https://www.privateinternetaccess.com/) and the other
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- organisations that help keep freenode and our other projects
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- running for their sustained support.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- In particular we would like to thank the sponsor
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :- of this server, details of which can be found above.
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 372 phpbot :-
+31.01.2015 - 15:23:08	  [ DATA ] 	:holmes.freenode.net 376 phpbot :End of /MOTD command.
+31.01.2015 - 15:23:08	  [ DATA ] 	:phpbot MODE phpbot :+i
+31.01.2015 - 15:23:08	  [ DATA ] 	:NickServ!NickServ@services. NOTICE phpbot :This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+31.01.2015 - 15:23:08	  [ DATAOUT ] 	JOIN #NanoPlayground
+31.01.2015 - 15:23:14	  [ DATA ] 	:phpbot!~phpbot@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN #NanoPlayground
+31.01.2015 - 15:23:15	  [ DATA ] 	:holmes.freenode.net 332 phpbot #NanoPlayground :Test site for bots.
+31.01.2015 - 15:23:15	  [ DATA ] 	:holmes.freenode.net 333 phpbot #NanoPlayground FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception 1420665380
+31.01.2015 - 15:23:15	  [ DATA ] 	:holmes.freenode.net 353 phpbot = #NanoPlayground :phpbot @NanoSector @FatalException @ChanServ
+31.01.2015 - 15:23:15	  [ DATA ] 	:holmes.freenode.net 366 phpbot #NanoPlayground :End of /NAMES list.
+31.01.2015 - 15:23:27	  [ DATA ] 	:NanoSector!~Yoshi2889@simplemachines/support/NanoSector PRIVMSG #NanoPlayground :phpbot, test
+31.01.2015 - 15:23:27	  [ COMMAND ] 	Command detected: test
+31.01.2015 - 15:25:11	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:25:11	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:27:47	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:27:47	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:30:23	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:30:23	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:32:59	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:32:59	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:35:35	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:35:35	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:38:11	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:38:11	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:40:47	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:40:47	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:43:23	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:43:23	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:46:00	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:46:00	  [ DATAOUT ] 	PONG :holmes.freenode.net
+31.01.2015 - 15:48:35	  [ DATA ] 	PING :holmes.freenode.net
+31.01.2015 - 15:48:35	  [ DATAOUT ] 	PONG :holmes.freenode.net

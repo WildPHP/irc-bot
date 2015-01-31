@@ -22,9 +22,10 @@ namespace WildPHP\Core;
 class EventManager
 {
 	// All available events. Used to determine if the event we're registering to is valid.
+	// Store as 'event' => array('property' => 'value')
 	private $available = array();
 
-	// The event database.
+	// The event database, with the hooks attached.
 	// Events are stored as 'event' => array('function', 'function')
 	private $eventDb = array();
 
@@ -37,9 +38,6 @@ class EventManager
 	// Construct the class.
 	public function __construct($bot)
 	{
-		// Register some default events.
-		$this->register(array('onConnect', 'onDataReceive', 'onDataSend',
-			'onSay'));
 
 		// Set the bot.
 		$this->bot = $bot;
@@ -47,10 +45,12 @@ class EventManager
 
 	/**
 	 * Register a new event. Pass an array for multiple.
-	 * @param string|array $event The event name.
+	 * @param string|array $event      The event name.
+	 * @param array        $properties Any properties this event/these events should carry.
+	 *                     Note: All properties in this array are set to all events to be registered.
 	 * @return bool Boolean determining if registration of the event(s) succeeded.
 	 */
-	public function register($event, $trigger = null)
+	public function register($event, $properties = array())
 	{
 		if (empty($event))
 			return false;
@@ -58,12 +58,15 @@ class EventManager
 		if (!is_array($event))
 			$event = array($event);
 
+		if (!is_array($properties))
+			throw new \Exception(__CLASS__ . ': The properties your event should carry must be an array.');
+
 		foreach ($event as $e)
 		{
 			if (!$this->eventExists($e))
 			{
 				// And it's registered.
-				$this->available[] = $e;
+				$this->available[$e] = $properties;
 				$this->eventDb[$e] = array();
 			}
 			else
@@ -83,7 +86,7 @@ class EventManager
 		if (empty($event))
 			return false;
 
-		return in_array($event, $this->available);
+		return array_key_exists($event, $this->available);
 	}
 
 	/**
@@ -102,13 +105,21 @@ class EventManager
 		if (!$this->eventExists($event))
 			trigger_error('The requested Event was not found: ' . $event . '. Your hook will be added but might not work until this Event becomes available.', E_USER_WARNING);
 
+		// Does this event have the hook_once property set?
+		if (!empty($this->getProperty($event, 'hook_once')))
+		{
+			// Already has hook(s)?
+			if (!empty($this->eventDb[$event]))
+				throw new \Exception(__CLASS__ . ': The Event ' . $event . ' has specified the hook_once property and a hook is already attached to it. No more hooks can be added');
+		}
+
 		// Already added this hook?
 		if (in_array($hook, $this->eventDb[$event]))
 		{
 			trigger_error('A request to add a duplicate hook to event ' . $event . ' was ignored.', E_USER_WARNING);
 			return false;
 		}
-
+		
 		// Add it on the event train.
 		$this->eventDb[$event][] = $hook;
 		return true;
@@ -139,10 +150,30 @@ class EventManager
 		// Loop through each hook, see what we should do.
 		foreach ($this->eventDb[$event] as $hook)
 		{
-			if (!empty($data))
-				call_user_func_array($hook, $data);
-			else
-				call_user_func($hook);
+			call_user_func($hook, $data);
 		}
+	}
+
+	/**
+	 * Gets the property of an event.
+	 * @param string $event    The event to get the property from.
+	 * @param string $property The property to get from the event.
+	 * @return mixed The event data, or false upon nonexisting value/error.
+	 */
+	public function getProperty(string $event, string $property)
+	{
+		if (empty($event) || empty($property))
+			return false;
+
+		// Check if the event exists.
+		if (!$this->eventExists($event))
+			return false;
+
+		// No such property?
+		if (!in_array($property, $this->available[$event]))
+			return false;
+
+		// Return the property.
+		return $this->available[$event][$property];
 	}
 }

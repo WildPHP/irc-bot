@@ -31,6 +31,7 @@ class Bot
 	protected $eventManager;
 	protected $connection;
 	protected $log;
+	protected $parser;
 
 	/**
 	 * @param string $config_file Optionally load a custom config file
@@ -43,6 +44,9 @@ class Bot
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
 
+		// Register some default events.
+		$this->eventManager->register(array('onConnect', 'onDataReceive'));
+
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
 
@@ -52,6 +56,9 @@ class Bot
 		// Plug in the log.
 		$this->log = new LogManager($this);
 		register_shutdown_function(array($this->log, 'logShutdown'));
+
+		// And the parser.
+		$this->parser = new \IRCParser\IRCParser($this);
 	}
 
 	/**
@@ -74,16 +81,43 @@ class Bot
 
 		// And start the connection.
 		$this->connection->connect();
+
+		// Call the connection hook.
+		$this->eventManager->call('onConnect');
 	}
 
 	public function start()
 	{
+		if (!$this->connection->isConnected())
+			throw new \Exception('No connection has been set up for the bot to use.');
+
 		do
 		{
+			// Check if we got any new data. Signs of life!
 			$data = $this->connection->getData();
-			echo $data . PHP_EOL;
+			if (empty($data))
+				continue;
+
+			// Make a note of what we received.
+			$this->log($data, 'DATA');
+
+			// !!! REMOVE
+			if (stripos($data, 'This nickname is registered'))
+				$this->sendData('JOIN #NanoPlayground');
+
+			// Parse the data.
+			$data = $this->parser->process($data);
+
+			// Got a PING? Do PONG. Probably nothing needs to handle this anyway.
+			if ($data['command'] == 'PING')
+			{
+				$this->sendData('PONG :' . $data['hostname']);
+				continue;
+			}
+
+			$this->eventManager->call('onDataReceive', $data);
 		}
-		while ($this->connection->isConnected());
+		while (true);
 	}
 
 	public function getConfiguration($item)
@@ -91,7 +125,42 @@ class Bot
 		return $this->configuration->get($item);
 	}
 
-	public function log($data, $level)
+	/**
+	 * Event manager getters/setters.
+	 */
+	public function hookEvent($event, $hook)
+	{
+		$this->eventManager->hook($event, $hook);
+	}
+
+	public function registerEvent($event)
+	{
+		$this->eventManager->register($event);
+	}
+
+	/**
+	 * Module manager getters/setters.
+	 */
+	public function loadModule($module)
+	{
+		$this->moduleManager->loadModule($module);
+	}
+	public function unloadModule($module)
+	{
+		$this->moduleManager->unloadModule($module);
+	}
+
+	/**
+	 * Connection manager  getters/setters
+	 */
+	public function sendData($data)
+	{
+		$this->log($data, 'DATAOUT');
+		$this->connection->sendData($data);
+	}
+
+
+	public function log($data, $level = 'LOG')
 	{
 		$this->log->log($data, $level);
 	}

@@ -1,0 +1,4 @@
+List of event properties
+------------------------
+
+boolean hook_once: Only allow this event to be hooked into once. (e.g. for commands)
