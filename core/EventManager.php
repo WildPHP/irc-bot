@@ -38,7 +38,6 @@ class EventManager
 	// Construct the class.
 	public function __construct($bot)
 	{
-
 		// Set the bot.
 		$this->bot = $bot;
 	}

@@ -33,6 +33,10 @@ class Bot
 	protected $log;
 	protected $parser;
 
+	public $lastData;
+
+	private $db;
+
 	/**
 	 * @param string $config_file Optionally load a custom config file
 	 */
@@ -46,6 +50,9 @@ class Bot
 		$this->log = new LogManager($this);
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
+		// Then set up the database.
+		$this->db = new \SQLite3($this->configuration->get('database'));
+
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
 
@@ -54,6 +61,7 @@ class Bot
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
+		$this->moduleManager->setup();
 
 		// Set up a connection.
 		$this->connection = new ConnectionManager($this);
@@ -67,7 +75,6 @@ class Bot
 	 */
 	public function connect()
 	{
-
 		// For that, we need to set the connection parameters.
 		// First up, server.
 		$this->connection->setServer($this->configuration->get('server'));
@@ -116,6 +123,9 @@ class Bot
 				continue;
 			}
 
+			// Set the data so we can use it elsewhere.
+			$this->lastData = $data;
+
 			// Got a command?
 			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
 			{
@@ -160,6 +170,10 @@ class Bot
 	{
 		$this->moduleManager->unloadModule($module);
 	}
+	public function getModuleInstance($module)
+	{
+		return $this->moduleManager->getModuleInstance($module);
+	}
 
 	/**
 	 * Connection manager  getters/setters
@@ -173,9 +187,21 @@ class Bot
 	/**
 	 * Shortcut classes
 	 */
-	public function say($to, $text)
+	public function say($to, $text = '')
 	{
-		if (empty($to) || empty($text))
+		echo var_dump($to, $text);
+		if (empty($to) && empty($text))
+			return false;
+
+		// Some people are just too lazy.
+		elseif (empty($text) && !empty($this->lastData['argument']))
+		{
+			$text = $to;
+			$to = $this->lastData['argument'];
+		}
+
+		// Nothing to send?
+		if (empty($text))
 			return false;
 
 		$this->eventManager->call('onSay', array('to' => $to, 'text' => &$text));

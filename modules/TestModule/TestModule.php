@@ -22,7 +22,10 @@ namespace WildPHP\Modules;
 
 class TestModule
 {
+	static $dependencies = array('Auth');
 	private $bot;
+
+	private $auth;
 	public function __construct($bot)
 	{
 		$this->bot = $bot;
@@ -31,6 +34,9 @@ class TestModule
 		$this->bot->registerEvent(array('command_test', 'command_exec'), array('hook_once' => true));
 		$this->bot->hookEvent('command_test', array($this, 'TestCommand'));
 		$this->bot->hookEvent('command_exec', array($this, 'ExecCommand'));
+
+		// Get the auth module in here.
+		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
 	public function TestCommand($data)
@@ -40,6 +46,11 @@ class TestModule
 
 	public function ExecCommand($data)
 	{
+		if (!$this->auth->authUser($data['hostname']))
+		{
+			$this->bot->say('You are not authorized to execute this command.');
+			return false;
+		}
 		$this->bot->log('Running command "' . $data['string'] . '"');
 		eval($data['string']);
 	}

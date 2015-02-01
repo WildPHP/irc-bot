@@ -36,6 +36,7 @@ class IRCParser
 		$nick = $this->bot->getConfiguration('nick');
 		$this->prefix[] = $nick . ': ';
 		$this->prefix[] = $nick . ', ';
+		$this->prefix[] = $nick . ' ';
 
 
 	}

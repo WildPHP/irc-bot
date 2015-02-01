@@ -23,7 +23,9 @@ namespace WildPHP\Core;
 class ModuleManager
 {
 	private $module_dir;
-	protected $modules = array();
+	private $modules = array();
+	private $loadedModules = array();
+	private $status = array();
 
 	/**
 	 * The Bot object. Used to interact with the main thread.
@@ -45,9 +47,25 @@ class ModuleManager
 			if (is_dir($this->module_dir . $file) && $file != '.' && $file != '..')
 			{
 				$this->modules[] = $file;
-				$this->loadModule($file);
 			}
 		}
+	}
+
+	public function setup()
+	{
+		if (empty($this->loadedModules))
+			$this->loadModules($this->modules);
+	}
+
+	public function loadModules($modules)
+	{
+		$success = true;
+		foreach ($modules as $module)
+		{
+			if (!$this->loadModule($module))
+				$success = false;
+		}
+		return $success;
 	}
 
 	// Load a module. Resolve its dependencies. Recurse over dependencies
@@ -55,11 +73,66 @@ class ModuleManager
 	{
 		$module_full = 'WildPHP\\modules\\' . $module;
 
-		if (class_exists($module_full))
+		if (array_key_exists($module, $this->status) && $this->status[$module] === false)
+			return false;
+
+		if ($this->moduleLoaded($module))
+			return true;
+
+		$this->bot->log('Loading module ' . $module . '...', 'MODMGR');
+		if ($this->moduleAvailable($module) && class_exists($module_full))
 		{
-			$this->modules[$module] = new $module_full($this->bot);
+			// Need any dependencies?
+			$requires = $this->checkDependencies($module);
+
+			// Looks like we have some modules to load before anything else happens.
+			if ($requires !== true)
+			{
+				$this->bot->log('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.', 'MODMGR');
+
+				// The function returned a list of modules we need. Load those first.
+				if (!$this->loadModules($requires))
+				{
+					$this->bot->log('Could not satisfy dependencies of module ' . $module . '; module not initialised.', 'MODMGR');
+					$this->status[$module] = false;
+					return false;
+				}
+			}
+
+			// Okay, so the class exists.
+			$this->loadedModules[$module] = new $module_full($this->bot);
 			$this->bot->log('Module ' . $module . ' loaded.', 'MODMGR');
+			$this->status[$module] = true;
+			return true;
 		}
+		else
+		{
+			$this->bot->log('Could not load non-existing module ' . $module . '; module not initialised.', 'MODMGR');
+			$this->status[$module] = false;
+			return false;
+		}
+	}
+
+	// Check the dependencies for a module. Note: the $dependencies method MUST be
+	public function checkDependencies($module)
+	{
+		$module_full = 'WildPHP\\modules\\' . $module;
+
+		// It has no dependencies? Good!
+		if (!property_exists($module_full, 'dependencies'))
+			return true;
+
+		$needs = array();
+		foreach ($module_full::$dependencies as $dep)
+		{
+			if (!$this->moduleLoaded($dep))
+				$needs[] = $dep;
+		}
+
+		if (empty($needs))
+			return true;
+		else
+			return $needs;
 	}
 
 	// Reverse the loading of the module.
@@ -74,5 +147,24 @@ class ModuleManager
 	{
 		$class = str_replace('WildPHP\\modules\\', '', $class);
 		require_once($this->module_dir . $class . '/' . $class . '.php');
+	}
+
+	// Is a module loaded?
+	public function moduleLoaded($module)
+	{
+		return array_key_exists($module, $this->loadedModules);
+	}
+
+	public function moduleAvailable($module)
+	{
+		return in_array($module, $this->modules);
+	}
+
+	public function getModuleInstance($module)
+	{
+		if (!$this->moduleLoaded($module))
+			return false;
+
+		return $this->loadedModules[$module];
 	}
 }

@@ -22,8 +22,10 @@ namespace WildPHP\Modules;
 
 class ChannelManager
 {
+	static $dependencies = array('Auth');
 	private $bot;
 	private $channels;
+	private $auth;
 	public function __construct($bot)
 	{
 		$this->bot = $bot;
@@ -32,11 +34,17 @@ class ChannelManager
 		$this->bot->registerEvent(array('command_join', 'command_part'), array('hook_once' => true));
 		$this->bot->hookEvent('command_join', array($this, 'JoinCommand'));
 		$this->bot->hookEvent('command_part', array($this, 'PartCommand'));
+
+		// Get the auth module.
+		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
 	public function JoinCommand($data)
 	{
 		if (empty($data['string']))
+			return;
+
+		if (!$this->auth->authUser($data['hostname']))
 			return;
 
 		// Join all specified channels.
@@ -52,6 +60,9 @@ class ChannelManager
 
 	public function PartCommand($data)
 	{
+		if (!$this->auth->authUser($data['hostname']))
+			return;
+		
 		// Part the current channel.
 		if (empty($data['string']))
 		{
