@@ -43,7 +43,7 @@ class Configuration
 				$this->config = \Nette\Neon\Neon::decode(file_get_contents($config));
 			else
 				die('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.' . PHP_EOL);
-		} catch (Nette\Neon\Exception $e) {
+		} catch (\Nette\Neon\Exception $e) {
 			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
 
