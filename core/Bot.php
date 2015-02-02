@@ -35,7 +35,7 @@ class Bot
 
 	public $lastData;
 
-	private $db;
+	public $db;
 
 	/**
 	 * @param string $config_file Optionally load a custom config file
@@ -189,7 +189,6 @@ class Bot
 	 */
 	public function say($to, $text = '')
 	{
-		echo var_dump($to, $text);
 		if (empty($to) && empty($text))
 			return false;
 
