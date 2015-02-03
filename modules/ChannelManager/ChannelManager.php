@@ -22,23 +22,59 @@ namespace WildPHP\Modules;
 
 class ChannelManager
 {
-	static $dependencies = array('Auth');
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var \WildPHP\Core\Bot
+	 */
 	private $bot;
-	private $channels;
+
+	/**
+	 * List of channels the bot is currently in.
+	 */
+	private $channels = array();
+
+	/**
+	 * The Auth module's object.
+	 * @var \WildPHP\Modules\Auth
+	 */
 	private $auth;
-	public function __construct($bot)
+
+	/**
+	 * Set up the module.
+	 * @param object $bot The Bot object.
+	 */
+	public function __construct(\WildPHP\Core\Bot $bot)
 	{
 		$this->bot = $bot;
 
-		// Register our command.
+		// Register our commands.
 		$this->bot->registerEvent(array('command_join', 'command_part'), array('hook_once' => true));
 		$this->bot->hookEvent('command_join', array($this, 'JoinCommand'));
 		$this->bot->hookEvent('command_part', array($this, 'PartCommand'));
+
+		// We also have a listener.
+		$this->bot->hookEvent('onDataReceive', array($this, 'initialJoin'));
+
+		// Register any custom events.
+		$this->bot->registerEvent('onInitialChannelJoin');
 
 		// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
+	/**
+	 * Returns the module dependencies.
+	 * @return array The array containing the module names of the dependencies.
+	 */
+	public static function getDependencies()
+	{
+		return array('Auth');
+	}
+
+	/**
+	 * The Join command.
+	 * @param array $data The last data received.
+	 */
 	public function JoinCommand($data)
 	{
 		if (empty($data['string']))
@@ -58,29 +94,61 @@ class ChannelManager
 		}
 	}
 
+	/**
+	 * The Part command.
+	 * @param array $data The last data received.
+	 */
 	public function PartCommand($data)
 	{
 		if (!$this->auth->authUser($data['hostname']))
 			return;
-		
+
 		// Part the current channel.
 		if (empty($data['string']))
-		{
-			$chan = $data['argument'];
-
-			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
-			$this->bot->sendData('PART ' . $chan);
-
-			return;
-		}
+			$c = array($data['argument']);
 
 		// Part all specified channels.
-		$c = explode(' ', $data['string']);
+		else
+			$c = explode(' ', $data['string']);
 
 		foreach ($c as $chan)
 		{
 			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
 			$this->bot->sendData('PART ' . $chan);
 		}
+	}
+
+	/**
+	 * This function handles the initial joining of channels.
+	 * @param array $data The last data received.
+	 */
+	public function initialJoin($data)
+	{
+		// Are we ready?
+		$status = $data['command'] == '376' && $data['string'] == 'End of /MOTD command.';
+
+		// Do any modules think we are ready?
+		$this->bot->callHook('onInitialChannelJoin', array(&$status));
+
+		// And?
+		if ($status)
+		{
+			$channels = $this->bot->getConfiguration('channels');
+
+			foreach ($channels as $chan)
+			{
+				$this->joinChannel($chan);
+			}
+		}
+	}
+
+	/**
+	 * Join a channel.
+	 * @param string $channel The channel name.
+	 */
+	public function joinChannel($channel)
+	{
+		if (!empty($channel))
+			$this->bot->sendData('JOIN ' . $channel);
 	}
 }

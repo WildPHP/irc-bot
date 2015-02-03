@@ -22,10 +22,22 @@ namespace WildPHP\Modules;
 
 class TestModule
 {
-	static $dependencies = array('Auth');
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var \WildPHP\Core\Bot
+	 */
 	private $bot;
 
+	/**
+	 * The Auth module's object.
+	 * @var \WildPHP\Modules\Auth
+	 */
 	private $auth;
+
+	/**
+	 * Set up the module.
+	 * @param object $bot The Bot object.
+	 */
 	public function __construct($bot)
 	{
 		$this->bot = $bot;
@@ -37,6 +49,15 @@ class TestModule
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
+	}
+
+	/**
+	 * Returns the module dependencies.
+	 * @return array The array containing the module names of the dependencies.
+	 */
+	public static function getDependencies()
+	{
+		return array('Auth');
 	}
 
 	public function TestCommand($data)

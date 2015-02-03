@@ -109,10 +109,6 @@ class Bot
 			// Make a note of what we received.
 			$this->log($data, 'DATA');
 
-			// !!! REMOVE
-			if (stripos($data, 'This nickname is registered'))
-				$this->sendData('JOIN #NanoPlayground');
-
 			// Parse the data.
 			$data = $this->parser->process($data);
 
@@ -157,6 +153,10 @@ class Bot
 	public function registerEvent($event, $properties = array())
 	{
 		$this->eventManager->register($event, $properties);
+	}
+	public function callHook($hook, $parameters = array())
+	{
+		$this->eventManager->call($hook, $parameters);
 	}
 
 	/**
