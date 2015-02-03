@@ -174,6 +174,18 @@ class Bot
 	{
 		return $this->moduleManager->getModuleInstance($module);
 	}
+	public function getModules()
+	{
+		return $this->moduleManager->getAvailableModules();
+	}
+	public function getLoadedModules()
+	{
+		return $this->moduleManager->getLoadedModules();
+	}
+	public function rescanModules()
+	{
+		$this->moduleManager->scanModules();
+	}
 
 	/**
 	 * Connection manager  getters/setters

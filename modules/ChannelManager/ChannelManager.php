@@ -139,6 +139,8 @@ class ChannelManager
 			{
 				$this->joinChannel($chan);
 			}
+
+			$this->bot->unhookEvent('onDataReceive', array($this, 'initialJoin'));
 		}
 	}
 

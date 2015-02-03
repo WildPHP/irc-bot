@@ -258,24 +258,18 @@ class ModuleManager
 	}
 
 	/**
-	 * Get all currently loaded modules. Note: This does not return the objects.
+	 * Get all currently loaded modules. Be careful with this.
 	 * @return array All currently loaded modules.
 	 */
 	public function getLoadedModules()
 	{
-		$lm = array();
-		foreach ($this->modules as $module)
-		{
-			if ($this->moduleLoaded($module))
-				$lm[] = $module;
-		}
-		return $lm;
+		return $this->loadedModules;
 	}
 
 	/**
 	 * Returns the loaded instance of the module, for use by other modules.
 	 * @param string $module The module name.
-	 * @return object The module instance.
+	 * @return object|bool The module instance.
 	 */
 	public function getModuleInstance($module)
 	{
