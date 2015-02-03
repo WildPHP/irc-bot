@@ -142,7 +142,7 @@ class EventManager
 
 		if (!empty($hook) && in_array($hook, $this->eventDb[$event]))
 		{
-			$key = array_search($hook, $event);
+			$key = array_search($hook, $this->eventDb[$event]);
 			unset($this->eventDb[$event][$key]);
 		}
 		else
