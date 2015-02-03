@@ -29,7 +29,7 @@ class Auth
 	public function __construct($bot)
 	{
 		$this->bot = $bot;
-		$this->hostnames = $this->bot->getConfiguration('hosts');
+		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 
 	public function authUser($hostname)

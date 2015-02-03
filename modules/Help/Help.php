@@ -42,9 +42,12 @@ class Help
 	{
 		$this->bot = $bot;
 
+		// Get the event manager over here.
+		$evman = $this->bot->getEventManager();
+
 		// Register our command.
-		$this->bot->registerEvent('command_help', array('hook_once' => true));
-		$this->bot->hookEvent('command_help', array($this, 'HelpCommand'));
+		$evman->register('command_help', array('hook_once' => true));
+		$evman->hook('command_help', array($this, 'HelpCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -66,13 +69,14 @@ class Help
 	public function HelpCommand($data)
 	{
 		// Do we have a module for specific help?
-		$cmd = array_shift(explode(' ', $data['string']));
+		$pieces = explode(' ', $data['string']);
+		$cmd = array_shift($pieces);
 
 		// Nope, show all commands.
 		if (empty($cmd))
 		{
 			// All commands are...
-			$cmd = $this->bot->getLoadedModules();
+			$cmd = $this->bot->getModuleManager()->getLoadedModules();
 
 			// Yep.
 			$this->bot->say('Available modules: ' . implode(', ', array_keys($cmd)));

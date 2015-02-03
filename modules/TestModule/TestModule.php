@@ -42,10 +42,15 @@ class TestModule
 	{
 		$this->bot = $bot;
 
+		// Get the event manager over here.
+		$evman = $this->bot->getEventManager();
+
 		// Register our command.
-		$this->bot->registerEvent(array('command_test', 'command_exec'), array('hook_once' => true));
-		$this->bot->hookEvent('command_test', array($this, 'TestCommand'));
-		$this->bot->hookEvent('command_exec', array($this, 'ExecCommand'));
+		$evman->register(array('command_test', 'command_exec'), array('hook_once' => true));
+		$evman->hook('command_test', array($this, 'TestCommand'));
+		$evman->hook('command_exec', array($this, 'ExecCommand'));
+
+		$evman->hook('onDataReceive', array($this, 'TestListener'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -76,20 +81,9 @@ class TestModule
 		eval($data['string']);
 	}
 
-	private function createCommand($command, $function)
+	public function TestListener($data)
 	{
-		try
-		{
-			$this->bot->registerEvent('command_' . $command, array('hook_once' => true));
-			$this->bot->hookEvent('command_' . $command, $function);
-		}
-		catch (\Exception $e)
-		{
-			$this->bot->log('An error occurred while adding the command: ' . $e->getMessage());
-		}
-	}
-	private function removeCommand($command)
-	{
-		$this->bot->unhookEvent('command_' . $command);
+		//if ($data['command'] == 'JOIN')
+		//	echo var_dump($data);
 	}
 }

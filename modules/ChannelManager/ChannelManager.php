@@ -40,6 +40,12 @@ class ChannelManager
 	private $auth;
 
 	/**
+	 * The Event Manager object.
+	 * @var \WildPHP\Core\EventManager
+	 */
+	private $evman;
+
+	/**
 	 * Set up the module.
 	 * @param object $bot The Bot object.
 	 */
@@ -47,19 +53,25 @@ class ChannelManager
 	{
 		$this->bot = $bot;
 
+		// Get the event manager over here.
+		$this->evman = $this->bot->getEventManager();
+
 		// Register our commands.
-		$this->bot->registerEvent(array('command_join', 'command_part'), array('hook_once' => true));
-		$this->bot->hookEvent('command_join', array($this, 'JoinCommand'));
-		$this->bot->hookEvent('command_part', array($this, 'PartCommand'));
+		$this->evman->register(array('command_join', 'command_part'), array('hook_once' => true));
+		$this->evman->hook('command_join', array($this, 'JoinCommand'));
+		$this->evman->hook('command_part', array($this, 'PartCommand'));
 
 		// We also have a listener.
-		$this->bot->hookEvent('onDataReceive', array($this, 'initialJoin'));
+		//$this->evman->hook('onDataReceive', array($this, 'initialJoin'));
 
 		// Register any custom events.
-		$this->bot->registerEvent('onInitialChannelJoin');
+		$this->evman->register('onInitialChannelJoin');
 
 		// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
+
+		// We're done, thanks!
+		unset($bot);
 	}
 
 	/**
@@ -128,19 +140,19 @@ class ChannelManager
 		$status = $data['command'] == '376' && $data['string'] == 'End of /MOTD command.';
 
 		// Do any modules think we are ready?
-		$this->bot->callHook('onInitialChannelJoin', array(&$status));
+		$this->evman->call('onInitialChannelJoin', array(&$status));
 
 		// And?
 		if ($status)
 		{
-			$channels = $this->bot->getConfiguration('channels');
+			$channels = $this->bot->getConfig('channels');
 
 			foreach ($channels as $chan)
 			{
 				$this->joinChannel($chan);
 			}
 
-			$this->bot->unhookEvent('onDataReceive', array($this, 'initialJoin'));
+			$this->evman->unhook('onDataReceive', array($this, 'initialJoin'));
 		}
 	}
 

@@ -71,7 +71,7 @@ class LogManager
 	public function __construct($bot, $logDir = WPHP_LOG_DIR)
 	{
 		// Fetch the configuration.
-		$config = $bot->getConfiguration('log');
+		$config = $bot->getConfig('log');
 
 		// Can't log to a file not set.
 		if (empty($config['file']))

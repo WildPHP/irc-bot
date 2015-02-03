@@ -130,65 +130,58 @@ class Bot
 
 			$this->eventManager->call('onDataReceive', $data);
 		}
-		while (true);
+		while ($this->connection->isConnected());
 	}
 
-	public function getConfiguration($item)
+	/**
+	 * Returns an item stored in the configuration.
+	 * @return mixed The item stored called by key, or false on failure.
+	 */
+	public function getConfig($item)
 	{
 		return $this->configuration->get($item);
 	}
 
 	/**
-	 * Event manager getters/setters.
+	 * Returns an instance of a module.
+	 * @param string $module The module to get an instance from.
+	 * @return object|false The module instance on success, false on failure.
 	 */
-	public function hookEvent($event, $hook)
-	{
-		$this->eventManager->hook($event, $hook);
-	}
-	public function unhookEvent($event, $hook = '')
-	{
-		$this->eventManager->unhook($event, $hook);
-	}
-
-	public function registerEvent($event, $properties = array())
-	{
-		$this->eventManager->register($event, $properties);
-	}
-	public function callHook($hook, $parameters = array())
-	{
-		$this->eventManager->call($hook, $parameters);
-	}
-
-	/**
-	 * Module manager getters/setters.
-	 */
-	public function loadModule($module)
-	{
-		$this->moduleManager->loadModule($module);
-	}
-	public function unloadModule($module)
-	{
-		$this->moduleManager->unloadModule($module);
-	}
-	public function getModuleInstance($module)
+	function getModuleInstance($module)
 	{
 		return $this->moduleManager->getModuleInstance($module);
 	}
-	public function getModules()
+
+	/**
+	 * Returns an instance of the EventManager.
+	 * @return object The Event Manager.
+	 */
+	public function getEventManager()
 	{
-		return $this->moduleManager->getAvailableModules();
-	}
-	public function getLoadedModules()
-	{
-		return $this->moduleManager->getLoadedModules();
-	}
-	public function rescanModules()
-	{
-		$this->moduleManager->scanModules();
+		return $this->eventManager;
 	}
 
 	/**
-	 * Connection manager  getters/setters
+	 * Returns an instance of the ModuleManager.
+	 * @return object The Module Manager.
+	 */
+	public function getModuleManager()
+	{
+		return $this->moduleManager;
+	}
+
+	/**
+	 * Returns an instance of the IRCParser class.
+	 * @return object The IRCParser.
+	 */
+	public function getIRCParser()
+	{
+		return $this->parser;
+	}
+
+	/**
+	 * Send data to the remote.
+	 * @param string $data The data to send.
 	 */
 	public function sendData($data)
 	{
@@ -197,7 +190,9 @@ class Bot
 	}
 
 	/**
-	 * Shortcut classes
+	 * Say something to a channel.
+	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
+	 * @param string $text The text to send.
 	 */
 	public function say($to, $text = '')
 	{
@@ -220,16 +215,56 @@ class Bot
 		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
 	}
 
-	// Quit the bot, disconnet and stop.
-	public function stop($message = '')
+	/**
+	 * Log data.
+	 * @param string $data  The data to log.
+	 * @param string $level The level to log the data at; can be anything.
+	 */
+	public function log($data, $level = 'LOG')
 	{
-		$this->sendData('QUIT :' . (!empty($message) ? (string) $message : 'WildPHP <http://wildphp.com>'));
+		$this->log->log($data, $level);
+	}
+
+	/**
+	 * Disconnects the bot and stops.
+	 * @param string $message Send a custom message along with the QUIT command.
+	 */
+	public function stop($message = 'WildPHP <http://wildphp.com/>')
+	{
+		$this->sendData('QUIT :' . $message);
 		$this->connection->disconnect();
 		exit;
 	}
 
-	public function log($data, $level = 'LOG')
-	{
-		$this->log->log($data, $level);
+	/**
+	 * Fetches data from $uri
+	 *
+	 * @param string $uri    The URI to fetch data from.
+	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
+	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.
+	 */
+	public static function fetch($uri, $decode = false) {
+		// create curl resource
+		$ch = curl_init();
+
+		// set url
+		curl_setopt($ch, CURLOPT_URL, $uri);
+
+		// user agent.
+		curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
+
+		//return the transfer as a string
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+
+		// $output contains the output string
+		$output = curl_exec($ch);
+
+		if (!empty($decode) && ($output = json_decode($output)) === null)
+			$output = false;
+
+		// close curl resource to free up system resources
+		curl_close($ch);
+		return $output;
 	}
 }
