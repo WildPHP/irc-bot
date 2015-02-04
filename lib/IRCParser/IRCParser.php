@@ -30,10 +30,10 @@ class IRCParser
 		$this->bot = $bot;
 
 		// Get the prefix.
-		$this->prefix[] = $this->bot->getConfiguration('prefix');
+		$this->prefix[] = $this->bot->getConfig('prefix');
 
 		// Set up the bot name as a prefix.
-		$nick = $this->bot->getConfiguration('nick');
+		$nick = $this->bot->getConfig('nick');
 		$this->prefix[] = $nick . ': ';
 		$this->prefix[] = $nick . ', ';
 		$this->prefix[] = $nick . ' ';
@@ -42,63 +42,65 @@ class IRCParser
 	}
 	public function process($message)
 	{
-		// Commands not automagically detected.
-		$commands = array('PING');
-
 		// This array will contain everything the string includes.
 		$data = array();
 
-		// Try to filter the hostname.
-		if (preg_match('/:([a-zA-Z0-9_.!~@\/-]+)/', $message, $hostname))
+		// No match? Bummer.
+		if (!preg_match('/^(?::([^ ]+) )?([A-Z]+|\d{3}) ((?:(?! :)).*?)(?: :(.*))?$/', $message, $matches))
+			return false;
+
+		// We should have gathered everything we need.
+		$data = array(
+			'full' => $message,
+			'hostname' => $matches[1],
+			'command' => $matches[2],
+			'arguments' => explode(' ', $matches[3]),
+			'string' => $matches[4],
+		);
+
+		// Does the hostname contain a nickname?
+		if (preg_match('/([a-zA-Z0-9_]+)!/', $data['hostname'], $username))
+			$data['nickname'] = $username[1];
+
+		// Time for command parsing.
+		if ($data['command'] == 'PRIVMSG')
 		{
-			$data['hostname'] = $hostname[1];
+			// Get any possible commands.
+			$result = $this->parseCommand($data['string']);
 
-			// Can we also parse a username out of it?
-			if (preg_match('/:([a-zA-Z0-9_]+)!/', $message, $username))
-				$data['from_user'] = $username[1];
-		}
-
-		// Parse the command. And optional parameters.
-		if (preg_match('/ ?([A-Z0-9]+) ([^ ]+)?/', $message, $command))
-		{
-			$data['command'] = $command[1];
-
-			if (!empty($command[2]))
-				$data['argument'] = $command[2];
-		}
-		else
-		{
-			$data['command'] = '';
-			foreach ($commands as $command)
-			{
-				if (substr($message, strlen($command)) == $command)
-					$data['command'] = $command;
-			}
-		}
-
-		// Strip both.
-		$data['string'] = trim(preg_replace('/(:[a-zA-Z0-9.!~@\/]+) ([A-Z0-9]+) ([^ ]+)?/', '', $message));
-
-		// Strip off the ':' we sometimes get.
-		if (substr($data['string'], 0, 1) == ':')
-			$data['string'] = substr($data['string'], 1, strlen($data['string']));
-
-		// Try to filter the command out, if it's in there.
-		foreach ($this->prefix as $prefix)
-		{
-			if (substr($data['string'], 0, strlen($prefix)) == $prefix)
-			{
-				// Get the command.
-				if (preg_match('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', strtolower($data['string']), $botcmd))
-				{
-					$this->bot->log('Command detected: ' . $botcmd[1], 'COMMAND');
-					$data['bot_command'] = $botcmd[1];
-					$data['string'] = trim(preg_replace('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', '', $data['string']));
-					break;
-				}
-			}
+			// Got one?
+			if (!empty($result['bot_command']))
+				$data = array_merge($data, $result);
 		}
 
 		return $data;
+	}
+
+	public function parseCommand($string)
+	{
+		$command = false;
+		$string = false;
+
+		// We have to do this for every prefix.
+		foreach ($this->prefix as $prefix)
+		{
+			if (substr($string, 0, strlen($prefix)) != $prefix)
+				continue;
+
+			// Get the command.
+			if (!preg_match('/' . preg_quote($prefix) . '([a-z0-9]+)/', strtolower($string), $botcmd))
+				continue;
+
+			// We detected a command! Good!
+			$this->bot->log('Command detected: ' . $botcmd[1], 'COMMAND');
+			$command = $botcmd[1];
+
+			// Strip out the command to get what's left of it. That should be just the arguments.
+			$string = trim(preg_replace('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', '', $string));
+			break;
+		}
+
+		// Return both.
+		return array('bot_command' => $command, 'command_arguments' => $string);
 	}
 }
