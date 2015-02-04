@@ -115,7 +115,7 @@ class Bot
 			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
 			if ($data['command'] == 'PING')
 			{
-				$this->sendData('PONG :' . $data['arguments'][0]);
+				$this->sendData('PONG ' . $data['arguments'][0]);
 				continue;
 			}
 
