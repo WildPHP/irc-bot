@@ -25,19 +25,56 @@ namespace WildPHP\Core;
  */
 class Bot
 {
-
+	/**
+	 * The configuration manager.
+	 * @var \WildPHP\Core\Configuration
+	 */
 	protected $configuration;
+
+	/**
+	 * The module manager.
+	 * @var \WildPHP\Core\ModuleManager
+	 */
 	protected $moduleManager;
+
+	/**
+	 * The event manager.
+	 * @var \WildPHP\Core\EventManager
+	 */
 	protected $eventManager;
+
+	/**
+	 * The connection manager.
+	 * @var \WildPHP\Core\ConnectionManager
+	 */
 	protected $connection;
+
+	/**
+	 * The log manager.
+	 * @var \WildPHP\Core\LogManager
+	 */
 	protected $log;
+
+	/**
+	 * The IRCParser.
+	 * @var \IRCParser\IRCParser
+	 */
 	protected $parser;
 
+	/**
+	 * The last data received.
+	 * @var array
+	 */
 	public $lastData;
 
+	/**
+	 * The database object.
+	 * @var \SQLite3
+	 */
 	public $db;
 
 	/**
+	 * Sets up the bot for initial load.
 	 * @param string $config_file Optionally load a custom config file
 	 */
 	public function __construct($config_file = WPHP_CONFIG)
@@ -94,6 +131,9 @@ class Bot
 		$this->eventManager->call('onConnect');
 	}
 
+	/**
+	 * Starts the bot's main loop.
+	 */
 	public function start()
 	{
 		if (!$this->connection->isConnected())
@@ -152,7 +192,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the EventManager.
-	 * @return object The Event Manager.
+	 * @return \WildPHP\Core\EventManager The Event Manager.
 	 */
 	public function getEventManager()
 	{
@@ -161,7 +201,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the ModuleManager.
-	 * @return object The Module Manager.
+	 * @return \WildPHP\Core\ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
 	{
@@ -170,7 +210,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the IRCParser class.
-	 * @return object The IRCParser.
+	 * @return \IRCParser\IRCParser The IRCParser.
 	 */
 	public function getIRCParser()
 	{
@@ -191,6 +231,7 @@ class Bot
 	 * Say something to a channel.
 	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
 	 * @param string $text The text to send.
+	 * @return bool False on failure, true on success.
 	 */
 	public function say($to, $text = '')
 	{
@@ -211,6 +252,7 @@ class Bot
 		$this->eventManager->call('onSay', array('to' => $to, 'text' => &$text));
 
 		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
+		return true;
 	}
 
 	/**
@@ -236,7 +278,6 @@ class Bot
 
 	/**
 	 * Fetches data from $uri
-	 *
 	 * @param string $uri    The URI to fetch data from.
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.

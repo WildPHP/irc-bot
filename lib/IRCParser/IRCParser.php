@@ -20,12 +20,23 @@
 namespace IRCParser;
 class IRCParser
 {
+	/**
+	 * The Bot object. Used to interact with the main thread.
+	 * @var \WildPHP\Core\Bot
+	 */
 	private $bot;
 
-	// The command prefix.
+	/**
+	 * The command prefixes to use.
+	 * @var array This array holds all command prefixes to match to.
+	 */
 	private $prefix;
 
-	public function __construct($bot)
+	/**
+	 * Set up the Parser.
+	 * @param object $bot The Bot object.
+	 */
+	public function __construct(\WildPHP\Core\Bot $bot)
 	{
 		$this->bot = $bot;
 
@@ -37,14 +48,15 @@ class IRCParser
 		$this->prefix[] = $nick . ': ';
 		$this->prefix[] = $nick . ', ';
 		$this->prefix[] = $nick . ' ';
-
-
 	}
+
+	/**
+	 * Process a string and returns it in parsed format.
+	 * @param string $message The string to parse.
+	 * @return bool|array Boolean false on failure/malformed string, array with parsed data on success.
+	 */
 	public function process($message)
 	{
-		// This array will contain everything the string includes.
-		$data = array();
-
 		// No match? Bummer.
 		if (!preg_match('/^(?::([^ ]+) )?([A-Z]+|\d{3}) ((?:(?! :)).*?)(?: :(.*))?$/', $message, $matches))
 			return false;
@@ -76,6 +88,11 @@ class IRCParser
 		return $data;
 	}
 
+	/**
+	 * Parses a bot command and its arguments out of the specified $string.
+	 * @param string $string The string to parse a bot command out of.
+	 * @return array array containing the command and any arguments. Both values are string on success, or false/empty on failure.
+	 */
 	public function parseCommand($string)
 	{
 		$command = false;
