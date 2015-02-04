@@ -112,10 +112,10 @@ class Bot
 			// Parse the data.
 			$data = $this->parser->process($data);
 
-			// Got a PING? Do PONG. Probably nothing needs to handle this anyway.
+			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
 			if ($data['command'] == 'PING')
 			{
-				$this->sendData('PONG :' . $data['hostname']);
+				$this->sendData('PONG :' . $data['arguments'][0]);
 				continue;
 			}
 
@@ -124,9 +124,7 @@ class Bot
 
 			// Got a command?
 			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
-			{
 				$this->eventManager->call('command_' . $data['bot_command'], $data);
-			}
 
 			$this->eventManager->call('onDataReceive', $data);
 		}

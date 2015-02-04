@@ -55,7 +55,7 @@ class IRCParser
 			'hostname' => $matches[1],
 			'command' => $matches[2],
 			'arguments' => explode(' ', $matches[3]),
-			'string' => $matches[4],
+			'string' => !empty($matches[4]) ? $matches[4] : '',
 		);
 
 		// Does the hostname contain a nickname?

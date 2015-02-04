@@ -62,7 +62,7 @@ class ChannelManager
 		$this->evman->hook('command_part', array($this, 'PartCommand'));
 
 		// We also have a listener.
-		//$this->evman->hook('onDataReceive', array($this, 'initialJoin'));
+		$this->evman->hook('onDataReceive', array($this, 'initialJoin'));
 
 		// Register any custom events.
 		$this->evman->register('onInitialChannelJoin');
