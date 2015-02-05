@@ -231,7 +231,7 @@ class Bot
 	/**
 	 * Say something to a channel.
 	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
-	 * @param string $text The text to send.
+	 * @param mixed $text The string to be sent or an array of strings. Newlines separate messages.
 	 * @return bool False on failure, true on success.
 	 */
 	public function say($to, $text = '')
@@ -252,8 +252,31 @@ class Bot
 		if (empty($text) || empty($to))
 			return false;
 
+		// Split multiple lines into separate messages *for each member of the input array* (or string, possibly)
+		// Also removes empty lines and other garbage and splits the line if it's too long
+		$out = array();
+		foreach((array) $text as $part)
+		{
+			$part = (string) $part;
+			$part = preg_replace('[\n\r]+', "\n", $part);
 
-		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
+			$lines = explode("\n", (string) $part);
+			foreach ($lines as $lines2) {
+				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
+				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
+				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
+				foreach ($lines2 as $line) {
+					// We finally have the correct line
+					$line = trim($line);
+					if(!empty($line))
+						array_push($out, $line);
+				}
+			}
+		}
+
+		foreach ($out as $msg)
+			$this->sendData('PRIVMSG ' . $to . ' :' . $msg);
+
 		return true;
 	}
 
