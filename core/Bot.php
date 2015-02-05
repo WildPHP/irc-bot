@@ -94,7 +94,7 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->register(array('onConnect', 'onDataReceive', 'onSay'));
+		$this->eventManager->registerEvent(array('onConnect', 'onDataReceive', 'onSay'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
@@ -128,7 +128,7 @@ class Bot
 		$this->connection->connect();
 
 		// Call the connection hook.
-		$this->eventManager->call('onConnect');
+		$this->eventManager->triggerEvent('onConnect');
 	}
 
 	/**
@@ -164,9 +164,9 @@ class Bot
 
 			// Got a command?
 			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
-				$this->eventManager->call('command_' . $data['bot_command'], $data);
+				$this->eventManager->triggerEvent('command_' . $data['bot_command'], $data);
 
-			$this->eventManager->call('onDataReceive', $data);
+			$this->eventManager->triggerEvent('onDataReceive', $data);
 		}
 		while ($this->connection->isConnected());
 	}
@@ -239,17 +239,17 @@ class Bot
 			return false;
 
 		// Some people are just too lazy.
-		elseif (empty($text) && !empty($this->lastData['argument']))
+		elseif (empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
 		{
 			$text = $to;
-			$to = $this->lastData['argument'];
+			$to = $this->lastData['arguments'][0];
 		}
 
 		// Nothing to send?
-		if (empty($text))
+		if (empty($text) || empty($to))
 			return false;
 
-		$this->eventManager->call('onSay', array('to' => $to, 'text' => &$text));
+		$this->eventManager->triggerEvent('onSay', array('to' => $to, 'text' => &$text));
 
 		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
 		return true;

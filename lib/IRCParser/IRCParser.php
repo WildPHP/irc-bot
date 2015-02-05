@@ -95,8 +95,8 @@ class IRCParser
 	 */
 	public function parseCommand($string)
 	{
-		$command = false;
-		$string = false;
+		$command_result = false;
+		$string_result = false;
 
 		// We have to do this for every prefix.
 		foreach ($this->prefix as $prefix)
@@ -105,19 +105,19 @@ class IRCParser
 				continue;
 
 			// Get the command.
-			if (!preg_match('/' . preg_quote($prefix) . '([a-z0-9]+)/', strtolower($string), $botcmd))
+			if (!preg_match('/' . preg_quote($prefix) . '([a-z0-9]+)/', $string, $botcmd))
 				continue;
 
 			// We detected a command! Good!
 			$this->bot->log('Command detected: ' . $botcmd[1], 'COMMAND');
-			$command = $botcmd[1];
+			$command_result = $botcmd[1];
 
 			// Strip out the command to get what's left of it. That should be just the arguments.
-			$string = trim(preg_replace('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', '', $string));
+			$string_result = trim(preg_replace('/' . preg_quote($prefix) . '([a-zA-Z0-9]+)/', '', $string));
 			break;
 		}
 
 		// Return both.
-		return array('bot_command' => $command, 'command_arguments' => $string);
+		return array('bot_command' => $command_result, 'command_arguments' => $string_result);
 	}
 }

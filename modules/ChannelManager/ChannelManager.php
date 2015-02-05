@@ -57,15 +57,15 @@ class ChannelManager
 		$this->evman = $this->bot->getEventManager();
 
 		// Register our commands.
-		$this->evman->register(array('command_join', 'command_part'), array('hook_once' => true));
-		$this->evman->hook('command_join', array($this, 'JoinCommand'));
-		$this->evman->hook('command_part', array($this, 'PartCommand'));
+		$this->evman->registerEvent(array('command_join', 'command_part'), array('hook_once' => true));
+		$this->evman->registerEventListener('command_join', array($this, 'JoinCommand'));
+		$this->evman->registerEventListener('command_part', array($this, 'PartCommand'));
 
 		// We also have a listener.
-		$this->evman->hook('onDataReceive', array($this, 'initialJoin'));
+		$this->evman->registerEventListener('onDataReceive', array($this, 'initialJoin'));
 
 		// Register any custom events.
-		$this->evman->register('onInitialChannelJoin');
+		$this->evman->registerEvent('onInitialChannelJoin');
 
 		// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -140,7 +140,7 @@ class ChannelManager
 		$status = $data['command'] == '376' && $data['string'] == 'End of /MOTD command.';
 
 		// Do any modules think we are ready?
-		$this->evman->call('onInitialChannelJoin', array(&$status));
+		$this->evman->triggerEvent('onInitialChannelJoin', array(&$status));
 
 		// And?
 		if ($status)
@@ -152,7 +152,7 @@ class ChannelManager
 				$this->joinChannel($chan);
 			}
 
-			$this->evman->unhook('onDataReceive', array($this, 'initialJoin'));
+			$this->evman->removeEventListener('onDataReceive', array($this, 'initialJoin'));
 		}
 	}
 

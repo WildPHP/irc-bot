@@ -123,7 +123,7 @@ class ModuleManager
 		}
 
 		// Need any dependencies?
-		$requires = $this->checkDependencies($module);
+		$requires = $this->checkModuleDependencies($module);
 
 		// Looks like we have some modules to load before anything else happens.
 		if ($requires !== true)
@@ -151,7 +151,7 @@ class ModuleManager
 	 * @param string $module The module to check dependencies for.
 	 * @return array|bool Array of dependencies or true (if no dependencies) on success, or false upon failure.
 	 */
-	public function checkDependencies($module)
+	public function checkModuleDependencies($module)
 	{
 		$module_full = 'WildPHP\\modules\\' . $module;
 

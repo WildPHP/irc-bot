@@ -46,11 +46,11 @@ class TestModule
 		$evman = $this->bot->getEventManager();
 
 		// Register our command.
-		$evman->register(array('command_test', 'command_exec'), array('hook_once' => true));
-		$evman->hook('command_test', array($this, 'TestCommand'));
-		$evman->hook('command_exec', array($this, 'ExecCommand'));
+		$evman->registerEvent(array('command_test', 'command_exec'), array('hook_once' => true));
+		$evman->registerEventListener('command_test', array($this, 'TestCommand'));
+		$evman->registerEventListener('command_exec', array($this, 'ExecCommand'));
 
-		$evman->hook('onDataReceive', array($this, 'TestListener'));
+		$evman->registerEventListener('onDataReceive', array($this, 'TestListener'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -67,7 +67,7 @@ class TestModule
 
 	public function TestCommand($data)
 	{
-		$this->bot->say($data['argument'], 'Test');
+		$this->bot->say('Test');
 	}
 
 	public function ExecCommand($data)
@@ -77,8 +77,8 @@ class TestModule
 			$this->bot->say('You are not authorized to execute this command.');
 			return false;
 		}
-		$this->bot->log('Running command "' . $data['string'] . '"');
-		eval($data['string']);
+		$this->bot->log('Running command "' . $data['command_arguments'] . '"');
+		eval($data['command_arguments']);
 	}
 
 	public function TestListener($data)

@@ -49,7 +49,7 @@ class EventManager
 	 *                     Note: All properties in this array are set to all events to be registered.
 	 * @return bool Boolean determining if registration of the event(s) succeeded.
 	 */
-	public function register($event, $properties = array())
+	public function registerEvent($event, $properties = array())
 	{
 		if (empty($event))
 			return false;
@@ -95,9 +95,9 @@ class EventManager
 	 * @param mixed $hook The hook to insert, as a function name. Pass as array($class, 'function') if in a class.
 	 * @return bool Boolean determining if adding the hook succeeded.
 	 */
-	public function hook($event, $hook)
+	public function registerEventListener($event, $listener)
 	{
-		if (empty($event) || empty($hook))
+		if (empty($event) || empty($listener))
 			return false;
 
 		// If we have not registered this event, say so.
@@ -105,7 +105,7 @@ class EventManager
 			trigger_error('The requested Event was not found: ' . $event . '. Your hook will be added but might not work until this Event becomes available.', E_USER_WARNING);
 
 		// Does this event have the hook_once property set?
-		if (!empty($this->getProperty($event, 'hook_once')))
+		if (!empty($this->getEventProperty($event, 'hook_once')))
 		{
 			// Already has hook(s)?
 			if (!empty($this->eventDb[$event]))
@@ -113,14 +113,14 @@ class EventManager
 		}
 
 		// Already added this hook?
-		if (in_array($hook, $this->eventDb[$event]))
+		if (in_array($listener, $this->eventDb[$event]))
 		{
 			trigger_error('A request to add a duplicate hook to event ' . $event . ' was ignored.', E_USER_WARNING);
 			return false;
 		}
 
 		// Add it on the event train.
-		$this->eventDb[$event][] = $hook;
+		$this->eventDb[$event][] = $listener;
 		return true;
 	}
 
@@ -130,7 +130,7 @@ class EventManager
 	 * @param string $hook  The hook to remove. Leave empty to remove all hooks.
 	 * @return bool Boolean determining if the operation succeeded.
 	 */
-	public function unhook($event, $hook = '')
+	public function removeEventListener($event, $listener = '')
 	{
 		if (empty($event))
 			return false;
@@ -139,13 +139,32 @@ class EventManager
 		if (!$this->eventExists($event))
 			return false;
 
-		if (!empty($hook) && in_array($hook, $this->eventDb[$event]))
+		if (!empty($listener) && in_array($listener, $this->eventDb[$event]))
 		{
-			$key = array_search($hook, $this->eventDb[$event]);
+			$key = array_search($listener, $this->eventDb[$event]);
 			unset($this->eventDb[$event][$key]);
 		}
 		else
 			$this->eventDb[$event] = array();
+	}
+
+	/**
+	 * Remove an event and its hooks.
+	 * @param string $event The event to remove.
+	 * @return bool Boolean determining if the operation succeeded.
+	 */
+	public function removeEvent($event)
+	{
+		if (empty($event))
+			return false;
+
+		// Does it exist?
+		if (!$this->eventExists($event))
+			return false;
+
+		// Unset the event and its hooks.
+		unset($this->eventDb[$event], $this->available[$event]);
+		return true;
 	}
 
 	/**
@@ -163,7 +182,7 @@ class EventManager
 	 * @param mixed  $data Data to send along with the event, to the hooks. Defaults to null.
 	 * @return bool Boolean determining if the event call succeeded.
 	 */
-	public function call($event, $data = null)
+	public function triggerEvent($event, $data = null)
 	{
 		if (empty($event))
 			return false;
@@ -192,7 +211,7 @@ class EventManager
 	 * @param string $property The property to get from the event.
 	 * @return mixed The event data, or false upon nonexisting value/error.
 	 */
-	public function getProperty($event, $property)
+	public function getEventProperty($event, $property)
 	{
 		if (empty($event) || empty($property))
 			return false;
