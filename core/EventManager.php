@@ -220,7 +220,7 @@ class EventManager
 	 * @param mixed  $data Data to send along with the event, to the hooks. Defaults to null.
 	 * @return bool Boolean determining if the event call succeeded.
 	 */
-	public function triggerEvent($event, &$data = null)
+	public function triggerEvent($event, $data = null)
 	{
 		if (empty($event))
 			return false;
