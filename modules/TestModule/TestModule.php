@@ -44,13 +44,14 @@ class TestModule
 
 		// Get the event manager over here.
 		$evman = $this->bot->getEventManager();
+		$this->evman = $evman;
 
 		// Register our command.
 		$evman->registerEvent(array('command_test', 'command_exec'), array('hook_once' => true));
 		$evman->registerEventListener('command_test', array($this, 'TestCommand'));
 		$evman->registerEventListener('command_exec', array($this, 'ExecCommand'));
 
-		$evman->registerEventListener('onDataReceive', array($this, 'TestListener'));
+		$evman->registerEventListener('onDataReceive', array($this, 'TestListener'), 'highest');
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -83,7 +84,5 @@ class TestModule
 
 	public function TestListener($data)
 	{
-		//if ($data['command'] == 'JOIN')
-		//	echo var_dump($data);
 	}
 }

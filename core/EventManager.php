@@ -95,7 +95,7 @@ class EventManager
 	 * @param mixed $hook The hook to insert, as a function name. Pass as array($class, 'function') if in a class.
 	 * @return bool Boolean determining if adding the hook succeeded.
 	 */
-	public function registerEventListener($event, $listener)
+	public function registerEventListener($event, $listener, $priority = 3)
 	{
 		if (empty($event) || empty($listener))
 			return false;
@@ -105,12 +105,8 @@ class EventManager
 			trigger_error('The requested Event was not found: ' . $event . '. Your hook will be added but might not work until this Event becomes available.', E_USER_WARNING);
 
 		// Does this event have the hook_once property set?
-		if (!empty($this->getEventProperty($event, 'hook_once')))
-		{
-			// Already has hook(s)?
-			if (!empty($this->eventDb[$event]))
+		if (!empty($this->getEventProperty($event, 'hook_once')) && !empty($this->eventDb[$event]))
 				throw new \Exception(__CLASS__ . ': The Event ' . $event . ' has specified the hook_once property and a hook is already attached to it. No more hooks can be added');
-		}
 
 		// Already added this hook?
 		if (in_array($listener, $this->eventDb[$event]))
@@ -119,15 +115,50 @@ class EventManager
 			return false;
 		}
 
+		// Priority codes. Such fun!
+		// 5: Lowest: Called at the very latest moment, usually used for logging purposes.
+		// 4: Low: Called later than normal. Used for non-important tasks.
+		// 3: Medium/default: This should include the most hooks. Used for things that don't require real priority.
+		// 2: High: Used for non-critical tasks that need to go before normal tasks.
+		// 1: Highest: Used for absolute critical tasks. On error (return of false), the event is canceled.
+		switch ($priority)
+		{
+			case 'highest':
+			case 1:
+				$priorityCode = 1;
+				break;
+
+			case 'high':
+			case 2:
+				$priorityCode = 2;
+				break;
+
+			default:
+			case 'medium':
+			case 3:
+				$priorityCode = 3;
+				break;
+
+			case 'low':
+			case 4:
+				$priorityCode = 4;
+				break;
+
+			case 'lowest':
+			case 5:
+				$priorityCode = 5;
+				break;
+		}
+
 		// Add it on the event train.
-		$this->eventDb[$event][] = $listener;
+		$this->eventDb[$event][$priorityCode][] = $listener;
 		return true;
 	}
 
 	/**
-	 * Remove a hook from an event.
+	 * Remove a listener from an event.
 	 * @param string $event The event to manipulate.
-	 * @param string $hook  The hook to remove. Leave empty to remove all hooks.
+	 * @param string $listener The hook to remove. Leave empty to remove all listeners
 	 * @return bool Boolean determining if the operation succeeded.
 	 */
 	public function removeEventListener($event, $listener = '')
@@ -139,10 +170,17 @@ class EventManager
 		if (!$this->eventExists($event))
 			return false;
 
-		if (!empty($listener) && in_array($listener, $this->eventDb[$event]))
+		if (!empty($listener))
 		{
-			$key = array_search($listener, $this->eventDb[$event]);
-			unset($this->eventDb[$event][$key]);
+			foreach ($this->eventDb as $level => $hooks)
+			{
+				if (($key = array_search($listener, $hooks)) !== false)
+				{
+					unset($this->eventDb[$level][$key]);
+					$this->bot->log('Removed listener ' . $listener . ' from event ' . $event, 'EVENTMGR');
+					break;
+				}
+			}
 		}
 		else
 			$this->eventDb[$event] = array();
@@ -182,26 +220,47 @@ class EventManager
 	 * @param mixed  $data Data to send along with the event, to the hooks. Defaults to null.
 	 * @return bool Boolean determining if the event call succeeded.
 	 */
-	public function triggerEvent($event, $data = null)
+	public function triggerEvent($event, &$data = null)
 	{
 		if (empty($event))
 			return false;
 
 		if (!$this->eventExists($event))
-			throw new Exception('Call to undefined event ' . $event . ', please register events before calling them.', E_USER_WARNING);
+			throw new \Exception('Call to undefined event ' . $event . ', please register events before calling them.', E_USER_WARNING);
 
 		// Do we have any event hooks to call? If not, the call succeeded.
 		if (empty($this->eventDb[$event]))
 			return true;
 
-		// So we have hooks. We might have data.
+		// call_user_func expects the parameters to pass as an array.
 		if (!empty($data) && !is_array($data))
 			$data = array($data);
 
+		// Give the eventDb a good sort (so we get high priority first)
+		ksort($this->eventDb[$event], SORT_NUMERIC);
+
 		// Loop through each hook, see what we should do.
-		foreach ($this->eventDb[$event] as $hook)
+		foreach ($this->eventDb[$event] as $level => $hooks)
 		{
-			call_user_func($hook, $data);
+			if (!$this->getEventProperty($event, 'surpress_log'))
+				$this->bot->log('Calling ' . count($hooks) . ' listeners for event ' . $event . ' with priority level ' . $level . '...', 'EVENTMGR');
+
+			foreach ($hooks as $hook)
+			{
+				$result = call_user_func($hook, $data);
+
+				// If the event was cancelled.
+				if ($level !== 5 && $result === false)
+				{
+					// Mark it as such.
+					$data['event_cancelled'] = true;
+
+					// Attempt to provide detailed data.
+					$class = !empty($hook[0]) && is_object($hook[0]) ? get_class($hook[0]) : '(unrecognised module)';
+					$hook = !empty($hook[1]) ? $hook[1] : '(anonymous/unrecognised function)';
+					$this->bot->log('Event ' . $event . ' was marked as canceled by listener ' . $hook . ' called by module ' . $class, 'EVENTMGR');
+				}
+			}
 		}
 	}
 

@@ -94,7 +94,8 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->registerEvent(array('onConnect', 'onDataReceive', 'onSay'));
+		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
+		$this->eventManager->registerEvent('onDataReceive', array('surpress_log' => true));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
