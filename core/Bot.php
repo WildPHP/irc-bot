@@ -258,7 +258,7 @@ class Bot
 		foreach((array) $text as $part)
 		{
 			$part = (string) $part;
-			$part = preg_replace('[\n\r]+', "\n", $part);
+			$part = preg_replace('/[\n\r]+/', "\n", $part);
 
 			$lines = explode("\n", (string) $part);
 			foreach ($lines as $lines2) {
