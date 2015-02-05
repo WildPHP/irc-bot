@@ -113,7 +113,12 @@ class ConnectionManager
 	 * @return boolean|int the number of bytes written, or FALSE on error.
 	 */
 	public function sendData( $data ) {
-		return fwrite( $this->socket, $data . "\r\n" );
+		$data = $data;
+
+		if(strlen($data) > 510)
+			throw new Exception('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
+
+		return fwrite( $this->socket,  $data . "\r\n");
 	}
 
 	/**
