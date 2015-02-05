@@ -246,11 +246,12 @@ class Bot
 			$to = $this->lastData['arguments'][0];
 		}
 
+		$this->eventManager->triggerEvent('onSay', array('to' => $to, 'text' => &$text));
+
 		// Nothing to send?
 		if (empty($text) || empty($to))
 			return false;
 
-		$this->eventManager->triggerEvent('onSay', array('to' => $to, 'text' => &$text));
 
 		$this->sendData('PRIVMSG ' . $to . ' :' . $text);
 		return true;
