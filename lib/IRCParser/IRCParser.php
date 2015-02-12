@@ -34,7 +34,7 @@ class IRCParser
 
 	/**
 	 * Set up the Parser.
-	 * @param object $bot The Bot object.
+	 * @param \WildPHP\Core\Bot $bot The Bot object.
 	 */
 	public function __construct(\WildPHP\Core\Bot $bot)
 	{

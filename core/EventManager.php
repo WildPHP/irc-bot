@@ -105,7 +105,8 @@ class EventManager
 			trigger_error('The requested Event was not found: ' . $event . '. Your hook will be added but might not work until this Event becomes available.', E_USER_WARNING);
 
 		// Does this event have the hook_once property set?
-		if (!empty($this->getEventProperty($event, 'hook_once')) && !empty($this->eventDb[$event]))
+		$prop = $this->getEventProperty($event, 'hook_once');
+		if (!empty($prop) && !empty($this->eventDb[$event]))
 				throw new \Exception(__CLASS__ . ': The Event ' . $event . ' has specified the hook_once property and a hook is already attached to it. No more hooks can be added');
 
 		// Already added this hook?
@@ -184,6 +185,8 @@ class EventManager
 		}
 		else
 			$this->eventDb[$event] = array();
+
+		return true;
 	}
 
 	/**
@@ -262,6 +265,8 @@ class EventManager
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -280,7 +285,7 @@ class EventManager
 			return false;
 
 		// No such property?
-		if (!in_array($property, $this->available[$event]))
+		if (!array_key_exists($property, $this->available[$event]))
 			return false;
 
 		// Return the property.

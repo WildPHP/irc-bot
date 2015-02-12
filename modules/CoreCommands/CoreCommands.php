@@ -20,7 +20,7 @@
 
 namespace WildPHP\Modules;
 
-class TestModule
+class CoreCommands
 {
 	/**
 	 * The Bot object. Used to interact with the main thread.
@@ -46,11 +46,9 @@ class TestModule
 		$this->evman = $this->bot->getEventManager();
 
 		// Register our command.
-		$this->evman->registerEvent(array('command_test'), array('hook_once' => true));
-		$this->evman->registerEventListener('command_test', array($this, 'TestCommand'));
-		//$this->evman->registerEventListener('command_exec', array($this, 'ExecCommand'));
-
-		$this->evman->registerEventListener('onDataReceive', array($this, 'TestListener'), 'highest');
+		$this->evman->registerEvent(array('command_quit', 'command_say'), array('hook_once' => true));
+		$this->evman->registerEventListener('command_quit', array($this, 'QuitCommand'));
+		$this->evman->registerEventListener('command_say', array($this, 'SayCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -65,25 +63,33 @@ class TestModule
 		return array('Auth');
 	}
 
-	public function TestCommand()
+	/**
+	 * The Quit command.
+	 * @param array $data The data received.
+	 */
+	public function QuitCommand($data)
 	{
-		$this->bot->say('Test');
+		$this->bot->stop(!empty($data['command_arguments']) ? $data['command_arguments'] : null);
 	}
 
-	public function ExecCommand($data)
+	/**
+	 * The Say command.
+	 * @param array $data The data received.
+	 */
+	public function SayCommand($data)
 	{
-		if (!$this->auth->authUser($data['hostname']))
+		if (substr($data['command_arguments'], 0, 1) == '#')
 		{
-			$this->bot->say('You are not authorized to execute this command.');
-			return false;
+			$args = explode(' ', $data['command_arguments'], 2);
+			$to = $args[0];
+			$message = $args[1];
 		}
-		$this->bot->log('Running command "' . $data['command_arguments'] . '"');
-		eval($data['command_arguments']);
+		else
+		{
+			$to = $data['arguments'][0];
+			$message = $data['command_arguments'];
+		}
 
-		return true;
-	}
-
-	public function TestListener($data)
-	{
+		$this->bot->say($to, $message);
 	}
 }

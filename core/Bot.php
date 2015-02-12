@@ -296,6 +296,9 @@ class Bot
 	 */
 	public function stop($message = 'WildPHP <http://wildphp.com/>')
 	{
+		if (empty($message))
+			$message = 'WildPHP <http://wildphp.com/>';
+
 		$this->sendData('QUIT :' . $message);
 		$this->connection->disconnect();
 		exit;
