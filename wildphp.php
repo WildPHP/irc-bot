@@ -27,6 +27,14 @@ if(function_exists('posix_getuid') && posix_getuid() === 0)
 	exit(128);
 }
 
+// Check if we are running high enough PHP version
+if(version_compare(PHP_VERSION, '5.3.9', '<'))
+{
+	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
+	echo 'Please use PHP 5.3.9 or later.';
+	exit(129);
+}
+
 // Define global constants
 define('WPHP_ROOT_DIR', __DIR__ . '/');
 define('WPHP_LIB_DIR', WPHP_ROOT_DIR . 'lib/');
