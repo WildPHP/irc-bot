@@ -18,6 +18,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 namespace IRCParser;
+
+use WildPHP\Bot;
+
 class IRCParser
 {
 	/**
@@ -36,7 +39,7 @@ class IRCParser
 	 * Set up the Parser.
 	 * @param \WildPHP\Core\Bot $bot The Bot object.
 	 */
-	public function __construct(\WildPHP\Core\Bot $bot)
+	public function __construct(Bot $bot)
 	{
 		$this->bot = $bot;
 

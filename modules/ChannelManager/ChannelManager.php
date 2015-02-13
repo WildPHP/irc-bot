@@ -20,7 +20,7 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP;
+use WildPHP\Bot;
 
 class ChannelManager
 {
