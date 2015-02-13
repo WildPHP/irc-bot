@@ -26,7 +26,6 @@ class Autoloader
 	{
 		$fixes = array(
 				'WildPHP' => '.',
-				'Core' => 'core',
 		);
 
 		// Split $class to the "path" and "classname" parts
