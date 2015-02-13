@@ -36,7 +36,7 @@ define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
 
 
 // Register the autoloader
-require_once(WPHP_ROOT_DIR . 'core/Autoloader.php');
+require_once(WPHP_ROOT_DIR . 'Core/Autoloader.php');
 spl_autoload_register('WildPHP\Core\Autoloader::load');
 
 $bot = new Bot();
