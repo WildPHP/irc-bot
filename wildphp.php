@@ -20,6 +20,9 @@
 
 use WildPHP\Bot;
 
+// Set error reporting to report all errors
+error_reporting(E_ALL);
+
 // Check if we are running as root and quit
 if(function_exists('posix_getuid') && posix_getuid() === 0)
 {
