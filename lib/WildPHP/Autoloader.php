@@ -18,15 +18,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Core;
+namespace WildPHP;
 
 class Autoloader
 {
 	static function load($class)
 	{
-		$fixes = array(
-				'WildPHP' => '.',
-		);
 
 		// Split $class to the "path" and "classname" parts
 		$class = explode('\\', $class);
@@ -34,24 +31,16 @@ class Autoloader
 		array_pop($classpath);
 		$classname = end($class) . '.php';
 
-		// Apply fixes to path
-		$classpath = str_replace(array_keys($fixes), array_values($fixes), $classpath);
-
 		// Assemble path
 		$classpath = implode('/', $classpath) . '/';
 
-		$path = array(
-			WPHP_ROOT_DIR . $classpath . $classname,			// Try to load the class from project root
-			WPHP_ROOT_DIR . 'lib/' . $classpath . $classname	// Check for files in lib/classpath/classname.php
-		);
+		$path = WPHP_LIB_DIR . $classpath . $classname;	// Check for files in lib/classpath/classname.php
 
-		foreach ($path as $p) {
-			if(file_exists($p))
-			{
-				echo '[AUTOLOAD] Loaded "' . $p . '"' . PHP_EOL;
-				require $p;
-				return true;
-			}
+		if(file_exists($path))
+		{
+			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
+			require $path;
+			return true;
 		}
 
 		return false;

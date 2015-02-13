@@ -18,8 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
-use WildPHP\Core\Bot;
+use WildPHP\Bot;
 
 // Check if we are running as root and quit
 if(function_exists('posix_getuid') && posix_getuid() === 0)
@@ -30,14 +29,15 @@ if(function_exists('posix_getuid') && posix_getuid() === 0)
 
 // Define global constants
 define('WPHP_ROOT_DIR', __DIR__ . '/');
+define('WPHP_LIB_DIR', WPHP_ROOT_DIR . 'lib/');
 define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
 define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'logs/');
 define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
 
 
 // Register the autoloader
-require_once(WPHP_ROOT_DIR . 'Core/Autoloader.php');
-spl_autoload_register('WildPHP\Core\Autoloader::load');
+require_once(WPHP_LIB_DIR . 'WildPHP/Autoloader.php');
+spl_autoload_register('WildPHP\Autoloader::load');
 
 $bot = new Bot();
 $bot->connect();

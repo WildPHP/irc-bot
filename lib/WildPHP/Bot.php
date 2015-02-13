@@ -18,7 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Core;
+namespace WildPHP;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -27,37 +27,37 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var \WildPHP\Core\Configuration
+	 * @var WildPHP\Configuration
 	 */
 	protected $configuration;
 
 	/**
 	 * The module manager.
-	 * @var \WildPHP\Core\ModuleManager
+	 * @var WildPHP\ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
-	 * @var \WildPHP\Core\EventManager
+	 * @var WildPHP\EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
-	 * @var \WildPHP\Core\ConnectionManager
+	 * @var WildPHP\ConnectionManager
 	 */
 	protected $connection;
 
 	/**
 	 * The log manager.
-	 * @var \WildPHP\Core\LogManager
+	 * @var WildPHP\LogManager
 	 */
 	protected $log;
 
 	/**
 	 * The IRCParser.
-	 * @var \IRCParser\IRCParser
+	 * @var IRCParser\IRCParser
 	 */
 	protected $parser;
 
@@ -69,7 +69,7 @@ class Bot
 
 	/**
 	 * The database object.
-	 * @var \SQLite3
+	 * @var SQLite3
 	 */
 	public $db;
 
