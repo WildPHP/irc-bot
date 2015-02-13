@@ -20,6 +20,8 @@
 
 namespace WildPHP\Modules;
 
+use WildPHP;
+
 class ChannelManager
 {
 	/**
@@ -49,7 +51,7 @@ class ChannelManager
 	 * Set up the module.
 	 * @param object $bot The Bot object.
 	 */
-	public function __construct(\WildPHP\Core\Bot $bot)
+	public function __construct(Bot $bot)
 	{
 		$this->bot = $bot;
 

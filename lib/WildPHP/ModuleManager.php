@@ -48,7 +48,7 @@ class ModuleManager
 
 	/**
 	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Core\Bot
+	 * @var \WildPHP\Bot
 	 */
 	protected $bot;
 
@@ -57,7 +57,7 @@ class ModuleManager
 	 * @param object $bot An instance of the bot.
 	 * @param string $dir The directory where the modules are in.
 	 */
-	public function __construct(\WildPHP\Core\Bot $bot, $dir = WPHP_MODULE_DIR)
+	public function __construct(Bot $bot, $dir = WPHP_MODULE_DIR)
 	{
 		$this->module_dir = $dir;
 		$this->bot = $bot;
