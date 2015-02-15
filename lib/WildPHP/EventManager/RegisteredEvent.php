@@ -118,7 +118,7 @@ class RegisteredEvent
 		// sort the listener array so that we actually
 		if(!$this->isSorted)
 		{
-			ksort($this->Listeners, SORT_NUMERIC);
+			ksort($this->listeners, SORT_NUMERIC);
 			$this->isSorted = true;
 		}
 
