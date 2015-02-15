@@ -103,7 +103,7 @@ class RegisteredEvent
 				return;
 			}
 
-		throw new ListenerNotRegisteredException('Attempt to remove event listener failed: this event did not register that listener.')
+		throw new ListenerNotRegisteredException('Attempt to remove event listener failed: this event did not register that listener.');
 	}
 
 	/**
