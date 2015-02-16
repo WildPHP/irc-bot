@@ -19,7 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
-use EventManager\ListenerPriority as Priority,
+use \WildPHP\EventManager\ListenerPriority as Priority,
 	WildPHP\Event\IEvent,
 	\RuntimeException,
 	\InvalidArgumentException;
@@ -112,7 +112,7 @@ class RegisteredEvent
 	 * Each listener gets executed and passed the event.
 	 * Listeners with the same priority get executed in arbitrary order
 	 * (usually from the first registered one to the last registered)
-	 * @param Event $event The event that gets passed to the listeners.
+	 * @param IEvent $event The event that gets passed to the listeners.
 	 */
 	public function trigger(IEvent $event)
 	{

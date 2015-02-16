@@ -19,7 +19,7 @@
 */
 
 namespace WildPHP;
-use IRCParser\IRCParser, WildPHP\EventManager\EventManager;
+use IRCParser\IRCParser, WildPHP\EventManager\EventManager, WildPHP\EventManager\RegisteredEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -28,37 +28,37 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var \WildPHP\Configuration
+	 * @var Configuration
 	 */
 	protected $configuration;
 
 	/**
 	 * The module manager.
-	 * @var \WildPHP\ModuleManager
+	 * @var ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
-	 * @var \WildPHP\EventManager\EventManager
+	 * @var EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
-	 * @var \WildPHP\ConnectionManager
+	 * @var ConnectionManager
 	 */
 	protected $connection;
 
 	/**
 	 * The log manager.
-	 * @var \WildPHP\LogManager
+	 * @var LogManager
 	 */
 	protected $log;
 
 	/**
 	 * The IRCParser.
-	 * @var \IRCParser\IRCParser
+	 * @var IRCParser
 	 */
 	protected $parser;
 
@@ -95,8 +95,9 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
-		$this->eventManager->registerEvent('onDataReceive', array('surpress_log' => true));
+		$this->eventManager->register('onConnect', new RegisteredEvent('IEvent'));
+		$this->eventManager->register('onSay', new RegisteredEvent('IEvent'));
+		$this->eventManager->register('onDataReceive', new RegisteredEvent('IEvent'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
@@ -130,7 +131,8 @@ class Bot
 		$this->connection->connect();
 
 		// Call the connection hook.
-		$this->eventManager->triggerEvent('onConnect');
+		$ev = $this->eventManager->getEvent('onConnect');
+		$ev->trigger();
 	}
 
 	/**
@@ -175,7 +177,7 @@ class Bot
 
 	/**
 	 * Returns an item stored in the configuration.
-	 * @param $item The configuration item to get.
+	 * @param string $item The configuration item to get.
 	 * @return mixed The item stored called by key, or false on failure.
 	 */
 	public function getConfig($item)
@@ -195,7 +197,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the EventManager.
-	 * @return \WildPHP\Core\EventManager The Event Manager.
+	 * @return \WildPHP\EventManager\EventManager The Event Manager.
 	 */
 	public function getEventManager()
 	{
@@ -204,7 +206,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the ModuleManager.
-	 * @return \WildPHP\Core\ModuleManager The Module Manager.
+	 * @return \WildPHP\ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
 	{

@@ -25,7 +25,7 @@ class IRCParser
 {
 	/**
 	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Core\Bot
+	 * @var \WildPHP\Bot
 	 */
 	private $bot;
 
@@ -37,7 +37,7 @@ class IRCParser
 
 	/**
 	 * Set up the Parser.
-	 * @param \WildPHP\Core\Bot $bot The Bot object.
+	 * @param \WildPHP\Bot $bot The Bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
