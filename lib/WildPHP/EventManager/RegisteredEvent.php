@@ -108,6 +108,23 @@ class RegisteredEvent
 	}
 
 	/**
+	 * Sorts the listeners array (if necessary).
+	 * @param bool $force Forces the sorting.
+	 * @return bool True if the listeners were sorted, false otherwise.
+	 */
+	public function sortListeners($force = false)
+	{
+		if(!$this->isSorted || $force)
+		{
+			ksort($this->listeners, SORT_NUMERIC);
+			$this->isSorted = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Triggers the event, going through each listener according to their priority.
 	 * Each listener gets executed and passed the event.
 	 * Listeners with the same priority get executed in arbitrary order
@@ -122,11 +139,7 @@ class RegisteredEvent
 			throw new InvalidEventTypeException('Cannot trigger event: Expected class ' . $this->className . ' or its subclass, got ' . get_class($event) . '.');
 
 		// sort the listener array so that we actually run it in the correct order
-		if(!$this->isSorted)
-		{
-			ksort($this->listeners, SORT_NUMERIC);
-			$this->isSorted = true;
-		}
+		$this->sortListeners();
 
 		foreach ($this->listeners as $priority)
 			foreach($this->listeners[$priority] as $listener)
