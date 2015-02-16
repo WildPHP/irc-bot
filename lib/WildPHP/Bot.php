@@ -27,37 +27,37 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var WildPHP\Configuration
+	 * @var \WildPHP\Configuration
 	 */
 	protected $configuration;
 
 	/**
 	 * The module manager.
-	 * @var WildPHP\ModuleManager
+	 * @var \WildPHP\ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
-	 * @var WildPHP\EventManager
+	 * @var \WildPHP\EventManager\EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
-	 * @var WildPHP\ConnectionManager
+	 * @var \WildPHP\ConnectionManager
 	 */
 	protected $connection;
 
 	/**
 	 * The log manager.
-	 * @var WildPHP\LogManager
+	 * @var \WildPHP\LogManager
 	 */
 	protected $log;
 
 	/**
 	 * The IRCParser.
-	 * @var IRCParser\IRCParser
+	 * @var \IRCParser\IRCParser
 	 */
 	protected $parser;
 
@@ -69,7 +69,7 @@ class Bot
 
 	/**
 	 * The database object.
-	 * @var SQLite3
+	 * @var \SQLite3
 	 */
 	public $db;
 
@@ -91,7 +91,7 @@ class Bot
 		$this->db = new \SQLite3($this->configuration->get('database'));
 
 		// And we'd like an event manager.
-		$this->eventManager = new EventManager($this);
+		$this->eventManager = new EventManager\EventManager($this);
 
 		// Register some default events.
 		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
@@ -174,6 +174,7 @@ class Bot
 
 	/**
 	 * Returns an item stored in the configuration.
+	 * @param $item The configuration item to get.
 	 * @return mixed The item stored called by key, or false on failure.
 	 */
 	public function getConfig($item)
