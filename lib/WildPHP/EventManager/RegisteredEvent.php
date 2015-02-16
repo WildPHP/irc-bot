@@ -64,7 +64,7 @@ class RegisteredEvent
 	 * @param Priority $priority The priority this event will be ran with. Defaults to normal.
 	 * @throws ListenerAlreadyRegisteredException
 	 */
-	public function registerEventListener(callable $listener, Priority $priority = null)
+	public function registerListener(callable $listener, Priority $priority = null)
 	{
 		if($priority === null)
 			$priority = new Priority(self::NORMAL);
@@ -95,7 +95,7 @@ class RegisteredEvent
 	 * @param callable $listener The listener we are removing.
 	 * @throws ListenerNotRegisteredException if the listener is not registered.
 	 */
-	public function removeEventListener(callable $listener)
+	public function removeListener(callable $listener)
 	{
 		foreach ($this->listeners as $priority)
 			if(($key = in_array($listener, $priority, true)) !== false)
