@@ -128,7 +128,7 @@ class EventManager
 	/**
 	 * Returns a registered event allowing you to manipulate it.
 	 * @param string $eventName The event to get.
-	 * @return array The events with their hooks.
+	 * @return RegisteredEvent The events with their hooks.
 	 */
 	public function getEvent($eventName)
 	{
