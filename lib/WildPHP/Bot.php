@@ -19,6 +19,7 @@
 */
 
 namespace WildPHP;
+use IRCParser\IRCParser, WildPHP\EventManager\EventManager;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -91,7 +92,7 @@ class Bot
 		$this->db = new \SQLite3($this->configuration->get('database'));
 
 		// And we'd like an event manager.
-		$this->eventManager = new EventManager\EventManager($this);
+		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
 		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
@@ -105,7 +106,7 @@ class Bot
 		$this->connection = new ConnectionManager($this);
 
 		// And the parser.
-		$this->parser = new \IRCParser\IRCParser($this);
+		$this->parser = new IRCParser($this);
 	}
 
 	/**
