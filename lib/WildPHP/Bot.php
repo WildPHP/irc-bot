@@ -19,8 +19,7 @@
 */
 
 namespace WildPHP;
-use IRCParser\IRCParser, WildPHP\EventManager\EventManager;
-use WildPHP\EventManager\RegisteredEvent;
+use IRCParser\IRCParser, WildPHP\EventManager\EventManager, WildPHP\EventManager\RegisteredEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -29,37 +28,37 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var \WildPHP\Configuration
+	 * @var Configuration
 	 */
 	protected $configuration;
 
 	/**
 	 * The module manager.
-	 * @var \WildPHP\ModuleManager
+	 * @var ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
-	 * @var \WildPHP\EventManager\EventManager
+	 * @var EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
-	 * @var \WildPHP\ConnectionManager
+	 * @var ConnectionManager
 	 */
 	protected $connection;
 
 	/**
 	 * The log manager.
-	 * @var \WildPHP\LogManager
+	 * @var LogManager
 	 */
 	protected $log;
 
 	/**
 	 * The IRCParser.
-	 * @var \IRCParser\IRCParser
+	 * @var IRCParser
 	 */
 	protected $parser;
 
@@ -96,9 +95,9 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->register('onConnect', new RegisteredEvent('onConnect'));
-		$this->eventManager->register('onSay', new RegisteredEvent('onSay'));
-		$this->eventManager->register('onDataReceive', new RegisteredEvent('onDataReceive'));
+		$this->eventManager->register('onConnect', new RegisteredEvent('IEvent'));
+		$this->eventManager->register('onSay', new RegisteredEvent('IEvent'));
+		$this->eventManager->register('onDataReceive', new RegisteredEvent('IEvent'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
@@ -132,7 +131,8 @@ class Bot
 		$this->connection->connect();
 
 		// Call the connection hook.
-		$this->eventManager->triggerEvent('onConnect');
+		$ev = $this->eventManager->getEvent('onConnect');
+		$ev->trigger();
 	}
 
 	/**
