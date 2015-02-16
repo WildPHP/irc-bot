@@ -20,8 +20,8 @@
 namespace WildPHP\EventManager;
 
 use WildPHP\Bot,
-	EventManager\ListenerPriority as Priority,
-	EventManager\RegisteredEvent,
+	WildPHP\EventManager\ListenerPriority as Priority,
+	WildPHP\EventManager\RegisteredEvent,
 	RuntimeException,
 	InvalidArgumentException;
 
@@ -75,15 +75,16 @@ class EventManager
 	 * If you attempt to register already registered event nothing happens unless
 	 * the classes mismatch. In that case an exception is thrown.
 	 * @param string  $eventName Name of the event that is being registered.
-	 * @param string  $className Name of the class that the event will use when fired.
+	 * @param RegisteredEvent $registeredEvent The class instance to use for this event.
 	 * @throws EventAlreadyRegisteredException on critical failure
+	 * @return bool True on success, false on failure.
 	 */
 	public function register($eventName, RegisteredEvent $registeredEvent)
 	{
 		self::assertValidName($registeredEvent->getClassName(), 'Event registration failed: Invalid event class name.');
 
 		// check if it is registered first - it also validates the name, no need to do that twice
-		if($this->isEventRegistered($eventName))
+		if($this->isRegistered($eventName))
 		{
 			// check whether the event we are registering is the same class (or subclass) of what we have already registered
 			if(is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
@@ -94,7 +95,7 @@ class EventManager
 		}
 
 		$this->events[$eventName] = $registeredEvent;
-		$this->bot->log('Registered event ' . $eventName . ' (with class ' . $className . ').', 'EVENTMGR');
+		$this->bot->log('Registered event ' . $eventName . ' (with class ' . $registeredEvent->getClassName() . ').', 'EVENTMGR');
 		return true;
 	}
 
@@ -107,12 +108,12 @@ class EventManager
 	{
 		self::assertValidName($eventName, 'Invalid event name.');
 
-		return array_key_exists($event, $this->events);
+		return array_key_exists($eventName, $this->events);
 	}
 
 	/**
 	 * Removes a registered event from this manager.
-	 * @param string $event The event to remove.
+	 * @param string $eventName The event to remove.
 	 * @return bool Boolean determining if the operation succeeded.
 	 */
 	public function remove($eventName)
@@ -126,6 +127,7 @@ class EventManager
 
 	/**
 	 * Returns a registered event allowing you to manipulate it.
+	 * @param string $eventName The event to get.
 	 * @return array The events with their hooks.
 	 */
 	public function getEvent($eventName)

@@ -20,6 +20,7 @@
 
 namespace WildPHP;
 use IRCParser\IRCParser, WildPHP\EventManager\EventManager;
+use WildPHP\EventManager\RegisteredEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -95,8 +96,9 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
-		$this->eventManager->registerEvent('onDataReceive', array('surpress_log' => true));
+		$this->eventManager->register('onConnect', new RegisteredEvent('onConnect'));
+		$this->eventManager->register('onSay', new RegisteredEvent('onSay'));
+		$this->eventManager->register('onDataReceive', new RegisteredEvent('onDataReceive'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
@@ -175,7 +177,7 @@ class Bot
 
 	/**
 	 * Returns an item stored in the configuration.
-	 * @param $item The configuration item to get.
+	 * @param string $item The configuration item to get.
 	 * @return mixed The item stored called by key, or false on failure.
 	 */
 	public function getConfig($item)
@@ -195,7 +197,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the EventManager.
-	 * @return \WildPHP\Core\EventManager The Event Manager.
+	 * @return \WildPHP\EventManager\EventManager The Event Manager.
 	 */
 	public function getEventManager()
 	{
@@ -204,7 +206,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the ModuleManager.
-	 * @return \WildPHP\Core\ModuleManager The Module Manager.
+	 * @return \WildPHP\ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
 	{
