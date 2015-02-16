@@ -21,7 +21,8 @@ namespace WildPHP\EventManager;
 
 use EventManager\ListenerPriority as Priority,
 	WildPHP\Event\IEvent,
-	\RuntimeException;
+	\RuntimeException,
+	\InvalidArgumentException;
 
 
 /**
@@ -115,7 +116,12 @@ class RegisteredEvent
 	 */
 	public function trigger(IEvent $event)
 	{
-		// sort the listener array so that we actually
+
+		// make sure that the event we got is of the promised type (or a subclass)
+		if(!is_a($event, $this->className))
+			throw new InvalidEventTypeException('Cannot trigger event: Expected class ' . $this->className . ' or its subclass, got ' . get_class($event) . '.');
+
+		// sort the listener array so that we actually run it in the correct order
 		if(!$this->isSorted)
 		{
 			ksort($this->listeners, SORT_NUMERIC);
@@ -145,5 +151,9 @@ class ListenerAlreadyRegisteredException extends RuntimeException {
 }
 
 class ListenerNotRegisteredException extends RuntimeException {
+
+}
+
+class InvalidEventTypeException extends InvalidArgumentException {
 
 }
