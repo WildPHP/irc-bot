@@ -130,9 +130,7 @@ class Bot
 		// And start the connection.
 		$this->connection->connect();
 
-		// Call the connection hook.
-		$ev = $this->eventManager->getEvent('onConnect');
-		$ev->trigger();
+		// !!! onConnect event
 	}
 
 	/**
@@ -167,10 +165,9 @@ class Bot
 			$this->lastData = $data;
 
 			// Got a command?
-			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
-				$this->eventManager->triggerEvent('command_' . $data['bot_command'], $data);
+			// !!! command events
 
-			$this->eventManager->triggerEvent('onDataReceive', $data);
+			// !!! onDataReceive event
 		}
 		while ($this->connection->isConnected());
 	}
@@ -197,7 +194,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the EventManager.
-	 * @return \WildPHP\EventManager\EventManager The Event Manager.
+	 * @return EventManager The Event Manager.
 	 */
 	public function getEventManager()
 	{
@@ -206,7 +203,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the ModuleManager.
-	 * @return \WildPHP\ModuleManager The Module Manager.
+	 * @return ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
 	{
@@ -215,7 +212,7 @@ class Bot
 
 	/**
 	 * Returns an instance of the IRCParser class.
-	 * @return \IRCParser\IRCParser The IRCParser.
+	 * @return IRCParser The IRCParser.
 	 */
 	public function getIRCParser()
 	{
@@ -250,7 +247,7 @@ class Bot
 			$to = $this->lastData['arguments'][0];
 		}
 
-		$this->eventManager->triggerEvent('onSay', array('to' => $to, 'text' => &$text));
+		// !!! onSay event
 
 		// Nothing to send?
 		if (empty($text) || empty($to))
