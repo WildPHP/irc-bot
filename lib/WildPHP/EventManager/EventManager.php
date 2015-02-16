@@ -132,7 +132,7 @@ class EventManager
 	{
 		// check if it is registered first - it also validates the name, no need to do that twice
 		if(!$this->isRegistered($eventName))
-			throw new EventDoesNotExistException('Event ' . $eventName . ' is not registered.';
+			throw new EventDoesNotExistException('Event ' . $eventName . ' is not registered.');
 
 		return $this->events[$eventName];
 	}
