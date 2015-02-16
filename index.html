@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./assets/css/bootstrap.css" media="screen">
     <link rel="stylesheet" href="./assets/css/bootswatch.min.css">
-	<link rel="stylesheet" href="./assets/css/slider.css">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="./bower_components/html5shiv/dist/html5shiv.js"></script>
@@ -29,12 +28,6 @@
             <li>
               <a href="index.html">Home</a>
             </li>
-			<li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="projects">Projects <span class="caret"></span></a>
-              <ul class="dropdown-menu" aria-labelledby="projects">
-                <li><a href="https://github.com/WildPHP/Wild-IRC-Bot/">Wild IRC Bot</a></li>
-              </ul>
-            </li>
             <li>
               <a href="https://webchat.freenode.net/?channels=wildphp">IRC</a>
             </li>
@@ -46,7 +39,7 @@
               <ul class="dropdown-menu" aria-labelledby="download">
                 <li class="dropdown-header">Wild IRC Bot</li>
                 <li><a href="https://github.com/WildPHP/Wild-IRC-Bot/archive/master.zip">Stable</a></li>
-				<li><a href="https://github.com/WildPHP/Wild-IRC-Bot/archive/beta.zip">Beta</a></li>
+				<li><a href="https://github.com/WildPHP/Wild-IRC-Bot/archive/modularity-rewrite.zip">Beta</a></li>
               </ul>
             </li>
 			<li>
@@ -54,6 +47,9 @@
             </li>
           </ul>
 
+		  <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/WildPHP/Wild-IRC-Bot/"><i class="fa fa-code-fork fa-lg"></i> <b>Version:</b> <span id="version"></span></a></li>
+          </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="https://github.com/WildPHP/"><i class="fa fa-github fa-lg"></i> Github</a></li>
           </ul>
@@ -1254,21 +1250,10 @@
 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="./assets/js/jquery.glide.min.js"></script>
+	<script src="./assets/js/wildphp.js"></script>
     <script src="./assets/js/bootswatch.js"></script>
 		<script type="text/javascript">
 		$("#documentation").popover();
 	</script>
-			<script>
-			var glide = $('.slider').glide().data('api_glide');
-			$(window).on('keyup', function (key) {
-				if (key.keyCode === 13) {
-					glide.jump(3, console.log('Wooo!'));
-				};
-			});
-			$('.slider__arrows-item').on('click', function() {
-				console.log(glide.current());
-			});
-			</script>
   </body>
 </html>
