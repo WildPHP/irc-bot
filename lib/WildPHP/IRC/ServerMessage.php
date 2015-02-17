@@ -17,8 +17,38 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\Event;
+namespace WildPHP\IRC;
 
-interface IEvent {
+use Phergie\Irc\Parser as PhergieParser;
+
+class ServerMessage implements IServerMessage {
+
+	protected $message;
+
+	public function __construct(IRCMessage $ircMessage)
+	{
+		$parser = new PhergieParser();
+		$this->message = $parser->parse($ircMessage);
+	}
+
+	public function getMessage()
+	{
+		return $this->message['message'];
+	}
+
+	public function getCommand()
+	{
+		return $this->message['command'];
+	}
+
+	public function getParams()
+	{
+		return (array) $this->message['params'];
+	}
+
+	public function getPrefix()
+	{
+		return (string) $this->message['string'];
+	}
 
 }

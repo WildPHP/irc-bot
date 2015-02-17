@@ -19,6 +19,16 @@
 */
 namespace WildPHP\Event;
 
-interface IEvent {
+interface ICancellableEvent {
+	/**
+	 * Marks the event as cancelled.
+	 * @param bool $cancel If set to false, the event will be un-cancelled. Defaults to true.
+	 */
+	public function setCancelled($cancel = true);
 
+	/**
+	 * Tells whether the event has been cancelled.
+	 * @return bool True when cancelled, false otherwise.
+	 */
+	public function isCancelled();
 }

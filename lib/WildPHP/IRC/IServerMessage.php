@@ -17,8 +17,35 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\Event;
+namespace WildPHP\IRC;
 
-interface IEvent {
+/**
+ * Represents an inbound server message.
+ */
+template IServerMessage {
 
+	/**
+	 * Returns the complete IRC message as it was received from the server.
+	 * @return string Full IRC message.
+	 */
+	public function getMessage();
+
+	/**
+	 * Returns the name of the IRC command that was received.
+	 * @return string The command name.
+	 */
+	public function getCommand();
+
+	/**
+	 * Returns the IRC message params as an array.
+	 * @return array A (possibly empty) array of parameters.
+	 */
+	public function getParams();
+
+	/**
+	 * Returns the IRC message prefix (as defined in RFC 1459 - including the leading colon).
+	 * It may be empty.
+	 * @return string The message prefix.
+	 */
+	public function getPrefix();
 }
