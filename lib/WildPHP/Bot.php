@@ -57,8 +57,8 @@ class Bot
 	protected $log;
 
 	/**
-	 * The IRCParser.
-	 * @var IRCParser
+	 * The Phergie Parser.
+	 * @var Parser
 	 */
 	protected $parser;
 
