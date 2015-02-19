@@ -139,3 +139,4 @@ class ChannelAdmin
 
                 $this->bot->sendData('MODE ' . $data['arguments'][0] . ' -v ' . $data['command_arguments']);
         }
+}
