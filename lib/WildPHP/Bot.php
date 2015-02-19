@@ -19,7 +19,7 @@
 */
 
 namespace WildPHP;
-use IRCParser\IRCParser, WildPHP\EventManager\EventManager, WildPHP\EventManager\RegisteredEvent;
+use Phergie\Irc\Parser, WildPHP\EventManager\EventManager, WildPHP\EventManager\RegisteredEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -107,7 +107,7 @@ class Bot
 		$this->connection = new ConnectionManager($this);
 
 		// And the parser.
-		$this->parser = new IRCParser($this);
+		$this->parser = new Parser($this);
 	}
 
 	/**
@@ -152,7 +152,7 @@ class Bot
 			$this->log($data, 'DATA');
 
 			// Parse the data.
-			$data = $this->parser->process($data);
+			$data = $this->parser->parse($data . "\r\n");
 
 			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
 			if ($data['command'] == 'PING')
