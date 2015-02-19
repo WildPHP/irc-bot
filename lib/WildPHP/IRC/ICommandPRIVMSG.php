@@ -22,13 +22,7 @@ namespace WildPHP\IRC;
 /**
  * Represents an incoming PRIVMSG command.
  */
-template ICommandPRIVMSG {
-
-	/**
-	 * Returns the complete IRC message as it was received from the server.
-	 * @return string Full IRC message.
-	 */
-	public function getIRCMessage();
+template ICommandPRIVMSG extends IServerMessage {
 
 	/**
 	 * Returns the sender name.
@@ -52,5 +46,5 @@ template ICommandPRIVMSG {
 	 * Returns the sent message.
 	 * @return string The message which was sent.
 	 */
-	public function getMessage();
+	public function getUserMessage();
 }
