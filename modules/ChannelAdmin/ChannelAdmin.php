@@ -54,11 +54,12 @@ class ChannelAdmin
                 $this->evman = $this->bot->getEventManager();
 
                 // Register our commands.
-                $this->evman->registerEvent(array('command_op', 'command_deop', 'command_voice', 'command_devoice'), array('hook_once' => true));                
+                $this->evman->registerEvent(array('command_op', 'command_deop', 'command_voice', 'command_devoice', 'command_kick'), array('hook_once' => true));                
                 $this->evman->registerEventListener('command_op', array($this, 'OPCommand'));
                 $this->evman->registerEventListener('command_deop', array($this, 'DeOPCommand'));
                 $this->evman->registerEventListener('command_voice', array($this, 'VoiceCommand'));
                 $this->evman->registerEventListener('command_devoice', array($this, 'DeVoiceCommand'));
+                $this->evman->registerEventListener('command_kick', array($this, 'KickCommand'));
 
                 // Get the auth module.
                 $this->auth = $this->bot->getModuleInstance('Auth');
@@ -138,5 +139,26 @@ class ChannelAdmin
 
 
                 $this->bot->sendData('MODE ' . $data['arguments'][0] . ' -v ' . $data['command_arguments']);
+        }
+        
+        /**
+         * The Kick command.
+         * @param array $data The last data received.
+         */
+        public function KickCommand($data)
+        {
+                if (empty($data['string']))
+                        return;
+
+                if (!$this->auth->authUser($data['hostname']))
+                        return;
+                
+                $cdata = explode(' ', $data['command_arguments']);
+                
+                if (count($cdata) < 2)
+                        return;
+
+                $user = array_shift($cdata);
+                $this->bot->sendData('KICK ' . $data['arguments'][0] . ' ' . $user . ' :' . implode(' ', $cdata));
         }
 }
