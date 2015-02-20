@@ -92,7 +92,7 @@ class EventManager
 	/**
 	 * Hook into an event.
 	 * @param string $event The event to hook into.
-	 * @param mixed $hook The hook to insert, as a function name. Pass as array($class, 'function') if in a class.
+	 * @param mixed $listener The hook to insert, as a function name. Pass as array($class, 'function') if in a class.
 	 * @return bool Boolean determining if adding the hook succeeded.
 	 */
 	public function registerEventListener($event, $listener, $priority = 3)
