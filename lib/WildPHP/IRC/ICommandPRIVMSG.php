@@ -22,7 +22,7 @@ namespace WildPHP\IRC;
 /**
  * Represents an incoming PRIVMSG command.
  */
-template ICommandPRIVMSG extends IServerMessage {
+interface ICommandPRIVMSG extends IServerMessage {
 
 	/**
 	 * Returns the sender object.

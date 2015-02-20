@@ -22,7 +22,7 @@ namespace WildPHP\IRC;
 /**
  * Represents an inbound server message.
  */
-template IServerMessage {
+interface IServerMessage {
 
 	/**
 	 * Returns the complete IRC message as it was received from the server.
