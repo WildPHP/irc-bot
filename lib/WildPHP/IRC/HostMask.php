@@ -20,25 +20,22 @@
 namespace WildPHP\IRC;
 
 /**
- * Represents an incoming PRIVMSG command.
+ * This class holds data about a specific host mask.
  */
-template ICommandPRIVMSG extends IServerMessage {
+class HostMask
+{
+	/**
+	* The hostmask.
+	* @var string
+	*/
+	protected $hostmask;
 
 	/**
-	 * Returns the sender object.
-	 * @return HostMask The sender object.
-	 */
-	public function getSender();
+	* The class constructor.
+	* @param string $hostmask The hostmask  to manipulate.
+	*/
+	public function __construct($hostmask)
+	{
 
-	/**
-	 * Returns the target user/channel name.
-	 * @return array Name of the target user/channel of this message.
-	 */
-	public function getTargets();
-
-	/**
-	 * Returns the sent message.
-	 * @return string The message which was sent.
-	 */
-	public function getUserMessage();
+	}
 }
