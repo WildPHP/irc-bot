@@ -20,7 +20,7 @@
 
 namespace WildPHP;
 
-use Nette\Neon;
+use Nette\Neon, Nette\Neon\Exception;
 
 class Configuration
 {

@@ -36,6 +36,6 @@ class HostMask
 	*/
 	public function __construct($hostmask)
 	{
-
+		$this->hostmask = $hostmask;
 	}
 }

@@ -187,7 +187,7 @@ class Bot
 	 * @param string $module The module to get an instance from.
 	 * @return object|false The module instance on success, false on failure.
 	 */
-	function getModuleInstance($module)
+	public function getModuleInstance($module)
 	{
 		return $this->moduleManager->getModuleInstance($module);
 	}

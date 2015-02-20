@@ -30,7 +30,7 @@ class IRCMessageInboundEvent implements IIRCMessageEvent {
 
 	public function getIRCMessage()
 	{
-		return $this->getIRCMessage;
+		return $this->ircMessage;
 	}
 
 }

@@ -22,7 +22,7 @@ namespace WildPHP;
 
 class Autoloader
 {
-	static function load($class)
+	static public function load($class)
 	{
 
 		// Split $class to the "path" and "classname" parts
