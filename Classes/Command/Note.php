@@ -61,7 +61,6 @@ class Note extends \Library\IRC\Command\Base
 
 						$dname = preg_replace('/[^a-zA-Z0-9!?_ -]+/', '', $name[1]);
 
-						echo var_dump($dname, $name);
 						if ($name[1] != $dname)
 						{
 							$this->say('Invalid note name. Names can contain the characters A-Z, a-z, 0-9, !, ?, _ and - only.');
