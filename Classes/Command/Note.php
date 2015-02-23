@@ -45,7 +45,7 @@ class Note extends \Library\IRC\Command\Base
 						$notenames = array();
 						foreach ($this->notes[$user] as $id => $note)
 							$notenames[] = '#' . $id . ': ' . $note['name'];
-						$this->say($user . ', I have ' . count($this->notes[$user]) . ' for you: ' . implode(', ', $notenames));
+						$this->say($user . ', I have ' . count($this->notes[$user]) . ' notes for you: ' . implode(', ', $notenames));
 					}
 					else
 						$this->say($user . ', I don\'t have any notes for you.');
@@ -59,8 +59,9 @@ class Note extends \Library\IRC\Command\Base
 					if (preg_match('/@ (.+)$/', $command, $name))
 					{
 
-						$dname = preg_replace('/[^a-zA-Z0-9!?_- ]+/', '', $name[1]);
+						$dname = preg_replace('/[^a-zA-Z0-9!?_ -]+/', '', $name[1]);
 
+						echo var_dump($dname, $name);
 						if ($name[1] != $dname)
 						{
 							$this->say('Invalid note name. Names can contain the characters A-Z, a-z, 0-9, !, ?, _ and - only.');
