@@ -58,9 +58,9 @@ class Bot {
 	private $nickToUse = '';
 
 	/**
-	 * The IRC password for the bot. 
+	 * The IRC password for the bot.
 	 * @var string
-	 */ 
+	 */
 	private $password = '';
 
 	/**
@@ -138,38 +138,38 @@ class Bot {
 	 */
 	public function __construct(array $configuration, \Library\IRC\Log $log) {
 		$this->connection = new \Library\IRC\Connection\Socket;
-	
+
 		// Add a new command manager.
 		$this->commandManager = new \Library\IRC\Command\Manager($this);
-	
+
 		// And a listener manager.
 		$this->listenerManager = new \Library\IRC\Listener\Manager($this);
-	
+
 		// Setup the log.
 		$this->log = $log;
 		$this->log->setBot($this);
-	
+
 		// No configuration? No bot.
 		if (empty($configuration))
 			trigger_error('Cannot start without a configuration. Aborting.', E_USER_ERROR);
-	
+
 		// We need this for the connection.
 		$this->connection->setServer( $configuration['server'] );
 		$this->connection->setPort( $configuration['port'] );
 		$this->connection->setName( $configuration['name'] );
-	
+
 		// Then come the bits the bot needs itself.
 		$this->setChannel( $configuration['channels'] );
 		$this->setNick($configuration['nick']);
-	
+
 		// We can only set a password if we have one. If we don't, don't bother.
 		if (!empty($configuration['password']))
 			$this->setPassword($configuration['password']);
-	
+
 		// Nickserv may differ between servers.
 		$this->setNickServ($configuration['nickserv']);
 		$this->setMaxReconnects( $configuration['max_reconnects'] );
-	
+
 		// Set the command prefix.
 		$this->setCommandPrefix($configuration['prefix']);
 	}
@@ -203,6 +203,15 @@ class Bot {
 		// And fire up a connection.
 		$this->log('Main loop ignited! GO GO GO!', 'STARTUP');
 		do {
+			foreach ($this->reminders as $time => $reminder)
+			{
+				if (time() >= $time)
+				{
+					$this->sendDataToServer('PRIVMSG #wildphp :' . $this->reminders[$time]);
+					unset($this->reminders[$time]);
+				}
+			}
+
 			$command = '';
 			$arguments = array ( );
 			$data = $this->connection->getData();
@@ -372,7 +381,7 @@ class Bot {
 	/**
 	 * Sets the IRC password for the bot
 	 * @param string $password The password for the IRC server.
-	 */ 
+	 */
 
 	 public function setPassword($password) {
 	$this->password = $password;
@@ -389,7 +398,7 @@ class Bot {
 		$this->nickToUse = $this->nick = (string) $nick;
 		$this->connection->setNick($this->nickToUse);
 	}
-	
+
 	/**
 	 * Get the nick of the bot.
 	 */
@@ -405,7 +414,7 @@ class Bot {
 	public function setNickServ($nickserv) {
 		$this->nickserv = (string) $nickserv;
 	}
-	
+
 	/**
 	 * Set the command prefix.
 	 * @param string $prefix The command prefix to set.
@@ -442,7 +451,7 @@ class Bot {
 	 * Called at shutdown.
 	 */
 	public function onShutdown()
-	{	
+	{
 		// It is possible that we have not had a chance to create a log object yet.
 		// In that case, we're in early initialisation. There's nothing we can do at that point.
 		if (is_object($this->log))

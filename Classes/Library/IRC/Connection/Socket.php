@@ -90,6 +90,8 @@
 			if (!$this->isConnected())
 				throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
 
+			socket_set_blocking($this->socket, 0);
+
 			if (!empty($pass))
 				$this->sendData('PASS ' . $pass);
 

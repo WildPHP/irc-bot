@@ -22,11 +22,11 @@ channels:
 log:
 	file: log
 	dir: ./logs
-	filter: 
+	filter:
 		- '#wildphp'
 
 # Load and configure the bot commands
-commands: 
+commands:
 	Command\Say:
 	Command\Weather:
 		yahooKey: a
@@ -44,6 +44,8 @@ commands:
 	Command\Update:
 	Command\Version:
 	Command\Raw:
+	Command\Note:
+	Command\Remind:
 
 # Load and configure listeners
 listeners:
