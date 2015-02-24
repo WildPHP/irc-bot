@@ -73,7 +73,7 @@ class Help
 		$cmd = array_shift($pieces);
 
 		// Nope, show all commands.
-		if (empty($cmd))
+		if(empty($cmd))
 		{
 			// All commands are...
 			$cmd = $this->bot->getModuleManager()->getLoadedModules();

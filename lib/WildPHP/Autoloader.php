@@ -34,7 +34,7 @@ class Autoloader
 		// Assemble path
 		$classpath = implode('/', $classpath) . '/';
 
-		$path = WPHP_LIB_DIR . $classpath . $classname;	// Check for files in lib/classpath/classname.php
+		$path = WPHP_LIB_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
 
 		if(file_exists($path))
 		{

@@ -83,10 +83,10 @@ class ChannelAdmin
          */
         public function OPCommand($data)
         {
-                if (empty($data['string']))
+                if(empty($data['string']))
                         return;
 
-                if (!$this->auth->authUser($data['hostname']))
+                if(!$this->auth->authUser($data['hostname']))
                         return;
 
                 // OPs Selected Person.
@@ -100,10 +100,10 @@ class ChannelAdmin
          */
         public function DeOPCommand($data)
         {
-                if (empty($data['string']))
+                if(empty($data['string']))
                         return;
 
-                if (!$this->auth->authUser($data['hostname']))
+                if(!$this->auth->authUser($data['hostname']))
                         return;
 
                 $this->bot->sendData('MODE ' . $data['arguments'][0] . ' -o ' . $data['command_arguments']);
@@ -115,10 +115,10 @@ class ChannelAdmin
          */
         public function VoiceCommand($data)
         {
-                if (empty($data['string']))
+                if(empty($data['string']))
                         return;
 
-                if (!$this->auth->authUser($data['hostname']))
+                if(!$this->auth->authUser($data['hostname']))
                         return;
 
 
@@ -131,10 +131,10 @@ class ChannelAdmin
          */
         public function DeVoiceCommand($data)
         {
-                if (empty($data['string']))
+                if(empty($data['string']))
                         return;
                         
-                if (!$this->auth->authUser($data['hostname']))
+                if(!$this->auth->authUser($data['hostname']))
                         return;
 
 
@@ -147,15 +147,15 @@ class ChannelAdmin
          */
         public function KickCommand($data)
         {
-                if (empty($data['string']))
+                if(empty($data['string']))
                         return;
 
-                if (!$this->auth->authUser($data['hostname']))
+                if(!$this->auth->authUser($data['hostname']))
                         return;
                 
                 $cdata = explode(' ', $data['command_arguments']);
                 
-                if (count($cdata) < 2)
+                if(count($cdata) < 2)
                         return;
 
                 $user = array_shift($cdata);

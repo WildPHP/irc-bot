@@ -73,7 +73,7 @@ class RegisteredEvent
 			throw new ListenerAlreadyRegisteredException('Attempt to register event listener failed: listener already attached.');
 
 		$this->isSorted = false;
-		$this->listeners[$priority->getValue()][]= $listener;
+		$this->listeners[$priority->getValue()][] = $listener;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class RegisteredEvent
 	 */
 	public function isListenerRegistered(callable $listener)
 	{
-		foreach ($this->listeners as $priority)
+		foreach($this->listeners as $priority)
 			if(in_array($listener, $priority, true))
 				return true;
 
@@ -107,7 +107,7 @@ class RegisteredEvent
 	 */
 	public function removeListener(callable $listener)
 	{
-		foreach ($this->listeners as $priority)
+		foreach($this->listeners as $priority)
 			if(($key = in_array($listener, $priority, true)) !== false)
 			{
 				unset($this->listeners[$priority][$key]);
@@ -151,7 +151,7 @@ class RegisteredEvent
 		// sort the listener array so that we actually run it in the correct order
 		$this->sortListeners();
 
-		foreach ($this->listeners as $priority)
+		foreach($this->listeners as $priority)
 			foreach($this->listeners[$priority] as $listener)
 			{
 				call_user_func($listener, $event);
@@ -169,14 +169,17 @@ class RegisteredEvent
 
 }
 
-class ListenerAlreadyRegisteredException extends RuntimeException {
+class ListenerAlreadyRegisteredException extends RuntimeException
+{
 
 }
 
-class ListenerNotRegisteredException extends RuntimeException {
+class ListenerNotRegisteredException extends RuntimeException
+{
 
 }
 
-class InvalidEventTypeException extends InvalidArgumentException {
+class InvalidEventTypeException extends InvalidArgumentException
+{
 
 }

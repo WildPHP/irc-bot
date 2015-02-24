@@ -138,14 +138,14 @@ class Bot
 	 */
 	public function start()
 	{
-		if (!$this->connection->isConnected())
+		if(!$this->connection->isConnected())
 			throw new \Exception('No connection has been set up for the bot to use.');
 
 		do
 		{
 			// Check if we got any new data. Signs of life!
 			$data = $this->connection->getData();
-			if (empty($data))
+			if(empty($data))
 				continue;
 
 			// Make a note of what we received.
@@ -155,7 +155,7 @@ class Bot
 			$data = $this->parser->parse($data . "\r\n");
 
 			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
-			if ($data['command'] == 'PING')
+			if($data['command'] == 'PING')
 			{
 				$this->sendData('PONG ' . $data['arguments'][0]);
 				continue;
@@ -169,7 +169,7 @@ class Bot
 
 			// !!! onDataReceive event
 		}
-		while ($this->connection->isConnected());
+		while($this->connection->isConnected());
 	}
 
 	/**
@@ -237,11 +237,11 @@ class Bot
 	 */
 	public function say($to, $text = '')
 	{
-		if (empty($to) && empty($text))
+		if(empty($to) && empty($text))
 			return false;
 
 		// Some people are just too lazy.
-		elseif (empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
+		elseif(empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
 		{
 			$text = $to;
 			$to = $this->lastData['arguments'][0];
@@ -250,7 +250,7 @@ class Bot
 		// !!! onSay event
 
 		// Nothing to send?
-		if (empty($text) || empty($to))
+		if(empty($text) || empty($to))
 			return false;
 
 		// Split multiple lines into separate messages *for each member of the input array* (or string, possibly)
@@ -262,11 +262,11 @@ class Bot
 			$part = preg_replace('/[\n\r]+/', "\n", $part);
 
 			$lines = explode("\n", (string) $part);
-			foreach ($lines as $lines2) {
+			foreach($lines as $lines2) {
 				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
 				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
 				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
-				foreach ($lines2 as $line) {
+				foreach($lines2 as $line) {
 					// We finally have the correct line
 					$line = trim($line);
 					if(!empty($line))
@@ -275,7 +275,7 @@ class Bot
 			}
 		}
 
-		foreach ($out as $msg)
+		foreach($out as $msg)
 			$this->sendData('PRIVMSG ' . $to . ' :' . $msg);
 
 		return true;
@@ -297,7 +297,7 @@ class Bot
 	 */
 	public function stop($message = 'WildPHP <http://wildphp.com/>')
 	{
-		if (empty($message))
+		if(empty($message))
 			$message = 'WildPHP <http://wildphp.com/>';
 
 		$this->sendData('QUIT :' . $message);
@@ -311,7 +311,8 @@ class Bot
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.
 	 */
-	public static function fetch($uri, $decode = false) {
+	public static function fetch($uri, $decode = false)
+	{
 		// create curl resource
 		$ch = curl_init();
 
@@ -328,7 +329,7 @@ class Bot
 		// $output contains the output string
 		$output = curl_exec($ch);
 
-		if (!empty($decode) && ($output = json_decode($output)) === null)
+		if(!empty($decode) && ($output = json_decode($output)) === null)
 			$output = false;
 
 		// close curl resource to free up system resources
