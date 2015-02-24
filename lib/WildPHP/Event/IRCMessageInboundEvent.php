@@ -19,16 +19,18 @@
 */
 namespace WildPHP\Event;
 
+use WildPHP\IRC\IServerMessage;
+
 class IRCMessageInboundEvent implements IIRCMessageEvent {
 
 	protected $ircMessage;
 
-	public function __construct(IRCMessage $ircMessage)
+	public function __construct(IServerMessage $ircMessage)
 	{
 		$this->ircMessage = $ircMessage;
 	}
 
-	public function getIRCMessage()
+	public function getMessage()
 	{
 		return $this->ircMessage;
 	}

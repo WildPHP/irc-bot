@@ -19,10 +19,10 @@
 */
 namespace WildPHP\Event;
 
-interface IIRCMessageEvent {
+interface IIRCMessageEvent extends IEvent {
 	/**
 	 * Gives acccess to the IRCMessage object that caused this event.
 	 * @return IRCMessage The IRCMessage.
 	 */
-	public function getIRCMessage();
+	public function getMessage();
 }
