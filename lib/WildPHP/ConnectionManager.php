@@ -126,15 +126,12 @@ class ConnectionManager
 	/**
 	 * Extracts a line from the connected data stream.
 	 *
-	 * @return string The extracted line (trimmed but with line enging characters) or NULL when there are no data.
+	 * @return string The extracted line (trimmed but with line enging characters) or NULL.
 	 */
-	public function getData() {
+	protected function getData() {
 		$data = fgets($this->socket);
 		if($data === false)
-			if(feof($this->socket))
-				return null;
-			else
-				throw new ConnectionException('Reading data from socket failed unexpectadly.');
+			return null;
 
 		return trim($data, STREAM_TRIM_CHARACTERS);
 	}
