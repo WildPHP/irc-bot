@@ -24,6 +24,8 @@ use RuntimeException;
 
 class ConnectionManager
 {
+	const STREAM_TRIM_CHARACTERS = " \t\0\x0B";
+
 	/**
 	 * The server you want to connect to.
 	 * @var string
@@ -122,12 +124,19 @@ class ConnectionManager
 	}
 
 	/**
-	 * Returns data from the server.
+	 * Extracts a line from the connected data stream.
 	 *
-	 * @return string|boolean The data as string, or false if no data is available or an error occured.
+	 * @return string The extracted line (trimmed but with line enging characters) or NULL when there are no data.
 	 */
 	public function getData() {
-		return trim(fgets($this->socket));
+		$data = fgets($this->socket);
+		if($data === false)
+			if(feof($this->socket))
+				return null;
+			else
+				throw new ConnectionException('Reading data from socket failed unexpectadly.');
+
+		return trim($data, STREAM_TRIM_CHARACTERS);
 	}
 
 	/**
