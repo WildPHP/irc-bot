@@ -111,16 +111,26 @@ class ConnectionManager
 	}
 
 	/**
-	 * Interaction with the server.
-	 * For example, send commands or some other data to the server.
+	 * Sends raw data to the server.
+	 * This method makes sure that the message ends with proper EOL characters.
 	 *
-	 * @return boolean|int the number of bytes written, or FALSE on error.
+	 * @return int the number of bytes written.
+	 * @throws MessageLengthException when $data exceed maximum lenght.
+	 * @throws ConnectionException on socket write error.
 	 */
 	public function sendData( $data ) {
+		$data = trim($data);
 		if(strlen($data) > 510)
 			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
 
-		return fwrite( $this->socket,  $data . "\r\n");
+		$numBytes = fwrite($this->socket, $data . "\r\n");
+		if($numBytes === false)
+		{
+			$errno = socket_last_error();
+			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
+		}
+
+		return $numBytes;
 	}
 
 	/**
