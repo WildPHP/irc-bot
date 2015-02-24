@@ -21,7 +21,8 @@ namespace WildPHP\IRC;
 
 use Phergie\Irc\Parser as PhergieParser;
 
-class CommandPRIVMSG implements ICommandPRIVMSG {
+class CommandPRIVMSG implements ICommandPRIVMSG
+{
 
 	protected $message;
 

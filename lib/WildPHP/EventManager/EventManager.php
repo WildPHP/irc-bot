@@ -19,11 +19,10 @@
 */
 namespace WildPHP\EventManager;
 
-use WildPHP\Bot,
-	WildPHP\EventManager\ListenerPriority as Priority,
-	WildPHP\EventManager\RegisteredEvent,
-	RuntimeException,
-	InvalidArgumentException;
+use WildPHP\Bot;
+use WildPHP\EventManager\RegisteredEvent;
+use RuntimeException;
+use InvalidArgumentException;
 
 
 /**
@@ -114,7 +113,7 @@ class EventManager
 	/**
 	 * Removes a registered event from this manager.
 	 * @param string $eventName The event to remove.
-	 * @return bool Boolean determining if the operation succeeded.
+	 * @return boolean|null Boolean determining if the operation succeeded.
 	 */
 	public function remove($eventName)
 	{
@@ -140,10 +139,12 @@ class EventManager
 	}
 }
 
-class EventAlreadyRegisteredException extends RuntimeException {
+class EventAlreadyRegisteredException extends RuntimeException
+{
 
 }
 
-class EventDoesNotExistException extends RuntimeException {
+class EventDoesNotExistException extends RuntimeException
+{
 
 }

@@ -56,7 +56,7 @@ class CoreCommands
 
 	/**
 	 * Returns the module dependencies.
-	 * @return array The array containing the module names of the dependencies.
+	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{
@@ -78,7 +78,7 @@ class CoreCommands
 	 */
 	public function SayCommand($data)
 	{
-		if (substr($data['command_arguments'], 0, 1) == '#')
+		if(substr($data['command_arguments'], 0, 1) == '#')
 		{
 			$args = explode(' ', $data['command_arguments'], 2);
 			$to = $args[0];

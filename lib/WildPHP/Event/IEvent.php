@@ -19,6 +19,7 @@
 */
 namespace WildPHP\Event;
 
-interface IEvent {
+interface IEvent
+{
 
 }
