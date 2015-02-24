@@ -77,6 +77,16 @@ class RegisteredEvent
 	}
 
 	/**
+	 * Registers the final event handler.
+	 * This is basically just a listener that is guaranteed to run last.
+	 * @see registerListener($listener, Priority::HANDLER())
+	 */
+	public function registerEventHandler(callable $listener)
+	{
+		return $this->registerListener($listener, new Priority(self::HANDLER));
+	}
+
+	/**
 	 * Checks whether a listener is already attached to this event.
 	 * @param callable $listener The listener we are looking for.
 	 * @return bool true when the listener is registered, false otherwise.
