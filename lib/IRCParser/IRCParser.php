@@ -61,7 +61,7 @@ class IRCParser
 	public function process($message)
 	{
 		// No match? Bummer.
-		if (!preg_match('/^(?::([^ ]+) )?([A-Z]+|\d{3}) ((?:(?! :)).*?)(?: :(.*))?$/', $message, $matches))
+		if(!preg_match('/^(?::([^ ]+) )?([A-Z]+|\d{3}) ((?:(?! :)).*?)(?: :(.*))?$/', $message, $matches))
 			return false;
 
 		// We should have gathered everything we need.
@@ -74,17 +74,17 @@ class IRCParser
 		);
 
 		// Does the hostname contain a nickname?
-		if (preg_match('/([a-zA-Z0-9_]+)!/', $data['hostname'], $username))
+		if(preg_match('/([a-zA-Z0-9_]+)!/', $data['hostname'], $username))
 			$data['nickname'] = $username[1];
 
 		// Time for command parsing.
-		if ($data['command'] == 'PRIVMSG')
+		if($data['command'] == 'PRIVMSG')
 		{
 			// Get any possible commands.
 			$result = $this->parseCommand($data['string']);
 
 			// Got one?
-			if (!empty($result['bot_command']))
+			if(!empty($result['bot_command']))
 				$data = array_merge($data, $result);
 		}
 
@@ -102,13 +102,13 @@ class IRCParser
 		$string_result = false;
 
 		// We have to do this for every prefix.
-		foreach ($this->prefix as $prefix)
+		foreach($this->prefix as $prefix)
 		{
-			if (substr($string, 0, strlen($prefix)) != $prefix)
+			if(substr($string, 0, strlen($prefix)) != $prefix)
 				continue;
 
 			// Get the command.
-			if (!preg_match('/' . preg_quote($prefix) . '([a-z0-9]+)/', $string, $botcmd))
+			if(!preg_match('/' . preg_quote($prefix) . '([a-z0-9]+)/', $string, $botcmd))
 				continue;
 
 			// We detected a command! Good!

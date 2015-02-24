@@ -82,10 +82,10 @@ class ConnectionManager
 	{
 		// Open a connection.
 		$this->socket = fsockopen($this->server, $this->port);
-		if (!$this->isConnected())
+		if(!$this->isConnected())
 			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
 
-		if (!empty($this->password))
+		if(!empty($this->password))
 			$this->sendData('PASS ' . $this->password);
 
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
@@ -100,8 +100,8 @@ class ConnectionManager
 	 * @return boolean True if the connection was closed. False otherwise.
 	 */
 	public function disconnect() {
-		if ($this->isConnected())
-			return fclose( $this->socket );
+		if($this->isConnected())
+			return fclose($this->socket);
 		return false;
 	}
 
@@ -119,7 +119,7 @@ class ConnectionManager
 	 * @throws MessageLengthException when $data exceed maximum lenght.
 	 * @throws ConnectionException on socket write error.
 	 */
-	public function sendData( $data ) {
+	public function sendData($data) {
 		$data = trim($data);
 		if(strlen($data) > 510)
 			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
@@ -153,7 +153,7 @@ class ConnectionManager
 	 * @return boolean True if the connection exists. False otherwise.
 	 */
 	public function isConnected() {
-		return is_resource( $this->socket );
+		return is_resource($this->socket);
 	}
 
 	/**
@@ -161,7 +161,7 @@ class ConnectionManager
 	 * E.g. irc.quakenet.org or irc.freenode.org
 	 * @param string $server The server to set.
 	 */
-	public function setServer( $server ) {
+	public function setServer($server) {
 		$this->server = (string) $server;
 	}
 
@@ -170,7 +170,7 @@ class ConnectionManager
 	 * E.g. 6667
 	 * @param integer $port The port to set.
 	 */
-	public function setPort( $port ) {
+	public function setPort($port) {
 		$this->port = (int) $port;
 	}
 

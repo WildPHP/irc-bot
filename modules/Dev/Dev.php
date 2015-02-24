@@ -75,20 +75,20 @@ class Dev
      */
     public function ExecCommand($data)
     {
-        if (!$this->auth->authUser($data['hostname']))
+        if(!$this->auth->authUser($data['hostname']))
         {
             $this->bot->say('You are not authorized to execute this command.');
             return false;
         }
 
-        if (!$this->unlockExec && $data['command_arguments'] != '$this->unlockExec = true;')
+        if(!$this->unlockExec && $data['command_arguments'] != '$this->unlockExec = true;')
         {
             $this->bot->say($data['nickname'], 'WARNING: The Exec command is a VERY DANGEROUS COMMAND, and is therefore locked by default.');
             $this->bot->say($data['nickname'], 'To unlock this command and understand that any damage caused by the use of this command relies exclusively on YOU and NOT THE BOT AUTHORS,');
             $this->bot->say($data['nickname'], 'Run the following command: ' . $this->bot->getConfig('prefix') . 'exec $this->unlockExec = true;');
             return false;
         }
-        elseif (!$this->unlockExec && $data['command_arguments'] != '$this->unlockExec = true;')
+        elseif(!$this->unlockExec && $data['command_arguments'] != '$this->unlockExec = true;')
             $this->bot->say($data['nickname'], 'The Exec command will now be unlocked.');
 
         $this->bot->log('Running command "' . $data['command_arguments'] . '"');

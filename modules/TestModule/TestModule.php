@@ -72,7 +72,7 @@ class TestModule
 
 	public function ExecCommand($data)
 	{
-		if (!$this->auth->authUser($data['hostname']))
+		if(!$this->auth->authUser($data['hostname']))
 		{
 			$this->bot->say('You are not authorized to execute this command.');
 			return false;
