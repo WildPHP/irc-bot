@@ -47,11 +47,11 @@ class Configuration
 			if(!empty($data) && is_string($data))
 				$this->config = Neon\Neon::decode(file_get_contents($config));
 			else
-				throw new \Exception('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
+				throw new ConfigurationException('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
 		catch(Neon\Exception $e)
 		{
-			throw new \Exception('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
+			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
 
 		$this->bot = $bot;
@@ -77,4 +77,9 @@ class Configuration
 
 		return $lastPiece;
 	}
+}
+
+class ConfigurationException extends RuntimeException
+{
+
 }
