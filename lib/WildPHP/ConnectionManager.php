@@ -42,13 +42,14 @@ class ConnectionManager
 	 * The TCP/IP connection.
 	 * @var resource
 	 */
-	private $socket;
+	protected $socket;
 
 	/**
 	 * The password used for connecting.
 	 * @var string
 	 */
 	private $password = '';
+
 	private $name = '';
 	private $nick = '';
 
