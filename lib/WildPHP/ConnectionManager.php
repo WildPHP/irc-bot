@@ -20,6 +20,8 @@
 
 namespace WildPHP;
 
+use RuntimeException;
+
 class ConnectionManager
 {
 	/**
@@ -78,7 +80,7 @@ class ConnectionManager
 		// Open a connection.
 		$this->socket = fsockopen($this->server, $this->port);
 		if (!$this->isConnected())
-			throw new Exception('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
+			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
 
 		if (!empty($this->password))
 			$this->sendData('PASS ' . $this->password);
@@ -114,7 +116,7 @@ class ConnectionManager
 	 */
 	public function sendData( $data ) {
 		if(strlen($data) > 510)
-			throw new Exception('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
+			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
 
 		return fwrite( $this->socket,  $data . "\r\n");
 	}
@@ -181,4 +183,12 @@ class ConnectionManager
 	{
 		$this->nick = (string) $nick;
 	}
+}
+
+class ConnectionException extends RuntimeException {
+
+}
+
+class MessageLengthException extends RuntimeException {
+
 }
