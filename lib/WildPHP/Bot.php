@@ -19,7 +19,9 @@
 */
 
 namespace WildPHP;
-use Phergie\Irc\Parser, WildPHP\EventManager\EventManager, WildPHP\EventManager\RegisteredEvent;
+use Phergie\Irc\Parser;
+use WildPHP\EventManager\EventManager;
+use WildPHP\EventManager\RegisteredEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -262,11 +264,13 @@ class Bot
 			$part = preg_replace('/[\n\r]+/', "\n", $part);
 
 			$lines = explode("\n", (string) $part);
-			foreach($lines as $lines2) {
+			foreach($lines as $lines2)
+			{
 				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
 				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
 				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
-				foreach($lines2 as $line) {
+				foreach($lines2 as $line)
+				{
 					// We finally have the correct line
 					$line = trim($line);
 					if(!empty($line))

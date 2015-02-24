@@ -21,7 +21,8 @@ namespace WildPHP\Event;
 
 use WildPHP\IRC\IServerMessage;
 
-class IRCMessageInboundEvent implements IIRCMessageEvent {
+class IRCMessageInboundEvent implements IIRCMessageEvent
+{
 
 	protected $ircMessage;
 

@@ -25,15 +25,15 @@ namespace WildPHP\IRC;
 class HostMask
 {
 	/**
-	* The hostmask.
-	* @var string
-	*/
+	 * The hostmask.
+	 * @var string
+	 */
 	protected $hostmask;
 
 	/**
-	* The class constructor.
-	* @param string $hostmask The hostmask  to manipulate.
-	*/
+	 * The class constructor.
+	 * @param string $hostmask The hostmask  to manipulate.
+	 */
 	public function __construct($hostmask)
 	{
 		$this->hostmask = $hostmask;

@@ -21,7 +21,8 @@ namespace WildPHP\IRC;
 
 use Phergie\Irc\Parser as PhergieParser;
 
-class ServerMessage implements IServerMessage {
+class ServerMessage implements IServerMessage
+{
 
 	protected $message;
 

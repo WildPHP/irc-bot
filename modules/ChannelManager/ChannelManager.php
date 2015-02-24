@@ -49,7 +49,7 @@ class ChannelManager
 
 	/**
 	 * Set up the module.
-	 * @param object $bot The Bot object.
+	 * @param Bot $bot The Bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
@@ -78,7 +78,7 @@ class ChannelManager
 
 	/**
 	 * Returns the module dependencies.
-	 * @return array The array containing the module names of the dependencies.
+	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{

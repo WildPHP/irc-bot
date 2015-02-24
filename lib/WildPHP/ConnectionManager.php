@@ -61,6 +61,7 @@ class ConnectionManager
 
 	/**
 	 * Sets up the class.
+	 * @param Bot $bot
 	 */
 	public function __construct($bot)
 	{
@@ -70,13 +71,14 @@ class ConnectionManager
 	/**
 	 * Close the connection.
 	 */
-	public function __destruct() {
+	public function __destruct()
+	{
 		$this->disconnect();
 	}
 
 	/**
 	 * Establishs the connection to the server. If no arguments passed, will use the defaults.
-	 * @return boolean True or false, depending on whether the connection succeeded.
+	 * @return boolean|null True or false, depending on whether the connection succeeded.
 	 */
 	public function connect()
 	{
@@ -99,7 +101,8 @@ class ConnectionManager
 	 *
 	 * @return boolean True if the connection was closed. False otherwise.
 	 */
-	public function disconnect() {
+	public function disconnect()
+	{
 		if($this->isConnected())
 			return fclose($this->socket);
 		return false;
@@ -115,11 +118,13 @@ class ConnectionManager
 	 * Sends raw data to the server.
 	 * This method makes sure that the message ends with proper EOL characters.
 	 *
+	 * @param string $data
 	 * @return int the number of bytes written.
 	 * @throws MessageLengthException when $data exceed maximum lenght.
 	 * @throws ConnectionException on socket write error.
 	 */
-	public function sendData($data) {
+	public function sendData($data)
+	{
 		$data = trim($data);
 		if(strlen($data) > 510)
 			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
@@ -139,7 +144,8 @@ class ConnectionManager
 	 *
 	 * @return string The extracted line (trimmed but with line enging characters) or NULL.
 	 */
-	protected function getData() {
+	protected function getData()
+	{
 		$data = fgets($this->socket);
 		if($data === false)
 			return null;
@@ -152,7 +158,8 @@ class ConnectionManager
 	 *
 	 * @return boolean True if the connection exists. False otherwise.
 	 */
-	public function isConnected() {
+	public function isConnected()
+	{
 		return is_resource($this->socket);
 	}
 
@@ -161,7 +168,8 @@ class ConnectionManager
 	 * E.g. irc.quakenet.org or irc.freenode.org
 	 * @param string $server The server to set.
 	 */
-	public function setServer($server) {
+	public function setServer($server)
+	{
 		$this->server = (string) $server;
 	}
 
@@ -170,7 +178,8 @@ class ConnectionManager
 	 * E.g. 6667
 	 * @param integer $port The port to set.
 	 */
-	public function setPort($port) {
+	public function setPort($port)
+	{
 		$this->port = (int) $port;
 	}
 
@@ -202,10 +211,12 @@ class ConnectionManager
 	}
 }
 
-class ConnectionException extends RuntimeException {
+class ConnectionException extends RuntimeException
+{
 
 }
 
-class MessageLengthException extends RuntimeException {
+class MessageLengthException extends RuntimeException
+{
 
 }
