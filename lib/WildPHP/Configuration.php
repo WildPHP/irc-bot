@@ -21,7 +21,7 @@
 namespace WildPHP;
 
 use Nette\Neon;
-use Nette\Neon\Exception;
+use Nette\Neon\Exception as NeonException;
 
 class Configuration
 {
@@ -37,6 +37,7 @@ class Configuration
 	 * Loads the config file and parses it.
 	 * @param string $config The path to the config file.
 	 * @param Bot $bot
+	 * @throws \Exception on read error.
 	 */
 	public function __construct($bot, $config)
 	{
@@ -47,11 +48,11 @@ class Configuration
 			if(!empty($data) && is_string($data))
 				$this->config = Neon\Neon::decode(file_get_contents($config));
 			else
-				die('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.' . PHP_EOL);
+				throw new \Exception('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
-		catch(Neon\Exception $e)
+		catch(NeonException $e)
 		{
-			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
+			throw new \Exception('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
 
 		$this->bot = $bot;
