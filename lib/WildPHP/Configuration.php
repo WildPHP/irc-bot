@@ -20,7 +20,8 @@
 
 namespace WildPHP;
 
-use \Nette\Neon;
+use Nette\Neon;
+use RuntimeException;
 
 class Configuration
 {
@@ -51,7 +52,7 @@ class Configuration
 		}
 		catch(Neon\Exception $e)
 		{
-			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
+			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage());
 		}
 
 		$this->bot = $bot;
