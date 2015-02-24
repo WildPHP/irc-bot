@@ -20,8 +20,7 @@
 
 namespace WildPHP;
 
-use Nette\Neon;
-use Nette\Neon\Exception as NeonException;
+use \Nette\Neon;
 
 class Configuration
 {
@@ -50,7 +49,7 @@ class Configuration
 			else
 				throw new \Exception('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
-		catch(NeonException $e)
+		catch(Neon\Exception $e)
 		{
 			throw new \Exception('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
 		}
@@ -61,6 +60,7 @@ class Configuration
 	/**
 	 * Returns an item stored in the configuration.
 	 * @param string $key The key of the configuration item to get.
+	 * @return false|mixed False on failure; mixed on success.
 	 */
 	public function get($key)
 	{
