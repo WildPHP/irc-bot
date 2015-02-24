@@ -19,6 +19,7 @@
 */
 
 namespace WildPHP;
+
 use Phergie\Irc\Parser;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
@@ -78,13 +79,13 @@ class Bot
 
 	/**
 	 * Sets up the bot for initial load.
-	 * @param string $config_file Optionally load a custom config file
+	 * @param string $configFile Optionally load a custom config file
 	 */
-	public function __construct($config_file = WPHP_CONFIG)
+	public function __construct($configFile = WPHP_CONFIG)
 	{
 
 		// Load the configuration in memory.
-		$this->configuration = new Configuration($this, $config_file);
+		$this->configuration = new Configuration($this, $configFile);
 
 		// Plug in the log.
 		$this->log = new LogManager($this);
@@ -214,9 +215,9 @@ class Bot
 
 	/**
 	 * Returns an instance of the IRCParser class.
-	 * @return IRCParser The IRCParser.
+	 * @return Parser The IRCParser.
 	 */
-	public function getIRCParser()
+	public function getIrcParser()
 	{
 		return $this->parser;
 	}
