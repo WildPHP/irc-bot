@@ -130,6 +130,11 @@ class Bot {
 	public $nickserv = '';
 
 	/**
+	 * The Reminders Array
+	 * @var array
+	 */
+	public $reminders = array();
+	/**
 	 * Creates a new IRCBot.
 	 *
 	 * @param array $configuration The whole configuration, you can use the setters, too.
