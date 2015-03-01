@@ -19,6 +19,8 @@
 */
 namespace WildPHP\IRC;
 
+use RuntimeException;
+
 class MessageLengthException extends RuntimeException
 {
 

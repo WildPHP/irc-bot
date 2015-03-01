@@ -19,6 +19,8 @@
 */
 namespace WildPHP\ConnectionManager;
 
+use RuntimeException;
+
 class ConnectionException extends RuntimeException
 {
 
