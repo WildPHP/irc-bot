@@ -22,7 +22,7 @@ namespace WildPHP;
 
 use WildPHP\Manager;
 
-class ModuleManager extends Manager;
+class ModuleManager extends Manager
 {
 	/**
 	 * The directory the modules are stored in.
