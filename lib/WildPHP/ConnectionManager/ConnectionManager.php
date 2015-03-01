@@ -18,10 +18,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\ConnectionManager;
 
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\IRC\ServerMessage;
+use WildPHP\IRC\MessageLengthException;
 use RuntimeException;
 
 class ConnectionManager
@@ -144,7 +145,7 @@ class ConnectionManager
 	/**
 	 * Extracts a line from the connected data stream.
 	 *
-	 * @return string The extracted line (trimmed but with line enging characters) or NULL.
+	 * @return null|string The extracted line (trimmed but with line enging characters) or NULL.
 	 */
 	protected function getData()
 	{
@@ -235,14 +236,4 @@ class ConnectionManager
 	{
 		$this->nick = (string) $nick;
 	}
-}
-
-class ConnectionException extends RuntimeException
-{
-
-}
-
-class MessageLengthException extends RuntimeException
-{
-
 }

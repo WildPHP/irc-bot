@@ -20,7 +20,7 @@
 
 namespace WildPHP;
 
-use Phergie\Irc\Parser;
+use WildPHP\ConnectionManager\ConnectionManager;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
 
@@ -58,12 +58,6 @@ class Bot
 	 * @var LogManager
 	 */
 	protected $log;
-
-	/**
-	 * The Phergie Parser.
-	 * @var Parser
-	 */
-	protected $parser;
 
 	/**
 	 * The database object.
@@ -110,9 +104,6 @@ class Bot
 
 		// Set up a connection.
 		$this->connection = new ConnectionManager($this);
-
-		// And the parser.
-		$this->parser = new Parser($this);
 	}
 
 	/**
@@ -185,15 +176,6 @@ class Bot
 	public function getModuleManager()
 	{
 		return $this->moduleManager;
-	}
-
-	/**
-	 * Returns the IRCParser class.
-	 * @return Parser The IRCParser.
-	 */
-	public function getIrcParser()
-	{
-		return $this->parser;
 	}
 
 	/**
