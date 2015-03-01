@@ -140,7 +140,7 @@ class ConnectionManager extends Manager
 		if($data === false)
 			return null;
 
-		return trim($data, STREAM_TRIM_CHARACTERS);
+		return trim($data, self::STREAM_TRIM_CHARACTERS);
 	}
 
 	/**

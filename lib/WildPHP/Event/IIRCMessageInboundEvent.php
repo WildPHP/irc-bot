@@ -24,8 +24,6 @@ use WildPHP\IRC\IServerMessage;
 interface IIRCMessageInboundEvent extends IIRCMessageEvent  
 {
 
-	protected $ircMessage;
-
 	/**
 	 * Creates an instance of the IRC message inbound event using ServerMessage as the event data.
 	 * @param IServerMessage $ircMessage The ServerMessage received from server.
