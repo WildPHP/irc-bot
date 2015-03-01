@@ -59,6 +59,6 @@ abstract class Manager
 	 */
 	protected function logDebug($message)
 	{
-		$this->log($message, __CLASS__ . '-DEBUG');
+		$this->bot->log($message, __CLASS__ . '-DEBUG');
 	}
 }
