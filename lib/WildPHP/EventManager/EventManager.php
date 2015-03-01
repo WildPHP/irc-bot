@@ -55,7 +55,7 @@ class EventManager extends Manager
 	public static function assertValidName($name, $message = 'Invalid name.')
 	{
 		if(!is_string($name) || !preg_match(self::EVENT_NAME_PATTERN, $name))
-			throw new InvalidArgumentException($message);
+			throw new InvalidArgumentException($message . ' Name was "' . $name . '".');
 	}
 
 	/**
