@@ -156,7 +156,7 @@ class RegisteredEvent
 
 		$count = 0;
 		foreach($this->listeners as $priority)
-			foreach($this->listeners[$priority] as $listener)
+			foreach($priority as $listener)
 			{
 				call_user_func($listener, $event);
 				$count++;
