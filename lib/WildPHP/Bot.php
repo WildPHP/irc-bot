@@ -51,7 +51,7 @@ class Bot
 	 * The connection manager.
 	 * @var ConnectionManager
 	 */
-	protected $connection;
+	protected $connectionManager;
 
 	/**
 	 * The log manager.
@@ -122,18 +122,18 @@ class Bot
 	{
 		// For that, we need to set the connection parameters.
 		// First up, server.
-		$this->connection->setServer($this->configuration->get('server'));
-		$this->connection->setPort($this->configuration->get('port'));
+		$this->connectionManager->setServer($this->configuration->get('server'));
+		$this->connectionManager->setPort($this->configuration->get('port'));
 
 		// Then we insert the details for the bot.
-		$this->connection->setNick($this->configuration->get('nick'));
-		$this->connection->setName($this->configuration->get('nick'));
+		$this->connectionManager->setNick($this->configuration->get('nick'));
+		$this->connectionManager->setName($this->configuration->get('nick'));
 
 		// Optionally, a password, too.
-		$this->connection->setPassword($this->configuration->get('password'));
+		$this->connectionManager->setPassword($this->configuration->get('password'));
 
 		// And start the connection.
-		$this->connection->connect();
+		$this->connectionManager->connect();
 
 		// !!! onConnect event
 	}
@@ -203,7 +203,7 @@ class Bot
 	public function sendData($data)
 	{
 		$this->log($data, 'DATAOUT');
-		$this->connection->sendData($data);
+		$this->connectionManager->sendData($data);
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Bot
 			$message = 'WildPHP <http://wildphp.com/>';
 
 		$this->sendData('QUIT :' . $message);
-		$this->connection->disconnect();
+		$this->connectionManager->disconnect();
 		exit;
 	}
 
