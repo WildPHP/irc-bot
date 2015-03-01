@@ -54,7 +54,7 @@ class RegisteredEvent
 	 */
 	public function __construct($className)
 	{
-		$this->className = EVENT_NAMESPACE . '\\' . (string) $className;
+		$this->className = self::EVENT_NAMESPACE . '\\' . (string) $className;
 	}
 
 	/**
