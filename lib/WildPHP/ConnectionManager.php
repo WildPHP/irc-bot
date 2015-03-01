@@ -176,6 +176,7 @@ class ConnectionManager
 			)
 		);
 
+		return true;
 	}
 
 	/**
