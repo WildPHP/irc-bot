@@ -24,7 +24,6 @@ use WildPHP\Manager;
 use WildPHP\Bot;
 use Nette\Neon\Neon;
 use Nette\Neon\Exception as NeonException;
-use RuntimeException;
 
 class ConfigurationManager extends Manager
 {
