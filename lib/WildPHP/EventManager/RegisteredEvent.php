@@ -54,7 +54,7 @@ class RegisteredEvent
 	 */
 	public function __construct($className)
 	{
-		$this->className = self::EVENT_NAMESPACE . '\\' . (string) $className;
+		$this->className = (string) $className;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class RegisteredEvent
 	{
 
 		// make sure that the event we got is of the promised type (or a subclass)
-		if(!is_a($event, $this->className))
+		if(!is_a($event, self::EVENT_NAMESPACE . '\\' . $this->className))
 			throw new InvalidEventTypeException('Cannot trigger event: Expected class ' . $this->className . ' or its subclass, got ' . get_class($event) . '.');
 
 		// sort the listener array so that we actually run it in the correct order
