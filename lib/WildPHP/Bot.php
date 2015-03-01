@@ -94,8 +94,8 @@ class Bot
 		$IRCMessageInboundEvent->registerEventHandler(
 			function($e)
 			{
-				if($e->getCommand() === 'PING')
-					$this->sendData('PONG ' . substr($e->getMessage(), 5));
+				if($e->getMessage()->getCommand() === 'PING')
+					$this->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
 			}
 		);
 
