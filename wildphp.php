@@ -45,11 +45,18 @@ define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
 define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'logs/');
 define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
 
+// Turn all PHP errors into exceptions
+set_error_handler(
+	function($errNo, $errStr, $errFile, $errLine) {
+		throw new ErrorException($errStr . ' in ' . $errFile . ' on line ' . $errLine, $errNo);
+	}
+);
 
 // Register the autoloader
 require_once(WPHP_LIB_DIR . 'WildPHP/Autoloader.php');
 spl_autoload_register('WildPHP\Autoloader::load');
 
+// Create a new bot and start it up
 $bot = new Bot();
 $bot->connect();
 $bot->start();
