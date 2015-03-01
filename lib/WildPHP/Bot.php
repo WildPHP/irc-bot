@@ -87,7 +87,7 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInbound');
+		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
 		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
 
 		// Ping handler
