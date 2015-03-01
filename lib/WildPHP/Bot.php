@@ -92,7 +92,17 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->register('IRCMessageInbound', new RegisteredEvent('IIRCMessageInbound'));
+		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInbound');
+		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
+
+		// Ping handler
+		$IRCMessageInboundEvent->registerEventHandler(
+			function($e)
+			{
+				if($e->getCommand() === 'PING')
+					$this->sendData('PONG ' . substr($e->getMessage(), 5));
+			}
+		);
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
