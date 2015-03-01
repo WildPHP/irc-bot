@@ -20,28 +20,25 @@
 
 namespace WildPHP\Configuration;
 
+use WildPHP\Manager;
+use WildPHP\Bot;
 use Nette\Neon\Neon;
 use Nette\Neon\Exception as NeonException;
 use RuntimeException;
 
-class ConfigurationManager
+class ConfigurationManager extends Manager
 {
 	private $config = array();
 
 	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
-
-	/**
 	 * Loads the config file and parses it.
 	 * @param string $config The path to the config file.
-	 * @param Bot $bot
 	 * @throws \Exception on read error.
 	 */
-	public function __construct($bot, $config)
+	public function __construct(Bot $bot, $config)
 	{
+		parent::__construct($bot);
+
 		try
 		{
 			// Open the file and surpress errors; we'll do our own error handling here.
@@ -55,8 +52,6 @@ class ConfigurationManager
 		{
 			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage());
 		}
-
-		$this->bot = $bot;
 	}
 
 	/**

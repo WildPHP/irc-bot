@@ -20,13 +20,10 @@
 
 namespace WildPHP;
 
-class LogManager
+use WildPHP\Manager;
+
+class LogManager extends Manager
 {
-	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
 
 	/**
 	 * Use a buffer to temporarily store data in. Useful on systems with slow disk access.
@@ -68,8 +65,10 @@ class LogManager
 	 * Set up the class.
 	 * @param array $logDir The
 	 */
-	public function __construct($bot, $logDir = WPHP_LOG_DIR)
+	public function __construct(Bot $bot, $logDir = WPHP_LOG_DIR)
 	{
+		parent::__construct($bot);
+
 		// Fetch the configuration.
 		$config = $bot->getConfig('log');
 
@@ -111,9 +110,6 @@ class LogManager
 		// Well this went great...
 		else
 			trigger_error('LogManager: Cannot create file ' . $this->logFile . '. Aborting.', E_USER_ERROR);
-
-		// Set up the bot.
-		$this->bot = $bot;
 	}
 
 	/**

@@ -19,6 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
+use WildPHP\Manager;
 use WildPHP\Bot;
 use WildPHP\EventManager\RegisteredEvent;
 use RuntimeException;
@@ -33,7 +34,7 @@ use InvalidArgumentException;
  * Note that all event names are validated and by default are expected
  * to be conform with the EVENT_NAME_PATTERN regex.
  */
-class EventManager
+class EventManager extends Manager
 {
 
 	const EVENT_NAME_PATTERN = '/^[a-z]+$/i';
@@ -43,18 +44,6 @@ class EventManager
 	 * Each event is stored as array()
 	 */
 	private $events = array();
-
-	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
-
-	// Construct the class.
-	public function __construct(Bot $bot)
-	{
-		$this->bot = $bot;
-	}
 
 	/**
 	 * Validates a name using EVENT_NAME_PATTERN, throwing an exception when the name is invalid.
@@ -87,14 +76,14 @@ class EventManager
 		{
 			// check whether the event we are registering is the same class (or subclass) of what we have already registered
 			if(is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
-				$this->bot->log('Event ' . $eventName . ' has been previously registered, skipping request.', 'EVENTMGR');
+				$this->log('Event ' . $eventName . ' has been previously registered, skipping request.');
 			else
 				throw new EventAlreadyRegisteredException('Event registration failed: Event ' . $eventName . ' has been previously registered with a different class name (' . $this->events[$eventName]->getClassName() . ').');
 			return false;
 		}
 
 		$this->events[$eventName] = $registeredEvent;
-		$this->bot->log('Registered event ' . $eventName . ' (with class ' . $registeredEvent->getClassName() . ').', 'EVENTMGR');
+		$this->log('Registered event ' . $eventName . ' (with class ' . $registeredEvent->getClassName() . ').');
 		return true;
 	}
 

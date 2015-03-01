@@ -20,12 +20,13 @@
 
 namespace WildPHP\Connection;
 
+use WildPHP\Manager;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\IRC\MessageLengthException;
 use RuntimeException;
 
-class ConnectionManager
+class ConnectionManager extends Manager
 {
 	const STREAM_TRIM_CHARACTERS = " \t\0\x0B";
 
@@ -57,21 +58,6 @@ class ConnectionManager
 	private $nick = '';
 
 	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
-
-	/**
-	 * Sets up the class.
-	 * @param Bot $bot
-	 */
-	public function __construct($bot)
-	{
-		$this->bot = $bot;
-	}
-
-	/**
 	 * Close the connection.
 	 */
 	public function __destruct()
@@ -97,7 +83,7 @@ class ConnectionManager
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
 		$this->sendData('NICK ' . $this->nick);
 
-		$this->bot->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.', 'CONNECT');
+		$this->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.');
 	}
 
 	/**
@@ -169,7 +155,7 @@ class ConnectionManager
 		if($data === null)
 			return false;
 
-		$this->bot->log($data, 'DATA');
+		$this->logDebug('<< ' . $data);
 
 		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
 		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(

@@ -20,7 +20,9 @@
 
 namespace WildPHP;
 
-class ModuleManager
+use WildPHP\Manager;
+
+class ModuleManager extends Manager;
 {
 	/**
 	 * The directory the modules are stored in.
@@ -47,22 +49,15 @@ class ModuleManager
 	private $status = array();
 
 	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Bot
-	 */
-	protected $bot;
-
-	/**
 	 * Sets up the module manager.
 	 * @param Bot $bot An instance of the bot.
 	 * @param string $dir The directory where the modules are in.
 	 */
 	public function __construct(Bot $bot, $dir = WPHP_MODULE_DIR)
 	{
-		$this->module_dir = $dir;
-		$this->bot = $bot;
+		parent::__construct($bot);
 
-		// Register our autoloader.
+		$this->module_dir = $dir;
 		spl_autoload_register(array($this, 'autoLoad'));
 	}
 
@@ -112,12 +107,12 @@ class ModuleManager
 		if($this->moduleLoaded($module))
 			return true;
 
-		$this->bot->log('Loading module ' . $module . '...', 'MODMGR');
+		$this->logDebug('Loading module ' . $module . '...');
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
 		if(!$this->moduleAvailable($module) || !class_exists($module_full))
 		{
-			$this->bot->log('Could not load non-existing module ' . $module . '; module not initialised.', 'MODMGR');
+			$this->log('Could not load non-existing module ' . $module . '; module not initialised.');
 			$this->status[$module] = false;
 			return false;
 		}
@@ -128,12 +123,12 @@ class ModuleManager
 		// Looks like we have some modules to load before anything else happens.
 		if($requires !== true)
 		{
-			$this->bot->log('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.', 'MODMGR');
+			$this->logDebug('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.');
 
 			// The function returned a list of modules we need. Load those first.
 			if(!$this->loadModules($requires))
 			{
-				$this->bot->log('Could not satisfy dependencies of module ' . $module . '; module not initialised.', 'MODMGR');
+				$this->log('Could not satisfy dependencies of module ' . $module . '; module not initialised.');
 				$this->status[$module] = false;
 				return false;
 			}
@@ -141,7 +136,7 @@ class ModuleManager
 
 		// Okay, so the class exists.
 		$this->loadedModules[$module] = new $module_full($this->bot);
-		$this->bot->log('Module ' . $module . ' loaded.', 'MODMGR');
+		$this->log('Module ' . $module . ' loaded.');
 		$this->status[$module] = true;
 		return true;
 	}
@@ -242,7 +237,7 @@ class ModuleManager
 		{
 			if(is_dir($this->module_dir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
 			{
-				$this->bot->log('Module ' . $file . ' registered.', 'MODMGR');
+				$this->logDebug('Module ' . $file . ' registered.');
 				$this->modules[] = $file;
 			}
 		}
