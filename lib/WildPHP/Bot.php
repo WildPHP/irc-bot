@@ -20,6 +20,11 @@
 
 namespace WildPHP;
 
+use WildPHP\Configuration\ConfigurationManager;
+use WildPHP\Connection\ConnectionManager;
+use WildPHP\EventManager\EventManager;
+use WildPHP\EventManager\RegisteredEvent;
+
 /**
  * The main bot class. Creates a single bot instance.
  */
@@ -27,85 +32,79 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var WildPHP\Configuration
+	 * @var ConfigurationManager
 	 */
-	protected $configuration;
+	protected $configurationManager;
 
 	/**
 	 * The module manager.
-	 * @var WildPHP\ModuleManager
+	 * @var ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
-	 * @var WildPHP\EventManager
+	 * @var EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
-	 * @var WildPHP\ConnectionManager
+	 * @var ConnectionManager
 	 */
-	protected $connection;
+	protected $connectionManager;
 
 	/**
 	 * The log manager.
-	 * @var WildPHP\LogManager
+	 * @var LogManager
 	 */
 	protected $log;
 
 	/**
-	 * The IRCParser.
-	 * @var IRCParser\IRCParser
-	 */
-	protected $parser;
-
-	/**
-	 * The last data received.
-	 * @var array
-	 */
-	public $lastData;
-
-	/**
 	 * The database object.
-	 * @var SQLite3
+	 * @var \SQLite3
 	 */
 	public $db;
 
 	/**
 	 * Sets up the bot for initial load.
-	 * @param string $config_file Optionally load a custom config file
+	 * @param string $configFile Optionally load a custom config file
 	 */
-	public function __construct($config_file = WPHP_CONFIG)
+	public function __construct($configFile = WPHP_CONFIG)
 	{
 
 		// Load the configuration in memory.
-		$this->configuration = new Configuration($this, $config_file);
+		$this->configurationManager = new ConfigurationManager($this, $configFile);
 
 		// Plug in the log.
 		$this->log = new LogManager($this);
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// Then set up the database.
-		$this->db = new \SQLite3($this->configuration->get('database'));
+		$this->db = new \SQLite3($this->configurationManager->get('database'));
 
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->registerEvent(array('onConnect', 'onSay'));
-		$this->eventManager->registerEvent('onDataReceive', array('surpress_log' => true));
+		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
+		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
+
+		// Ping handler
+		$IRCMessageInboundEvent->registerEventHandler(
+			function($e)
+			{
+				if($e->getMessage()->getCommand() === 'PING')
+					$this->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
+			}
+		);
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
 
 		// Set up a connection.
-		$this->connection = new ConnectionManager($this);
-
-		// And the parser.
-		$this->parser = new \IRCParser\IRCParser($this);
+		$this->connectionManager = new ConnectionManager($this);
 	}
 
 	/**
@@ -115,21 +114,20 @@ class Bot
 	{
 		// For that, we need to set the connection parameters.
 		// First up, server.
-		$this->connection->setServer($this->configuration->get('server'));
-		$this->connection->setPort($this->configuration->get('port'));
+		$this->connectionManager->setServer($this->configurationManager->get('server'));
+		$this->connectionManager->setPort($this->configurationManager->get('port'));
 
 		// Then we insert the details for the bot.
-		$this->connection->setNick($this->configuration->get('nick'));
-		$this->connection->setName($this->configuration->get('nick'));
+		$this->connectionManager->setNick($this->configurationManager->get('nick'));
+		$this->connectionManager->setName($this->configurationManager->get('nick'));
 
 		// Optionally, a password, too.
-		$this->connection->setPassword($this->configuration->get('password'));
+		$this->connectionManager->setPassword($this->configurationManager->get('password'));
 
 		// And start the connection.
-		$this->connection->connect();
+		$this->connectionManager->connect();
 
-		// Call the connection hook.
-		$this->eventManager->triggerEvent('onConnect');
+		// !!! onConnect event
 	}
 
 	/**
@@ -137,63 +135,35 @@ class Bot
 	 */
 	public function start()
 	{
-		if (!$this->connection->isConnected())
-			throw new \Exception('No connection has been set up for the bot to use.');
-
-		do
+		while($this->connectionManager->isConnected())
 		{
-			// Check if we got any new data. Signs of life!
-			$data = $this->connection->getData();
-			if (empty($data))
-				continue;
-
-			// Make a note of what we received.
-			$this->log($data, 'DATA');
-
-			// Parse the data.
-			$data = $this->parser->process($data);
-
-			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
-			if ($data['command'] == 'PING')
-			{
-				$this->sendData('PONG ' . $data['arguments'][0]);
-				continue;
-			}
-
-			// Set the data so we can use it elsewhere.
-			$this->lastData = $data;
-
-			// Got a command?
-			if (!empty($data['bot_command']) && $this->eventManager->eventExists('command_' . $data['bot_command']))
-				$this->eventManager->triggerEvent('command_' . $data['bot_command'], $data);
-
-			$this->eventManager->triggerEvent('onDataReceive', $data);
+			$this->connectionManager->processReceivedData();
 		}
-		while ($this->connection->isConnected());
 	}
 
 	/**
 	 * Returns an item stored in the configuration.
+	 * @param string $item The configuration item to get.
 	 * @return mixed The item stored called by key, or false on failure.
 	 */
 	public function getConfig($item)
 	{
-		return $this->configuration->get($item);
+		return $this->configurationManager->get($item);
 	}
 
 	/**
-	 * Returns an instance of a module.
+	 * Returns a module.
 	 * @param string $module The module to get an instance from.
 	 * @return object|false The module instance on success, false on failure.
 	 */
-	function getModuleInstance($module)
+	public function getModuleInstance($module)
 	{
 		return $this->moduleManager->getModuleInstance($module);
 	}
 
 	/**
-	 * Returns an instance of the EventManager.
-	 * @return \WildPHP\Core\EventManager The Event Manager.
+	 * Returns the EventManager.
+	 * @return EventManager The Event Manager.
 	 */
 	public function getEventManager()
 	{
@@ -201,21 +171,12 @@ class Bot
 	}
 
 	/**
-	 * Returns an instance of the ModuleManager.
-	 * @return \WildPHP\Core\ModuleManager The Module Manager.
+	 * Returns the ModuleManager.
+	 * @return ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
 	{
 		return $this->moduleManager;
-	}
-
-	/**
-	 * Returns an instance of the IRCParser class.
-	 * @return \IRCParser\IRCParser The IRCParser.
-	 */
-	public function getIRCParser()
-	{
-		return $this->parser;
 	}
 
 	/**
@@ -225,7 +186,7 @@ class Bot
 	public function sendData($data)
 	{
 		$this->log($data, 'DATAOUT');
-		$this->connection->sendData($data);
+		$this->connectionManager->sendData($data);
 	}
 
 	/**
@@ -236,20 +197,20 @@ class Bot
 	 */
 	public function say($to, $text = '')
 	{
-		if (empty($to) && empty($text))
+		if(empty($to) && empty($text))
 			return false;
 
 		// Some people are just too lazy.
-		elseif (empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
+		elseif(empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
 		{
 			$text = $to;
 			$to = $this->lastData['arguments'][0];
 		}
 
-		$this->eventManager->triggerEvent('onSay', array('to' => $to, 'text' => &$text));
+		// !!! onSay event
 
 		// Nothing to send?
-		if (empty($text) || empty($to))
+		if(empty($text) || empty($to))
 			return false;
 
 		// Split multiple lines into separate messages *for each member of the input array* (or string, possibly)
@@ -261,11 +222,13 @@ class Bot
 			$part = preg_replace('/[\n\r]+/', "\n", $part);
 
 			$lines = explode("\n", (string) $part);
-			foreach ($lines as $lines2) {
+			foreach($lines as $lines2)
+			{
 				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
 				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
 				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
-				foreach ($lines2 as $line) {
+				foreach($lines2 as $line)
+				{
 					// We finally have the correct line
 					$line = trim($line);
 					if(!empty($line))
@@ -274,7 +237,7 @@ class Bot
 			}
 		}
 
-		foreach ($out as $msg)
+		foreach($out as $msg)
 			$this->sendData('PRIVMSG ' . $to . ' :' . $msg);
 
 		return true;
@@ -296,11 +259,11 @@ class Bot
 	 */
 	public function stop($message = 'WildPHP <http://wildphp.com/>')
 	{
-		if (empty($message))
+		if(empty($message))
 			$message = 'WildPHP <http://wildphp.com/>';
 
 		$this->sendData('QUIT :' . $message);
-		$this->connection->disconnect();
+		$this->connectionManager->disconnect();
 		exit;
 	}
 
@@ -310,7 +273,8 @@ class Bot
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.
 	 */
-	public static function fetch($uri, $decode = false) {
+	public static function fetch($uri, $decode = false)
+	{
 		// create curl resource
 		$ch = curl_init();
 
@@ -327,7 +291,7 @@ class Bot
 		// $output contains the output string
 		$output = curl_exec($ch);
 
-		if (!empty($decode) && ($output = json_decode($output)) === null)
+		if(!empty($decode) && ($output = json_decode($output)) === null)
 			$output = false;
 
 		// close curl resource to free up system resources

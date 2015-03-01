@@ -17,32 +17,29 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\IRC;
 
-namespace WildPHP;
-
-class Autoloader
+/**
+ * Represents an incoming PRIVMSG command.
+ */
+interface ICommandPRIVMSG extends IServerMessage
 {
-	public static function load($class)
-	{
 
-		// Split $class to the "path" and "classname" parts
-		$class = explode('\\', $class);
-		$classpath = $class;
-		array_pop($classpath);
-		$classname = end($class) . '.php';
+	/**
+	 * Returns the sender object.
+	 * @return HostMask The sender object.
+	 */
+	public function getSender();
 
-		// Assemble path
-		$classpath = implode('/', $classpath) . '/';
+	/**
+	 * Returns the target user/channel name.
+	 * @return array Name of the target user/channel of this message.
+	 */
+	public function getTargets();
 
-		$path = WPHP_LIB_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
-
-		if(file_exists($path))
-		{
-			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
-			require $path;
-			return true;
-		}
-
-		return false;
-	}
+	/**
+	 * Returns the sent message.
+	 * @return string The message which was sent.
+	 */
+	public function getUserMessage();
 }

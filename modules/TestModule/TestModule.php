@@ -58,7 +58,7 @@ class TestModule
 
 	/**
 	 * Returns the module dependencies.
-	 * @return array The array containing the module names of the dependencies.
+	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{
@@ -72,7 +72,7 @@ class TestModule
 
 	public function ExecCommand($data)
 	{
-		if (!$this->auth->authUser($data['hostname']))
+		if(!$this->auth->authUser($data['hostname']))
 		{
 			$this->bot->say('You are not authorized to execute this command.');
 			return false;

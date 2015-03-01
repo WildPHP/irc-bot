@@ -17,32 +17,13 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\Event;
 
-namespace WildPHP;
-
-class Autoloader
+interface IIRCMessageEvent extends IEvent
 {
-	public static function load($class)
-	{
-
-		// Split $class to the "path" and "classname" parts
-		$class = explode('\\', $class);
-		$classpath = $class;
-		array_pop($classpath);
-		$classname = end($class) . '.php';
-
-		// Assemble path
-		$classpath = implode('/', $classpath) . '/';
-
-		$path = WPHP_LIB_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
-
-		if(file_exists($path))
-		{
-			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
-			require $path;
-			return true;
-		}
-
-		return false;
-	}
+	/**
+	 * Returns the IRCMessage object that caused this event.
+	 * @return IIRCMessage The message.
+	 */
+	public function getMessage();
 }

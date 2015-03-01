@@ -24,141 +24,141 @@ use WildPHP\Bot;
 
 class ChannelAdmin
 {
-        /**
-         * The Bot object. Used to interact with the main thread.
-         * @var \WildPHP\Core\Bot
-         */
-        private $bot;
+		/**
+		 * The Bot object. Used to interact with the main thread.
+		 * @var \WildPHP\Core\Bot
+		 */
+		private $bot;
 
-        /**
-         * The Auth module's object.
-         * @var \WildPHP\Modules\Auth
-         */
-        private $auth;
+		/**
+		 * The Auth module's object.
+		 * @var \WildPHP\Modules\Auth
+		 */
+		private $auth;
 
-        /**
-         * The Event Manager object.
-         * @var \WildPHP\Core\EventManager
-         */
-        private $evman;
+		/**
+		 * The Event Manager object.
+		 * @var \WildPHP\Core\EventManager
+		 */
+		private $evman;
 
-        /**
-         * Set up the module.
-         * @param object $bot The Bot object.
-         */
-        public function __construct(Bot $bot)
-        {
-                $this->bot = $bot;
+		/**
+		 * Set up the module.
+		 * @param Bot $bot The Bot object.
+		 */
+		public function __construct(Bot $bot)
+		{
+				$this->bot = $bot;
 
-                // Get the event manager over here.
-                $this->evman = $this->bot->getEventManager();
+				// Get the event manager over here.
+				$this->evman = $this->bot->getEventManager();
 
-                // Register our commands.
-                $this->evman->registerEvent(array('command_op', 'command_deop', 'command_voice', 'command_devoice', 'command_kick'), array('hook_once' => true));                
-                $this->evman->registerEventListener('command_op', array($this, 'OPCommand'));
-                $this->evman->registerEventListener('command_deop', array($this, 'DeOPCommand'));
-                $this->evman->registerEventListener('command_voice', array($this, 'VoiceCommand'));
-                $this->evman->registerEventListener('command_devoice', array($this, 'DeVoiceCommand'));
-                $this->evman->registerEventListener('command_kick', array($this, 'KickCommand'));
+				// Register our commands.
+				$this->evman->registerEvent(array('command_op', 'command_deop', 'command_voice', 'command_devoice', 'command_kick'), array('hook_once' => true));                
+				$this->evman->registerEventListener('command_op', array($this, 'OPCommand'));
+				$this->evman->registerEventListener('command_deop', array($this, 'DeOPCommand'));
+				$this->evman->registerEventListener('command_voice', array($this, 'VoiceCommand'));
+				$this->evman->registerEventListener('command_devoice', array($this, 'DeVoiceCommand'));
+				$this->evman->registerEventListener('command_kick', array($this, 'KickCommand'));
 
-                // Get the auth module.
-                $this->auth = $this->bot->getModuleInstance('Auth');
+				// Get the auth module.
+				$this->auth = $this->bot->getModuleInstance('Auth');
 
-                // We're done, thanks!
-                unset($bot);
-        }
+				// We're done, thanks!
+				unset($bot);
+		}
 
-        /**
-         * Returns the module dependencies.
-         * @return array The array containing the module names of the dependencies.
-         */
-        public static function getDependencies()
-        {
-                return array('Auth');
-         }
+		/**
+		 * Returns the module dependencies.
+		 * @return string[] The array containing the module names of the dependencies.
+		 */
+		public static function getDependencies()
+		{
+				return array('Auth');
+		 }
 
-        /**
-         * The OP command.
-         * @param array $data The last data received.
-         */
-        public function OPCommand($data)
-        {
-                if (empty($data['string']))
-                        return;
+		/**
+		 * The OP command.
+		 * @param array $data The last data received.
+		 */
+		public function OPCommand($data)
+		{
+				if(empty($data['string']))
+						return;
 
-                if (!$this->auth->authUser($data['hostname']))
-                        return;
+				if(!$this->auth->authUser($data['hostname']))
+						return;
 
-                // OPs Selected Person.
+				// OPs Selected Person.
 
-                $this->bot->sendData('MODE ' . $data['arguments'][0] . ' +o ' . $data['command_arguments']);
-        }
+				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' +o ' . $data['command_arguments']);
+		}
 
-        /**
-         * The De-OP command.
-         * @param array $data The last data received.
-         */
-        public function DeOPCommand($data)
-        {
-                if (empty($data['string']))
-                        return;
+		/**
+		 * The De-OP command.
+		 * @param array $data The last data received.
+		 */
+		public function DeOPCommand($data)
+		{
+				if(empty($data['string']))
+						return;
 
-                if (!$this->auth->authUser($data['hostname']))
-                        return;
+				if(!$this->auth->authUser($data['hostname']))
+						return;
 
-                $this->bot->sendData('MODE ' . $data['arguments'][0] . ' -o ' . $data['command_arguments']);
-        }
+				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' -o ' . $data['command_arguments']);
+		}
 
-        /**
-         * The Voice command.
-         * @param array $data The last data received.
-         */
-        public function VoiceCommand($data)
-        {
-                if (empty($data['string']))
-                        return;
+		/**
+		 * The Voice command.
+		 * @param array $data The last data received.
+		 */
+		public function VoiceCommand($data)
+		{
+				if(empty($data['string']))
+						return;
 
-                if (!$this->auth->authUser($data['hostname']))
-                        return;
+				if(!$this->auth->authUser($data['hostname']))
+						return;
 
 
-                $this->bot->sendData('MODE ' . $data['arguments'][0] . ' +v ' . $data['command_arguments']);
-        }
+				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' +v ' . $data['command_arguments']);
+		}
 
-        /**
-         * The De-Voice command.
-         * @param array $data The last data received.
-         */
-        public function DeVoiceCommand($data)
-        {
-                if (empty($data['string']))
-                        return;
+		/**
+		 * The De-Voice command.
+		 * @param array $data The last data received.
+		 */
+		public function DeVoiceCommand($data)
+		{
+				if(empty($data['string']))
+						return;
                         
-                if (!$this->auth->authUser($data['hostname']))
-                        return;
+				if(!$this->auth->authUser($data['hostname']))
+						return;
 
 
-                $this->bot->sendData('MODE ' . $data['arguments'][0] . ' -v ' . $data['command_arguments']);
-        }
+				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' -v ' . $data['command_arguments']);
+		}
         
-        /**
-         * The Kick command.
-         * @param array $data The last data received.
-         */
-        public function KickCommand($data)
-        {
-                if (empty($data['string']))
-                        return;
+		/**
+		 * The Kick command.
+		 * @param array $data The last data received.
+		 */
+		public function KickCommand($data)
+		{
+				if(empty($data['string']))
+						return;
 
-                if (!$this->auth->authUser($data['hostname']))
-                        return;
+				if(!$this->auth->authUser($data['hostname']))
+						return;
                 
-                $cdata = explode(' ', $data['command_arguments']);
+				$cdata = explode(' ', $data['command_arguments']);
                 
-                if (count($cdata) < 2)
-                        return;
+				if(count($cdata) < 2)
+						return;
 
-                $user = array_shift($cdata);
-                $this->bot->sendData('KICK ' . $data['arguments'][0] . ' ' . $user . ' :' . implode(' ', $cdata));
-        }
+				$user = array_shift($cdata);
+				$this->bot->sendData('KICK ' . $data['arguments'][0] . ' ' . $user . ' :' . implode(' ', $cdata));
+		}
 }

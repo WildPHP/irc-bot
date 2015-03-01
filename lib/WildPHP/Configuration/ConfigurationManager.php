@@ -18,50 +18,54 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Configuration;
 
-class Configuration
+use WildPHP\Manager;
+use WildPHP\Bot;
+use Nette\Neon\Neon;
+use Nette\Neon\Exception as NeonException;
+
+class ConfigurationManager extends Manager
 {
 	private $config = array();
 
 	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
-
-	/**
 	 * Loads the config file and parses it.
 	 * @param string $config The path to the config file.
+	 * @throws \Exception on read error.
 	 */
-	public function __construct($bot, $config)
+	public function __construct(Bot $bot, $config)
 	{
-		try {
+		parent::__construct($bot);
+
+		try
+		{
 			// Open the file and surpress errors; we'll do our own error handling here.
 			$data = @file_get_contents($config);
-			if (!empty($data) && is_string($data))
-				$this->config = \Nette\Neon\Neon::decode(file_get_contents($config));
+			if(!empty($data) && is_string($data))
+				$this->config = Neon::decode(file_get_contents($config));
 			else
-				die('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.' . PHP_EOL);
-		} catch (\Nette\Neon\Exception $e) {
-			die('Configuration syntax error: ' . $e->getMessage() . PHP_EOL);
+				throw new ConfigurationException('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
-
-		$this->bot = $bot;
+		catch(NeonException $e)
+		{
+			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage());
+		}
 	}
 
 	/**
 	 * Returns an item stored in the configuration.
 	 * @param string $key The key of the configuration item to get.
+	 * @return false|mixed False on failure; mixed on success.
 	 */
 	public function get($key)
 	{
 		$pieces = explode('.', $key);
 
 		$lastPiece = $this->config;
-		foreach ($pieces as $piece)
+		foreach($pieces as $piece)
 		{
-			if (array_key_exists($piece, $lastPiece))
+			if(array_key_exists($piece, $lastPiece))
 				$lastPiece = $lastPiece[$piece];
 			else
 				return false;

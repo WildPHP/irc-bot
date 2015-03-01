@@ -49,7 +49,7 @@ class ChannelManager
 
 	/**
 	 * Set up the module.
-	 * @param object $bot The Bot object.
+	 * @param Bot $bot The Bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
@@ -78,7 +78,7 @@ class ChannelManager
 
 	/**
 	 * Returns the module dependencies.
-	 * @return array The array containing the module names of the dependencies.
+	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{
@@ -91,16 +91,16 @@ class ChannelManager
 	 */
 	public function JoinCommand($data)
 	{
-		if (empty($data['string']))
+		if(empty($data['string']))
 			return;
 
-		if (!$this->auth->authUser($data['hostname']))
+		if(!$this->auth->authUser($data['hostname']))
 			return;
 
 		// Join all specified channels.
 		$c = explode(' ', $data['string']);
 
-		foreach ($c as $chan)
+		foreach($c as $chan)
 		{
 			$this->bot->log('Joining channel ' . $chan . '...', 'CHANMAN');
 			$this->channels[] = $chan;
@@ -114,18 +114,18 @@ class ChannelManager
 	 */
 	public function PartCommand($data)
 	{
-		if (!$this->auth->authUser($data['hostname']))
+		if(!$this->auth->authUser($data['hostname']))
 			return;
 
 		// Part the current channel.
-		if (empty($data['string']))
+		if(empty($data['string']))
 			$c = array($data['argument']);
 
 		// Part all specified channels.
 		else
 			$c = explode(' ', $data['string']);
 
-		foreach ($c as $chan)
+		foreach($c as $chan)
 		{
 			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
 			$this->bot->sendData('PART ' . $chan);
@@ -145,11 +145,11 @@ class ChannelManager
 		$this->evman->triggerEvent('onInitialChannelJoin', array(&$status));
 
 		// And?
-		if ($status)
+		if($status)
 		{
 			$channels = $this->bot->getConfig('channels');
 
-			foreach ($channels as $chan)
+			foreach($channels as $chan)
 			{
 				$this->joinChannel($chan);
 			}
@@ -164,7 +164,7 @@ class ChannelManager
 	 */
 	public function joinChannel($channel)
 	{
-		if (!empty($channel))
+		if(!empty($channel))
 			$this->bot->sendData('JOIN ' . $channel);
 	}
 }

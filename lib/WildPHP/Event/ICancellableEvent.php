@@ -17,4 +17,19 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\Core\Interfaces;
+namespace WildPHP\Event;
+
+interface ICancellableEvent
+{
+	/**
+	 * Marks the event as cancelled.
+	 * @param bool $cancel If set to false, the event will be un-cancelled. Defaults to true.
+	 */
+	public function setCancelled($cancel = true);
+
+	/**
+	 * Tells whether the event has been cancelled.
+	 * @return bool True when cancelled, false otherwise.
+	 */
+	public function isCancelled();
+}

@@ -55,7 +55,7 @@ class Help
 
 	/**
 	 * Returns the module dependencies.
-	 * @return array The array containing the module names of the dependencies.
+	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{
@@ -73,7 +73,7 @@ class Help
 		$cmd = array_shift($pieces);
 
 		// Nope, show all commands.
-		if (empty($cmd))
+		if(empty($cmd))
 		{
 			// All commands are...
 			$cmd = $this->bot->getModuleManager()->getLoadedModules();

@@ -18,10 +18,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Connection;
 
-class ConnectionManager
+use WildPHP\Manager;
+use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\IRC\ServerMessage;
+use WildPHP\IRC\MessageLengthException;
+use RuntimeException;
+
+class ConnectionManager extends Manager
 {
+	const STREAM_TRIM_CHARACTERS = " \t\0\x0B";
+
 	/**
 	 * The server you want to connect to.
 	 * @var string
@@ -38,55 +46,44 @@ class ConnectionManager
 	 * The TCP/IP connection.
 	 * @var resource
 	 */
-	private $socket;
+	protected $socket;
 
 	/**
 	 * The password used for connecting.
 	 * @var string
 	 */
 	private $password = '';
+
 	private $name = '';
 	private $nick = '';
 
 	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var object
-	 */
-	protected $bot;
-
-	/**
-	 * Sets up the class.
-	 */
-	public function __construct($bot)
-	{
-		$this->bot = $bot;
-	}
-
-	/**
 	 * Close the connection.
 	 */
-	public function __destruct() {
-		$this->disconnect();
+	public function __destruct()
+	{
+		if($this->isConnected())
+			$this->disconnect();
 	}
 
 	/**
 	 * Establishs the connection to the server. If no arguments passed, will use the defaults.
-	 * @return boolean True or false, depending on whether the connection succeeded.
+	 * @return boolean|null True or false, depending on whether the connection succeeded.
 	 */
 	public function connect()
 	{
 		// Open a connection.
 		$this->socket = fsockopen($this->server, $this->port);
-		if (!$this->isConnected())
-			throw new Exception('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
+		if(!$this->isConnected())
+			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
 
-		if (!empty($this->password))
+		if(!empty($this->password))
 			$this->sendData('PASS ' . $this->password);
 
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
 		$this->sendData('NICK ' . $this->nick);
 
-		$this->bot->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.', 'CONNECT');
+		$this->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.');
 	}
 
 	/**
@@ -94,9 +91,10 @@ class ConnectionManager
 	 *
 	 * @return boolean True if the connection was closed. False otherwise.
 	 */
-	public function disconnect() {
-		if ($this->isConnected())
-			return fclose( $this->socket );
+	public function disconnect()
+	{
+		if($this->isConnected())
+			return fclose($this->socket);
 		return false;
 	}
 
@@ -107,25 +105,66 @@ class ConnectionManager
 	}
 
 	/**
-	 * Interaction with the server.
-	 * For example, send commands or some other data to the server.
+	 * Sends raw data to the server.
+	 * This method makes sure that the message ends with proper EOL characters.
 	 *
-	 * @return boolean|int the number of bytes written, or FALSE on error.
+	 * @param string $data
+	 * @return int the number of bytes written.
+	 * @throws MessageLengthException when $data exceed maximum lenght.
+	 * @throws ConnectionException on socket write error.
 	 */
-	public function sendData( $data ) {
+	public function sendData($data)
+	{
+		$data = trim($data);
 		if(strlen($data) > 510)
-			throw new Exception('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
+			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
 
-		return fwrite( $this->socket,  $data . "\r\n");
+		$numBytes = fwrite($this->socket, $data . "\r\n");
+		if($numBytes === false)
+		{
+			$errno = socket_last_error();
+			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
+		}
+
+		return $numBytes;
 	}
 
 	/**
-	 * Returns data from the server.
+	 * Extracts a line from the connected data stream.
 	 *
-	 * @return string|boolean The data as string, or false if no data is available or an error occured.
+	 * @return null|string The extracted line (trimmed but with line enging characters) or NULL.
 	 */
-	public function getData() {
-		return trim(fgets($this->socket));
+	protected function getData()
+	{
+		$data = fgets($this->socket);
+		if($data === false)
+			return null;
+
+		return trim($data, self::STREAM_TRIM_CHARACTERS);
+	}
+
+	/**
+	 * Looks for new data, parses them and triggers an event with the data.
+	 *
+	 * @return bool False when there were no data to process, true otherwise.
+	 */
+	public function processReceivedData()
+	{
+		$data = $this->getData();
+
+		if($data === null)
+			return false;
+
+		$this->logDebug('<< ' . $data);
+
+		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
+		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(
+			new IRCMessageInboundEvent(
+				new ServerMessage($data)
+			)
+		);
+
+		return true;
 	}
 
 	/**
@@ -133,8 +172,9 @@ class ConnectionManager
 	 *
 	 * @return boolean True if the connection exists. False otherwise.
 	 */
-	public function isConnected() {
-		return is_resource( $this->socket );
+	public function isConnected()
+	{
+		return is_resource($this->socket);
 	}
 
 	/**
@@ -142,7 +182,8 @@ class ConnectionManager
 	 * E.g. irc.quakenet.org or irc.freenode.org
 	 * @param string $server The server to set.
 	 */
-	public function setServer( $server ) {
+	public function setServer($server)
+	{
 		$this->server = (string) $server;
 	}
 
@@ -151,7 +192,8 @@ class ConnectionManager
 	 * E.g. 6667
 	 * @param integer $port The port to set.
 	 */
-	public function setPort( $port ) {
+	public function setPort($port)
+	{
 		$this->port = (int) $port;
 	}
 
