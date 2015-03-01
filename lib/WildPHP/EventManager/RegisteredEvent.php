@@ -67,7 +67,7 @@ class RegisteredEvent
 	public function registerListener(callable $listener, Priority $priority = null)
 	{
 		if($priority === null)
-			$priority = new Priority(self::NORMAL);
+			$priority = new Priority(Priority::NORMAL);
 
 		if($this->isListenerRegistered($listener))
 			throw new ListenerAlreadyRegisteredException('Attempt to register event listener failed: listener already attached.');
@@ -83,7 +83,7 @@ class RegisteredEvent
 	 */
 	public function registerEventHandler(callable $listener)
 	{
-		return $this->registerListener($listener, new Priority(self::HANDLER));
+		return $this->registerListener($listener, new Priority(Priority::HANDLER));
 	}
 
 	/**
