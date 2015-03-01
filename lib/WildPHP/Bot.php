@@ -143,19 +143,10 @@ class Bot
 	 */
 	public function start()
 	{
-		if(!$this->connection->isConnected())
-			throw new \Exception('No connection has been set up for the bot to use.');
-
-		do
+		while($this->connectionManager->isConnected())
 		{
-
-
-			// Got a command?
-			// !!! command events
-
-			// !!! onDataReceive event
+			$this->connectionManager->processReceivedData();
 		}
-		while($this->connection->isConnected());
 	}
 
 	/**
