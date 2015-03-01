@@ -30,6 +30,7 @@ use \WildPHP\EventManager\ListenerPriority as Priority,
  */
 class RegisteredEvent
 {
+	const EVENT_NAMESPACE = 'WildPHP\Event';
 
 	/**
 	 * Class name of the event.
@@ -53,7 +54,7 @@ class RegisteredEvent
 	 */
 	public function __construct($className)
 	{
-		$this->className = (string) $className;
+		$this->className = EVENT_NAMESPACE . '\\' . (string) $className;
 	}
 
 	/**
