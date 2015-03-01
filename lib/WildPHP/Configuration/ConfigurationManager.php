@@ -18,13 +18,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Configuration;
 
 use Nette\Neon\Neon;
 use Nette\Neon\Exception as NeonException;
 use RuntimeException;
 
-class Configuration
+class ConfigurationManager
 {
 	private $config = array();
 
@@ -79,9 +79,4 @@ class Configuration
 
 		return $lastPiece;
 	}
-}
-
-class ConfigurationException extends RuntimeException
-{
-
 }

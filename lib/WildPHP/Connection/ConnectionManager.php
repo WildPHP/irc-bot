@@ -18,7 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\ConnectionManager;
+namespace WildPHP\Connection;
 
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\IRC\ServerMessage;

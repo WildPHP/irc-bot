@@ -20,7 +20,8 @@
 
 namespace WildPHP;
 
-use WildPHP\ConnectionManager\ConnectionManager;
+use WildPHP\Configuration\ConfigurationManager;
+use WildPHP\Connection\ConnectionManager;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
 
@@ -31,9 +32,9 @@ class Bot
 {
 	/**
 	 * The configuration manager.
-	 * @var Configuration
+	 * @var ConfigurationManager
 	 */
-	protected $configuration;
+	protected $configurationManager;
 
 	/**
 	 * The module manager.
@@ -73,14 +74,14 @@ class Bot
 	{
 
 		// Load the configuration in memory.
-		$this->configuration = new Configuration($this, $configFile);
+		$this->configurationManager = new ConfigurationManager($this, $configFile);
 
 		// Plug in the log.
 		$this->log = new LogManager($this);
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// Then set up the database.
-		$this->db = new \SQLite3($this->configuration->get('database'));
+		$this->db = new \SQLite3($this->configurationManager->get('database'));
 
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
@@ -103,7 +104,7 @@ class Bot
 		$this->moduleManager->setup();
 
 		// Set up a connection.
-		$this->connection = new ConnectionManager($this);
+		$this->connectionManager = new ConnectionManager($this);
 	}
 
 	/**
@@ -113,15 +114,15 @@ class Bot
 	{
 		// For that, we need to set the connection parameters.
 		// First up, server.
-		$this->connectionManager->setServer($this->configuration->get('server'));
-		$this->connectionManager->setPort($this->configuration->get('port'));
+		$this->connectionManager->setServer($this->configurationManager->get('server'));
+		$this->connectionManager->setPort($this->configurationManager->get('port'));
 
 		// Then we insert the details for the bot.
-		$this->connectionManager->setNick($this->configuration->get('nick'));
-		$this->connectionManager->setName($this->configuration->get('nick'));
+		$this->connectionManager->setNick($this->configurationManager->get('nick'));
+		$this->connectionManager->setName($this->configurationManager->get('nick'));
 
 		// Optionally, a password, too.
-		$this->connectionManager->setPassword($this->configuration->get('password'));
+		$this->connectionManager->setPassword($this->configurationManager->get('password'));
 
 		// And start the connection.
 		$this->connectionManager->connect();
@@ -147,7 +148,7 @@ class Bot
 	 */
 	public function getConfig($item)
 	{
-		return $this->configuration->get($item);
+		return $this->configurationManager->get($item);
 	}
 
 	/**

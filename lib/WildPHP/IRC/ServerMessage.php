@@ -20,14 +20,23 @@
 namespace WildPHP\IRC;
 
 use Phergie\Irc\Parser as PhergieParser;
+use InvalidArgumentException;
 
 class ServerMessage implements IServerMessage
 {
 
 	protected $message;
 
-	public function __construct(IRCMessage $ircMessage)
+	/**
+	 * Create a parsed IRC message from string.
+	 * @param string The string to be parsed.
+	 * @throws InvalidArgumentException
+	 */
+	public function __construct($ircMessage)
 	{
+		if(!is_string($ircMessage))
+			throw new InvalidArgumentException('ircMessage is of invalid type: expected string, got ' . gettype($ircMessage) . '.');
+
 		$parser = new PhergieParser();
 		$this->message = $parser->parse($ircMessage);
 	}
