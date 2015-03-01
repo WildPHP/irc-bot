@@ -76,7 +76,8 @@ class ConnectionManager
 	 */
 	public function __destruct()
 	{
-		$this->disconnect();
+		if($this->isConnected())
+			$this->disconnect();
 	}
 
 	/**
