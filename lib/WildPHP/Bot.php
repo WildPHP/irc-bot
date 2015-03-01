@@ -66,12 +66,6 @@ class Bot
 	protected $parser;
 
 	/**
-	 * The last data received.
-	 * @var array
-	 */
-	public $lastData;
-
-	/**
 	 * The database object.
 	 * @var \SQLite3
 	 */
@@ -98,9 +92,7 @@ class Bot
 		$this->eventManager = new EventManager($this);
 
 		// Register some default events.
-		$this->eventManager->register('onConnect', new RegisteredEvent('IEvent'));
-		$this->eventManager->register('onSay', new RegisteredEvent('IEvent'));
-		$this->eventManager->register('onDataReceive', new RegisteredEvent('IEvent'));
+		$this->eventManager->register('IRCMessageInbound', new RegisteredEvent('IIRCMessageInbound'));
 
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
@@ -146,26 +138,7 @@ class Bot
 
 		do
 		{
-			// Check if we got any new data. Signs of life!
-			$data = $this->connection->getData();
-			if(empty($data))
-				continue;
 
-			// Make a note of what we received.
-			$this->log($data, 'DATA');
-
-			// Parse the data.
-			$data = $this->parser->parse($data . "\r\n");
-
-			// Got a PING? Do PONG. Probably nothing needs to handle this anyway. Plus we skip cycles worrying about nothing.
-			if($data['command'] == 'PING')
-			{
-				$this->sendData('PONG ' . $data['arguments'][0]);
-				continue;
-			}
-
-			// Set the data so we can use it elsewhere.
-			$this->lastData = $data;
 
 			// Got a command?
 			// !!! command events
@@ -186,7 +159,7 @@ class Bot
 	}
 
 	/**
-	 * Returns an instance of a module.
+	 * Returns a module.
 	 * @param string $module The module to get an instance from.
 	 * @return object|false The module instance on success, false on failure.
 	 */
@@ -196,7 +169,7 @@ class Bot
 	}
 
 	/**
-	 * Returns an instance of the EventManager.
+	 * Returns the EventManager.
 	 * @return EventManager The Event Manager.
 	 */
 	public function getEventManager()
@@ -205,7 +178,7 @@ class Bot
 	}
 
 	/**
-	 * Returns an instance of the ModuleManager.
+	 * Returns the ModuleManager.
 	 * @return ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
@@ -214,7 +187,7 @@ class Bot
 	}
 
 	/**
-	 * Returns an instance of the IRCParser class.
+	 * Returns the IRCParser class.
 	 * @return Parser The IRCParser.
 	 */
 	public function getIrcParser()

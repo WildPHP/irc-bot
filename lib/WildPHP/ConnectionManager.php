@@ -20,6 +20,8 @@
 
 namespace WildPHP;
 
+use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\IRC\ServerMessage;
 use RuntimeException;
 
 class ConnectionManager
@@ -151,6 +153,29 @@ class ConnectionManager
 			return null;
 
 		return trim($data, STREAM_TRIM_CHARACTERS);
+	}
+
+	/**
+	 * Looks for new data, parses them and triggers an event with the data.
+	 *
+	 * @return bool False when there were no data to process, true otherwise.
+	 */
+	public function processReceivedData()
+	{
+		$data = $this->getData();
+
+		if($data === null)
+			return false;
+
+		$this->bot->log($data, 'DATA');
+
+		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
+		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(
+			new IRCMessageInboundEvent(
+				new ServerMessage($data)
+			)
+		);
+
 	}
 
 	/**
