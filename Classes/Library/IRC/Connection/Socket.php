@@ -86,9 +86,10 @@
 				$pass = $this->password;
 
 			// Open a connection.
-			$this->socket = fsockopen($server, $port);
+			$this->socket = stream_socket_client($server.':'.$port, $errno, $errstr);
 			if (!$this->isConnected())
-				throw new Exception('Unable to connect to server via fsockopen with server: "' . $server . '" and port: "' . $port . '".');
+				throw new Exception('Unable to connect to server via stream_socket_client with server: "' . $server . '" and port: "' . $port . '".'
+					      ."\n".'Error: '.$errno.' ('.$errstr.')');
 
 			socket_set_blocking($this->socket, 0);
 
@@ -133,7 +134,18 @@
 		 * @return string|boolean The data as string, or false if no data is available or an error occured.
 		 */
 		public function getData() {
-			return trim(fgets( $this->socket, 256 ));
+			$read   = array($this->socket );
+			$write  = NULL;
+			$except = NULL;
+			$changed = stream_select($read, $write, $except, 1);
+			if($changed === false) {
+				return false;
+			} else {
+				if($changed > 0)
+					return trim(fgets( $read[0], 256 ));
+				else
+					return false;
+			}
 		}
 
 		/**
