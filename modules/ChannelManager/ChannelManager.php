@@ -20,16 +20,10 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP\Bot;
+use WildPHP\BaseModule;
 
-class ChannelManager
+class ChannelManager extends BaseModule
 {
-	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Core\Bot
-	 */
-	private $bot;
-
 	/**
 	 * List of channels the bot is currently in.
 	 */
@@ -40,67 +34,40 @@ class ChannelManager
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
-
-	/**
-	 * The Event Manager object.
-	 * @var \WildPHP\Core\EventManager
-	 */
-	private $evman;
+	
+    /**
+     * Dependencies of this module.
+     * @var string[]
+     */
+    protected static $dependencies = array('Auth');
 
 	/**
 	 * Set up the module.
 	 * @param Bot $bot The Bot object.
 	 */
-	public function __construct(Bot $bot)
+	public function setup()
 	{
-		$this->bot = $bot;
-
-		// Get the event manager over here.
-		$this->evman = $this->bot->getEventManager();
-
 		// Register our commands.
-		$this->evman->registerEvent(array('command_join', 'command_part'), array('hook_once' => true));
-		$this->evman->registerEventListener('command_join', array($this, 'JoinCommand'));
-		$this->evman->registerEventListener('command_part', array($this, 'PartCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'JoinCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'PartCommand'));
 
 		// We also have a listener.
-		$this->evman->registerEventListener('onDataReceive', array($this, 'initialJoin'));
-
-		// Register any custom events.
-		$this->evman->registerEvent('onInitialChannelJoin');
+		//$this->evman->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
 
 		// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
-
-		// We're done, thanks!
-		unset($bot);
-	}
-
-	/**
-	 * Returns the module dependencies.
-	 * @return string[] The array containing the module names of the dependencies.
-	 */
-	public static function getDependencies()
-	{
-		return array('Auth');
 	}
 
 	/**
 	 * The Join command.
 	 * @param array $data The last data received.
 	 */
-	public function JoinCommand($data)
+	public function JoinCommand($e)
 	{
-		if(empty($data['string']))
+		if ($e->getCommand() != 'join' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
 
-		if(!$this->auth->authUser($data['hostname']))
-			return;
-
-		// Join all specified channels.
-		$c = explode(' ', $data['string']);
-
-		foreach($c as $chan)
+		foreach($e->getParams() as $chan)
 		{
 			$this->bot->log('Joining channel ' . $chan . '...', 'CHANMAN');
 			$this->channels[] = $chan;
@@ -112,18 +79,17 @@ class ChannelManager
 	 * The Part command.
 	 * @param array $data The last data received.
 	 */
-	public function PartCommand($data)
+	public function PartCommand($e)
 	{
-		if(!$this->auth->authUser($data['hostname']))
+		if ($e->getCommand() != 'part' || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
-
-		// Part the current channel.
-		if(empty($data['string']))
-			$c = array($data['argument']);
-
-		// Part all specified channels.
+		
+		// If no argument specified, attempt to leave the current channel.
+		if (empty($e->getParams()))
+			$c = array($e->getMessage()->getTargets());
+			
 		else
-			$c = explode(' ', $data['string']);
+			$c = $e->getParams();
 
 		foreach($c as $chan)
 		{

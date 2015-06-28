@@ -20,15 +20,13 @@
 
 namespace WildPHP\Modules;
 
-class Auth
+class Auth extends \WildPHP\BaseModule
 {
 	private $hostnames;
 	private $pass;
-	private $bot;
 
-	public function __construct($bot)
+	public function setup()
 	{
-		$this->bot = $bot;
 		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 

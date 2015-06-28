@@ -38,4 +38,21 @@ class HostMask
 	{
 		$this->hostmask = $hostmask;
 	}
+	
+	/**
+	 * Getter for $hostmask.
+	 * @return string
+	 */
+	public function getHostMask()
+	{
+		return $this->hostmask;
+	}
+	
+	/**
+	 * Converts the hostmask to a string.
+	 */
+	public function __toString()
+	{
+		return $this->getHostMask();
+	}
 }

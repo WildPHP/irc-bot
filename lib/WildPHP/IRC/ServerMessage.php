@@ -58,7 +58,11 @@ class ServerMessage implements IServerMessage
 
 	public function getPrefix()
 	{
-		return (string) $this->message['string'];
+		return (string) $this->message['prefix'];
 	}
-
+	
+	public function get()
+	{
+		return $this->message;
+	}
 }

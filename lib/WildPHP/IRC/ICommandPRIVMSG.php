@@ -24,7 +24,6 @@ namespace WildPHP\IRC;
  */
 interface ICommandPRIVMSG extends IServerMessage
 {
-
 	/**
 	 * Returns the sender object.
 	 * @return HostMask The sender object.
@@ -42,4 +41,10 @@ interface ICommandPRIVMSG extends IServerMessage
 	 * @return string The message which was sent.
 	 */
 	public function getUserMessage();
+    
+    /**
+     * Returns the bot command, if found.
+     * @return boolean|string False if no command found, string with the command otherwise.
+     */
+    public function getBotCommand();
 }

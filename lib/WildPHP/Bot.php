@@ -89,6 +89,9 @@ class Bot
 		// Register some default events.
 		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
 		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
+		
+		$BotCommandEvent = new RegisteredEvent('ICommandEvent');
+		$this->eventManager->register('BotCommand', $BotCommandEvent);
 
 		// Ping handler
 		$IRCMessageInboundEvent->registerEventHandler(
@@ -96,6 +99,23 @@ class Bot
 			{
 				if($e->getMessage()->getCommand() === 'PING')
 					$this->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
+			}
+		);
+		
+		$IRCMessageInboundEvent->registerEventHandler(
+			function($e)
+			{
+				if ($e->getMessage()->getCommand() != 'PRIVMSG')
+					return;
+				
+				$msg = new IRC\CommandPRIVMSG($e->getMessage(), $this->getConfig('prefix'));
+				
+				if (!$msg->getBotCommand())
+					return;
+				
+				$this->getEventManager()->getEvent('BotCommand')->trigger(
+					new Event\CommandEvent($msg)
+				);
 			}
 		);
 
@@ -201,7 +221,7 @@ class Bot
 			return false;
 
 		// Some people are just too lazy.
-		elseif(empty($text) && $this->lastData['command'] == 'PRIVMSG' && !empty($this->lastData['arguments'][0]))
+		elseif(empty($text) && $this->connectionManager->lastData['command'] == 'PRIVMSG' && !empty($this->connectionManager->lastData['arguments'][0]))
 		{
 			$text = $to;
 			$to = $this->lastData['arguments'][0];

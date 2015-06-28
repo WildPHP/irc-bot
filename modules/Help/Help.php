@@ -20,54 +20,43 @@
 
 namespace WildPHP\Modules;
 
-class Help
-{
-	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Core\Bot
-	 */
-	private $bot;
+use WildPHP\BaseModule;
 
+class Help extends BaseModule
+{
 	/**
 	 * The Auth module's object.
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
+	
+    /**
+     * Dependencies of this module.
+     * @var string[]
+     */
+    protected static $dependencies = array('Auth');
 
 	/**
 	 * Set up the module.
-	 * @param object $bot The Bot object.
 	 */
-	public function __construct($bot)
+	public function setup()
 	{
-		$this->bot = $bot;
-
-		// Get the event manager over here.
-		$evman = $this->bot->getEventManager();
-
 		// Register our command.
-		$evman->registerEvent('command_help', array('hook_once' => true));
-		$evman->registerEventListener('command_help', array($this, 'HelpCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'HelpCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
 	/**
-	 * Returns the module dependencies.
-	 * @return string[] The array containing the module names of the dependencies.
-	 */
-	public static function getDependencies()
-	{
-		return array('Auth');
-	}
-
-	/**
 	 * The help command itself.
 	 * @param array $data The data received.
 	 */
-	public function HelpCommand($data)
+	public function HelpCommand($e)
 	{
+		if ($e->getCommand() != 'help')
+			return;
+		
 		// Do we have a module for specific help?
 		$pieces = explode(' ', $data['command_arguments']);
 		$cmd = array_shift($pieces);

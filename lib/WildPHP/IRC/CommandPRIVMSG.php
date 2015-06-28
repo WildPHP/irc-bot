@@ -23,48 +23,83 @@ use Phergie\Irc\Parser as PhergieParser;
 
 class CommandPRIVMSG implements ICommandPRIVMSG
 {
-
 	protected $message;
+	protected $prefix;
 
-	public function __construct(IRCMessage $ircMessage)
+	public function __construct(ServerMessage $ircMessage, $commandPrefix)
 	{
-		$parser = new PhergieParser();
-		$this->message = $parser->parse($ircMessage);
+		if (!($ircMessage instanceof ServerMessage))
+			throw new InvalidArgumentException('The provided argument is not an instance of ServerMessage.');
+		
+		if ($ircMessage->getCommand() != 'PRIVMSG')
+			throw new InvalidArgumentException('The provided message is not a PRIVMSG command.');
+		
+		$this->message = $ircMessage;
+		$this->prefix = (string) $commandPrefix;
 	}
 
 	public function getMessage()
 	{
-		return $this->message['message'];
+		return $this->message->getMessage();
 	}
 
 	public function getCommand()
 	{
-		return $this->message['command'];
+		return $this->message->getCommand();
 	}
 
 	public function getParams()
 	{
-		return (array) $this->message['params'];
+		return $this->message->getParams();
 	}
 
 	public function getPrefix()
 	{
-		return (string) $this->message['string'];
+		return $this->message->getPrefix();
+	}
+	
+	public function getHostname()
+	{
+		return $this->message->get()['user'];
 	}
 
 	public function getSender()
 	{
-		return new HostMask($this->message['prefix']);
+		return new HostMask($this->getHostname());
 	}
 
 	public function getTargets()
 	{
-		return (array) $this->message['targets'];
+		return $this->message->get()['params']['receivers'];
 	}
 
 	public function getUserMessage()
 	{
-		return (string) $this->message['params']['text'];
+		return (string) $this->message->getParams()['text'];
+	}
+	
+	public function get()
+	{
+		return $this->message;
 	}
 
+    public function getBotCommand()
+	{
+		$pieces = explode(' ', $this->getUserMessage());
+		
+		if (substr($pieces[0], 0, strlen($this->prefix)) != $this->prefix)
+			return false;
+		
+		return substr($pieces[0], strlen($this->prefix));
+	}
+	
+	public function getBotCommandParams()
+	{
+		if (!$this->getBotCommand())
+			return false;
+		
+		$pieces = explode(' ', $this->getUserMessage());
+		array_shift($pieces);
+		return $pieces;
+	}
 }

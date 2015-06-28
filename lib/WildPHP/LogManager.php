@@ -124,10 +124,10 @@ class LogManager extends Manager
 			$status = 'LOG';
 
 		// Add the date and status to the message.
-		$msg = date('d.m.Y - H:i:s') . "\t  [ " . $status . " ] \t" . $data . PHP_EOL;
+		$msg = date('d.m.Y - H:i:s') . "\t  [ " . $status . " ] \t" . $data;
 
 		// Print the message to the console.
-		echo $msg;
+		echo trim($msg) . PHP_EOL;
 
 		// Are we using a buffer? If so, queue the message; we'll write it later.
 		if($this->useBuffer)

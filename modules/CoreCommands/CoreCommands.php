@@ -20,74 +20,67 @@
 
 namespace WildPHP\Modules;
 
-class CoreCommands
-{
-	/**
-	 * The Bot object. Used to interact with the main thread.
-	 * @var \WildPHP\Core\Bot
-	 */
-	private $bot;
+use WildPHP\BaseModule;
+use WildPHP\Validation;
 
+class CoreCommands extends BaseModule
+{
 	/**
 	 * The Auth module's object.
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
+	
+    /**
+     * Dependencies of this module.
+     * @var string[]
+     */
+    protected static $dependencies = array('Auth');
 
 	/**
 	 * Set up the module.
 	 * @param object $bot The Bot object.
 	 */
-	public function __construct($bot)
+	public function setup()
 	{
-		$this->bot = $bot;
-
-		// Get the event manager over here.
-		$this->evman = $this->bot->getEventManager();
-
 		// Register our command.
-		$this->evman->registerEvent(array('command_quit', 'command_say'), array('hook_once' => true));
-		$this->evman->registerEventListener('command_quit', array($this, 'QuitCommand'));
-		$this->evman->registerEventListener('command_say', array($this, 'SayCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'QuitCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'SayCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
 	/**
-	 * Returns the module dependencies.
-	 * @return string[] The array containing the module names of the dependencies.
-	 */
-	public static function getDependencies()
-	{
-		return array('Auth');
-	}
-
-	/**
 	 * The Quit command.
 	 * @param array $data The data received.
 	 */
-	public function QuitCommand($data)
+	public function QuitCommand($e)
 	{
-		$this->bot->stop(!empty($data['command_arguments']) ? $data['command_arguments'] : null);
+		if ($e->getCommand() != 'quit')
+			return;
+		$this->bot->stop(!empty($e->getParams()) ? implode(' ', $e->getParams()) : null);
 	}
 
 	/**
 	 * The Say command.
 	 * @param array $data The data received.
 	 */
-	public function SayCommand($data)
+	public function SayCommand($e)
 	{
-		if(substr($data['command_arguments'], 0, 1) == '#')
+		if ($e->getCommand() != 'say')
+			return;
+		
+		if (Validation::isChannel($e->getParams()[0]))
 		{
-			$args = explode(' ', $data['command_arguments'], 2);
-			$to = $args[0];
-			$message = $args[1];
+			$args = $e->getParams();
+			$to = array_shift($args);
+			$message = implode(' ', $args);
 		}
 		else
 		{
-			$to = $data['arguments'][0];
-			$message = $data['command_arguments'];
+			$to = $e->getMessage()->getTargets();
+			$message = implode(' ', $e->getParams());
 		}
 
 		$this->bot->say($to, $message);

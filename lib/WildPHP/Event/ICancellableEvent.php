@@ -19,7 +19,7 @@
 */
 namespace WildPHP\Event;
 
-interface ICancellableEvent
+interface ICancellableEvent extends IEvent
 {
 	/**
 	 * Marks the event as cancelled.

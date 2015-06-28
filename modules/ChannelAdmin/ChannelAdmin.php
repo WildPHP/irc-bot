@@ -20,145 +20,126 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP\Bot;
+use WildPHP\BaseModule;
+use WildPHP\Validation;
 
-class ChannelAdmin
+class ChannelAdmin extends BaseModule
 {
-		/**
-		 * The Bot object. Used to interact with the main thread.
-		 * @var \WildPHP\Core\Bot
-		 */
-		private $bot;
-
 		/**
 		 * The Auth module's object.
 		 * @var \WildPHP\Modules\Auth
 		 */
 		private $auth;
-
+	
 		/**
-		 * The Event Manager object.
-		 * @var \WildPHP\Core\EventManager
+		 * Dependencies of this module.
+		 * @var string[]
 		 */
-		private $evman;
+		protected static $dependencies = array('Auth', 'ChannelManager');
 
 		/**
 		 * Set up the module.
 		 * @param Bot $bot The Bot object.
 		 */
-		public function __construct(Bot $bot)
+		public function setup()
 		{
-				$this->bot = $bot;
-
-				// Get the event manager over here.
-				$this->evman = $this->bot->getEventManager();
-
-				// Register our commands.
-				$this->evman->registerEvent(array('command_op', 'command_deop', 'command_voice', 'command_devoice', 'command_kick'), array('hook_once' => true));                
-				$this->evman->registerEventListener('command_op', array($this, 'OPCommand'));
-				$this->evman->registerEventListener('command_deop', array($this, 'DeOPCommand'));
-				$this->evman->registerEventListener('command_voice', array($this, 'VoiceCommand'));
-				$this->evman->registerEventListener('command_devoice', array($this, 'DeVoiceCommand'));
-				$this->evman->registerEventListener('command_kick', array($this, 'KickCommand'));
+				// Register our commands.                
+				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'OPCommand'));
+				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'DeOPCommand'));
+				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'VoiceCommand'));
+				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'DeVoiceCommand'));
+				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'KickCommand'));
 
 				// Get the auth module.
 				$this->auth = $this->bot->getModuleInstance('Auth');
-
-				// We're done, thanks!
-				unset($bot);
 		}
 
 		/**
-		 * Returns the module dependencies.
-		 * @return string[] The array containing the module names of the dependencies.
-		 */
-		public static function getDependencies()
-		{
-				return array('Auth');
-		 }
-
-		/**
 		 * The OP command.
-		 * @param array $data The last data received.
+		 * @param \WildPHP\IRC\CommandPRIVMSG $e The last data received.
 		 */
-		public function OPCommand($data)
+		public function OPCommand($e)
 		{
-				if(empty($data['string']))
+				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
-				if(!$this->auth->authUser($data['hostname']))
-						return;
-
+				$parts = $e->getParams();
+				
+				if (Validation::isChannel($parts[0]))
+						$chan = array_shift($parts);
+				else
+						$chan = $e->getMessage()->getTargets();
+				
 				// OPs Selected Person.
-
-				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' +o ' . $data['command_arguments']);
+				$this->bot->sendData('MODE ' . $chan . ' +o ' . implode(' ', $parts));
 		}
 
 		/**
 		 * The De-OP command.
 		 * @param array $data The last data received.
 		 */
-		public function DeOPCommand($data)
+		public function DeOPCommand($e)
 		{
-				if(empty($data['string']))
+				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
-				if(!$this->auth->authUser($data['hostname']))
-						return;
-
-				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' -o ' . $data['command_arguments']);
+				$parts = $e->getParams();
+				if (Validation::isChannel($parts[0]))
+						$chan = array_shift($parts);
+				else
+						$chan = $e->getMessage()->getTargets();
+				$this->bot->sendData('MODE ' . $chan . ' -o ' . implode(' ', $parts));
 		}
 
 		/**
 		 * The Voice command.
 		 * @param array $data The last data received.
 		 */
-		public function VoiceCommand($data)
+		public function VoiceCommand($e)
 		{
-				if(empty($data['string']))
+				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
-				if(!$this->auth->authUser($data['hostname']))
-						return;
-
-
-				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' +v ' . $data['command_arguments']);
+				$parts = $e->getParams();
+				if (Validation::isChannel($parts[0]))
+						$chan = array_shift($parts);
+				else
+						$chan = $e->getMessage()->getTargets();
+				$this->bot->sendData('MODE ' . $chan . ' +v ' . implode(' ', $parts));
 		}
 
 		/**
 		 * The De-Voice command.
 		 * @param array $data The last data received.
 		 */
-		public function DeVoiceCommand($data)
+		public function DeVoiceCommand($e)
 		{
-				if(empty($data['string']))
-						return;
-                        
-				if(!$this->auth->authUser($data['hostname']))
+				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
-
-				$this->bot->sendData('MODE ' . $data['arguments'][0] . ' -v ' . $data['command_arguments']);
+				$parts = $e->getParams();
+				if (Validation::isChannel($parts[0]))
+						$chan = array_shift($parts);
+				else
+						$chan = $e->getMessage()->getTargets();
+				$this->bot->sendData('MODE ' . $chan . ' -v ' . implode(' ', $parts));
 		}
         
 		/**
 		 * The Kick command.
 		 * @param array $data The last data received.
 		 */
-		public function KickCommand($data)
+		public function KickCommand($e)
 		{
-				if(empty($data['string']))
+				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
-
-				if(!$this->auth->authUser($data['hostname']))
-						return;
-                
-				$cdata = explode(' ', $data['command_arguments']);
+				
+				$cdata = explode(' ', $e->getParams());
                 
 				if(count($cdata) < 2)
 						return;
 
 				$user = array_shift($cdata);
-				$this->bot->sendData('KICK ' . $data['arguments'][0] . ' ' . $user . ' :' . implode(' ', $cdata));
+				$this->bot->sendData('KICK ' . $e->getParams()[0] . ' ' . $user . ' :' . implode(' ', $cdata));
 		}
 }
