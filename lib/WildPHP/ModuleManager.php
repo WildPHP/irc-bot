@@ -53,7 +53,7 @@ class ModuleManager extends Manager
 	 * @param Bot $bot An instance of the bot.
 	 * @param string $dir The directory where the modules are in.
 	 */
-	public function __construct(Bot $bot, $dir = WPHP_MODULEDIR)
+	public function __construct(Bot $bot, $dir = WPHP_MODULE_DIR)
 	{
 		parent::__construct($bot);
 
