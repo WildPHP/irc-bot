@@ -31,11 +31,11 @@ class Help extends BaseModule
 	 */
 	private $auth;
 	
-    /**
-     * Dependencies of this module.
-     * @var string[]
-     */
-    protected static $dependencies = array('Auth');
+	/**
+	 * Dependencies of this module.
+	 * @var string[]
+	 */
+	protected static $dependencies = array('Auth');
 
 	/**
 	 * Set up the module.

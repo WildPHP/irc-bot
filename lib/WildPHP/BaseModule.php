@@ -24,11 +24,11 @@ use WildPHP\EventManager\EventManager;
 
 class BaseModule
 {
-    /**
-     * Dependencies of this module.
-     * @var string[]
-     */
-    protected static $dependencies = array();
+	/**
+	 * Dependencies of this module.
+	 * @var string[]
+	 */
+	protected static $dependencies = array();
     
 	/**
 	 * The Bot object. Used to interact with the main thread.
@@ -36,11 +36,11 @@ class BaseModule
 	 */
 	protected $bot;
     
-    /**
-     * The module directory.
-     * @var string
-     */
-    private $dir;
+	/**
+	 * The module directory.
+	 * @var string
+	 */
+	private $dir;
     
 	/**
 	 * Set up the module.
@@ -50,21 +50,21 @@ class BaseModule
 	{
 		$this->bot = $bot;
             
-        $dirname = explode('\\', get_class($this));
-        $this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
+		$dirname = explode('\\', get_class($this));
+		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
 
-        if (method_exists($this, 'setup'))
-            $this->setup();
+		if (method_exists($this, 'setup'))
+			$this->setup();
 	}
     
-    /**
-     * Return the working directory of this module.
-     * @return string
-     */
-    public function getWorkingDir()
-    {
-        return $this->dir;
-    }
+	/**
+	 * Return the working directory of this module.
+	 * @return string
+	 */
+	public function getWorkingDir()
+	{
+		return $this->dir;
+	}
     
 	/**
 	 * Returns the module dependencies.
@@ -75,12 +75,12 @@ class BaseModule
 		return self::$dependencies;
 	}
     
-    /**
-     * Helper function for using the Event Manager.
-     * @return EventManager
-     */
-    public function evman()
-    {
-        return $this->bot->getEventManager();
-    }
+	/**
+	 * Helper function for using the Event Manager.
+	 * @return EventManager
+	 */
+	public function evman()
+	{
+		return $this->bot->getEventManager();
+	}
 }

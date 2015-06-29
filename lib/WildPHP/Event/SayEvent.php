@@ -21,98 +21,98 @@ namespace WildPHP\Event;
 
 class SayEvent implements ISayEvent
 {
-    /**
-     * Boolean determining the state of the event.
-     * @var bool
-     */
-    protected $cancelled = false;
+	/**
+	 * Boolean determining the state of the event.
+	 * @var bool
+	 */
+	protected $cancelled = false;
     
-    /**
-     * The text that's going to be said.
-     * @var string
-     */
-    protected $text = '';
+	/**
+	 * The text that's going to be said.
+	 * @var string
+	 */
+	protected $text = '';
     
-    /**
-     * The recipients.
-     * @var string[]
-     */
-    protected $recipients = array();
+	/**
+	 * The recipients.
+	 * @var string[]
+	 */
+	protected $recipients = array();
     
-    /**
-     * Construct method.
-     * @param string $text The initial text to send.
-     * @param string|string[] $to The recipients.
-     */
-    public function __construct($text, $to)
-    {
-        $this->setText($text);
-        $this->addRecipient($to);
-    }
+	/**
+	 * Construct method.
+	 * @param string $text The initial text to send.
+	 * @param string|string[] $to The recipients.
+	 */
+	public function __construct($text, $to)
+	{
+		$this->setText($text);
+		$this->addRecipient($to);
+	}
     
-    public function setText($text)
-    {
-        $this->text = $text;
-    }
+	public function setText($text)
+	{
+		$this->text = $text;
+	}
     
-    public function getText()
-    {
-        return $this->text;
-    }
+	public function getText()
+	{
+		return $this->text;
+	}
     
-    public function addRecipient($to)
-    {
-        if (is_array($to))
-        {
-            // We want no duplicates.
-            foreach ($to as $id => $recp)
-            {
-                if (!is_string($recp) || $this->recipientExists($recp))
-                    unset($to[$id]);
-            }
-            $this->recipients = array_merge($this->recipients, $to);
-        }
-        else
-        {
-            if (!$this->recipientExists($to))
-                $this->recipients[] = $to;
-        }
-    }
+	public function addRecipient($to)
+	{
+		if (is_array($to))
+		{
+			// We want no duplicates.
+			foreach ($to as $id => $recp)
+			{
+				if (!is_string($recp) || $this->recipientExists($recp))
+					unset($to[$id]);
+			}
+			$this->recipients = array_merge($this->recipients, $to);
+		}
+		else
+		{
+			if (!$this->recipientExists($to))
+				$this->recipients[] = $to;
+		}
+	}
     
-    public function removeRecipient($to)
-    {
-        if (is_array($to))
-        {
-            foreach ($to as $recp)
-            {
-                if ($this->recipientExists($recp))
-                    unset($this->recipients[array_search($recp, $this->recipients)]);
-            }
-        }
-        else
-        {
-            if ($this->recipientExists($to))
-                unset($this->recipients[array_search($to, $this->recipients)]);
-        }
-    }
+	public function removeRecipient($to)
+	{
+		if (is_array($to))
+		{
+			foreach ($to as $recp)
+			{
+				if ($this->recipientExists($recp))
+					unset($this->recipients[array_search($recp, $this->recipients)]);
+			}
+		}
+		else
+		{
+			if ($this->recipientExists($to))
+				unset($this->recipients[array_search($to, $this->recipients)]);
+		}
+	}
     
-    public function recipientExists($to)
-    {
-        return in_array($to, $this->recipients);
-    }
+	public function recipientExists($to)
+	{
+		return in_array($to, $this->recipients);
+	}
     
-    public function getRecipients()
-    {
-        return $this->recipients;
-    }
+	public function getRecipients()
+	{
+		return $this->recipients;
+	}
     
-    public function setCancelled($cancel = true)
-    {
-        $this->cancelled = (bool) $cancel;
-    }
+	public function setCancelled($cancel = true)
+	{
+		$this->cancelled = (bool) $cancel;
+	}
     
-    public function isCancelled()
-    {
-        return $this->cancelled;
-    }
+	public function isCancelled()
+	{
+		return $this->cancelled;
+	}
 }
