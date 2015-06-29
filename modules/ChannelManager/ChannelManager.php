@@ -23,6 +23,7 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Validation;
 use WildPHP\IRC\CommandPRIVMSG;
+use WildPHP\EventManager\RegisteredEvent;
 
 class ChannelManager extends BaseModule
 {
@@ -51,9 +52,13 @@ class ChannelManager extends BaseModule
 		// Register our commands.
 		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'joinCommand'));
 		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'partCommand'));
+		
+		// Register a new event.
+		$channelJoin = new RegisteredEvent('ChannelJoinEvent');
+		$this->evman()->register('ChannelJoin', $channelJoin);
 
 		// We also have a listener.
-		//$this->evman->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
+		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
 
 		// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -101,18 +106,15 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function handles the initial joining of channels.
-	 * @param array $e The last data received.
+	 * @param ServerMessage $e The last data received.
 	 */
 	public function initialJoin($e)
 	{
 		// Are we ready?
-		$status = $e['command'] == '376' && $e['string'] == 'End of /MOTD command.';
-
-		// Do any modules think we are ready?
-		$this->evman->triggerEvent('onInitialChannelJoin', array(&$status));
+		$status = $e->getCommand() == '376' && $e->get()['string'] == 'End of /MOTD command.';
 
 		// And?
-		if($status)
+		if ($status)
 		{
 			$channels = $this->bot->getConfig('channels');
 
@@ -121,7 +123,7 @@ class ChannelManager extends BaseModule
 				$this->joinChannel($chan);
 			}
 
-			$this->evman->removeEventListener('onDataReceive', array($this, 'initialJoin'));
+			$this->evman()->getEvent('IRCMessageInbound')->removeListener(array($this, 'initialJoin'));
 		}
 	}
 
@@ -132,6 +134,9 @@ class ChannelManager extends BaseModule
 	public function joinChannel($channel)
 	{
 		if(!empty($channel) && Validation::isChannel($channel))
+		{
+			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelManager\ChannelJoinEvent($channel));
 			$this->bot->sendData('JOIN ' . $channel);
+		}
 	}
 }
