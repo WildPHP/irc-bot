@@ -93,8 +93,14 @@ class Bot
 		$BotCommandEvent = new RegisteredEvent('ICommandEvent');
 		$this->eventManager->register('BotCommand', $BotCommandEvent);
 		
+		// Say event, used in the Say method before saying something. This event is cancellable.
 		$SayEvent = new RegisteredEvent('ISayEvent');
 		$this->eventManager->register('Say', $SayEvent);
+		
+		// Connect event... Used at startup, right after connecting.
+		// You can use this to e.g. initialise databases, if you haven't done so yet.
+		$ConnectEvent = new RegisteredEvent('IConnectEvent');
+		$this->eventManager->register('Connect', $ConnectEvent);
 
 		// Ping handler
 		$IRCMessageInboundEvent->registerEventHandler(
@@ -147,10 +153,11 @@ class Bot
 		// Optionally, a password, too.
 		$this->connectionManager->setPassword($this->configurationManager->get('password'));
 
-		// And start the connection.
+		// Start the connection.
 		$this->connectionManager->connect();
 
-		// !!! onConnect event
+		// And fire the onConnect event.
+		$this->eventManager->getEvent('Connect')->trigger(new Event\ConnectEvent());
 	}
 
 	/**
@@ -216,7 +223,7 @@ class Bot
 	 * Say something to a channel.
 	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
 	 * @param mixed $text The string to be sent or an array of strings. Newlines separate messages.
-	 * @return bool False on failure, true on success.
+	 * @return bool False on failure (or when cancelled), true on success.
 	 */
 	public function say($to, $text = '')
 	{
@@ -232,7 +239,11 @@ class Bot
 		elseif (empty($text))
 			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');
 
-		$this->eventManager->getEvent('Say')->trigger(new WildPHP\Event\SayEvent($text, $to));
+		$e = new WildPHP\Event\SayEvent($text, $to);
+		$this->eventManager->getEvent('Say')->trigger($e);
+		
+		if ($e->isCancelled())
+			return false;
 
 		// Nothing to send?
 		if(empty($text) || empty($to))
