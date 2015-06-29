@@ -50,4 +50,10 @@ interface ISayEvent extends ICancellableEvent
      * @param string $to
      */
     public function recipientExists($to);
+    
+    /**
+     * Returns all recipients.
+     * @return string[]
+     */
+    public function getRecipients();
 }

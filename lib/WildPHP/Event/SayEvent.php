@@ -101,6 +101,11 @@ class SayEvent implements ISayEvent
         return in_array($to, $this->recipients);
     }
     
+    public function getRecipients()
+    {
+        return $this->recipients;
+    }
+    
     public function setCancelled($cancel = true)
     {
         $this->cancelled = (bool) $cancel;
