@@ -236,7 +236,7 @@ class ConnectionManager extends Manager
 	
 	/**
 	 * Returns the last data received.
-	 * @return array
+	 * @return ServerMessage
 	 */
 	public function getLastData()
 	{
