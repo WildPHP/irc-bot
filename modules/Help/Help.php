@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\IRC\CommandPRIVMSG;
 
 class Help extends BaseModule
 {
@@ -50,7 +51,7 @@ class Help extends BaseModule
 
 	/**
 	 * The help command itself.
-	 * @param array $data The data received.
+	 * @param CommandPRIVMSG $data The data received.
 	 */
 	public function HelpCommand($e)
 	{
@@ -58,7 +59,7 @@ class Help extends BaseModule
 			return;
 		
 		// Do we have a module for specific help?
-		$pieces = explode(' ', $data['command_arguments']);
+		$pieces = $e->getParams();
 		$cmd = array_shift($pieces);
 
 		// Nope, show all commands.

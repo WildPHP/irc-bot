@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\IRC\CommandPRIVMSG;
 
 class Dev extends BaseModule
 {
@@ -50,7 +51,7 @@ class Dev extends BaseModule
 
 	/**
 	 * Executes a command.
-	 * @param array $e The data received.
+	 * @param CommandPRIVMSG $e The data received.
 	 * @return bool
 	 */
 	public function execCommand($e)

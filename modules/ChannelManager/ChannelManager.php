@@ -21,6 +21,8 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\Validation;
+use WildPHP\IRC\CommandPRIVMSG;
 
 class ChannelManager extends BaseModule
 {
@@ -59,7 +61,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Join command.
-	 * @param array $e The last data received.
+	 * @param CommandPRIVMSG $e The last data received.
 	 */
 	public function joinCommand($e)
 	{
@@ -76,7 +78,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Part command.
-	 * @param array $e The last data received.
+	 * @param CommandPRIVMSG $e The last data received.
 	 */
 	public function partCommand($e)
 	{
@@ -129,7 +131,7 @@ class ChannelManager extends BaseModule
 	 */
 	public function joinChannel($channel)
 	{
-		if(!empty($channel))
+		if(!empty($channel) && Validation::isChannel($channel))
 			$this->bot->sendData('JOIN ' . $channel);
 	}
 }

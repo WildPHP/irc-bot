@@ -22,6 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Validation;
+use WildPHP\IRC\CommandPRIVMSG;
 
 class CoreCommands extends BaseModule
 {
@@ -52,7 +53,7 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Quit command.
-	 * @param array $e The data received.
+	 * @param CommandPRIVMSG $e The data received.
 	 */
 	public function quitCommand($e)
 	{
@@ -63,7 +64,7 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Say command.
-	 * @param array $e The data received.
+	 * @param CommandPRIVMSG $e The data received.
 	 */
 	public function sayCommand($e)
 	{

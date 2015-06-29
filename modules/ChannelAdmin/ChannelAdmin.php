@@ -22,6 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Validation;
+use WildPHP\IRC\CommandPRIVMSG;
 
 class ChannelAdmin extends BaseModule
 {
@@ -55,7 +56,7 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The OP command.
-		 * @param \WildPHP\IRC\CommandPRIVMSG $e The last data received.
+		 * @param CommandPRIVMSG $e The last data received.
 		 */
 		public function opCommand($e)
 		{
@@ -75,7 +76,7 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The De-OP command.
-		 * @param array $e The last data received.
+		 * @param CommandPRIVMSG $e The last data received.
 		 */
 		public function deOpCommand($e)
 		{
@@ -92,7 +93,7 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The Voice command.
-		 * @param array $e The last data received.
+		 * @param CommandPRIVMSG $e The last data received.
 		 */
 		public function voiceCommand($e)
 		{
@@ -109,7 +110,7 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The De-Voice command.
-		 * @param array $e The last data received.
+		 * @param CommandPRIVMSG $e The last data received.
 		 */
 		public function deVoiceCommand($e)
 		{
@@ -126,7 +127,7 @@ class ChannelAdmin extends BaseModule
         
 		/**
 		 * The Kick command.
-		 * @param array $e The last data received.
+		 * @param CommandPRIVMSG $e The last data received.
 		 */
 		public function kickCommand($e)
 		{
