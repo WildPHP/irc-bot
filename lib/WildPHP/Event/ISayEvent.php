@@ -21,43 +21,43 @@ namespace WildPHP\Event;
 
 interface ISayEvent extends ICancellableEvent
 {
-    /**
-     * Returns the text being said.
-     * @return string
-     */
-    public function getText();
+	/**
+	 * Returns the text being said.
+	 * @return string
+	 */
+	public function getText();
     
-    /**
-     * Sets the text being said.
-     * @param string $text
-     * @return void
-     */
-    public function setText($text);
+	/**
+	 * Sets the text being said.
+	 * @param string $text
+	 * @return void
+	 */
+	public function setText($text);
     
-    /**
-     * Adds (a) new recipient(s)
-     * @param string|string[] $to
-     * @return void
-     */
-    public function addRecipient($to);
+	/**
+	 * Adds (a) new recipient(s)
+	 * @param string|string[] $to
+	 * @return void
+	 */
+	public function addRecipient($to);
     
-    /**
-     * Removes (a) recipient(s)
-     * @param string|string[] $to
-     * @return void
-     */
-    public function removeRecipient($to);
+	/**
+	 * Removes (a) recipient(s)
+	 * @param string|string[] $to
+	 * @return void
+	 */
+	public function removeRecipient($to);
     
-    /**
-     * Checks if a recipient exists.
-     * @param string $to
-     * @return boolean
-     */
-    public function recipientExists($to);
+	/**
+	 * Checks if a recipient exists.
+	 * @param string $to
+	 * @return boolean
+	 */
+	public function recipientExists($to);
     
-    /**
-     * Returns all recipients.
-     * @return string[]
-     */
-    public function getRecipients();
+	/**
+	 * Returns all recipients.
+	 * @return string[]
+	 */
+	public function getRecipients();
 }

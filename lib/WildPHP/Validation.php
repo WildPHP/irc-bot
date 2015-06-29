@@ -25,7 +25,7 @@ namespace WildPHP;
  */
 class Validation
 {
-    	public static function isChannel($chan)
+		public static function isChannel($chan)
 		{
 				return preg_match('/^(?:\&|\#|\+|\!)\w+$/', $chan) !== false;
 		}

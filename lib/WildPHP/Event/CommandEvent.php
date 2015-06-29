@@ -24,7 +24,7 @@ use \WildPHP\IRC\CommandPRIVMSG;
 class CommandEvent implements ICommandEvent
 {
 	protected $command;
-    protected $params;
+	protected $params;
 	protected $message;
 
 	public function __construct(CommandPRIVMSG $message)
@@ -37,15 +37,15 @@ class CommandEvent implements ICommandEvent
 			throw new \InvalidArgumentException('The given CommandPRIVMSG is not a bot command.');
 	}
     
-    public function getCommand()
-    {
-        return $this->command;
-    }
+	public function getCommand()
+	{
+		return $this->command;
+	}
     
-    public function getParams()
-    {
-        return $this->params;
-    }
+	public function getParams()
+	{
+		return $this->params;
+	}
 	
 	public function getMessage()
 	{

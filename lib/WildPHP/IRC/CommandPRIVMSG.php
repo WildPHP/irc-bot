@@ -83,7 +83,7 @@ class CommandPRIVMSG implements ICommandPRIVMSG
 		return $this->message;
 	}
 
-    public function getBotCommand()
+	public function getBotCommand()
 	{
 		$pieces = explode(' ', $this->getUserMessage());
 		
