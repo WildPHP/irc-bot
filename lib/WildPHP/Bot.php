@@ -224,8 +224,10 @@ class Bot
 		elseif(empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG' && !empty($this->connectionManager->getLastData()->get()['arguments'][0]))
 		{
 			$text = $to;
-			$to = $this->getLastData()->get()['arguments'][0];
+			$to = $this->connectionManager->getLastData()->get()['arguments'][0];
 		}
+		elseif (empty($text))
+			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');
 
 		// !!! onSay event
 

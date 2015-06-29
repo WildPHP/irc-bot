@@ -59,7 +59,7 @@ class ConnectionManager extends Manager
 	
 	/**
 	 * The last data received.
-	 * @var array
+	 * @var ServerMessage
 	 */
 	protected $lastdata = array();
 
