@@ -106,12 +106,12 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function handles the initial joining of channels.
-	 * @param ServerMessage $e The last data received.
+	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
 	public function initialJoin($e)
 	{
 		// Are we ready?
-		$status = $e->getCommand() == '376' && $e->get()['string'] == 'End of /MOTD command.';
+		$status = $e->getMessage()->getCommand() == '376' && $e->get()['string'] == 'End of /MOTD command.';
 
 		// And?
 		if ($status)
