@@ -59,7 +59,7 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function opCommand($e)
 		{
-				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->get()->getSender()))
+				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 						return;
 
 				$parts = $e->getParams();
@@ -67,7 +67,7 @@ class ChannelAdmin extends BaseModule
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->get()->getTargets();
+						$chan = $e->getTargets();
 				
 				// OPs Selected Person.
 				$this->bot->sendData('MODE ' . $chan . ' +o ' . implode(' ', $parts));
@@ -79,14 +79,14 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function deOpCommand($e)
 		{
-				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->get()->getSender()))
+				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 						return;
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->get()->getTargets();
+						$chan = $e->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' -o ' . implode(' ', $parts));
 		}
 
@@ -96,7 +96,7 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function voiceCommand($e)
 		{
-				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->get()->getSender()))
+				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 						return;
 
 				$parts = $e->getParams();
@@ -113,14 +113,14 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function deVoiceCommand($e)
 		{
-				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->get()->getSender()))
+				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 						return;
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->get()->getTargets();
+						$chan = $e->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' -v ' . implode(' ', $parts));
 		}
         
@@ -130,7 +130,7 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function kickCommand($e)
 		{
-				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->get()->getSender()))
+				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 						return;
 				
 				$cdata = explode(' ', $e->getParams());
