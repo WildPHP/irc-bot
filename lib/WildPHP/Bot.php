@@ -92,6 +92,9 @@ class Bot
 		
 		$BotCommandEvent = new RegisteredEvent('ICommandEvent');
 		$this->eventManager->register('BotCommand', $BotCommandEvent);
+		
+		$SayEvent = new RegisteredEvent('ISayEvent');
+		$this->eventManager->register('Say', $SayEvent);
 
 		// Ping handler
 		$IRCMessageInboundEvent->registerEventHandler(
@@ -229,7 +232,7 @@ class Bot
 		elseif (empty($text))
 			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');
 
-		// !!! onSay event
+		$this->eventManager->getEvent('Say')->trigger(new WildPHP\Event\SayEvent($text, $to));
 
 		// Nothing to send?
 		if(empty($text) || empty($to))
