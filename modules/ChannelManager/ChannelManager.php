@@ -111,7 +111,7 @@ class ChannelManager extends BaseModule
 	public function initialJoin($e)
 	{
 		// Are we ready?
-		$status = $e->getMessage()->getCommand() == '376' && $e->get()['string'] == 'End of /MOTD command.';
+		$status = $e->getMessage()->getCommand() == '376' && $e->getMessage()->get()['string'] == 'End of /MOTD command.';
 
 		// And?
 		if ($status)
