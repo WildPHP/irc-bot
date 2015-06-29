@@ -43,13 +43,12 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * Set up the module.
-	 * @param Bot $bot The Bot object.
 	 */
 	public function setup()
 	{
 		// Register our commands.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'JoinCommand'));
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'PartCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'joinCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'partCommand'));
 
 		// We also have a listener.
 		//$this->evman->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
@@ -60,9 +59,9 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Join command.
-	 * @param array $data The last data received.
+	 * @param array $e The last data received.
 	 */
-	public function JoinCommand($e)
+	public function joinCommand($e)
 	{
 		if ($e->getCommand() != 'join' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
@@ -77,9 +76,9 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Part command.
-	 * @param array $data The last data received.
+	 * @param array $e The last data received.
 	 */
-	public function PartCommand($e)
+	public function partCommand($e)
 	{
 		if ($e->getCommand() != 'part' || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
@@ -100,12 +99,12 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function handles the initial joining of channels.
-	 * @param array $data The last data received.
+	 * @param array $e The last data received.
 	 */
-	public function initialJoin($data)
+	public function initialJoin($e)
 	{
 		// Are we ready?
-		$status = $data['command'] == '376' && $data['string'] == 'End of /MOTD command.';
+		$status = $e['command'] == '376' && $e['string'] == 'End of /MOTD command.';
 
 		// Do any modules think we are ready?
 		$this->evman->triggerEvent('onInitialChannelJoin', array(&$status));

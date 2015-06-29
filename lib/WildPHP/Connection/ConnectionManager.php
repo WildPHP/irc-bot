@@ -56,6 +56,12 @@ class ConnectionManager extends Manager
 
 	private $name = '';
 	private $nick = '';
+	
+	/**
+	 * The last data received.
+	 * @var array
+	 */
+	protected $lastdata = array();
 
 	/**
 	 * Close the connection.
@@ -156,13 +162,17 @@ class ConnectionManager extends Manager
 			return false;
 
 		$this->logDebug('<< ' . $data);
+		
+		$data = new ServerMessage($data);
 
 		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
 		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(
 			new IRCMessageInboundEvent(
-				new ServerMessage($data)
+				$data
 			)
 		);
+		
+		$this->lastdata = $data;
 
 		return true;
 	}
@@ -222,5 +232,14 @@ class ConnectionManager extends Manager
 	public function setNick($nick)
 	{
 		$this->nick = (string) $nick;
+	}
+	
+	/**
+	 * Returns the last data received.
+	 * @return array
+	 */
+	public function getLastData()
+	{
+		return $this->lastdata;
 	}
 }

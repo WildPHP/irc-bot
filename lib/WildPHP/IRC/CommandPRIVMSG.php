@@ -95,7 +95,7 @@ class CommandPRIVMSG implements ICommandPRIVMSG
 	
 	public function getBotCommandParams()
 	{
-		if (!$this->getBotCommand())
+		if ($this->getBotCommand() === false)
 			return false;
 		
 		$pieces = explode(' ', $this->getUserMessage());

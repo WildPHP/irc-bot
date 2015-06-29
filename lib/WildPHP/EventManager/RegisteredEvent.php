@@ -62,7 +62,7 @@ class RegisteredEvent
 	 * The listener function must be able to accept the event as its first parameter.
 	 * Throws an exception when the listener is attempted to be registered for a second time.
 	 * @param callable $listener The listener (as a callable function or method) that will be called when the event is triggered
-	 * @param Priority $priority The priority this event will be ran with. Defaults to normal.
+	 * @param null|Priority $priority The priority this event will be ran with. Defaults to normal.
 	 * @throws ListenerAlreadyRegisteredException
 	 */
 	public function registerListener(callable $listener, Priority $priority = null)

@@ -28,7 +28,7 @@ class ModuleManager extends Manager
 	 * The directory the modules are stored in.
 	 * @var string
 	 */
-	private $module_dir;
+	private $moduleDir;
 
 	/**
 	 * The list of available modules.
@@ -53,11 +53,11 @@ class ModuleManager extends Manager
 	 * @param Bot $bot An instance of the bot.
 	 * @param string $dir The directory where the modules are in.
 	 */
-	public function __construct(Bot $bot, $dir = WPHP_MODULE_DIR)
+	public function __construct(Bot $bot, $dir = WPHP_MODULEDIR)
 	{
 		parent::__construct($bot);
 
-		$this->module_dir = $dir;
+		$this->moduleDir = $dir;
 		spl_autoload_register(array($this, 'autoLoad'));
 	}
 
@@ -121,7 +121,7 @@ class ModuleManager extends Manager
 		$requires = $this->checkModuleDependencies($module);
 
 		// Looks like we have some modules to load before anything else happens.
-		if($requires !== true)
+		if(!is_bool($requires))
 		{
 			$this->logDebug('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.');
 
@@ -203,8 +203,8 @@ class ModuleManager extends Manager
 	{
 		$class = str_replace('WildPHP\\modules\\', '', $class);
 
-		if(file_exists($this->module_dir . $class . '/' . $class . '.php'))
-			require_once($this->module_dir . $class . '/' . $class . '.php');
+		if(file_exists($this->moduleDir . $class . '/' . $class . '.php'))
+			require_once($this->moduleDir . $class . '/' . $class . '.php');
 	}
 
 	/**
@@ -233,9 +233,9 @@ class ModuleManager extends Manager
 	public function scanModules()
 	{
 		// Scan the modules directory for any available modules
-		foreach(scandir($this->module_dir) as $file)
+		foreach(scandir($this->moduleDir) as $file)
 		{
-			if(is_dir($this->module_dir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
+			if(is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
 			{
 				$this->logDebug('Module ' . $file . ' registered.');
 				$this->modules[] = $file;

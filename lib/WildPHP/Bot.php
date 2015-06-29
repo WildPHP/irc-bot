@@ -110,7 +110,7 @@ class Bot
 				
 				$msg = new IRC\CommandPRIVMSG($e->getMessage(), $this->getConfig('prefix'));
 				
-				if (!$msg->getBotCommand())
+				if ($msg->getBotCommand() === false)
 					return;
 				
 				$this->getEventManager()->getEvent('BotCommand')->trigger(
@@ -221,10 +221,10 @@ class Bot
 			return false;
 
 		// Some people are just too lazy.
-		elseif(empty($text) && $this->connectionManager->lastData['command'] == 'PRIVMSG' && !empty($this->connectionManager->lastData['arguments'][0]))
+		elseif(empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG' && !empty($this->connectionManager->getLastData()->get()['arguments'][0]))
 		{
 			$text = $to;
-			$to = $this->lastData['arguments'][0];
+			$to = $this->getLastData()->get()['arguments'][0];
 		}
 
 		// !!! onSay event

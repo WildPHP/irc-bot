@@ -39,13 +39,12 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * Set up the module.
-	 * @param object $bot The Bot object.
 	 */
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'QuitCommand'));
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'SayCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'quitCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'sayCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -53,9 +52,9 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Quit command.
-	 * @param array $data The data received.
+	 * @param array $e The data received.
 	 */
-	public function QuitCommand($e)
+	public function quitCommand($e)
 	{
 		if ($e->getCommand() != 'quit')
 			return;
@@ -64,9 +63,9 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Say command.
-	 * @param array $data The data received.
+	 * @param array $e The data received.
 	 */
-	public function SayCommand($e)
+	public function sayCommand($e)
 	{
 		if ($e->getCommand() != 'say')
 			return;

@@ -27,6 +27,6 @@ class Validation
 {
     	public static function isChannel($chan)
 		{
-				return preg_match("/^(?:\&|\#|\+|\!)\w+$/", $chan) != false;
+				return preg_match('/^(?:\&|\#|\+|\!)\w+$/', $chan) !== false;
 		}
 }

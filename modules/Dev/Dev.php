@@ -38,12 +38,11 @@ class Dev extends BaseModule
 
 	/**
 	 * Set up the module.
-	 * @param object $bot The Bot object.
 	 */
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'ExecCommand'));
+		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'execCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -51,13 +50,13 @@ class Dev extends BaseModule
 
 	/**
 	 * Executes a command.
-	 * @param array $data The data received.
+	 * @param array $e The data received.
 	 * @return bool
 	 */
-	public function ExecCommand($e)
+	public function execCommand($e)
 	{
 		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-			return;
+			return false;
 
 		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');
 		eval(implode(' ', $e->getParams()));

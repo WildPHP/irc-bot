@@ -33,7 +33,7 @@ class CommandEvent implements ICommandEvent
 		$this->command = $message->getBotCommand();
 		$this->params = $message->getBotCommandParams();
 		
-		if ($this->command == false)
+		if ($this->command === false)
 			throw new \InvalidArgumentException('The given CommandPRIVMSG is not a bot command.');
 	}
     

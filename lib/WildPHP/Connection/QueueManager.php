@@ -97,10 +97,10 @@ class QueueManager extends Manager
 			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: expeted integer, got ' . gettype($linesPerSecond) . '.');
 
 		if($linesPerSecond < 0)
-			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.')
+			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');
 		
 		if($linesMaxBurst < 1)
-			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.')
+			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.');
 
 		$this->linesPerSecond = $linesPerSecond;
 		$this->linesMaxBurst = $linesMaxBurst;
@@ -209,7 +209,7 @@ class QueueManager extends Manager
 	protected function getImmediateQueueContents()
 	{
 		// Alias the queue for readability
-		$queue = &$this->queues[QueuePriority::IMMEDIATE]);
+		$queue = &$this->queues[QueuePriority::IMMEDIATE];
 
 		// Return empty-handed if we are ... empty.
 		if(empty($queue))
@@ -238,28 +238,6 @@ class QueueManager extends Manager
 	{
 		return $this->linesAvailable;
 	}
-
-	/**
-	 * Returns the count of messages in a specific queue.
-	 * @param QueuePriority $priority The queue priority to be examined
-	 * @return int Count of messages in the queue.
-	 * @todo remove this method
-	 *//*
-	public function getQueueSize(QueuePriority $priority)
-	{
-		$priority = $priority->getValue();
-
-		// Void queue is always empty
-		if($priority === QueuePriority::void)
-			return 0;
-
-		// Immediate queue is an array, so it is accessed using a different method.
-		// Again this is really ugly approach.
-		if($priority === QueuePriority::IMMEDIATE)
-			return count($this->queues[QueuePriority::IMMEDIATE]);
-
-		return $this->queues[$priority]->count();
-	}*/
 
 	/**
 	 * Recreates all queues effectively purging them.

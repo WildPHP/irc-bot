@@ -49,4 +49,10 @@ interface IServerMessage
 	 * @return string The message prefix.
 	 */
 	public function getPrefix();
+    
+    /**
+     * Returns the IRC message as parsed by Phergie.
+     * @return array
+     */
+    public function get();
 }

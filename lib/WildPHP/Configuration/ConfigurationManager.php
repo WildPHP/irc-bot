@@ -23,7 +23,6 @@ namespace WildPHP\Configuration;
 use WildPHP\Manager;
 use WildPHP\Bot;
 use Nette\Neon\Neon;
-use Nette\Neon\Exception as NeonException;
 
 class ConfigurationManager extends Manager
 {
@@ -47,7 +46,7 @@ class ConfigurationManager extends Manager
 			else
 				throw new ConfigurationException('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
-		catch(NeonException $e)
+		catch(\Exception $e)
 		{
 			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage());
 		}
