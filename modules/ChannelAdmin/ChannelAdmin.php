@@ -104,7 +104,7 @@ class ChannelAdmin extends BaseModule
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->get()->getTargets();
+						$chan = $e->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' +v ' . implode(' ', $parts));
 		}
 

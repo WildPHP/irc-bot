@@ -56,7 +56,7 @@ class Dev extends BaseModule
 	 */
 	public function execCommand($e)
 	{
-		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
+		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
 			return false;
 
 		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');

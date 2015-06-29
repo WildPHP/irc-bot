@@ -79,7 +79,7 @@ class CoreCommands extends BaseModule
 		}
 		else
 		{
-			$to = $e->getMessage()->getTargets();
+			$to = $e->getTargets();
 			$message = implode(' ', $e->getParams());
 		}
 
