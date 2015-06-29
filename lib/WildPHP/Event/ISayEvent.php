@@ -30,24 +30,28 @@ interface ISayEvent extends ICancellableEvent
     /**
      * Sets the text being said.
      * @param string $text
+     * @return void
      */
     public function setText($text);
     
     /**
      * Adds (a) new recipient(s)
      * @param string|string[] $to
+     * @return void
      */
     public function addRecipient($to);
     
     /**
      * Removes (a) recipient(s)
      * @param string|string[] $to
+     * @return void
      */
     public function removeRecipient($to);
     
     /**
      * Checks if a recipient exists.
      * @param string $to
+     * @return boolean
      */
     public function recipientExists($to);
     
