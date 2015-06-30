@@ -44,11 +44,12 @@ class CommandEvent implements ICommandEvent
 	public function __construct(CommandPRIVMSG $message)
 	{
 		$this->message = $message;
+		
+		if (!$message->getCommand())
+			throw new \InvalidArgumentException('This CommandPRIVMSG does not have a command associated; CommandEvent can not be fired.');
+		
 		$this->command = $message->getBotCommand();
 		$this->params = $message->getBotCommandParams();
-		
-		if ($this->command === false)
-			throw new \InvalidArgumentException('The given CommandPRIVMSG is not a bot command.');
 	}
     
 	public function getCommand()
