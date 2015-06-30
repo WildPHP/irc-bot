@@ -33,13 +33,13 @@ class QueueManager extends Manager
 
 	/**
 	 * Stores the queues as an array of pointers to first and last elements of the queue.
-	 * @var array<QueuePriority array<'first'<QueueItem>,'last'<QueueItem>>>
+	 * @var array<QueuePriority, array<'first'<QueueItem>,'last'<QueueItem>>>
 	 */
 	protected $queues;
 
 	/**
 	 * The flood limit for max. lines per second that will be returned from the queues.
-	 * @var double
+	 * @var int
 	 */
 	protected $linesPerSecond;
 
