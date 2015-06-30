@@ -72,7 +72,7 @@ class ChannelManager extends BaseModule
 	 */
 	public function joinCommand($e)
 	{
-		if ($e->getCommand() != 'join' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+		if ($e->getCommand() != 'join' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
 
 		foreach($e->getParams() as $chan)
@@ -93,7 +93,7 @@ class ChannelManager extends BaseModule
 			return;
 		
 		// If no argument specified, attempt to leave the current channel.
-		if (empty($e->getParams()))
+		if (empty($e->getMessage()->getParams()))
 			$c = array($e->getTargets());
 			
 		else

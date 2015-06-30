@@ -52,7 +52,7 @@ class Dev extends BaseModule
 
 	/**
 	 * Executes a command.
-	 * @param CommandPRIVMSG $e The data received.
+	 * @param CommandEvent $e The data received.
 	 * @return bool
 	 */
 	public function execCommand($e)

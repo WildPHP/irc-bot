@@ -23,8 +23,22 @@ use \WildPHP\IRC\CommandPRIVMSG;
 
 class CommandEvent implements ICommandEvent
 {
+	/**
+	 * Command name.
+	 * @var string
+	 */
 	protected $command;
+	
+	/**
+	 * Parameters received.
+	 * @var string[]
+	 */
 	protected $params;
+	
+	/**
+	 * The message received.
+	 * @var CommandPRIVMSG
+	 */
 	protected $message;
 
 	public function __construct(CommandPRIVMSG $message)
