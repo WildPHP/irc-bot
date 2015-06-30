@@ -67,6 +67,12 @@ class QueueManager extends Manager
 	 * @var int
 	 */
 	protected $linesAvailable = 0;
+	
+	/**
+	 * The message count.
+	 * @var int
+	 */
+	protected $messageCount = 0;
 
 	/**
 	 * Initializes the queues. You can specify custom flood limits, but the defaults should be safe for most servers.
@@ -160,7 +166,7 @@ class QueueManager extends Manager
 		}
 
 		// Everything else goes here
-		$queues[$priority]->enqueue($message);
+		$this->queues[$priority]->enqueue($message);
 	}
 
 	/**
