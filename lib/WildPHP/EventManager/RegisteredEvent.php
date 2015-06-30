@@ -175,18 +175,3 @@ class RegisteredEvent
 	}
 
 }
-
-class ListenerAlreadyRegisteredException extends RuntimeException
-{
-
-}
-
-class ListenerNotRegisteredException extends RuntimeException
-{
-
-}
-
-class InvalidEventTypeException extends InvalidArgumentException
-{
-
-}
