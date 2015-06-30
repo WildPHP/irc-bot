@@ -78,6 +78,11 @@ class CommandPRIVMSG implements ICommandPRIVMSG
 		return (string) $this->message->getParams()['text'];
 	}
 	
+	public function getNickname()
+	{
+		return $this->message->get()['nick'];
+	}
+	
 	public function get()
 	{
 		return $this->message;
