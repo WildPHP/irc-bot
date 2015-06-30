@@ -22,14 +22,22 @@ namespace WildPHP\Modules;
 
 class Auth extends \WildPHP\BaseModule
 {
+	/**
+	 * List of hostnames to accept.
+	 * @var string[]
+	 */
 	private $hostnames;
-	private $pass;
 
 	public function setup()
 	{
 		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 
+	/**
+	 * Checks if this user is authenticated.
+	 * @param string $hostname The hostname to check.
+	 * @return boolean
+	 */
 	public function authUser($hostname)
 	{
 		// Remove the nickname from the hostname to also match with that. The nickname doesn't have to always be the same!
