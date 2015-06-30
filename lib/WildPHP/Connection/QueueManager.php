@@ -133,7 +133,7 @@ class QueueManager extends Manager
 	/**
 	 * Queues a new message at given priority.
 	 * @param string $message The message.
-	 * @param QueuePriority $priority The desired priority. Defaults to NORMAL.
+	 * @param null|QueuePriority $priority The desired priority. Defaults to NORMAL.
 	 * @return void
 	 * @throws InvalidArgumentException when $message is not a string.
 	 */
@@ -171,7 +171,7 @@ class QueueManager extends Manager
 
 	/**
 	 * Returns an array of queued messages respecting the limits and removing the messages from their queues.
-	 * @return array<string> Array of messages from the queues.
+	 * @return string[] Array of messages from the queues.
 	 */
 	public function getQueuedItems()
 	{
@@ -210,7 +210,7 @@ class QueueManager extends Manager
 	/**
 	 * Returns contents of the immediate "queue" array.
 	 * The messages count toward flood limits and the array is reset.
-	 * @return array<string> messages from the immediate queue
+	 * @return string[] messages from the immediate queue
 	 */
 	protected function getImmediateQueueContents()
 	{
