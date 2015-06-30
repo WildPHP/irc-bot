@@ -127,13 +127,3 @@ class EventManager extends Manager
 		return $this->events[$eventName];
 	}
 }
-
-class EventAlreadyRegisteredException extends RuntimeException
-{
-
-}
-
-class EventDoesNotExistException extends RuntimeException
-{
-
-}
