@@ -51,7 +51,7 @@ class Help extends BaseModule
 
 	/**
 	 * The help command itself.
-	 * @param CommandPRIVMSG $data The data received.
+	 * @param CommandEvent $data The data received.
 	 */
 	public function HelpCommand($e)
 	{

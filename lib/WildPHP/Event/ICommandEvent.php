@@ -19,6 +19,8 @@
 */
 namespace WildPHP\Event;
 
+use WildPHP\IRC\CommandPRIVMSG;
+
 interface ICommandEvent extends IEvent
 {
 	/**
@@ -32,4 +34,10 @@ interface ICommandEvent extends IEvent
 	 * @return string[]
 	 */
 	public function getParams();
+	
+	/**
+	 * Returns the assiciated command.
+	 * @return CommandPRIVMSG
+	 */
+	public function getMessage();
 }
