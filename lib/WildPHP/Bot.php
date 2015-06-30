@@ -176,7 +176,7 @@ class Bot
 	/**
 	 * Returns an item stored in the configuration.
 	 * @param string $item The configuration item to get.
-	 * @return mixed The item stored called by key, or false on failure.
+	 * @return false|mixed The item stored called by key, or false on failure.
 	 */
 	public function getConfig($item)
 	{

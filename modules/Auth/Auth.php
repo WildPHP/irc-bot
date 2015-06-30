@@ -30,6 +30,11 @@ class Auth extends \WildPHP\BaseModule
 
 	public function setup()
 	{
+		$hostnames = $this->bot->getConfig('hosts');
+		
+		if (!$hostnames)
+			throw new \Exception('Could not read trusted hostnames from the bot config.');
+		
 		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 
