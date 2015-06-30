@@ -39,7 +39,7 @@ class QueueManager extends Manager
 
 	/**
 	 * The flood limit for max. lines per second that will be returned from the queues.
-	 * @var int
+	 * @var int|double
 	 */
 	protected $linesPerSecond;
 
