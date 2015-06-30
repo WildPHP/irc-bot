@@ -33,7 +33,7 @@ class Auth extends \WildPHP\BaseModule
 	public function authUser($hostname)
 	{
 		// Remove the nickname from the hostname to also match with that. The nickname doesn't have to always be the same!
-		$hostnonick = preg_replace("/[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/", "", $hostname);
+		$hostnonick = preg_replace('/[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/', '', $hostname);
 		$result = !empty($hostname) && (in_array($hostname, $this->hostnames) || in_array($hostnonick, $this->hostnames));
 
 		$this->bot->log('Checking authorization for hostname ' . $hostname . ': ' . ($result ? 'Authorized' : 'Unauthorized'), 'AUTH');
