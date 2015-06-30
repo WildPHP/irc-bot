@@ -27,6 +27,7 @@ class Autoloader
 
 		// Split $class to the "path" and "classname" parts
 		$class = explode('\\', $class);
+		
 		$classpath = $class;
 		array_pop($classpath);
 		$classname = end($class) . '.php';
@@ -35,7 +36,7 @@ class Autoloader
 		$classpath = implode('/', $classpath) . '/';
 
 		$path = WPHP_LIB_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
-
+			
 		if(file_exists($path))
 		{
 			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;

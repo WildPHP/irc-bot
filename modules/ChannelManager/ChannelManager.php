@@ -22,8 +22,10 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Validation;
-use WildPHP\IRC\CommandPRIVMSG;
+use WildPHP\Event\CommandEvent;
 use WildPHP\EventManager\RegisteredEvent;
+use WildPHP\Event\ChannelJoinEvent;
+use WildPHP\Event\ChannelPartEvent;
 
 class ChannelManager extends BaseModule
 {
@@ -66,7 +68,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Join command.
-	 * @param CommandPRIVMSG $e The last data received.
+	 * @param CommandEvent $e The last data received.
 	 */
 	public function joinCommand($e)
 	{
@@ -83,11 +85,11 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Part command.
-	 * @param CommandPRIVMSG $e The last data received.
+	 * @param CommandEvent $e The last data received.
 	 */
 	public function partCommand($e)
 	{
-		if ($e->getCommand() != 'part' || !$this->auth->authUser($e->getSender()))
+		if ($e->getCommand() != 'part' || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
 		
 		// If no argument specified, attempt to leave the current channel.
@@ -111,7 +113,7 @@ class ChannelManager extends BaseModule
 	public function initialJoin($e)
 	{
 		// Are we ready?
-		$status = $e->getMessage()->getCommand() == '376' && $e->getMessage()->get()['string'] == 'End of /MOTD command.';
+		$status = $e->getMessage()->getCommand() == '376' && $e->getMessage()->get()['code'] == 'RPL_ENDOFMOTD';
 
 		// And?
 		if ($status)
@@ -135,7 +137,7 @@ class ChannelManager extends BaseModule
 	{
 		if(!empty($channel) && Validation::isChannel($channel))
 		{
-			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelManager\ChannelJoinEvent($channel));
+			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
 			$this->bot->sendData('JOIN ' . $channel);
 		}
 	}

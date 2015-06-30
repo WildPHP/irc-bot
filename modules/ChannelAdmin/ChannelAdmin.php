@@ -22,7 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Validation;
-use WildPHP\IRC\CommandPRIVMSG;
+use WildPHP\Event\CommandEvent;
 
 class ChannelAdmin extends BaseModule
 {
@@ -56,19 +56,18 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The OP command.
-		 * @param CommandPRIVMSG $e The last data received.
+		 * @param CommandEvent $e The last data received.
 		 */
 		public function opCommand($e)
 		{
-				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
 				$parts = $e->getParams();
-				
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->getTargets();
+						$chan = $e->getMessage()->getTargets();
 				
 				// OPs Selected Person.
 				$this->bot->sendData('MODE ' . $chan . ' +o ' . implode(' ', $parts));
@@ -76,62 +75,62 @@ class ChannelAdmin extends BaseModule
 
 		/**
 		 * The De-OP command.
-		 * @param CommandPRIVMSG $e The last data received.
+		 * @param CommandEvent $e The last data received.
 		 */
 		public function deOpCommand($e)
 		{
-				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->getTargets();
+						$chan = $e->getMessage()->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' -o ' . implode(' ', $parts));
 		}
 
 		/**
 		 * The Voice command.
-		 * @param CommandPRIVMSG $e The last data received.
+		 * @param CommandEvent $e The last data received.
 		 */
 		public function voiceCommand($e)
 		{
-				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->getTargets();
+						$chan = $e->getMessage()->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' +v ' . implode(' ', $parts));
 		}
 
 		/**
 		 * The De-Voice command.
-		 * @param CommandPRIVMSG $e The last data received.
+		 * @param CommandEvent $e The last data received.
 		 */
 		public function deVoiceCommand($e)
 		{
-				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
 						$chan = array_shift($parts);
 				else
-						$chan = $e->getTargets();
+						$chan = $e->getMessage()->getTargets();
 				$this->bot->sendData('MODE ' . $chan . ' -v ' . implode(' ', $parts));
 		}
         
 		/**
 		 * The Kick command.
-		 * @param CommandPRIVMSG $e The last data received.
+		 * @param CommandEvent $e The last data received.
 		 */
 		public function kickCommand($e)
 		{
-				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 						return;
 				
 				$cdata = explode(' ', $e->getParams());

@@ -39,7 +39,7 @@ class CommandEvent implements ICommandEvent
     
 	public function getCommand()
 	{
-		return $this->command;
+		return strtolower($this->command);
 	}
     
 	public function getParams()

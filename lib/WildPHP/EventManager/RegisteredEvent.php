@@ -108,10 +108,10 @@ class RegisteredEvent
 	 */
 	public function removeListener(callable $listener)
 	{
-		foreach($this->listeners as $priority)
-			if(($key = in_array($listener, $priority, true)) !== false)
+		foreach($this->listeners as $level => $priority)
+			if(($key = array_search($listener, $priority, true)) !== false)
 			{
-				unset($this->listeners[$priority][$key]);
+				unset($this->listeners[$level][$key]);
 				return;
 			}
 

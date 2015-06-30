@@ -44,6 +44,7 @@ class Dev extends BaseModule
 	{
 		// Register our command.
 		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'execCommand'));
+		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -56,11 +57,19 @@ class Dev extends BaseModule
 	 */
 	public function execCommand($e)
 	{
-		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getSender()))
+		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
 			return false;
 
 		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');
 		eval(implode(' ', $e->getParams()));
 		return true;
+	}
+	
+	/**
+	 * Simply a test listener. Dump any code you want in here.
+	 */
+	public function testListener($e)
+	{
+		//echo var_dump($e);
 	}
 }

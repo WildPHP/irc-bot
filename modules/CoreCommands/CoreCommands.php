@@ -22,7 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Validation;
-use WildPHP\IRC\CommandPRIVMSG;
+use WildPHP\Event\CommandEvent;
 
 class CoreCommands extends BaseModule
 {
@@ -53,18 +53,18 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Quit command.
-	 * @param CommandPRIVMSG $e The data received.
+	 * @param CommandEvent $e The data received.
 	 */
 	public function quitCommand($e)
 	{
-		if ($e->getCommand() != 'quit')
+		if ($e->getCommand() != 'quit' || !$this->auth->authUser($e->getMessage()->getSender()))
 			return;
 		$this->bot->stop(!empty($e->getParams()) ? implode(' ', $e->getParams()) : null);
 	}
 
 	/**
 	 * The Say command.
-	 * @param CommandPRIVMSG $e The data received.
+	 * @param CommandEvent $e The data received.
 	 */
 	public function sayCommand($e)
 	{
@@ -79,7 +79,7 @@ class CoreCommands extends BaseModule
 		}
 		else
 		{
-			$to = $e->getTargets();
+			$to = $e->getMessage()->getTargets();
 			$message = implode(' ', $e->getParams());
 		}
 

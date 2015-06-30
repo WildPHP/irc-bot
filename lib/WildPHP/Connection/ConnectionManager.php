@@ -164,6 +164,8 @@ class ConnectionManager extends Manager
 		$this->logDebug('<< ' . $data);
 		
 		$data = new ServerMessage($data);
+		
+		$this->lastdata = $data;
 
 		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
 		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(
@@ -171,8 +173,6 @@ class ConnectionManager extends Manager
 				$data
 			)
 		);
-		
-		$this->lastdata = $data;
 
 		return true;
 	}

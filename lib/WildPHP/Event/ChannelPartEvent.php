@@ -17,9 +17,9 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\Modules\ChannelManager;
+namespace WildPHP\Event;
 
-class ChannelJoinEvent implements IChannelEvent
+class ChannelPartEvent implements IChannelEvent
 {
 	/**
 	 * The channel.
@@ -29,7 +29,7 @@ class ChannelJoinEvent implements IChannelEvent
     
 	/**
 	 * Constructs the event.
-	 * @param string $channel The channel that is being joined.
+	 * @param string $channel The channel that is being parted.
 	 */
 	public function __construct($channel)
 	{

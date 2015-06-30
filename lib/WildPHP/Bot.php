@@ -24,6 +24,8 @@ use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
+use WildPHP\Event\SayEvent;
+use WildPHP\Event\ConnectEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -231,15 +233,15 @@ class Bot
 			return false;
 
 		// Some people are just too lazy.
-		elseif(empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG' && !empty($this->connectionManager->getLastData()->get()['arguments'][0]))
+		elseif(empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG')
 		{
 			$text = $to;
-			$to = $this->connectionManager->getLastData()->get()['arguments'][0];
+			$to = $this->connectionManager->getLastData()->get()['targets'][0];
 		}
 		elseif (empty($text))
 			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');
 
-		$e = new WildPHP\Event\SayEvent($text, $to);
+		$e = new SayEvent($text, $to);
 		$this->eventManager->getEvent('Say')->trigger($e);
 		
 		if ($e->isCancelled())

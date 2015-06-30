@@ -17,9 +17,9 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\Modules\ChannelManager;
+namespace WildPHP\Event;
 
-interface IChannelEvent extends WildPHP\Event\IEvent
+interface IChannelEvent extends IEvent
 {
 	/**
 	 * Returns the current command.
