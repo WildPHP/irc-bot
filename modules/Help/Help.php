@@ -51,32 +51,15 @@ class Help extends BaseModule
 
 	/**
 	 * The help command itself.
-	 * @param CommandEvent $data The data received.
+	 * @param CommandEvent $e The data received.
 	 */
 	public function HelpCommand($e)
 	{
 		if ($e->getCommand() != 'help')
 			return;
-		
-		// Do we have a module for specific help?
-		$pieces = $e->getParams();
-		$cmd = array_shift($pieces);
 
-		// Nope, show all commands.
-		if(empty($cmd))
-		{
-			// All commands are...
-			$cmd = $this->bot->getModuleManager()->getLoadedModules();
-
-			// Yep.
-			$this->bot->say('Available modules: ' . implode(', ', array_keys($cmd)));
-		}
-
-		// Yep, show the data for the single command, if available.
-		else
-		{
-
-		}
-
+		// All commands are...
+		$cmd = $this->bot->getModuleManager()->getLoadedModules();
+		$this->bot->say('Available modules: ' . implode(', ', array_keys($cmd)));
 	}
 }
