@@ -224,7 +224,7 @@ class Bot
 	/**
 	 * Say something to a channel.
 	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
-	 * @param mixed $text The string to be sent or an array of strings. Newlines separate messages.
+	 * @param string $text The string to be sent or an array of strings. Newlines separate messages.
 	 * @return bool False on failure (or when cancelled), true on success.
 	 */
 	public function say($to, $text = '')

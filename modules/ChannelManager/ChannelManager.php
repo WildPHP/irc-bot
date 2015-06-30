@@ -93,8 +93,8 @@ class ChannelManager extends BaseModule
 			return;
 		
 		// If no argument specified, attempt to leave the current channel.
-		if (empty($e->getMessage()->getParams()))
-			$c = array($e->getTargets());
+		if (empty($e->getParams()))
+			$c = array($e->getMessage()->getTargets());
 			
 		else
 			$c = $e->getParams();
