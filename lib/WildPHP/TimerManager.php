@@ -27,7 +27,7 @@ class TimerManager extends Manager
 {
 	/**
 	 * The timers. Stored as array<timestamp, callable>
-	 * @var array<int, callable>
+	 * @var array<string, Timer>
 	 */
 	protected $timers = array();
 	
