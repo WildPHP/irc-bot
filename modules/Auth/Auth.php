@@ -20,6 +20,8 @@
 
 namespace WildPHP\Modules;
 
+use WildPHP\Event\CommandEvent;
+
 class Auth extends \WildPHP\BaseModule
 {
 	/**
@@ -30,27 +32,44 @@ class Auth extends \WildPHP\BaseModule
 
 	public function setup()
 	{
-		$hostnames = $this->bot->getConfig('hosts');
+		$this->forceHostnamesReload();
 		
-		if (!$hostnames)
+		if (!$this->hostnames)
 			throw new \Exception('Could not read trusted hostnames from the bot config.');
-		
-		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 
 	/**
 	 * Checks if this user is authenticated.
 	 * @param string $hostname The hostname to check.
+	 * @param boolean $notify Notify the user on authentication failure. Defaults to true.
 	 * @return boolean
 	 */
-	public function authUser($hostname)
+	public function authUser($hostname, $notify = true)
 	{
 		// Remove the nickname from the hostname to also match with that. The nickname doesn't have to always be the same!
 		$hostnonick = preg_replace('/[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/', '', $hostname);
 		$result = !empty($hostname) && (in_array($hostname, $this->hostnames) || in_array($hostnonick, $this->hostnames));
 
 		$this->bot->log('Checking authorization for hostname ' . $hostname . ': ' . ($result ? 'Authorized' : 'Unauthorized'), 'AUTH');
+		
+		if (!$result && !empty($notify))
+		{
+			// Need to do it like this, we might not have a PRIVMSG as last data!
+			try
+			{
+				$this->bot->say('You do not have permission to access that.');
+			}
+			catch (\InvalidArgumentException $e) {}
+		}
 
 		return $result;
+	}
+	
+	/**
+	 * Forces a hostname reload.
+	 */
+	public function forceHostnamesReload()
+	{
+		$this->hostnames = $this->bot->getConfig('hosts');
 	}
 }
