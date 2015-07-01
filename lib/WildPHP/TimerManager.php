@@ -59,7 +59,7 @@ class TimerManager extends Manager
 	
 	/**
 	 * Removes a timer.
-	 * @param callable $name The call to remove.
+	 * @param string $name The timer to remove.
 	 */
 	public function remove($name)
 	{
@@ -138,6 +138,7 @@ class TimerManager extends Manager
 	/**
 	 * Gets a specific timer by name.
 	 * @param string $name The timer name.
+	 * @return Timer
 	 */
 	public function get($name)
 	{
