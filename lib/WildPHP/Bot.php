@@ -55,6 +55,12 @@ class Bot
 	 * @var ConnectionManager
 	 */
 	protected $connectionManager;
+	
+	/**
+	 * The TimerManager
+	 * @var TimerManager
+	 */
+	protected $timerManager;
 
 	/**
 	 * The log manager.
@@ -84,6 +90,9 @@ class Bot
 
 		// Then set up the database.
 		$this->db = new \SQLite3($this->configurationManager->get('database'));
+		
+		// Set up the timer manager.
+		$this->timerManager = new TimerManager($this);
 
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
@@ -169,6 +178,7 @@ class Bot
 	{
 		while($this->connectionManager->isConnected())
 		{
+			$this->timerManager->trigger();
 			$this->connectionManager->processReceivedData();
 		}
 	}
@@ -200,6 +210,15 @@ class Bot
 	public function getEventManager()
 	{
 		return $this->eventManager;
+	}
+	
+	/**
+	 * Returns the Timer Manager
+	 * @returns TimerManager The Timer Manager.
+	 */
+	public function getTimerManager()
+	{
+		return $this->timerManager;
 	}
 
 	/**
@@ -303,6 +322,14 @@ class Bot
 		$this->sendData('QUIT :' . $message);
 		$this->connectionManager->disconnect();
 		exit;
+	}
+	
+	/**
+	 * Reconnects the bot.
+	 */
+	public function reconnect()
+	{
+		$this->connectionManager->reconnect();
 	}
 
 	/**

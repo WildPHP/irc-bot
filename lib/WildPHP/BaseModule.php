@@ -21,6 +21,7 @@
 namespace WildPHP;
 
 use WildPHP\EventManager\EventManager;
+use WildPHP\TimerManager;
 
 class BaseModule
 {
@@ -82,5 +83,14 @@ class BaseModule
 	public function evman()
 	{
 		return $this->bot->getEventManager();
+	}
+	
+	/**
+	 * Helper function for using the Timer Manager.
+	 * @return TimerManager
+	 */
+	public function timeman()
+	{
+		return $this->bot->getTimerManager();
 	}
 }
