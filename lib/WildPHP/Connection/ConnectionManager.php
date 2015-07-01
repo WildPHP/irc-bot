@@ -79,9 +79,11 @@ class ConnectionManager extends Manager
 	public function connect()
 	{
 		// Open a connection.
-		$this->socket = fsockopen($this->server, $this->port);
+		$this->socket = stream_socket_client($this->server . ':' . $this->port, $errno, $errstr);
 		if(!$this->isConnected())
-			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '".');
+			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '" (' . $errno .  ': ' . $errstr . ')');
+		
+		socket_set_blocking($this->socket, 0);
 
 		if(!empty($this->password))
 			$this->sendData('PASS ' . $this->password);
@@ -142,11 +144,17 @@ class ConnectionManager extends Manager
 	 */
 	protected function getData()
 	{
-		$data = fgets($this->socket);
-		if($data === false)
+		$read = array($this->socket);
+		$write = NULL;
+		$except = NULL;
+		$changed = stream_select($read, $write, $except, 1);
+		if ($changed === false)
 			return null;
-
-		return trim($data, self::STREAM_TRIM_CHARACTERS);
+		
+		if($changed > 0)
+			return trim(fgets($read[0]), self::STREAM_TRIM_CHARACTERS);
+		else
+			return null;
 	}
 
 	/**
