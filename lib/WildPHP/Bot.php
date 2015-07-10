@@ -24,6 +24,7 @@ use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
+use WildPHP\EventManager\RegisteredCommandEvent;
 use WildPHP\Event\SayEvent;
 use WildPHP\Event\ConnectEvent;
 
@@ -101,7 +102,7 @@ class Bot
 		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
 		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
 		
-		$BotCommandEvent = new RegisteredEvent('ICommandEvent');
+		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
 		$this->eventManager->register('BotCommand', $BotCommandEvent);
 		
 		// Say event, used in the Say method before saying something. This event is cancellable.
@@ -112,6 +113,10 @@ class Bot
 		// You can use this to e.g. initialise databases, if you haven't done so yet.
 		$ConnectEvent = new RegisteredEvent('IConnectEvent');
 		$this->eventManager->register('Connect', $ConnectEvent);
+		
+		// Loop event.
+		$LoopEvent = new RegisteredEvent('IEvent');
+		$this->eventManager->register('Loop', $LoopEvent);
 
 		// Ping handler
 		$IRCMessageInboundEvent->registerEventHandler(
@@ -142,6 +147,8 @@ class Bot
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
+		
+		$this->eventManager->getEvent('BotCommand')->setAuthModule($this->moduleManager->getModuleInstance('Auth'));
 
 		// Set up a connection.
 		$this->connectionManager = new ConnectionManager($this);
@@ -178,6 +185,8 @@ class Bot
 	{
 		while($this->connectionManager->isConnected())
 		{
+			// Let anything hook into the main loop for its own business.
+			$this->eventManager->getEvent('Loop')->trigger(new Event\LoopEvent());
 			$this->timerManager->trigger();
 			$this->connectionManager->processReceivedData();
 		}

@@ -1,0 +1,223 @@
+28.06.2015 - 15:21:10	  [ LOG ] 	Using log file /mnt/data/IRC Bot/new/Wild-IRC-Bot/logs//log4.log28.06.2015 - 15:21:10	  [ WildPHP\Manager ] 	Registered event IRCMessageInbound (with class IIRCMessageInboundEvent).28.06.2015 - 15:21:10	  [ WildPHP\Manager ] 	Connection to server localhost:5000 set up with nick NanoSector; ready to use.28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 001 NanoSector :Welcome to the freenode Internet Relay Chat Network NanoSector
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 002 NanoSector :Your host is wolfe.freenode.net[91.217.189.44/6697], running version ircd-seven-1.1.3
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 003 NanoSector :This server was created Mon Sep 15 2014 at 10:05:03 UTC
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 004 NanoSector wolfe.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 251 NanoSector :There are 163 users and 87607 invisible on 27 servers
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 252 NanoSector 22 :IRC Operators online
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 254 NanoSector 59393 :channels formed
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 255 NanoSector :I have 1998 clients and 1 servers
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 265 NanoSector 1998 6804 :Current local users 1998, max 6804
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 266 NanoSector 87770 105669 :Current global users 87770, max 105669
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 250 NanoSector :Highest connection count: 6805 (6804 clients) (3021413 connections received)
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 375 NanoSector :- wolfe.freenode.net Message of the Day - 
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Welcome to wolfe.freenode.net in Stockholm, SE.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Thanks to http://www.portlane.com/ for sponsoring
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- this server!
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- WOLFE, GENE [1931-].  Prolific writer of short stories and
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- novels. His best-known work is the multi-volume novel The
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Book of the New Sun. He has won multiple awards including
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- the Nebula Award, the World Fantasy Award, The Campell
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Memorial Award and the Locus Award. He was awarded the World
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Fantasy Award for lifetime achievement in 1996.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Welcome to freenode - supporting the free and open source
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- software communities since 1998.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- By connecting to freenode you indicate that you have read and
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- accept our policies as set out on http://www.freenode.net
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- freenode runs an open proxy scanner. Please join #freenode for
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- any network-related questions or queries, where a number of
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- volunteer staff and helpful users will be happy to assist you.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- together with like-minded FOSS enthusiasts for talks and
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- real-life collaboration.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- We would like to thank Private Internet Access
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- (https://www.privateinternetaccess.com/) and the other
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- organisations that help keep freenode and our other projects
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- running for their sustained support.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- In particular we would like to thank the sponsor
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- of this server, details of which can be found above.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 376 NanoSector :End of /MOTD command.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl MODE NanoSector :+Zi
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#dolphin-emu
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #dolphin-emu :http://dolphin-emu.org/ | http://changes.dolphin-emu.org/ | http://dolphin-emu.org/docs/faq/ | No Magic | No Piracy - Instant Ban | Development channel: #dolphin-dev
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #dolphin-emu HdkR!~ryanh@li489-126.members.linode.com 1417328760
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #dolphin-emu :Adr1 Amanieu Arisaka Armada Aster Azelphur B0g4r7 BITTERBEE @Bh44L Bish_ BtbN CME CoreDuo CyberKitsune DarkAceZ DarkFire David3k Dazzozo Dippyskoodlez DoctorDelusional ExeciN Extrems FIQ Fenhl FenrisulfrX @Fiora FireFly Fissurez FourSword F|RES Genericenemy Genolo Ghabry Gogh GreenBlood GuntherD1 Hamcha @HdkR Helios747 Internets InusualZ Isotarge JMC47 Jacksoft Kazuma KnightMustard Kovensky Ladon Lightning @Lioncash LittleWhite LocoMJ Logokas
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #dolphin-emu :MMukherjee @MaJoR1 @Matt_P Montisaquadeis MrC MrKB Muzer NWPlayer123 NanoSector Neui Nextra NickG365 Nighthawk NsGk Omega22 OrNoX Orlando Orphis Pepe_ Pikachu025 Quatroking RonnChyran Saturn812 Schquid Shadoxfix Shoegazer Soni StapleButter Stevoisiak Subv Summeli Tanjoodo TechyZeldaNerd Toothache Tropsy WinterMute XgF Yllodra Zialus [Unknown] _Spekkio_ _aegis_ `blasty_ acidx alucryd amanone anathema_ archshift awksp balrog bigpet booto
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #dolphin-emu :cdoublejj clobber comex crediar_ csssuf cthd cute_korean_girl dan- dantarion darkengine @degasus dibas dozn ds84182 dtm dx ehw- endrift enitiz espes evil-doer flacs flamingspinach flowerhack friden fury__ furyhunter imaginary inara jchadwick jj2baile juzza1 karolherbst kee7a kexplo kg_ kode54 krnlyng lecx linkmauve1 lol0gram mackal madez markey_work marzipanWhale mathieui mephostophilis merry mimimi mrgreywater msm mth neiltyson @neobrain
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #dolphin-emu :nethershaw nispaur nogagplz nopnopgoose paperManu pendo324 phire pinchy radens radius rdema riking_ ripdog rweichler saneki sapheriel seirl_ sherlock shonumi simcop2387 @skid_au skmp smea the8thark unicodesnowman utack vik wapiflapi wariw yuriks zkxs zylche
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #dolphin-emu :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#wildphp
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #wildphp :Welcome to #wildphp. Feel free to idle around. For help, just poke one of us and please stay around; someone will get to you. Get the latest version of the bot from https://github.com/WildPHP/Wild-IRC-Bot
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #wildphp NanoSector!~Yoshi2889@simplemachines/support/NanoSector 1428415030
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #wildphp :@ChanServ Envigado GuntherD1 @NanoSector +SPF|Cloud Sheo Stifler @TimTims +amunak rbxs
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #wildphp :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#NanoPlayground
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #NanoPlayground :Test place for bots.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #NanoPlayground FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception 1425410979
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #NanoPlayground :@ChanServ DenBeiren @NanoSector SPF|Cloud Stifler Stiflerrpg TimTims iStifler sigv
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #NanoPlayground :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#aospa
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #aospa :Welcome to the official AOSPA channel! | Sometimes it is a bit silent here - please don't leave right away! | PA 5.0 ALPHA2 is out | Website: http://aospa.co/ | AOSPA community: http://bit.ly/1lcw0cO | AOSPA Legacy community: http://bit.ly/1gm965I
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #aospa sigv 1425919812
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #aospa :BytesAndCoffee Cerise Clark008 Cthulhux GermainZ Happzz JZTech101 NanoSector NaterTots ParkerR T-Junk [Saint] @aospa beekay201 chachin codebam deathspawn gnosticJade helicopter88 infected_ lol768- m3rcuriel ne0phyte netwoodle p3lim pinPoint pirateghost +sigv
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #aospa :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#Cyanogenmod
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #Cyanogenmod :Welcome! Stuck on a new install? Did you Wipe? || General info see: http://goo.gl/EEoBM & google.com/+CyanogenMod :: Don't ask to ask a question, just ask! || Protip: Do not click EugeneKay's links | All questions regarding development or building #cyanogenmod-dev
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #Cyanogenmod ciwrl|away!~ciwrl@cyanogenmod/pr/ciwrl 1401579684
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :AbsoluteZero Afterster Alam_Squeeze Ankhers AppAraat Archon__ AshTR Aster Atlas Azelphur BKuhl BlackBishop BloodDonor Bluefoxicy Brando753 BytesAndCoffee Cerise @ChanServ ChrisWarrick ChunkzZ CiPi Corey84 Cork Criamo_Off Cultist CustosLimen CygniX Dastgir Dave123 Dave123_ Dazzozo DeadRinga Decad3nce DinCahill Djole DoYouKnow DrMacinyasha DrTaft DroidOne DzAirmaX Eduard_Munteanu ElAngelo Elish Entropy512 FDCX_ FR^2 Fenhl Fiouz Fleurety Fogest
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :FruitieX FuZZ__ Furai GentileBen GeraldWagner Great-Geek Happzz Haxxa ImQ009 Ir0nsh007er JRansome_ JZTech101 Jackneill Jagster Jim[work] JohnnyricoMC Jonno_FTW Jordy Jusic KDDLB KaZo58 Kaboon Kenzi` +Khaytsus +KhaytsusToo Kitt3n KoolKidsK Lacriatch Lartza Lekensteyn Liam` LjL Lloir LoganA LoganG LordDeath Lymia LzrdKing_ M4rc3l MDTech-us_MAN Maakuth Makinit Malmis Manolis Marquel McNetic Midnightfox Monkeh MooingLemur Namidairo NanoSector
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :Neffi NightMonkey Nik05 NikolausK NucWin Obilan PatBoy PennStater PomstaZLesa @PsychoI3oy QuinnLion Qwell R0b0t1 RBecker RDash Raccoon Reedy Reventlov RiXtEr Ricaz Rundll Ruusento SATS Saturn812 Savemech Schnabeltierchen Sean_Wang Sedated ShapeShifter499 Shiodooru SirCmpwn Skyrider Soaps SpeakerToMeat SteamPoweredH Streetwalrus SudoNull- SuperLag Techman Telvana Termana ThatOneDude The0x539 TheQuestionmark TheReverend403 Top_Cat Turl Turtuga
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :Unforgiving Vampire0_ Venusaur Vladi Werring Wiki13|Cloud XDS2010 Xavierdarkness Xoib XpineX YamakasY YeahRight Yomi Yoshimo Zackio Zzeiss [Awaxx] [Saint] ]OLI[ _0x5eb_ _litz _marc` a3Dman aaa801 aarontc aeroevan aetheric ajrty33 alok alxd amiconn andre_m androidbruce archshift ari5av arlen asturel axisys basteh +bealtine benoliver999 bgupta bipolar bitkid blaise blind blunden borosky brainsaw break19 brolin_empey bynarie c00p3r c0deweaver
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :cantstanya catpiggest cdesai chjj chris| chrstfer @ciwrl cl4p-tp cliffer cluelesscoder codeworkx coperek303 core cryptic cwstorm_ cydrobolt d1b dadrc damwdan danl danmackay darken datagutt dazo_afk deathspawn devatwork dippingsauce dju dna5589|away doomwake dustinm eXtremo ecips elgatov endlessgate eric f4lk0r_ flatface fluxi ford forkup frankS2 frankyboy_ frapell fuqi g_byers gdrc georg ghormoon ghost64 godlessfather gox39 grobe0ba h82or8
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :haasn haltdef hays_ heap_ helicopter88 heydabop hfp hmmwhatsthisdo hyper_ch iNsAn|tY ieatacid infected_ infernix intervigil invisiblek ivan\ j0z jason237 jazka jemus42 jerdog jgeboski joe75 jreese jurcz91 jusplainmike jzaw jznomoney k0mp0 kInOzAwA kalz kamyl ketas klaas klusark kossy kuzetsa l0xas lahwran laufersteppenw__ lerc lkoranda lnostdal lonewulf` lonex lool lunchdump m0viefreak m4rcu5 m4t mac-mini_ madLyfe makije maqr mave_ maxexcloo
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :mbecroft meLon meeeeeeee megabitdragon meti mfabian milaq mindrunner mist_ mittwinter mmmonk moviuro mrtux myside nausea neersighted nemysis nepochal nethershaw netwoodle noptys normalra normalra_ nyuszika7h obXiDeJSFQ orliesaurus owa oxhak pagefault paramourne passenger pb penguin1263 pfloyd philippe_fouquet phunyguy pii4 pikpok pinPoint ponyofdeath pppingme pragma- protodev protosoul prox prurigro pvoigt pw qupada42 raid rajesh1158 razorloves_
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :rich0 rika rmk robink robtow romann rosseaux ruukasu ryan-c rymate1234 sado1 saintcajetan sash_ scorche seba seejy shoerain siel sigv siinus` sir_tyrion skarn_ sleepys40 snitch_ spY|da sparetire stargo storrgie stux|work stvlker subterfugium supa_user swebb tapout thebiffman thoemy tilal6991 tjader @toastcfh tomaw tomreyn trae32566[w] trobotham turgenevskaya uber unforgiven512 untitaker utack @utkanos v0rtex varesa vividboarder waratte
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector * #Cyanogenmod :webvictim weltall wlritchi xMopxShell xSmurf xadidas4lifex xelra xfullmetal17 zaniyah zcat zifnab zinx zom |0xD34D| |PuLi| |shark|
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #Cyanogenmod :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#twrp
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #twrp :Team Win Recovery Project || TWRP 2.8.7.0: http://tinyw.in/twrp || Compile TWRP from source: http://tinyw.in/50tg || Unsupported devices: http://tinyw.in/unsupported || If you need help, just ask your question (don't ask to ask) and state what device you're using and *wait* for an answer
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #twrp _that 1435256772
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector @ #twrp :Azelphur Babydollll BigShotRob BytesAndCoffee CaptainThrowback @ChanServ Chris122- Ciku Darkshado DeMiNe0 @Dees_Troy DrMacinyasha Elimin8er EllieGoulding Entropy512 FireBreath FrankZZ FuZZ__ GhostlyCrowd Guest9143 HeyCitizen Ignorant JRansome_ Junaos Kamilion Kra1o5 Lky Lloir Lunario Lymia MDTech-us_MAN MeanderingCode MiloH NanoSector @NookieBot NucWin Nuggernogger NxtGenCowboy PRJosh PatBoy PeperPots__ PlayfulGod Rentard SATS Sagi Savvkin Sean_Wang
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector @ #twrp :Sedated SlimBot Sneakyghost T-Junk Tassadar WondererQ XDS2010 @Zanzibar Zesty_ Ziyan [NUT] @_that adema_ aeroevan aj-san alok arlen arrrghhh asturel autoprime ben_alman benoliver999 @bigbiff bipolar bitpushr blacklaser blind book` bynarie ced117 chaosagent chrisch1974 chrmhoffmann clarjon1 csmart cybo deanrock devrandomfx dexter93 djkinetic dkelle4 doomwake eXtremo @eyeballer fluxi foxblur frankyboy_ ghormoon gladiac gladitzu78 godlessfather gvercoutere
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector @ #twrp :haltdef +hashcode heap_ +helicopter88 humberos idnar irick itsblah jakew02 jcase jerdog jevin jfeise_ jrior001 jscinoz @kevank klept0 +lilstevie lsdigital marduk191 markus-j martinmcu misc-- mschiff netwoodle nkk71 normalra normalra_ onebyside pb perillamint phh pirateghost polyzen ppq pvoigt razorloves_ rebelos riotz rwaters sawdey21 sbdags scanno sigv simonsickle sireebob sleepys40 steev stvlker th3g1z thoemy tiny4579 @toastcfh twitch153 v_superuser-away
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector @ #twrp :vidplace7 @vividboarder withere2 xadidas4lifex z31s1g_ zamber
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #twrp :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#sunshine-support
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #sunshine-support :No one here? Submit a ticket http://support.theroot.ninja | Type '!info ring' to summon support | SunShine 3.1 is out! | Get latest copy from http://theroot.ninja | Need help rooting? Type '!info rootchoices' | ALL OFF-TOPIC goes to ##sunshine-support | No re-using license on replacement phones - You need to buy a new license | For Out-of-App payment options, type: !msglist payment
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #sunshine-support beaups 1434806613
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #sunshine-support :Chris122- Daemoen_ +Dr_Drache Fenny @Fuses GSKarhu Haxxa Jdpaul88 M3mphiZ Mr_Bartek NanoSector @NookieBot OakyTree PeperPots__ Sneakyghost XDS2010 @Zanzibar +_litz @autoprime @beaups bfritz blakange3 break19 bschram darkspadez datagutt dizzan djkinetic dr0id dstaley illie +j_to_the_4n jcase jcbjoe joako joeykrim +kingy9000 kuzetsa lud @madpax mik__ @nkk71 pi-rho posixninja pulser sawdey21 th3g1z timong uba @uld wetdog @zifnab |EHG|
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #sunshine-support :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :##sunshine-support
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector ##sunshine-support :FYF
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector ##sunshine-support beaups!~beaups@unaffiliated/beaups 1421709151
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = ##sunshine-support :Dr_Drache Haxxa Mr_Bartek NanoSector NookieBot PeperPots__ Sneakyghost XDS2010 Zanzibar _litz bschram datagutt illie j_to_the_4n jcase kingy9000 kuzetsa nkk71 oxyc th3g1z uba zifnab
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector ##sunshine-support :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#cakephp
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #cakephp :CakePHP Channel - http://cakephp.org | Manual - http://book.cakephp.org | CakePHP API - http://api.cakephp.org | CakeFest - http://cakefest.org
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #cakephp PhpNut!~PhpNut@137.119.152.45 1393439244
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #cakephp :Akufen Alina-malina Astraeus BackEndCoder BackEndCoder2 Blacklite CakeBot Coldblackice_ Guest55880 Henskeleinen JelmerD Jippi Kaimei Kitcat711 Laszlo Martin` NanoSector NeoThermic|Work Neon1024 Oldskool Paradox924X RamunasM_ RuAnt Schalla Scott0_ ScottO_1 SpX TheRec Werring Wouter0100 Wouterdt WyriHaximus Zir0h _mtz acosonic alarch arj arnis_ aro atmx bakerman bcSquared berarma bigbluehat bravo_kernel1 burzum candybar cholthi coellobranco dakota
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #cakephp :deizel diegoaguilar djpretzel dogmatic69 dorxy_ dziegler_off egerlach elventails foogle gale geheim49 greenmanspirit grzes hekep jadb jcool jekt jfive jmtran jschwartz_ lexx linxon m-takagi makamo marlinc mclee mglinski micalm michelpeters mkettel mvriel noob13_ orangey patsToms petris phafner pharesim_ phishy phpcoder qdk r0kc4t ran randompherret renan rmill rvsjoen shealyw2 shinnya shudon simont spexi spriz stiv2k storkovo|away styles synapt
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #cakephp :synbyte tapout the_dave toin0u|a1ay ujjain underflow veganista waspinator_ webguynow zonetti
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #cakephp :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#antergos
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #antergos :Official Antergos IRC | Need Help? IRC Help Guide: http://bit.ly/1odHpzZ | FAQs: http://bit.ly/1wai35S | Forum: http://bit.ly/1CudJ2p | Antergos News: http://bit.ly/1F9qXpo | Arch News: http://bit.ly/1sWFfoE
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #antergos faidoc 1413654696
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #antergos :Acidflash| Asterisk AyForest @ChanServ DerRaiden Eadaro Guest40051 Impyy JustACharlatan Lartza Meaulnes_ Melon_Bread Mikaela NanoSector NuSuey ShapeShifter499 ShrewdSpirit SiGNAL[Arch] SirCmpwn TheSoph WizBright ahoneybun aitorpazos amdavies_ angular_mike_ anthony25 cook_ cowai ctgriffiths dabbill dfalk fractal ghost64 glebihan__ jgmdev joren jumbers kennae mitfree neiltyson odinho palasso pankid pirateghost rOss^64 radish rawzone revnja rikai
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #antergos :rrittenhouse ryanlee rylinaux s8321414 smo superobserver titanomachy
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #antergos :End of /NAMES list.
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl JOIN :#smf
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 332 NanoSector #smf :Simple Machines Forum (SMF) official IRC channel! || SMF 2.1 Beta 1 Released! http://bit.ly/1xItRQl || SMF 2.0.10 and 1.1.21 Released! Please upgrade: http://bit.ly/1GvRVJW || Visit us at http://www.simplemachines.org/ || Online manual: http://bit.ly/I2PEnF || Looking for support? http://bit.ly/1aoqWwZ
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 333 NanoSector #smf CoreISP!~coreisp@simplemachines/rootadmin/CoreISP 1432406302
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 353 NanoSector = #smf :@ChanServ Daniel15 +Dragooon Elsensee Kissaki KnownSyntax NanoSector Nicofuma Niko^ Nikon Pouvik RTamas Roph Rymax99 SleePy StupidWeasel Stu|[A] anonymouse cali callumacrae eichiro paulr realz spossiba stefan t tomreyn tvenhola
+28.06.2015 - 15:21:10	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 366 NanoSector #smf :End of /NAMES list.
+28.06.2015 - 15:21:33	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector NOTICE NanoSector :LAGCHK 1435497735888
+28.06.2015 - 15:21:43	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :The last updates i think have been made by drunk developers.
+28.06.2015 - 15:22:01	  [ WildPHP\Manager-DEBUG ] 	<< :normalra!~normal@unaffiliated/normalra QUIT :Ping timeout: 276 seconds
+28.06.2015 - 15:22:15	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :to be included in next nightly:
+28.06.2015 - 15:22:15	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :RAINBOW MODE MOTHERFUCKERS (android_bootable_recovery)
+28.06.2015 - 15:22:17	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod ::)
+28.06.2015 - 15:22:26	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :Fuck you mother fucker!
+28.06.2015 - 15:22:33	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :Someone is playing with the updates
+28.06.2015 - 15:22:38	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #aospa :15:22 <CiPi> to be included in next nightly:
+28.06.2015 - 15:22:38	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #aospa :15:22 <CiPi> RAINBOW MODE MOTHERFUCKERS (android_bootable_recovery)
+28.06.2015 - 15:22:48	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #Cyanogenmod :haha
+28.06.2015 - 15:23:23	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector NOTICE NanoSector :LAGCHK 1435497845888
+28.06.2015 - 15:23:34	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :saw something about that today.
+28.06.2015 - 15:23:38	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :wtf is rainbow mode.
+28.06.2015 - 15:23:42	  [ WildPHP\Manager-DEBUG ] 	<< :michelpeters!~z3ugj3@4dafd194.ftth.telfortglasvezel.nl PRIVMSG #cakephp :Kitcat711: im not sure. Don't have an answer for you ;( maybe someone else
+28.06.2015 - 15:23:42	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #aospa :dunno
+28.06.2015 - 15:24:08	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :iirc, something to do with cwm.
+28.06.2015 - 15:24:32	  [ WildPHP\Manager-DEBUG ] 	<< :Kitcat711!Kitcat711@bau91-h01-176-189-82-44.dsl.sta.abo.bbox.fr PRIVMSG #cakephp :any idea? ;-) ready to test everything, even incntations
+28.06.2015 - 15:24:55	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :amunak, around?
+28.06.2015 - 15:25:03	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :yea
+28.06.2015 - 15:25:09	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :i finally understand peanuts of the event manager
+28.06.2015 - 15:25:10	  [ WildPHP\Manager-DEBUG ] 	<< :AppAraat!~AppAraat@gateway/vpn/privateinternetaccess/apparaat PRIVMSG #Cyanogenmod :I think some of the devs are just happy for the fact that it's legal to have gay marriage in the US now :p
+28.06.2015 - 15:25:19	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :took me half a year
+28.06.2015 - 15:25:21	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :but i do
+28.06.2015 - 15:25:47	  [ WildPHP\Manager-DEBUG ] 	<< PING :ZNC
+28.06.2015 - 15:25:47	  [ DATAOUT ] 	PONG :ZNC
+28.06.2015 - 15:25:53	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector NOTICE NanoSector :LAGCHK 1435497995889
+28.06.2015 - 15:26:04	  [ WildPHP\Manager-DEBUG ] 	<< :mohammadsaleh_!~mohammads@31.14.83.212 JOIN #cakephp
+28.06.2015 - 15:26:27	  [ WildPHP\Manager-DEBUG ] 	<< :michelpeters!~z3ugj3@4dafd194.ftth.telfortglasvezel.nl PRIVMSG #cakephp :well, i have some ideas and i could reproduce the code and figure it out; but im working on something now (for client), so i advice to try to rebuild it and see if you get it working the second time and see if you can get it working. Also i would try to bake the models and see if that changes anything
+28.06.2015 - 15:26:28	  [ WildPHP\Manager-DEBUG ] 	<< :Savvkin!05e4b716@gateway/web/freenode/ip.5.228.183.22 QUIT :Quit: Page closed
+28.06.2015 - 15:26:33	  [ WildPHP\Manager-DEBUG ] 	<< :variable!~variable@freebsd/developer/variable JOIN #dolphin-emu
+28.06.2015 - 15:26:45	  [ WildPHP\Manager-DEBUG ] 	<< :michelpeters!~z3ugj3@4dafd194.ftth.telfortglasvezel.nl PRIVMSG #cakephp :i havent seen the error before, so i have no ready answer :)
+28.06.2015 - 15:27:00	  [ WildPHP\Manager-DEBUG ] 	<< :Clark008!~Clark@unaffiliated/clark008 PRIVMSG #aospa :http://review.cyanogenmod.org/#/c/102037/
+28.06.2015 - 15:27:13	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :if I were to create a command event, is it best to extend IrcMessageInboundEvent?
+28.06.2015 - 15:27:37	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :since a command is an incoming message, pretty much
+28.06.2015 - 15:28:13	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector NOTICE NanoSector :LAGCHK 1435498135889
+28.06.2015 - 15:28:52	  [ WildPHP\Manager-DEBUG ] 	<< :ImQ009!~ImQ009@unaffiliated/imq009 QUIT :Quit: Leaving
+28.06.2015 - 15:28:56	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :oh yeah
+28.06.2015 - 15:29:12	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :or did you have other plans for command events
+28.06.2015 - 15:29:22	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :or the command event would have to "link" to it in a private variable anyway
+28.06.2015 - 15:29:25	  [ WildPHP\Manager-DEBUG ] 	<< :Kitcat711!Kitcat711@bau91-h01-176-189-82-44.dsl.sta.abo.bbox.fr PRIVMSG #cakephp :ok :-/ thx anyway
+28.06.2015 - 15:29:28	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :I'm not even sure after so long lol
+28.06.2015 - 15:29:34	  [ WildPHP\Manager-DEBUG ] 	<< :ImQ009!~ImQ009@unaffiliated/imq009 JOIN #Cyanogenmod
+28.06.2015 - 15:29:34	  [ WildPHP\Manager-DEBUG ] 	<< :Kitcat711!Kitcat711@bau91-h01-176-189-82-44.dsl.sta.abo.bbox.fr PRIVMSG #cakephp :may be someone has seen this before?
+28.06.2015 - 15:29:36	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :no wonder it was abandoned
+28.06.2015 - 15:29:39	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :what do you mean link?
+28.06.2015 - 15:29:49	  [ WildPHP\Manager-DEBUG ] 	<< :rajesh1158!31cfbd60@gateway/web/freenode/ip.49.207.189.96 PRIVMSG #Cyanogenmod :wil CM be supported for Lenovo Vibe X2 mobile?
+28.06.2015 - 15:29:50	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :to the ircmessageinbound?
+28.06.2015 - 15:30:01	  [ WildPHP\Manager-DEBUG ] 	<< :georg!~georg@27.122.13.129 QUIT :Ping timeout: 264 seconds
+28.06.2015 - 15:30:03	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :cwm needs to die already
+28.06.2015 - 15:30:26	  [ WildPHP\Manager-DEBUG ] 	<< :variable!~variable@freebsd/developer/variable NICK :trout
+28.06.2015 - 15:30:47	  [ WildPHP\Manager-DEBUG ] 	<< PING :ZNC
+28.06.2015 - 15:30:47	  [ DATAOUT ] 	PONG :ZNC
+28.06.2015 - 15:30:51	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :It will, when this dev mother fuckers will be out of service.
+28.06.2015 - 15:30:52	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #aospa :the whole internet is full of rainbows today
+28.06.2015 - 15:31:02	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :AppAraat, yeah, ur right.
+28.06.2015 - 15:31:02	  [ WildPHP\Manager-DEBUG ] 	<< :ob-sed!~obesd@unaffiliated/obesd JOIN #Cyanogenmod
+28.06.2015 - 15:31:03	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #aospa :http://komodoide.com/ < logo
+28.06.2015 - 15:31:08	  [ WildPHP\Manager-DEBUG ] 	<< :luuuciano!~luuuciano@unaffiliated/luuuciano JOIN #smf
+28.06.2015 - 15:31:28	  [ WildPHP\Manager-DEBUG ] 	<< :rajesh1158!31cfbd60@gateway/web/freenode/ip.49.207.189.96 PRIVMSG #Cyanogenmod :how many of you here want CM to support for Lenovo Vibe X2 mobile?
+28.06.2015 - 15:31:52	  [ WildPHP\Manager-DEBUG ] 	<< :Sneakyghost!~Sneakygho@ip1f13413b.dynamic.kabel-deutschland.de QUIT :Quit: Bye Bye
+28.06.2015 - 15:31:57	  [ WildPHP\Manager-DEBUG ] 	<< :cito79!5d2e7e1a@gateway/web/freenode/ip.93.46.126.26 JOIN #twrp
+28.06.2015 - 15:32:14	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :amunak?
+28.06.2015 - 15:32:19	  [ WildPHP\Manager-DEBUG ] 	<< :cito79!5d2e7e1a@gateway/web/freenode/ip.93.46.126.26 QUIT :Client Quit
+28.06.2015 - 15:32:34	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :I mean just have it as a variable there with getters and setters
+28.06.2015 - 15:32:40	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :not sure what would be better now
+28.06.2015 - 15:32:44	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :anything will work probably.¨
+28.06.2015 - 15:32:47	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :the ircinboundmessagething?
+28.06.2015 - 15:33:12	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :i'm not sure how we're going to trigger commands
+28.06.2015 - 15:33:19	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :have a generic commandevent where listeners can attach?
+28.06.2015 - 15:33:26	  [ WildPHP\Manager-DEBUG ] 	<< :beekay201!~bk201@unaffiliated/beekay201 PRIVMSG #aospa :-_-
+28.06.2015 - 15:33:34	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :then have the commandevent sort out what listener to call or something?
+28.06.2015 - 15:33:37	  [ WildPHP\Manager-DEBUG ] 	<< :cito79!5d2e7e1a@gateway/web/freenode/ip.93.46.126.26 JOIN #twrp
+28.06.2015 - 15:33:37	  [ WildPHP\Manager-DEBUG ] 	<< :wiiguy!~fake@unaffiliated/wiiguy JOIN #Cyanogenmod
+28.06.2015 - 15:34:10	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :None
+28.06.2015 - 15:34:11	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :I believe the idea was to let people hook to the command event, and trigger it just regularly when a message is received and command detected
+28.06.2015 - 15:34:13	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :ur the first
+28.06.2015 - 15:34:22	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :mhm
+28.06.2015 - 15:34:27	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :but that results in all commands being called
+28.06.2015 - 15:34:29	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :right?
+28.06.2015 - 15:35:03	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector NOTICE NanoSector :LAGCHK 1435498545889
+28.06.2015 - 15:35:18	  [ WildPHP\Manager-DEBUG ] 	<< PING :ZNC
+28.06.2015 - 15:35:18	  [ DATAOUT ] 	PONG :ZNC
+28.06.2015 - 15:35:34	  [ WildPHP\Manager-DEBUG ] 	<< :rajesh1158!31cfbd60@gateway/web/freenode/ip.49.207.189.96 PRIVMSG #Cyanogenmod :hmm..so i'm assuming it'll be never done.. right?
+28.06.2015 - 15:36:04	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :uhh
+28.06.2015 - 15:36:15	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :well all commands would trigger that event
+28.06.2015 - 15:36:24	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :and then the user would have to filter just those that they want
+28.06.2015 - 15:36:44	  [ WildPHP\Manager-DEBUG ] 	<< :cito79!5d2e7e1a@gateway/web/freenode/ip.93.46.126.26 PRIVMSG #twrp :hi, sorry for my English,I would like to install TWRP 2.8.5.0 for htc pico, but I can not find the download link, this link (http://download.htclegacy.tk/?dir=pico/Twrp) is not working.
+28.06.2015 - 15:37:08	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :so we need at least a getCommand method that returns the command
+28.06.2015 - 15:37:12	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :so users can compare against that
+28.06.2015 - 15:37:21	  [ WildPHP\Manager-DEBUG ] 	<< :HeapIRC!40cbd072@gateway/web/freenode/ip.64.203.208.114 JOIN #sunshine-support
+28.06.2015 - 15:37:52	  [ WildPHP\Manager-DEBUG ] 	<< :HeapIRC!40cbd072@gateway/web/freenode/ip.64.203.208.114 QUIT :Client Quit
+28.06.2015 - 15:38:09	  [ WildPHP\Manager-DEBUG ] 	<< :CiPi!~cip@unaffiliated/cipi PRIVMSG #Cyanogenmod :With this fucked up devs, i don`t think so.
+28.06.2015 - 15:38:09	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :oh it already has a getCommand() method
+28.06.2015 - 15:38:10	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :hmm
+28.06.2015 - 15:38:15	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :wait
+28.06.2015 - 15:38:16	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :huh
+28.06.2015 - 15:38:23	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :oh
+28.06.2015 - 15:38:25	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :nvm
+28.06.2015 - 15:38:49	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :yeah and that was why I was like... and well need a command manager too
+28.06.2015 - 15:38:49	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@541BF3D2.cm-5-4d.dynamic.ziggo.nl PRIVMSG #wildphp :#quit
+28.06.2015 - 15:38:52	  [ WildPHP\Manager-DEBUG ] 	<< :amunak!amunak@owner.amunak.net PRIVMSG #wildphp :to make it simpler for people

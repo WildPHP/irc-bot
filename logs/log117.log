@@ -1,0 +1,126 @@
+10.07.2015 - 01:24:11	  [ LOG ] 	Using log file /mnt/data/IRC Bot/new/Wild-IRC-Bot/logs//log117.log10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event IRCMessageInbound (with class IIRCMessageInboundEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event BotCommand (with class ICommandEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event Say (with class ISayEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event Connect (with class IConnectEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event Loop (with class IEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module Auth registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module ChannelAdmin registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module ChannelManager registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module CoreCommands registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module Dev registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module GitHub registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module Help registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Module Watchdog registered.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module Auth...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module Auth loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelAdmin...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module ChannelAdmin loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelManager...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Registered event ChannelJoin (with class ChannelJoinEvent).10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module ChannelManager loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module CoreCommands...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module CoreCommands loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module Dev...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module Dev loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module GitHub...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module GitHub loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module Help...10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module Help loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	Loading module Watchdog...10.07.2015 - 01:24:11	  [ TIMERMAN ] 	Added new timer PingTimeoutTimer. Next trigger in 350 seconds.10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Module Watchdog loaded.10.07.2015 - 01:24:11	  [ WildPHP\Manager ] 	Connection to server irc.freenode.net:6667 set up with nick FatalException; ready to use.10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Looking up your hostname...
+10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Checking Ident
+10.07.2015 - 01:24:11	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Found your hostname
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** No Ident response
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 001 FatalException :Welcome to the freenode Internet Relay Chat Network FatalException
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 002 FatalException :Your host is wilhelm.freenode.net[148.251.187.147/6667], running version ircd-seven-1.1.3
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 003 FatalException :This server was created Sun Mar 15 2015 at 18:30:04 UTC
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 004 FatalException wilhelm.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 251 FatalException :There are 166 users and 86489 invisible on 27 servers
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 252 FatalException 19 :IRC Operators online
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 253 FatalException 13 :unknown connection(s)
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 254 FatalException 59998 :channels formed
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 255 FatalException :I have 2706 clients and 1 servers
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 265 FatalException 2706 3134 :Current local users 2706, max 3134
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 266 FatalException 86655 94714 :Current global users 86655, max 94714
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 250 FatalException :Highest connection count: 3135 (3134 clients) (47419 connections received)
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 375 FatalException :- wilhelm.freenode.net Message of the Day - 
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Welcome to wilhelm.freenode.net in Germany, EU. 
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Thanks to http://digitaltreemedia.co.uk/ for sponsoring
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- this server!
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Welcome to freenode - supporting the free and open source
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- software communities since 1998.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- By connecting to freenode you indicate that you have read and
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- accept our policies as set out on http://www.freenode.net
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- freenode runs an open proxy scanner. Please join #freenode for
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- any network-related questions or queries, where a number of
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- volunteer staff and helpful users will be happy to assist10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< you.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- together with like-minded FOSS enthusiasts for talks and
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- real-life collaboration.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- We would like to thank Private Internet Access
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- (https://www.privateinternetaccess.com/) and the other
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- organisations that help keep freenode and our other projects
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- running for their sustained support.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- In particular we would like to thank the sponsor
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- of this server, details of which can be found above.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 376 FatalException :End of /MOTD command.
+10.07.2015 - 01:24:18	  [ DATAOUT ] 	JOIN #NanoPlayground10.07.2015 - 01:24:18	  [ DATAOUT ] 	JOIN #smf10.07.2015 - 01:24:18	  [ DATAOUT ] 	JOIN #wildphp10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException MODE FatalException :+i
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :You are now identified for FatalException.
+10.07.2015 - 01:24:18	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 396 FatalException unaffiliated/yoshi2889/bot/fatalexception :is now your hidden host (set by services.)
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #NanoPlayground
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 332 FatalException #NanoPlayground :Test place for bots.
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 333 FatalException #NanoPlayground FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception 1425410979
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 353 FatalException = #NanoPlayground :FatalException zz_DenBeiren Stiflerrpg Stifler NanoSector SPF|Cloud @ChanServ TimTims sigv
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 366 FatalException #NanoPlayground :End of /NAMES list.
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #smf
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 332 FatalException #smf :Simple Machines Forum (SMF) official IRC channel! || SMF 2.1 Beta 1 Released! http://bit.ly/1xItRQl || SMF 2.0.10 and 1.1.21 Released! Please upgrade: http://bit.ly/1GvRVJW || Visit us at http://www.simplemachines.org/ || Online manual: http://bit.ly/I2PEnF || Looking for support? http://bit.ly/1aoqWwZ
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 333 FatalException #smf CoreISP!~coreisp@simplemachines/rootadmin/CoreISP 1432406302
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 353 FatalException = #smf :FatalException +Antes CoreISP luuuciano ^esc NanoSector Roph KnownSyntax tvenhola Mega9 cali Metacity Kissaki Stu| @ChanServ t eichiro Nicofuma callumacrae SleePy RTamas stefan StupidWeasel Niko^ Elsensee Rymax99 anonymouse realz paulr spossiba
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 366 FatalException #smf :End of /NAMES list.
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #wildphp
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 33210.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< FatalException #wildphp :Welcome to #wildphp. Feel free to idle around. For help, just poke one of us and please stay around; someone will get to you. Get the latest version of the bot from https://github.com/WildPHP/Wild-IRC-Bot
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 333 FatalException #wildphp NanoSector!~Yoshi2889@simplemachines/support/NanoSector 1428415030
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 353 FatalException = #wildphp :FatalException +amunak Stifler @NanoSector +SPF|Cloud Madgod @ChanServ GuntherD1 @TimTims rbxs
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 366 FatalException #wildphp :End of /NAMES list.
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #NanoPlayground +o FatalException
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. NOTICE FatalException :[#smf] Welcome to the SimpleMachines.org official IRC channel! No guarantee for support here. Please do !NOT! send private messages to anyone in this channel without asking permission first! Thank you :) Staff are +v. Have a great time! *!*Please speak English in this channel*!*
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #smf :http://www.simplemachines.org/
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #wildphp :http://wildphp.com
+10.07.2015 - 01:24:24	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #wildphp +v FatalException
+10.07.2015 - 01:25:35	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :ACTION jumps on FatalException 
+10.07.2015 - 01:25:39	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :ACTION bites FatalException 
+10.07.2015 - 01:25:50	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :ACTION dislikes this
+10.07.2015 - 01:25:54	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :ACTION kicks NanoSector 
+10.07.2015 - 01:26:21	  [ WildPHP\Manager-DEBUG ] 	<< PING :wilhelm.freenode.net
+10.07.2015 - 01:26:21	  [ DATAOUT ] 	PONG :wilhelm.freenode.net
+10.07.2015 - 01:27:00	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :ACTION slaps Antes
+10.07.2015 - 01:27:05	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :fix the bot
+10.07.2015 - 01:27:33	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :what's broken?
+10.07.2015 - 01:27:38	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :ACTION pets FatalException 
+10.07.2015 - 01:27:43	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :its not biting me back!
+10.07.2015 - 01:28:02	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :I sometimes think of submitting or open sourcing / posting my smf mod but I think I'd be ridiculed or someone would find some security problem in it
+10.07.2015 - 01:28:21	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :and I doubt it'd ever be accepted to the smf site for copyright reasons
+10.07.2015 - 01:28:34	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :Roph, if anyone can be ridiculed it'd be me
+10.07.2015 - 01:28:44	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :btw I find out G27 Logitech costs 220 usd
+10.07.2015 - 01:28:50	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :while it costs 500 usd in Turkey
+10.07.2015 - 01:28:51	  [ WildPHP\Manager-DEBUG ] 	<< PING :wilhelm.freenode.net
+10.07.2015 - 01:28:51	  [ DATAOUT ] 	PONG :wilhelm.freenode.net
+10.07.2015 - 01:28:55	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :users can encounter / catch pokemon on my forum, then trade them etc
+10.07.2015 - 01:29:02	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :thats cool
+10.07.2015 - 01:29:12	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :Roph, that's kind of cool
+10.07.2015 - 01:29:28	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :and well, "mod"
+10.07.2015 - 01:29:38	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :the only mod to SMF is a display.template edit to allow them to appear
+10.07.2015 - 01:29:51	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :otherwise runs in a subfolder and uses SSI, seperate sqlite db :$
+10.07.2015 - 01:30:01	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer10.07.2015 - 01:30:17	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :is it for 2.0.x ? or 1.1.x ?
+10.07.2015 - 01:30:29	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :2
+10.07.2015 - 01:30:37	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :ACTION sighs
+10.07.2015 - 01:30:40	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :I thought I ported this module
+10.07.2015 - 01:30:47	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :I assume 2.1 doesn't change SSI
+10.07.2015 - 01:30:50	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :https://github.com/Yoshi2889/WildPHP-Modules/blob/master/FunModule/FunModule.php
+10.07.2015 - 01:30:51	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :In fact
+10.07.2015 - 01:30:53	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :you can redistribute SMF files
+10.07.2015 - 01:30:54	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :or break backwards compatability at least
+10.07.2015 - 01:30:57	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :I'm almost certain I ported that module
+10.07.2015 - 01:31:02	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :we did some changes actually Roph
+10.07.2015 - 01:31:07	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :http://rmrk.net/pokemon/?trainer=273
+10.07.2015 - 01:31:11	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :backwards compatible though?
+10.07.2015 - 01:31:21	  [ WildPHP\Manager-DEBUG ] 	<< PING :wilhelm.freenode.net
+10.07.2015 - 01:31:21	  [ DATAOUT ] 	PONG :wilhelm.freenode.net
+10.07.2015 - 01:31:36	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :brb after this game
+10.07.2015 - 01:31:36	  [ WildPHP\Manager-DEBUG ] 	<< :Roph!~uh@lily.roph.eu PRIVMSG #smf :must be lol
+10.07.2015 - 01:32:02	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#exec $this->bot->getModuleManager()->scanModules();
+10.07.2015 - 01:32:02	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized10.07.2015 - 01:32:02	  [ LOG ] 	Running command "$this->bot->getModuleManager()->scanModules();"10.07.2015 - 01:32:02	  [ WildPHP\Manager-DEBUG ] 	Module Hooks registered.10.07.2015 - 01:32:02	  [ WildPHP\Manager-DEBUG ] 	Module STFU registered.10.07.2015 - 01:32:13	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#exec $this->bot->getModuleManager()->loadModule('Hooks');
+10.07.2015 - 01:32:13	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized10.07.2015 - 01:32:13	  [ LOG ] 	Running command "$this->bot->getModuleManager()->loadModule('Hooks');"10.07.2015 - 01:32:13	  [ WildPHP\Manager-DEBUG ] 	Loading module Hooks...10.07.2015 - 01:32:13	  [ WildPHP\Manager ] 	Module Hooks loaded.10.07.2015 - 01:32:24	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :y
+10.07.2015 - 01:32:28	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :I'm playing LoL
+10.07.2015 - 01:32:30	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#exec $this->bot->getModuleManager()->loadModule('STFU');
+10.07.2015 - 01:32:30	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized10.07.2015 - 01:32:30	  [ LOG ] 	Running command "$this->bot->getModuleManager()->loadModule('STFU');"10.07.2015 - 01:32:30	  [ WildPHP\Manager-DEBUG ] 	Loading module STFU...10.07.2015 - 01:32:30	  [ WildPHP\Manager ] 	Module STFU loaded.10.07.2015 - 01:32:30	  [ WildPHP\Manager-DEBUG ] 	<< :Antes!~Antes@simplemachines/marketing/Antes PRIVMSG #smf :for now
+10.07.2015 - 01:32:33	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#stfu
+10.07.2015 - 01:32:45	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :ACTION wonders if FatalException is actually receiving input
+10.07.2015 - 01:33:12	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :according to logs, yes
+10.07.2015 - 01:33:16	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#stfu
+10.07.2015 - 01:33:19	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :fucking
+10.07.2015 - 01:33:21	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#issue 23
+10.07.2015 - 01:33:21	  [ DATAOUT ] 	PRIVMSG #smf :Pull request #23: Core is gone... :'( (0 comment(s))10.07.2015 - 01:33:21	  [ DATAOUT ] 	PRIVMSG #smf :Reported by emanuele45, current status: closed10.07.2015 - 01:33:21	  [ DATAOUT ] 	PRIVMSG #smf :And a couple of minor fixes10.07.2015 - 01:33:21	  [ DATAOUT ] 	PRIVMSG #smf :More information: https://github.com/SimpleMachines/SMF2.1/pull/2310.07.2015 - 01:33:27	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :okay
+10.07.2015 - 01:33:37	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#quit
+10.07.2015 - 01:33:37	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized10.07.2015 - 01:33:37	  [ DATAOUT ] 	QUIT :WildPHP <http://wildphp.com/>10.07.2015 - 01:33:37	  [ LOG ] 	Shutdown function called, closing log...

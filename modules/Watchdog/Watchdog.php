@@ -25,7 +25,7 @@ use WildPHP\Timer\Timer;
 
 class Watchdog extends BaseModule
 {
-	const TIMEOUT = 256;
+	const TIMEOUT = 350;
 	/**
 	 * Last ping request.
 	 * @var int

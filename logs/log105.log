@@ -1,0 +1,151 @@
+07.07.2015 - 18:19:42	  [ LOG ] 	Using log file /mnt/data/IRC Bot/new/Wild-IRC-Bot/logs//log105.log07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event IRCMessageInbound (with class IIRCMessageInboundEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event BotCommand (with class ICommandEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event Say (with class ISayEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event Connect (with class IConnectEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event Loop (with class IEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module Auth registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module ChannelAdmin registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module ChannelManager registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module CoreCommands registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module Dev registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module GitHub registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module Help registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module Remote registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Module Watchdog registered.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module Auth...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module Auth loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelAdmin...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module ChannelAdmin loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelManager...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Registered event ChannelJoin (with class ChannelJoinEvent).07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module ChannelManager loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module CoreCommands...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module CoreCommands loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module Dev...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module Dev loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module GitHub...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module GitHub loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module Help...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module Help loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module Remote...07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module Remote loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	Loading module Watchdog...07.07.2015 - 18:19:42	  [ TIMERMAN ] 	Added new timer PingTimeoutTimer. Next trigger in 256 seconds.07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Module Watchdog loaded.07.07.2015 - 18:19:42	  [ WildPHP\Manager ] 	Connection to server irc.freenode.net:6667 set up with nick FatalException; ready to use.07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net NOTICE * :*** Looking up your hostname...
+07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net NOTICE * :*** Checking Ident
+07.07.2015 - 18:19:42	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net NOTICE * :*** Found your hostname
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net NOTICE * :*** No Ident response
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 001 FatalException :Welcome to the freenode Internet Relay Chat Network FatalException
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 002 FatalException :Your host is sinisalo.freenode.net[91.217.189.42/6667], running version ircd-seven-1.1.3
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 003 FatalException :This server was created Tue Jul 1 2014 at 14:17:05 CEST
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 004 FatalException sinisalo.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 005 FatalException CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 005 FatalException CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 005 FatalException EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 251 FatalException :There are 166 users and 93398 invisible on 27 servers
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 252 FatalException 21 :IRC Operators online
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 253 FatalException 7 :unknown connection(s)
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 254 FatalException 60619 :channels formed
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 255 FatalException :I have 8119 clients and 1 servers
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 265 FatalException 8119 12000 :Current local users 8119, max 12000
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 266 FatalException 93564 105669 :Current global users 93564, max 105669
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 250 FatalException :Highest connection count: 12012 (12000 clients) (4456230 connections received)
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 375 FatalException :- sinisalo.freenode.net Message of the Day - 
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- Welcome to sinisalo.freenode.net in Stockholm, SE.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- Thanks to http://www.portlane.com/ for sponsoring
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- this server!
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- SINISALO, (ANNA) JOHANNA (1958-), a Finnish science fiction
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- and fantasy novelist and a script writer. Her novel 'Not
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- Before Sundown' (orig. 'Ennen päivänlaskua ei voi'
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- published in Finnish in 2000, when it also won the biggest
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- literature award of Finland) was awarded The James Tiptree
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- Jr. award in 2004.  She was nominated for a Nebula award in
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- 2009 for her short story Baby Doll.  Their most recent work
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- includes screenwriting for the film 'Iron Sky'.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- Welcome to freenode - supporting the free and open source
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- software communities since 1998.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- By connecting to freenode you indicate that you have read and
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- accept our policies as set out on http://www.freenode.net
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- freenode runs an open proxy scanner. Please join #freenode for
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- any network-related questions or queries, where a number of
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- volunteer staff and helpful users will be happy to assist you.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- together with like-minded FOSS enthusiasts for talks and
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- real-life collaboration.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- We would like to thank Private Internet Access
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 37207.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< FatalException :- (https://www.privateinternetaccess.com/) and the other
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- organisations that help keep freenode and our other projects
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- running for their sustained support.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- In particular we would like to thank the sponsor
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :- of this server, details of which can be found above.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 372 FatalException :-  
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 376 FatalException :End of /MOTD command.
+07.07.2015 - 18:19:53	  [ DATAOUT ] 	JOIN #NanoPlayground07.07.2015 - 18:19:53	  [ DATAOUT ] 	JOIN #smf07.07.2015 - 18:19:53	  [ DATAOUT ] 	JOIN #wildphp07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException MODE FatalException :+i
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :You are now identified for FatalException.
+07.07.2015 - 18:19:53	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 396 FatalException unaffiliated/yoshi2889/bot/fatalexception :is now your hidden host (set by services.)
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #NanoPlayground
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 332 FatalException #NanoPlayground :Test place for bots.
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 333 FatalException #NanoPlayground FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception 1425410979
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 353 FatalException = #NanoPlayground :FatalException SPF|Cloud DenBeiren NanoSector Stiflerrpg sigv Stifler TimTims @ChanServ
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 366 FatalException #NanoPlayground :End of /NAMES list.
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #smf
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 332 FatalException #smf :Simple Machines Forum (SMF) official IRC channel! || SMF 2.1 Beta 1 Released! http://bit.ly/1xItRQl || SMF 2.0.10 and 1.1.21 Released! Please upgrade: http://bit.ly/1GvRVJW || Visit us at http://www.simplemachines.org/ || Online manual: http://bit.ly/I2PEnF || Looking for support? http://bit.ly/1aoqWwZ
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 333 FatalException #smf CoreISP!~coreisp@simplemachines/rootadmin/CoreISP 1432406302
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 353 FatalException = #smf :FatalException idosedthekoolaid +Oldiesmann +Dragooon +Antes KnownSyntax cali Roph NanoSector Metacity Kissaki tvenhola Stu| spossiba paulr realz anonymouse Rymax99 Elsensee Niko^ StupidWeasel stefan RTamas SleePy callumacrae Nicofuma eichiro t @ChanServ
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 366 FatalException #smf :End of /NAMES list.
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #wildphp
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< freenode.net 332 FatalException #wildphp :Welcome to #wildphp. Feel free to idle around. For help, just poke one of us and please stay around; someone will get to you. Get the latest version of the bot from https://github.com/WildPHP/Wild-IRC-Bot
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 333 FatalException #wildphp NanoSector!~Yoshi2889@simplemachines/support/NanoSector 1428415030
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 353 FatalException = #wildphp :FatalException +SPF|Cloud @NanoSector Madgod +amunak Stifler rbxs @TimTims GuntherD1 @ChanServ
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :sinisalo.freenode.net 366 FatalException #wildphp :End of /NAMES list.
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #NanoPlayground +o FatalException
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. NOTICE FatalException :[#smf] Welcome to the SimpleMachines.org official IRC channel! No guarantee for support here. Please do !NOT! send private messages to anyone in this channel without asking permission first! Thank you :) Staff are +v. Have a great time! *!*Please speak English in this channel*!*
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #smf :http://www.simplemachines.org/
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #wildphp :http://wildphp.com
+07.07.2015 - 18:19:58	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #wildphp +v FatalException
+07.07.2015 - 18:21:22	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@c-69-246-3-15.hsd1.tn.comcast.net QUIT :Ping timeout: 248 seconds
+07.07.2015 - 18:21:50	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@c-69-246-3-15.hsd1.tn.comcast.net JOIN #smf
+07.07.2015 - 18:22:04	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:22:04	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:23:58	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:24:12	  [ WildPHP\Manager-DEBUG ] 	<< :luuuciano!~luuuciano@unaffiliated/luuuciano JOIN #smf
+07.07.2015 - 18:24:20	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:24:20	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:26:36	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:26:36	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:28:14	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:28:52	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:28:52	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:31:08	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:31:08	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:32:30	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:33:24	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:33:24	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:33:26	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#clearclients
+07.07.2015 - 18:33:26	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 18:33:34	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#socketsend Test
+07.07.2015 - 18:33:34	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 18:33:34	  [ DATAOUT ] 	PRIVMSG #smf :Sent the specified message to 0 clients.07.07.2015 - 18:33:47	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 18:33:50	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#socketsend Test
+07.07.2015 - 18:33:50	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 18:33:50	  [ DATAOUT ] 	PRIVMSG #smf :Sent the specified message to 1 clients.07.07.2015 - 18:33:55	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#clearclients
+07.07.2015 - 18:33:55	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 18:33:57	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #smf :#socketsend Test
+07.07.2015 - 18:33:57	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 18:33:57	  [ DATAOUT ] 	PRIVMSG #smf :Sent the specified message to 0 clients.07.07.2015 - 18:36:14	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:36:14	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:36:46	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:38:30	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:38:30	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:39:11	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@c-69-246-3-15.hsd1.tn.comcast.net QUIT :Ping timeout: 252 seconds
+07.07.2015 - 18:39:50	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@50.153.220.134 JOIN #smf
+07.07.2015 - 18:40:46	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:40:46	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:41:02	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:43:02	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:43:02	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:45:18	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:45:18	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:45:18	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:47:34	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:47:34	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:49:34	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:49:50	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:49:50	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:52:06	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:52:06	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:53:50	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:54:22	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:54:22	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:56:38	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:56:38	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 18:58:06	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 18:58:54	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 18:58:54	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:01:10	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:01:10	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:02:22	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:03:26	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:03:26	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:05:42	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:05:42	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:06:38	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:07:57	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:07:58	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:07:58	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:10:14	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:10:14	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:10:54	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:12:30	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:12:30	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:14:46	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:14:46	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:15:10	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:17:01	  [ WildPHP\Manager-DEBUG ] 	<< :Oldiesmann!~oldiesman@simplemachines/developer/Oldiesmann NICK :Oldiesmann-Away
+07.07.2015 - 19:17:02	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:17:02	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:18:42	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@50.153.220.134 QUIT :Ping timeout: 255 seconds
+07.07.2015 - 19:19:18	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:19:18	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:19:25	  [ WildPHP\Manager-DEBUG ] 	<< :idosedthekoolaid!~idosedthe@c-69-246-3-15.hsd1.tn.comcast.net JOIN #smf
+07.07.2015 - 19:19:26	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:21:34	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:21:34	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:23:42	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:23:50	  [ WildPHP\Manager-DEBUG ] 	<< PING :sinisalo.freenode.net
+07.07.2015 - 19:23:50	  [ DATAOUT ] 	PONG :sinisalo.freenode.net
+07.07.2015 - 19:24:16	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:25:08	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG #NanoPlayground :#socketsend Test
+07.07.2015 - 19:25:08	  [ AUTH ] 	Checking authorization for hostname ~Yoshi2889@simplemachines/friend/NanoSector: Authorized07.07.2015 - 19:25:08	  [ LOG ] 	Shutdown function called, closing log...

@@ -1,0 +1,139 @@
+07.07.2015 - 19:34:41	  [ LOG ] 	Using log file /mnt/data/IRC Bot/new/Wild-IRC-Bot/logs//log107.log07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event IRCMessageInbound (with class IIRCMessageInboundEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event BotCommand (with class ICommandEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event Say (with class ISayEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event Connect (with class IConnectEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event Loop (with class IEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module Auth registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module ChannelAdmin registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module ChannelManager registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module CoreCommands registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module Dev registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module GitHub registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module Help registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module Remote registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Module Watchdog registered.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module Auth...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module Auth loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelAdmin...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module ChannelAdmin loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelManager...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Registered event ChannelJoin (with class ChannelJoinEvent).07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module ChannelManager loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module CoreCommands...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module CoreCommands loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module Dev...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module Dev loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module GitHub...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module GitHub loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module Help...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module Help loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module Remote...07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module Remote loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	Loading module Watchdog...07.07.2015 - 19:34:41	  [ TIMERMAN ] 	Added new timer PingTimeoutTimer. Next trigger in 256 seconds.07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Module Watchdog loaded.07.07.2015 - 19:34:41	  [ WildPHP\Manager ] 	Connection to server irc.freenode.net:6667 set up with nick FatalException; ready to use.07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net NOTICE * :*** Looking up your hostname...
+07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net NOTICE * :*** Checking Ident
+07.07.2015 - 19:34:41	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net NOTICE * :*** Found your hostname
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net NOTICE * :*** No Ident response
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 001 FatalException :Welcome to the freenode Internet Relay Chat Network FatalException
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 002 FatalException :Your host is leguin.freenode.net[130.239.18.119/6667], running version ircd-seven-1.1.3
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 003 FatalException :This server was created Sun Mar 15 2015 at 18:31:34 UTC
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 004 FatalException leguin.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 005 FatalException CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 005 FatalException CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 005 FatalException EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 251 FatalException :There are 170 users and 93134 invisible on 27 servers
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 252 FatalException 21 :IRC Operators online
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 253 FatalException 12 :unknown connection(s)
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 254 FatalException 60602 :channels formed
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 255 FatalException :I have 7209 clients and 1 servers
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 265 FatalException 7209 9114 :Current local users 7209, max 9114
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 266 FatalException 93304 100454 :Current global users 93304, max 100454
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 250 FatalException :Highest connection count: 9115 (9114 clients) (277988 connections received)
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 375 FatalException :- leguin.freenode.net Message of the Day - 
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- Welcome to leguin.freenode.net in Umeå, Sweden, EU! Thanks to
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- the Academic Computer Club at Umeå University for sponsoring
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- this server!
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- LE GUIN, URSULA K. (1929-) Born in Berkeley, California,
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- Ursula Le Guin is an american author primarily known for
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- her Science Fiction and Fantasy. She has been awarded the
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- Hugo and Nebula awards, and is best known for her Earthsea
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- and Hainish series.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- Welcome to freenode - supporting the free and open source
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- software communities since 1998.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- By connecting to freenode you indicate that you have read and
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- accept our policies as set out on http://www.freenode.net
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- freenode runs an open proxy scanner. Please join #freenode for
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- any network-related questions or queries, where a number of
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- volunteer staff and helpful users will be happy to assist you.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- together with like-minded FOSS enthusiasts for talks and
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- real-life collaboration.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- We would like to thank Private Internet Access
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- (https://www.privateinternetaccess.com/) and the other
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- organisations that help keep freenode and our other projects
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- running for their sustained support.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- In particular we would like to thank the sponsor
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :- of this server, de07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< tails of which can be found above.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 372 FatalException :-  
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 376 FatalException :End of /MOTD command.
+07.07.2015 - 19:34:48	  [ DATAOUT ] 	JOIN #NanoPlayground07.07.2015 - 19:34:48	  [ DATAOUT ] 	JOIN #smf07.07.2015 - 19:34:48	  [ DATAOUT ] 	JOIN #wildphp07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException MODE FatalException :+i
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :You are now identified for FatalException.
+07.07.2015 - 19:34:48	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 396 FatalException unaffiliated/yoshi2889/bot/fatalexception :is now your hidden host (set by services.)
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #NanoPlayground
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 332 FatalException #NanoPlayground :Test place for bots.
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 333 FatalException #NanoPlayground FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception 1425410979
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 353 FatalException = #NanoPlayground :FatalException SPF|Cloud DenBeiren NanoSector Stiflerrpg sigv Stifler @ChanServ TimTims
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 366 FatalException #NanoPlayground :End of /NAMES list.
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #smf
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 332 FatalException #smf :Simple Machines Forum (SMF) official IRC channel! || SMF 2.1 Beta 1 Released! http://bit.ly/1xItRQl || SMF 2.0.10 and 1.1.21 Released! Please upgrade: http://bit.ly/1GvRVJW || Visit us at http://www.simplemachines.org/ || Online manual: http://bit.ly/I2PEnF || Looking for support? http://bit.ly/1aoqWwZ
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 333 FatalException #smf CoreISP!~coreisp@simplemachines/rootadmin/CoreISP 1432406302
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 353 FatalException = #smf :FatalException idosedthekoolaid luuuciano +Oldiesmann-Away +Dragooon +Antes KnownSyntax cali Roph NanoSector Metacity Kissaki tvenhola Stu| spossiba paulr realz anonymouse Rymax99 Elsensee Niko^ StupidWeasel stefan RTamas SleePy @ChanServ t eichiro Nicofuma callumacrae
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 366 FatalException #smf :End of /NAMES list.
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException!~FatalExce@unaffiliated/yoshi2889/bot/fatalexception JOIN #wildphp
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.fre07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< enode.net 332 FatalException #wildphp :Welcome to #wildphp. Feel free to idle around. For help, just poke one of us and please stay around; someone will get to you. Get the latest version of the bot from https://github.com/WildPHP/Wild-IRC-Bot
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 333 FatalException #wildphp NanoSector!~Yoshi2889@simplemachines/support/NanoSector 1428415030
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 353 FatalException = #wildphp :FatalException +SPF|Cloud @NanoSector Madgod +amunak Stifler @ChanServ GuntherD1 @TimTims rbxs
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net 366 FatalException #wildphp :End of /NAMES list.
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :leguin.freenode.net NOTICE #wildphp :[freenode-info] if you're at a conference and other people are having trouble connecting, please mention it to staff: http://freenode.net/faq.shtml#gettinghelp
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #NanoPlayground +o FatalException
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. NOTICE FatalException :[#smf] Welcome to the SimpleMachines.org official IRC channel! No guarantee for support here. Please do !NOT! send private messages to anyone in this channel without asking permission first! Thank you :) Staff are +v. Have a great time! *!*Please speak English in this channel*!*
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #smf :http://www.simplemachines.org/
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :services. 328 FatalException #wildphp :http://wildphp.com
+07.07.2015 - 19:34:53	  [ WildPHP\Manager-DEBUG ] 	<< :ChanServ!ChanServ@services. MODE #wildphp +v FatalException
+07.07.2015 - 19:35:02	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:35:02	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:35:02	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:35:54	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:35:54	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:35:54	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:37:26	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:37:26	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:37:26	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:37:59	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:37:59	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:37:59	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:38:19	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:38:19	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:38:19	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:38:57	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:38:57	  [ WATCHDOG ] 	Ping timeout detected. Attempting to reconnect.07.07.2015 - 19:38:57	  [ WildPHP\Manager ] 	Connection to server irc.freenode.net:6667 set up with nick FatalException; ready to use.07.07.2015 - 19:38:57	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Looking up your hostname...
+07.07.2015 - 19:38:57	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Checking Ident
+07.07.2015 - 19:38:57	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** Found your hostname
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net NOTICE * :*** No Ident response
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 001 FatalException :Welcome to the freenode Internet Relay Chat Network FatalException
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 002 FatalException :Your host is wilhelm.freenode.net[148.251.187.147/6667], running version ircd-seven-1.1.3
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 003 FatalException :This server was created Sun Mar 15 2015 at 18:30:04 UTC
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 004 FatalException wilhelm.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 005 FatalException EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 251 FatalException :There are 170 users and 93171 invisible on 27 servers
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 252 FatalException 21 :IRC Operators online
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 253 FatalException 16 :unknown connection(s)
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 254 FatalException 60601 :channels formed
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 255 FatalException :I have 2248 clients and 1 servers
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 265 FatalException 2248 2248 :Current local users 2248, max 2248
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 266 FatalException 93341 94345 :Current global users 93341, max 94345
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 250 FatalException :Highest connection count: 2249 (2248 clients) (14588 connections received)
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 375 FatalException :- wilhelm.freenode.net Message of the Day - 
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Welcome to wilhelm.freenode.net in Germany, EU. 
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Thanks to http://digitaltreemedia.co.uk/ for sponsoring
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- this server!
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- Welcome to freenode - supporting the free and open source
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- software communities since 1998.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- By connecting to freenode you indicate that you have read and
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- accept our policies as set out on http://www.freenode.net
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- freenode runs an open proxy scanner. Please join #freenode for
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- any network-related questions or queries, where a number of
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- volunteer staff and helpful users will be happy to assist07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< you.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- together with like-minded FOSS enthusiasts for talks and
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- real-life collaboration.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- We would like to thank Private Internet Access
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- (https://www.privateinternetaccess.com/) and the other
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- organisations that help keep freenode and our other projects
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- running for their sustained support.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- In particular we would like to thank the sponsor
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :- of this server, details of which can be found above.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 372 FatalException :-  
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 376 FatalException :End of /MOTD command.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :FatalException MODE FatalException :+i
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :NickServ!NickServ@services. NOTICE FatalException :You are now identified for FatalException.
+07.07.2015 - 19:39:03	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 396 FatalException unaffiliated/yoshi2889/bot/fatalexception :is now your hidden host (set by services.)
+07.07.2015 - 19:39:15	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:39:15	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:39:15	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:39:15	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 404 FatalException #NanoPlayground :Cannot send to channel
+07.07.2015 - 19:39:15	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 404 FatalException #NanoPlayground :Cannot send to channel
+07.07.2015 - 19:40:02	  [ REMOTE ] 	Client 192.168.178.21 connected.07.07.2015 - 19:40:02	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Client 192.168.178.21 initiated a connection.07.07.2015 - 19:40:02	  [ DATAOUT ] 	PRIVMSG #NanoPlayground :Attempted to write data to socket: 1907.07.2015 - 19:40:02	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 404 FatalException #NanoPlayground :Cannot send to channel
+07.07.2015 - 19:40:02	  [ WildPHP\Manager-DEBUG ] 	<< :wilhelm.freenode.net 404 FatalException #NanoPlayground :Cannot send to channel
+07.07.2015 - 19:42:30	  [ WildPHP\Manager-DEBUG ] 	<< PING :wilhelm.freenode.net
+07.07.2015 - 19:42:30	  [ DATAOUT ] 	PONG :wilhelm.freenode.net
+07.07.2015 - 19:42:48	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :#join #NanoPlayground
+07.07.2015 - 19:42:57	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :#join #NanoPlayground
+07.07.2015 - 19:42:59	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :#join #NanoPlayground
+07.07.2015 - 19:43:04	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :join #NanoPlayground
+07.07.2015 - 19:43:13	  [ TIMERMAN ] 	Triggering timer PingTimeoutTimer07.07.2015 - 19:43:15	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :#quit
+07.07.2015 - 19:43:22	  [ WildPHP\Manager-DEBUG ] 	<< :NanoSector!~Yoshi2889@simplemachines/friend/NanoSector PRIVMSG FatalException :quit

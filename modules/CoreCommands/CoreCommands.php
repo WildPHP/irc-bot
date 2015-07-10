@@ -44,8 +44,8 @@ class CoreCommands extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'quitCommand'));
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'sayCommand'));
+		$this->evman()->getEvent('BotCommand')->registerCommand('quit', array($this, 'quitCommand'), true);
+		$this->evman()->getEvent('BotCommand')->registerCommand('say', array($this, 'sayCommand'), true);
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -57,8 +57,6 @@ class CoreCommands extends BaseModule
 	 */
 	public function quitCommand($e)
 	{
-		if ($e->getCommand() != 'quit' || !$this->auth->authUser($e->getMessage()->getSender()))
-			return;
 		$this->bot->stop(!empty($e->getParams()) ? implode(' ', $e->getParams()) : null);
 	}
 
@@ -68,9 +66,6 @@ class CoreCommands extends BaseModule
 	 */
 	public function sayCommand($e)
 	{
-		if ($e->getCommand() != 'say')
-			return;
-		
 		if (Validation::isChannel($e->getParams()[0]))
 		{
 			$args = $e->getParams();

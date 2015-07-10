@@ -52,8 +52,8 @@ class ChannelManager extends BaseModule
 	public function setup()
 	{
 		// Register our commands.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'joinCommand'));
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'partCommand'));
+		$this->evman()->getEvent('BotCommand')->registerCommand('join', array($this, 'joinCommand'), true);
+		$this->evman()->getEvent('BotCommand')->registerCommand('part', array($this, 'partCommand'), true);
 		
 		// Register a new event.
 		$channelJoin = new RegisteredEvent('ChannelJoinEvent');
@@ -72,8 +72,11 @@ class ChannelManager extends BaseModule
 	 */
 	public function joinCommand($e)
 	{
-		if ($e->getCommand() != 'join' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
+		if (empty($e->getParams()))
+		{
+			$this->bot->say('Not enough parameters. Usage: join [#channel] [#channel] [...]');
 			return;
+		}
 
 		foreach($e->getParams() as $chan)
 		{
@@ -89,9 +92,6 @@ class ChannelManager extends BaseModule
 	 */
 	public function partCommand($e)
 	{
-		if ($e->getCommand() != 'part' || !$this->auth->authUser($e->getMessage()->getSender()))
-			return;
-		
 		// If no argument specified, attempt to leave the current channel.
 		if (empty($e->getParams()))
 			$c = array($e->getMessage()->getTargets());

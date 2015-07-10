@@ -1,0 +1,49 @@
+29.06.2015 - 17:00:49	  [ LOG ] 	Using log file /mnt/data/IRC Bot/new/Wild-IRC-Bot/logs//log61.log29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Registered event IRCMessageInbound (with class IIRCMessageInboundEvent).29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Registered event BotCommand (with class ICommandEvent).29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Registered event Say (with class ISayEvent).29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Registered event Connect (with class IConnectEvent).29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module Auth registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module ChannelAdmin registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module ChannelManager registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module CoreCommands registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module Dev registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Module Help registered.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module Auth...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module Auth loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelAdmin...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module ChannelAdmin loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module ChannelManager...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Registered event ChannelJoin (with class ChannelJoinEvent).29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module ChannelManager loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module CoreCommands...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module CoreCommands loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module Dev...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module Dev loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	Loading module Help...29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Module Help loaded.29.06.2015 - 17:00:49	  [ WildPHP\Manager ] 	Connection to server localhost:5000 set up with nick NanoSector; ready to use.29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 001 NanoSector :Welcome to the freenode Internet Relay Chat Network NanoSector
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 002 NanoSector :Your host is wolfe.freenode.net[91.217.189.44/6697], running version ircd-seven-1.1.3
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 003 NanoSector :This server was created Mon Sep 15 2014 at 10:05:03 UTC
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 004 NanoSector wolfe.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode KNOCK STATUSMSG=@+ CALLERID=g :are supported by this server
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector CASEMAPPING=rfc1459 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 ETRACE CPRIVMSG CNOTICE DEAF=D MONITOR=100 FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 005 NanoSector EXTBAN=$,ajrxz WHOX CLIENTVER=3.0 SAFELIST ELIST=CTU :are supported by this server
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 251 NanoSector :There are 163 users and 87607 invisible on 27 servers
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 252 NanoSector 22 :IRC Operators online
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 254 NanoSector 59393 :channels formed
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 255 NanoSector :I have 1998 clients and 1 servers
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 265 NanoSector 1998 6804 :Current local users 1998, max 6804
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 266 NanoSector 87770 105669 :Current global users 87770, max 105669
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 250 NanoSector :Highest connection count: 6805 (6804 clients) (3021413 connections received)
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 375 NanoSector :- wolfe.freenode.net Message of the Day - 
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Welcome to wolfe.freenode.net in Stockholm, SE.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Thanks to http://www.portlane.com/ for sponsoring
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- this server!
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- WOLFE, GENE [1931-].  Prolific writer of short stories and
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- novels. His best-known work is the multi-volume novel The
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Book of the New Sun. He has won multiple awards including
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- the Nebula Award, the World Fantasy Award, The Campell
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Memorial Award and the Locus Award. He was awarded the World
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Fantasy Award for lifetime achievement in 1996.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- Welcome to freenode - supporting the free and open source
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- software communities since 1998.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- By connecting to freenode you indicate that you have read and
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- accept our policies as set out on http://www.freenode.net
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- freenode runs an open proxy scanner. Please join #freenode for
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- any network-related questions or queries, where a number of
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- volunteer staff and helpful users will be happy to assist you.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- You can meet us at FOSSCON (http://www.fosscon.org) where we get
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- together with like-minded FOSS enthusiasts for talks and
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- real-life collaboration.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- We would like to thank Private Internet Access
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- (https://www.privateinternetaccess.com/) and the other
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- organisations that help keep freenode and our other projects
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- running for their sustained support.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- In particular we would like to thank the sponsor
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :- of this server, details of which can be found above.
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 372 NanoSector :-  
+29.06.2015 - 17:00:49	  [ WildPHP\Manager-DEBUG ] 	<< :wolfe.freenode.net 376 NanoSector :End of /MOTD command.
+29.06.2015 - 17:00:49	  [ LOG ] 	Shutdown function called, closing log...

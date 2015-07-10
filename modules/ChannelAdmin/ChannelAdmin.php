@@ -44,11 +44,11 @@ class ChannelAdmin extends BaseModule
 		public function setup()
 		{
 				// Register our commands.                
-				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'opCommand'));
-				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'deOpCommand'));
-				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'voiceCommand'));
-				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'deVoiceCommand'));
-				$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'kickCommand'));
+				$this->evman()->getEvent('BotCommand')->registerCommand('op', array($this, 'opCommand'), true);
+				$this->evman()->getEvent('BotCommand')->registerCommand('deop', array($this, 'deOpCommand'), true);
+				$this->evman()->getEvent('BotCommand')->registerCommand('voice', array($this, 'voiceCommand'), true);
+				$this->evman()->getEvent('BotCommand')->registerCommand('devoice', array($this, 'deVoiceCommand'), true);
+				$this->evman()->getEvent('BotCommand')->registerCommand('kick', array($this, 'kickCommand'), true);
 
 				// Get the auth module.
 				$this->auth = $this->bot->getModuleInstance('Auth');
@@ -60,8 +60,11 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function opCommand($e)
 		{
-				if ($e->getCommand() != 'op' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-						return;
+				if (empty($e->getParams()))
+				{
+					$this->bot->say('Not enough parameters. Usage: op [#channel] [user] or op [user]');
+					return;
+				}
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
@@ -79,8 +82,11 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function deOpCommand($e)
 		{
-				if ($e->getCommand() != 'deop' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-						return;
+				if (empty($e->getParams()))
+				{
+					$this->bot->say('Not enough parameters. Usage: deop [#channel] [user] or deop [user]');
+					return;
+				}
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
@@ -96,8 +102,11 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function voiceCommand($e)
 		{
-				if ($e->getCommand() != 'voice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-						return;
+				if (empty($e->getParams()))
+				{
+					$this->bot->say('Not enough parameters. Usage: voice [#channel] [user] or voice [user]');
+					return;
+				}
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
@@ -113,8 +122,11 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function deVoiceCommand($e)
 		{
-				if ($e->getCommand() != 'devoice' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-						return;
+				if (empty($e->getParams()))
+				{
+					$this->bot->say('Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]');
+					return;
+				}
 
 				$parts = $e->getParams();
 				if (Validation::isChannel($parts[0]))
@@ -130,8 +142,11 @@ class ChannelAdmin extends BaseModule
 		 */
 		public function kickCommand($e)
 		{
-				if ($e->getCommand() != 'kick' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-						return;
+				if (empty($e->getParams()))
+				{
+					$this->bot->say('Not enough parameters. Usage: kick [user]');
+					return;
+				}
 				
 				$cdata = explode(' ', $e->getParams());
                 

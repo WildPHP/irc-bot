@@ -25,7 +25,6 @@ use WildPHP\EventManager\RegisteredEvent;
 use RuntimeException;
 use InvalidArgumentException;
 
-
 /**
  * The bot's event manager.
  * It manages data processing, makes sure methods that are supposed to be ran

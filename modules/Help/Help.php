@@ -43,7 +43,7 @@ class Help extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'helpCommand'));
+		$this->evman()->getEvent('BotCommand')->registerCommand('help', array($this, 'helpCommand'));
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
@@ -55,9 +55,6 @@ class Help extends BaseModule
 	 */
 	public function helpCommand($e)
 	{
-		if ($e->getCommand() != 'help')
-			return;
-
 		// All commands are...
 		$cmd = $this->bot->getModuleManager()->getLoadedModules();
 		$this->bot->say('Available modules: ' . implode(', ', array_keys($cmd)));

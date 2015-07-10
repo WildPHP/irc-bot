@@ -43,7 +43,7 @@ class Dev extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerListener(array($this, 'execCommand'));
+		$this->evman()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
 
 		// Get the auth module in here.
@@ -57,8 +57,11 @@ class Dev extends BaseModule
 	 */
 	public function execCommand($e)
 	{
-		if ($e->getCommand() != 'exec' || empty($e->getParams()) || !$this->auth->authUser($e->getMessage()->getSender()))
-			return false;
+		if (empty($e->getParams()))
+		{
+			$this->bot->say('Not enough parameters. Usage: exec [code to execute]');
+			return;
+		}
 
 		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');
 		eval(implode(' ', $e->getParams()));
