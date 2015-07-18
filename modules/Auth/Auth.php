@@ -25,8 +25,8 @@ use WildPHP\Event\CommandEvent;
 class Auth extends \WildPHP\BaseModule
 {
 	/**
-	 * List of hostnames to accept.
-	 * @var string[]
+	 * List of hostnames to accept. Boolean false on failure.
+	 * @var string[]|boolean
 	 */
 	private $hostnames;
 
@@ -34,7 +34,7 @@ class Auth extends \WildPHP\BaseModule
 	{
 		$this->forceHostnamesReload();
 		
-		if (!$this->hostnames)
+		if ($this->hostnames === false)
 			throw new \Exception('Could not read trusted hostnames from the bot config.');
 	}
 
