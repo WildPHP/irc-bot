@@ -67,7 +67,7 @@ class QueueManager extends Manager
 	 * @var int
 	 */
 	protected $linesAvailable = 0;
-	
+
 	/**
 	 * The message count.
 	 * @var int
@@ -104,7 +104,7 @@ class QueueManager extends Manager
 
 		if($linesPerSecond < 0)
 			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');
-		
+
 		if($linesMaxBurst < 1)
 			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.');
 
@@ -184,25 +184,8 @@ class QueueManager extends Manager
 		// Handle the immediate queue
 		$messages = $this->getImmediateQueueContents();
 
-		// Handle all the other queues
-		foreach($this->queues as $priority => $queue)
-		{
-			// Immediate queue has already been processed
-			if($priority === QueuePriority::IMMEDIATE)
-				continue;
-
-			// Get messages until limits stop us or the queue is empty
-			while(!$queue->isEmpty() && ($this->burst > 0) && ($this->messageCount > 0))
-			{
-				$messages[] = $this->queues[QueuePriority::IMMEDIATE]->dequeue();
-				$this->messageCount--;
-				$this->burst--;
-			}
-
-			// we can't take more / there are no more messages, so we just stop
-			if($this->burst <= 0 || $this->messageCount <= 0)
-				break;
-		}
+		// Now all other queues.
+		$messages = array_merge($messages, $this->getQueueContents());
 
 		return $messages;
 	}
@@ -233,6 +216,35 @@ class QueueManager extends Manager
 		$this->linesAvailable -= $messageCount;
 
 		// Finally return the messages
+		return $messages;
+	}
+
+	/**
+	 * Returns contents of all queues but the immediate queue.
+	 * @return string[]
+	 */
+	public function getQueueContents()
+	{
+		// Handle all the other queues
+		foreach($this->queues as $priority => $queue)
+		{
+			// Immediate queue has already been processed
+			if($priority === QueuePriority::IMMEDIATE)
+				continue;
+
+			// Get messages until limits stop us or the queue is empty
+			while(!$queue->isEmpty() && ($this->burst > 0) && ($this->messageCount > 0))
+			{
+				$messages[] = $this->queues[QueuePriority::IMMEDIATE]->dequeue();
+				$this->messageCount--;
+				$this->burst--;
+			}
+
+			// we can't take more / there are no more messages, so we just stop
+			if($this->burst <= 0 || $this->messageCount <= 0)
+				break;
+		}
+
 		return $messages;
 	}
 
