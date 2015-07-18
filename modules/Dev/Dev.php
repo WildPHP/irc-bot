@@ -30,7 +30,7 @@ class Dev extends BaseModule
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
-	
+
 	/**
 	 * Dependencies of this module.
 	 * @var string[]
@@ -53,7 +53,6 @@ class Dev extends BaseModule
 	/**
 	 * Executes a command.
 	 * @param CommandEvent $e The data received.
-	 * @return bool
 	 */
 	public function execCommand($e)
 	{
@@ -65,9 +64,8 @@ class Dev extends BaseModule
 
 		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');
 		eval(implode(' ', $e->getParams()));
-		return true;
 	}
-	
+
 	/**
 	 * Simply a test listener. Dump any code you want in here.
 	 */
