@@ -78,7 +78,7 @@ class CoreCommands extends BaseModule
 			$message = implode(' ', $e->getParams());
 		}
 
-		if ($to == null)
+		if ($to === null)
 			return;
 
 		$this->bot->say($to, $message);

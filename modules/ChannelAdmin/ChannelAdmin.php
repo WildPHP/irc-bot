@@ -140,7 +140,7 @@ class ChannelAdmin extends BaseModule
 				else
 						$chan = $e->getMessage()->getTargets();
 
-				if ($chan == null)
+				if ($chan === null)
 						return false;
 
 				return $chan;

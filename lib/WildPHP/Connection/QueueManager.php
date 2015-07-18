@@ -225,6 +225,9 @@ class QueueManager extends Manager
 	 */
 	public function getQueueContents()
 	{
+		// Start empty.
+		$messages = array();
+		
 		// Handle all the other queues
 		foreach($this->queues as $priority => $queue)
 		{
