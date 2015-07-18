@@ -31,7 +31,7 @@ class CoreCommands extends BaseModule
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
-	
+
 	/**
 	 * Dependencies of this module.
 	 * @var string[]
@@ -77,6 +77,9 @@ class CoreCommands extends BaseModule
 			$to = $e->getMessage()->getTargets();
 			$message = implode(' ', $e->getParams());
 		}
+
+		if ($to == null)
+			return;
 
 		$this->bot->say($to, $message);
 	}
