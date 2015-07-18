@@ -8,18 +8,33 @@ If you need help or just want to idle in the IRC channel join us at
 [#wildphp@irc.freenode.net](http://webchat.freenode.net/?channels=wildphp)
 
 ## Features and Functions
+Apart from being awesome, this bot features the following functions:
 
-    todo
+- Pre-installed modules:
+	- Auth: Provides basic hostname-based authentication. Most modules depend on this
+	- ChannelAdmin: Provides commands like `op`, `voice`, `kick`
+	- ChannelManager: Provides commands like `join`, `part`, and keeps track of channel joins and parts
+	- CoreCommands: Provides `quit` and `say` commands.
+	- Help: Provides the `help` command
+	- Watchdog: Watches for PING PONG requests and automatically attempts to reconnect the bot if the connection is assumed lost
+- Easy to install modules, complete with dependency management
+- Full-featured event-driven API that's easy to hook into,
+- Timers that trigger after a set time,
 
 ## Installation
-
-    todo
+1. Copy config.example.neon to config.neon
+2. Open config.neon with your favourite text editor and change the settings to your liking (check the wiki for more information)
+3. Launch the bot with the following command: `php wildphp.php`
+4. Profit!
 
 ### Configuration
 
 Copy the example configuration file and edit it to suit you. It uses the [Neon](http://ne-on.org/) syntax (borrowed from [Nette Framework](http://nette.org/en/)). It is similar to yaml but less strict and much faster to parse.
 
     cp config.example.neon config.neon
+
+## Installing modules
+Installing modules is as simple as dropping the module folder in the `modules` directory. The bot will automatically load it when it is next started.
 
 ## Running the bot
 
@@ -29,10 +44,8 @@ While you can run the bot in the terminal it is best to run it in [tmux](https:/
 
 ### Sample Usage and Output
 
-    <random-user> !say #wildphp hello there
+    <random-user> !say hello there
     <wildphp-bot> hello there
-    <random-user> !poke #wildphp random-user
-    * wildphp-bot pokes random-user
 
 ## Contributors
 
