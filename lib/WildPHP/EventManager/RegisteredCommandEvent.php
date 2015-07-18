@@ -33,13 +33,13 @@ class RegisteredCommandEvent extends RegisteredEvent
      * @var Auth
      */
     protected $auth;
-    
+
     /**
      * The list of commands.
      * @var array<string, array>
      */
     protected $commands = array();
-    
+
 	/**
 	 * Sets the authentication module for this event.
 	 * @param Auth $auth
@@ -48,7 +48,7 @@ class RegisteredCommandEvent extends RegisteredEvent
     {
         $this->auth = $auth;
     }
-    
+
     /**
      * Registers a new command.
      * @param string $command The command, like 'say'.
@@ -59,16 +59,16 @@ class RegisteredCommandEvent extends RegisteredEvent
     {
         if (empty($command) || empty($call) || !is_callable($call))
             throw new \InvalidArgumentException();
-        
+
         if ($this->commandExists($command))
             throw new CommandExistsException();
-        
+
         $this->commands[$command] = array(
                 'auth' => (bool) $auth,
                 'call' => $call
         );
     }
-    
+
     /**
      * Removes a command.
      * @param string $command
@@ -77,13 +77,13 @@ class RegisteredCommandEvent extends RegisteredEvent
     {
         if (empty($command))
             throw new \InvalidArgumentException();
-        
+
         if (!$this->commandExists($command))
             throw new CommandDoesNotExistException();
-        
+
         unset($this->commands[$command]);
     }
-    
+
     /**
      * Checks if a command already exists.
      * @param string $command
@@ -92,23 +92,26 @@ class RegisteredCommandEvent extends RegisteredEvent
     {
         return array_key_exists($command, $this->commands);
     }
-    
+
     /**
      * Triggers the event.
      * @param CommandEvent $event The event that gets passed to the listeners.
      */
-    public function trigger(CommandEvent $event)
+    public function trigger(IEvent $event)
     {
+		if (!($event instanceof CommandEvent))
+			throw new \InvalidArgumentException('For triggering a RegisteredCommandEvent, you need to pass a CommandEvent.');
+		
         if (!$this->commandExists($event->getCommand()))
             return;
-        
+
         // Needs authorization?
         if ($this->commands[$event->getCommand()]['auth'])
         {
             if (!$this->auth->authUser($event->getMessage()->getHostname()))
                 return;
         }
-        
+
         // Do the call.
         call_user_func($this->commands[$event->getCommand()]['call'], $event);
     }
