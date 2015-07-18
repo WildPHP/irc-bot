@@ -56,7 +56,7 @@ class Bot
 	 * @var ConnectionManager
 	 */
 	protected $connectionManager;
-	
+
 	/**
 	 * The TimerManager
 	 * @var TimerManager
@@ -91,7 +91,7 @@ class Bot
 
 		// Then set up the database.
 		$this->db = new \SQLite3($this->configurationManager->get('database'));
-		
+
 		// Set up the timer manager.
 		$this->timerManager = new TimerManager($this);
 
@@ -101,19 +101,19 @@ class Bot
 		// Register some default events.
 		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
 		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
-		
+
 		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
 		$this->eventManager->register('BotCommand', $BotCommandEvent);
-		
+
 		// Say event, used in the Say method before saying something. This event is cancellable.
 		$SayEvent = new RegisteredEvent('ISayEvent');
 		$this->eventManager->register('Say', $SayEvent);
-		
+
 		// Connect event... Used at startup, right after connecting.
 		// You can use this to e.g. initialise databases, if you haven't done so yet.
 		$ConnectEvent = new RegisteredEvent('IConnectEvent');
 		$this->eventManager->register('Connect', $ConnectEvent);
-		
+
 		// Loop event.
 		$LoopEvent = new RegisteredEvent('IEvent');
 		$this->eventManager->register('Loop', $LoopEvent);
@@ -126,18 +126,18 @@ class Bot
 					$this->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
 			}
 		);
-		
+
 		$IRCMessageInboundEvent->registerEventHandler(
 			function($e)
 			{
 				if ($e->getMessage()->getCommand() != 'PRIVMSG')
 					return;
-				
+
 				$msg = new IRC\CommandPRIVMSG($e->getMessage(), $this->getConfig('prefix'));
-				
+
 				if ($msg->getBotCommand() === false)
 					return;
-				
+
 				$this->getEventManager()->getEvent('BotCommand')->trigger(
 					new Event\CommandEvent($msg)
 				);
@@ -147,7 +147,7 @@ class Bot
 		// And fire up any existing modules.
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
-		
+
 		$this->eventManager->getEvent('BotCommand')->setAuthModule($this->moduleManager->getModuleInstance('Auth'));
 
 		// Set up a connection.
@@ -220,7 +220,7 @@ class Bot
 	{
 		return $this->eventManager;
 	}
-	
+
 	/**
 	 * Returns the Timer Manager
 	 * @returns TimerManager The Timer Manager.
@@ -251,7 +251,7 @@ class Bot
 
 	/**
 	 * Say something to a channel.
-	 * @param string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
+	 * @param string[]|string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
 	 * @param string $text The string to be sent or an array of strings. Newlines separate messages.
 	 * @return bool False on failure (or when cancelled), true on success.
 	 */
@@ -271,7 +271,7 @@ class Bot
 
 		$e = new SayEvent($text, $to);
 		$this->eventManager->getEvent('Say')->trigger($e);
-		
+
 		if ($e->isCancelled())
 			return false;
 
@@ -332,7 +332,7 @@ class Bot
 		$this->connectionManager->disconnect();
 		exit;
 	}
-	
+
 	/**
 	 * Reconnects the bot.
 	 */
