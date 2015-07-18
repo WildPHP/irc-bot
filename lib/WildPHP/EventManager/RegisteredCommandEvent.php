@@ -97,7 +97,7 @@ class RegisteredCommandEvent extends RegisteredEvent
      * Triggers the event.
      * @param CommandEvent $event The event that gets passed to the listeners.
      */
-    public function trigger(IEvent $event)
+    public function trigger(CommandEvent $event)
     {
         if (!$this->commandExists($event->getCommand()))
             return;
