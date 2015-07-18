@@ -36,6 +36,9 @@ Copy the example configuration file and edit it to suit you. It uses the [Neon](
 ## Installing modules
 Installing modules is as simple as dropping the module folder in the `modules` directory. The bot will automatically load it when it is next started.
 
+## Official extra modules
+Modules which have been tested to work with the latest version of the bot by us can be found [here](https://github.com/WildPHP/Wild-IRC-Bot-Plugins).
+
 ## Running the bot
 
 While you can run the bot in the terminal it is best to run it in [tmux](https://en.wikipedia.org/wiki/Tmux) or [screen](https://en.wikipedia.org/wiki/GNU_Screen) so that it can run in background.
