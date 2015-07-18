@@ -11,6 +11,9 @@ nick: phpbot
 name: phpbot
 nickserv: NickServ
 
+# Database settings. Paths are relative to the root path.
+database: database.db
+
 # General bot settings
 timezone: America/New_York
 max_reconnects: 1
@@ -22,6 +25,7 @@ channels:
 log:
 	file: log
 	dir: ./logs
+<<<<<<< HEAD
 	filter:
 		- '#wildphp'
 
@@ -51,6 +55,8 @@ commands:
 listeners:
 	Listener\Joins:
 	Listener\Youtube:
+=======
+>>>>>>> modularity-rewrite
 
 # Set up the 'masters' of the bot here using 'ident@hostmask' syntax
 hosts:

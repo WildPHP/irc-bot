@@ -4,5 +4,8 @@ log/*
 .project
 .settings/
 config.neon
-
+*.komodoproject
+.komodotools/
 .idea
+*.log
+php_errors

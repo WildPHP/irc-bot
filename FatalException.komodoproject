@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="eced440d-8e91-4241-bc78-1b6d01b8cd4f" kpf_version="5" name="FatalException.komodoproject">
+<preference-set idref="eced440d-8e91-4241-bc78-1b6d01b8cd4f" id="project" preftype="project">
+  <string relative="path" id="phpExtraPaths"></string>
+  <long id="prefs_version">1</long>
+</preference-set>
+</project>
