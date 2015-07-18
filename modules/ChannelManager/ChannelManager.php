@@ -52,8 +52,9 @@ class ChannelManager extends BaseModule
 	public function setup()
 	{
 		// Register our commands.
-		$this->evman()->getEvent('BotCommand')->registerCommand('join', array($this, 'joinCommand'), true);
-		$this->evman()->getEvent('BotCommand')->registerCommand('part', array($this, 'partCommand'), true);
+		$botCommand = $this->evman()->getEvent('BotCommand');
+		$botCommand->registerCommand('join', array($this, 'joinCommand'), true);
+		$botCommand->registerCommand('part', array($this, 'partCommand'), true);
 		
 		// Register a new event.
 		$channelJoin = new RegisteredEvent('ChannelJoinEvent');
