@@ -36,7 +36,7 @@ class CoreCommands extends BaseModule
 	 * Dependencies of this module.
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth');
+	protected static $dependencies = array('Auth', 'Help');
 
 	/**
 	 * Set up the module.
@@ -46,6 +46,10 @@ class CoreCommands extends BaseModule
 		// Register our command.
 		$this->evman()->getEvent('BotCommand')->registerCommand('quit', array($this, 'quitCommand'), true);
 		$this->evman()->getEvent('BotCommand')->registerCommand('say', array($this, 'sayCommand'), true);
+
+		$helpmodule = $this->bot->getModuleInstance('Help');
+		$helpmodule->registerHelp('quit', 'Shuts down the bot. Usage: quit ([message])');
+		$helpmodule->registerHelp('say', 'Makes the bot say something to a channel. Usage: say ([channel]) [message]');
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');

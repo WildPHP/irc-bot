@@ -39,12 +39,12 @@ class ChannelManager extends BaseModule
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
-	
+
 	/**
 	 * Dependencies of this module.
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth');
+	protected static $dependencies = array('Auth', 'Help');
 
 	/**
 	 * Set up the module.
@@ -55,7 +55,11 @@ class ChannelManager extends BaseModule
 		$botCommand = $this->evman()->getEvent('BotCommand');
 		$botCommand->registerCommand('join', array($this, 'joinCommand'), true);
 		$botCommand->registerCommand('part', array($this, 'partCommand'), true);
-		
+
+		$helpmodule = $this->bot->getModuleInstance('Help');
+		$helpmodule->registerHelp('join', 'Joins a channel. Usage: join [channel] [channel] [...]');
+		$helpmodule->registerHelp('part', 'Leaves a channel. Usage: part [channel] [channel] [...]');
+
 		// Register a new event.
 		$channelJoin = new RegisteredEvent('ChannelJoinEvent');
 		$this->evman()->register('ChannelJoin', $channelJoin);
@@ -96,7 +100,7 @@ class ChannelManager extends BaseModule
 		// If no argument specified, attempt to leave the current channel.
 		if (empty($e->getParams()))
 			$c = array($e->getMessage()->getTargets());
-			
+
 		else
 			$c = $e->getParams();
 

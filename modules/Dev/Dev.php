@@ -35,7 +35,7 @@ class Dev extends BaseModule
 	 * Dependencies of this module.
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth');
+	protected static $dependencies = array('Auth', 'Help');
 
 	/**
 	 * Set up the module.
@@ -44,6 +44,10 @@ class Dev extends BaseModule
 	{
 		// Register our command.
 		$this->evman()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
+
+		$helpmodule = $this->bot->getModuleInstance('Help');
+		$helpmodule->registerHelp('exec', 'Executes code in the bot\'s process. Usage: exec [code]');
+
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
 
 		// Get the auth module in here.

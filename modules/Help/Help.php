@@ -50,6 +50,7 @@ class Help extends BaseModule
 	{
 		// Register our command.
 		$this->evman()->getEvent('BotCommand')->registerCommand('help', array($this, 'helpCommand'));
+		$this->registerHelp('help', 'You just used it correctly.');
 
 		// Get the auth module in here.
 		$this->auth = $this->bot->getModuleInstance('Auth');
