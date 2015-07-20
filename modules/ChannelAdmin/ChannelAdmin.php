@@ -54,6 +54,10 @@ class ChannelAdmin extends BaseModule
 				// Help module.
 				$helpmodule = $this->bot->getModuleInstance('Help');
 				$helpmodule->registerHelp('op', 'OPs a user. Usage: op [channel|user] [user] [user] [...]');
+				$helpmodule->registerHelp('deop', 'Undos an OP flag. Usage: deop [channel|user] [user] [user] [...]');
+				$helpmodule->registerHelp('voice', 'Voices a user. Usage: voice [channel|user] [user] [user] [...]');
+				$helpmodule->registerHelp('devoice', 'Undos a voice flag. Usage: devoice [channel|user] [user] [user] [...]');
+				$helpmodule->registerHelp('kick', 'Kicks a user from the channel. Usage: kick [channel]');
 
 				// Get the auth module.
 				$this->auth = $this->bot->getModuleInstance('Auth');
