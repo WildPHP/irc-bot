@@ -25,96 +25,105 @@ use WildPHP\Event\IEvent;
 
 /**
  * Represents a registered event within the event manager.
- */
+*/
 class RegisteredCommandEvent extends RegisteredEvent
 {
-    /**
-     * The Auth module.
-     * @var Auth
-     */
-    protected $auth;
+	/**
+	 * The Auth module.
+	 * @var Auth
+	 */
+	protected $auth;
 
-    /**
-     * The list of commands.
-     * @var array<string, array>
-     */
-    protected $commands = array();
+	/**
+	 * The list of commands.
+	 * @var array<string, array>
+	 */
+	protected $commands = array();
 
 	/**
 	 * Sets the authentication module for this event.
 	 * @param Auth $auth
 	 */
-    public function setAuthModule(Auth $auth)
-    {
-        $this->auth = $auth;
-    }
+	public function setAuthModule(Auth $auth)
+	{
+		if ($this->auth instanceof Auth)
+			return;
 
-    /**
-     * Registers a new command.
-     * @param string $command The command, like 'say'.
-     * @param callable $call The callable to call.
-     * @param bool $auth Whether the command needs pre-execution authentication.
-     */
-    public function registerCommand($command, $call, $auth = false)
-    {
-        if (empty($command) || empty($call) || !is_callable($call))
-            throw new \InvalidArgumentException();
+		$this->auth = $auth;
+	}
 
-        if ($this->commandExists($command))
-            throw new CommandExistsException();
+	/**
+	 * Registers a new command.
+	 * @param string $command The command, like 'say'.
+	 * @param callable $call The callable to call.
+	 * @param bool $auth Whether the command needs pre-execution authentication.
+	 */
+	public function registerCommand($command, $call, $auth = false)
+	{
+		if (empty($command) || empty($call) || !is_callable($call))
+			throw new \InvalidArgumentException();
 
-        $this->commands[$command] = array(
-                'auth' => (bool) $auth,
-                'call' => $call
-        );
-    }
+		if ($this->commandExists($command))
+			throw new CommandExistsException();
 
-    /**
-     * Removes a command.
-     * @param string $command
-     */
-    public function removeCommand($command)
-    {
-        if (empty($command))
-            throw new \InvalidArgumentException();
+		$this->commands[$command] = array(
+			'auth' => (bool) $auth,
+			'call' => $call
+		);
+	}
 
-        if (!$this->commandExists($command))
-            throw new CommandDoesNotExistException();
+	/**
+	* Removes a command.
+	* @param string $command
+	*/
+	public function removeCommand($command)
+	{
+		if (empty($command))
+			throw new \InvalidArgumentException();
 
-        unset($this->commands[$command]);
-    }
+		if (!$this->commandExists($command))
+			throw new CommandDoesNotExistException();
 
-    /**
-     * Checks if a command already exists.
-     * @param string $command
-     */
-    public function commandExists($command)
-    {
-        return array_key_exists($command, $this->commands);
-    }
+		unset($this->commands[$command]);
+	}
 
-    /**
-     * Triggers the event.
-     * @param CommandEvent $event The event that gets passed to the listeners.
-     */
-    public function trigger(IEvent $event)
-    {
+	/**
+	 * Checks if a command already exists.
+	 * @param string $command
+	 */
+	public function commandExists($command)
+	{
+		return array_key_exists($command, $this->commands);
+	}
+
+	/**
+	 * Triggers the event.
+	 * @param CommandEvent $event The event that gets passed to the listeners.
+	 */
+	public function trigger(IEvent $event)
+	{
 		if (!($event instanceof CommandEvent))
 			throw new \InvalidArgumentException('For triggering a RegisteredCommandEvent, you need to pass a CommandEvent.');
-		
-        if (!$this->commandExists($event->getCommand()))
-            return;
 
-        // Needs authorization?
-        if ($this->commands[$event->getCommand()]['auth'])
-        {
-            if (!$this->auth->authUser($event->getMessage()->getHostname()))
-                return;
-        }
+		if (!$this->commandExists($event->getCommand()))
+			return;
 
-        // Do the call.
-        call_user_func($this->commands[$event->getCommand()]['call'], $event);
-    }
+		// Needs authorization?
+		if ($this->commands[$event->getCommand()]['auth'] && !$this->auth->authUser($event->getMessage()->getHostname()))
+				return;
+
+		// Do the call.
+		call_user_func($this->commands[$event->getCommand()]['call'], $event);
+	}
+
+	/**
+	 * List all available commands.
+	 * @return string[]
+	 */
+	public function getCommands()
+	{
+		return array_keys($this->commands);
+	}
 }
 
 class CommandExistsException extends \RuntimeException

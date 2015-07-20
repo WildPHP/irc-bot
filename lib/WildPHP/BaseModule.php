@@ -30,19 +30,19 @@ class BaseModule
 	 * @var string[]
 	 */
 	protected static $dependencies = array();
-    
+
 	/**
 	 * The Bot object. Used to interact with the main thread.
 	 * @var Bot
 	 */
 	protected $bot;
-    
+
 	/**
 	 * The module directory.
 	 * @var string
 	 */
 	private $dir;
-    
+
 	/**
 	 * Set up the module.
 	 * @param Bot $bot The Bot object.
@@ -50,14 +50,14 @@ class BaseModule
 	public function __construct(Bot $bot)
 	{
 		$this->bot = $bot;
-            
+
 		$dirname = explode('\\', get_class($this));
 		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
 
 		if (method_exists($this, 'setup'))
 			$this->setup();
 	}
-    
+
 	/**
 	 * Return the working directory of this module.
 	 * @return string
@@ -66,16 +66,16 @@ class BaseModule
 	{
 		return $this->dir;
 	}
-    
+
 	/**
 	 * Returns the module dependencies.
 	 * @return string[] The array containing the module names of the dependencies.
 	 */
 	public static function getDependencies()
 	{
-		return self::$dependencies;
+		return static::$dependencies;
 	}
-    
+
 	/**
 	 * Helper function for using the Event Manager.
 	 * @return EventManager
@@ -84,7 +84,7 @@ class BaseModule
 	{
 		return $this->bot->getEventManager();
 	}
-	
+
 	/**
 	 * Helper function for using the Timer Manager.
 	 * @return TimerManager

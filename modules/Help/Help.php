@@ -30,12 +30,18 @@ class Help extends BaseModule
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
-	
+
 	/**
 	 * Dependencies of this module.
 	 * @var string[]
 	 */
 	protected static $dependencies = array('Auth');
+
+	/**
+	 * The registered help strings.
+	 * @var array<string, string>
+	 */
+	protected $strings = array();
 
 	/**
 	 * Set up the module.
@@ -55,8 +61,61 @@ class Help extends BaseModule
 	 */
 	public function helpCommand($e)
 	{
-		// All commands are...
-		$cmd = $this->bot->getModuleManager()->getLoadedModules();
-		$this->bot->say('Available modules: ' . implode(', ', array_keys($cmd)));
+		$commands = $this->evman()->getEvent('BotCommand')->getCommands();
+
+		if (empty($e->getParams()))
+		{
+			// All commands are...
+			$cmd = $this->bot->getModuleManager()->getLoadedModules();
+			$this->bot->say('Available commands: ' . implode(', ', $commands));
+		}
+		else
+		{
+			$command = strtolower($e->getParams()[0]);
+
+			if (!in_array($command, $commands))
+			{
+				$this->bot->say('Command ' . $command . ' does not exist or is not known to me.');
+				return;
+			}
+
+			if (!array_key_exists($command, $this->strings))
+			{
+				$this->bot->say('There is no help available for command ' . $command);
+				return;
+			}
+
+			$this->bot->say($command . ': ' . $this->strings[$command]);
+		}
 	}
+
+	/**
+	 * Register help for a command.
+	 * @param string $command The command to set help for.
+	 * @param string $string The help string to set for it.
+	 * @param boolean $overwrite Overwrite existing help if already set?
+	 */
+	public function registerHelp($command, $string, $overwrite = false)
+	{
+		if (empty($command) || empty($string) || !is_string($command) || !is_string($string))
+			throw new \InvalidArgumentException();
+
+		$cmd = $this->evman()->getEvent('BotCommand');
+
+		if (!$cmd->commandExists($command))
+			throw new HelpForNonexistingCommand();
+
+		if (array_key_exists($command, $this->strings) && !$overwrite)
+			throw new HelpAlreadyRegistered();
+
+		$this->strings[strtolower($command)] = $string;
+	}
+}
+
+class HelpForNonexistingCommand extends \RuntimeException
+{
+}
+
+class HelpAlreadyRegistered extends \RuntimeException
+{
 }

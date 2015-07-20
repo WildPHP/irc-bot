@@ -36,7 +36,7 @@ class ChannelAdmin extends BaseModule
 		 * Dependencies of this module.
 		 * @var string[]
 		 */
-		protected static $dependencies = array('Auth', 'ChannelManager');
+		protected static $dependencies = array('Auth', 'ChannelManager', 'Help');
 
 		/**
 		 * Set up the module.
@@ -50,6 +50,10 @@ class ChannelAdmin extends BaseModule
 				$botCommand->registerCommand('voice', array($this, 'voiceCommand'), true);
 				$botCommand->registerCommand('devoice', array($this, 'deVoiceCommand'), true);
 				$botCommand->registerCommand('kick', array($this, 'kickCommand'), true);
+
+				// Help module.
+				$helpmodule = $this->bot->getModuleInstance('Help');
+				$helpmodule->registerHelp('op', 'OPs a user. Usage: op [channel|user] [user] [user] [...]');
 
 				// Get the auth module.
 				$this->auth = $this->bot->getModuleInstance('Auth');
