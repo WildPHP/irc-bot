@@ -67,7 +67,6 @@ class Help extends BaseModule
 		if (empty($e->getParams()))
 		{
 			// All commands are...
-			$cmd = $this->bot->getModuleManager()->getLoadedModules();
 			$this->bot->say('Available commands: ' . implode(', ', $commands));
 		}
 		else
