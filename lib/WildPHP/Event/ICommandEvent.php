@@ -34,7 +34,7 @@ interface ICommandEvent extends IEvent
 	 * @return string[]
 	 */
 	public function getParams();
-	
+
 	/**
 	 * Returns the assiciated command.
 	 * @return CommandPRIVMSG

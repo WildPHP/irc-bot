@@ -28,13 +28,13 @@ class CommandEvent implements ICommandEvent
 	 * @var string
 	 */
 	protected $command;
-	
+
 	/**
 	 * Parameters received.
 	 * @var string[]
 	 */
 	protected $params;
-	
+
 	/**
 	 * The message received.
 	 * @var CommandPRIVMSG
@@ -44,24 +44,24 @@ class CommandEvent implements ICommandEvent
 	public function __construct(CommandPRIVMSG $message)
 	{
 		$this->message = $message;
-		
+
 		if ($message->getBotCommand() === false || $message->getBotCommandParams() === false)
 			throw new \InvalidArgumentException('This CommandPRIVMSG does not have a command associated; CommandEvent can not be fired.');
-		
+
 		$this->command = $message->getBotCommand();
 		$this->params = $message->getBotCommandParams();
 	}
-    
+
 	public function getCommand()
 	{
 		return strtolower($this->command);
 	}
-    
+
 	public function getParams()
 	{
 		return $this->params;
 	}
-	
+
 	public function getMessage()
 	{
 		return $this->message;
