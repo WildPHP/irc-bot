@@ -81,7 +81,6 @@ class Bot
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
-
 		// Load the configuration in memory.
 		$this->configurationManager = new ConfigurationManager($this, $configFile);
 
@@ -90,7 +89,7 @@ class Bot
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// Then set up the database.
-		$this->db = new \SQLite3($this->configurationManager->get('database'));
+		$this->db = new \SQLite3($this->getConfig('database'));
 
 		// Set up the timer manager.
 		$this->timerManager = new TimerManager($this);
@@ -138,7 +137,7 @@ class Bot
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
 
-		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->moduleManager->getModuleInstance('Auth'));
+		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleInstance('Auth'));
 	}
 
 	/**
@@ -148,15 +147,15 @@ class Bot
 	{
 		// For that, we need to set the connection parameters.
 		// First up, server.
-		$this->connectionManager->setServer($this->configurationManager->get('server'));
-		$this->connectionManager->setPort($this->configurationManager->get('port'));
+		$this->connectionManager->setServer($this->getConfig('server'));
+		$this->connectionManager->setPort($this->getConfig('port'));
 
 		// Then we insert the details for the bot.
-		$this->connectionManager->setNick($this->configurationManager->get('nick'));
-		$this->connectionManager->setName($this->configurationManager->get('nick'));
+		$this->connectionManager->setNick($this->getConfig('nick'));
+		$this->connectionManager->setName($this->getConfig('nick'));
 
 		// Optionally, a password, too.
-		$this->connectionManager->setPassword($this->configurationManager->get('password'));
+		$this->connectionManager->setPassword($this->getConfig('password'));
 
 		// Start the connection.
 		$this->connectionManager->connect();
