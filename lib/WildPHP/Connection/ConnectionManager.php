@@ -68,7 +68,7 @@ class ConnectionManager extends Manager
 
 	/**
 	 * Set up some initial events.
-	 * @param Bot The bot object.
+	 * @param Bot $bot The bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
