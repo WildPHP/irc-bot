@@ -90,7 +90,7 @@ class Bot
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// Then set up the database.
-		//$this->db = new \SQLite3($this->configurationManager->get('database'));
+		$this->db = new \SQLite3($this->configurationManager->get('database'));
 
 		// Set up the timer manager.
 		$this->timerManager = new TimerManager($this);
