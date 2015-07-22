@@ -67,7 +67,7 @@ class Bot
 	 * The log manager.
 	 * @var LogManager
 	 */
-	protected $log;
+	protected $logManager;
 
 	/**
 	 * The database object.
@@ -81,40 +81,11 @@ class Bot
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
-		// Load the configuration in memory.
-		$this->configurationManager = new ConfigurationManager($this, $configFile);
-
-		// Plug in the log.
-		$this->log = new LogManager($this);
-		register_shutdown_function(array($this->log, 'logShutdown'));
+        // Set up all managers.
+        $this->initializeManagers($configFile);
 
 		// Then set up the database.
 		$this->db = new \SQLite3($this->getConfig('database'));
-
-		// Set up the timer manager.
-		$this->timerManager = new TimerManager($this);
-
-		// And we'd like an event manager.
-		$this->eventManager = new EventManager($this);
-
-		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
-		$this->getEventManager()->register('BotCommand', $BotCommandEvent);
-
-		// Say event, used in the Say method before saying something. This event is cancellable.
-		$SayEvent = new RegisteredEvent('ISayEvent');
-		$this->getEventManager()->register('Say', $SayEvent);
-
-		// Connect event... Used at startup, right after connecting.
-		// You can use this to e.g. initialise databases, if you haven't done so yet.
-		$ConnectEvent = new RegisteredEvent('IConnectEvent');
-		$this->getEventManager()->register('Connect', $ConnectEvent);
-
-		// Loop event.
-		$LoopEvent = new RegisteredEvent('IEvent');
-		$this->getEventManager()->register('Loop', $LoopEvent);
-
-		// Set up a connection.
-		$this->connectionManager = new ConnectionManager($this);
 
         $this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
 			function($e)
@@ -133,20 +104,60 @@ class Bot
 			}
 		);
 
-		// And fire up any existing modules.
-		$this->moduleManager = new ModuleManager($this);
-		$this->moduleManager->setup();
-
 		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleInstance('Auth'));
 	}
+
+    /**
+     * Get all managers locked and loaded.
+     * @param string $configFile The config file to load.
+     */
+    protected function initializeManagers($configFile)
+    {
+		// Configuration Manager
+		$this->configurationManager = new ConfigurationManager($this, $configFile);
+
+		// Log Manager
+		$this->logManager = new LogManager($this);
+
+		// Event Manager
+		$this->eventManager = new EventManager($this);
+        $this->initializeEvents();
+
+		// Timer Manager
+		$this->timerManager = new TimerManager($this);
+
+		// Connection Manager
+		$this->connectionManager = new ConnectionManager($this);
+
+        // Module Manager
+		$this->moduleManager = new ModuleManager($this);
+		$this->moduleManager->setup();
+    }
+
+    /**
+     * Initialize all core events.
+     */
+    public function initializeEvents()
+    {
+        // BotCommand - Triggered when the bot receives a command from a user.
+		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
+		$this->getEventManager()->register('BotCommand', $BotCommandEvent);
+
+		// Say - When the bot is going to "say" (PRIVMSG) to a channel.
+		$SayEvent = new RegisteredEvent('ISayEvent');
+		$this->getEventManager()->register('Say', $SayEvent);
+
+		// Loop - Triggered at every iteration of the bot's main loop.
+		$LoopEvent = new RegisteredEvent('IEvent');
+		$this->getEventManager()->register('Loop', $LoopEvent);
+    }
 
 	/**
 	 * Set up the connection for the bot.
 	 */
 	public function connect()
 	{
-		// For that, we need to set the connection parameters.
-		// First up, server.
+		// Pass over the server and port details.
 		$this->connectionManager->setServer($this->getConfig('server'));
 		$this->connectionManager->setPort($this->getConfig('port'));
 
@@ -159,9 +170,6 @@ class Bot
 
 		// Start the connection.
 		$this->connectionManager->connect();
-
-		// And fire the onConnect event.
-		$this->eventManager->getEvent('Connect')->trigger(new Event\ConnectEvent());
 	}
 
 	/**
@@ -173,7 +181,6 @@ class Bot
 		{
 			// Let anything hook into the main loop for its own business.
 			$this->eventManager->getEvent('Loop')->trigger(new Event\LoopEvent());
-			$this->timerManager->trigger();
 			$this->connectionManager->processReceivedData();
 		}
 	}
@@ -302,7 +309,7 @@ class Bot
 	 */
 	public function log($data, $level = 'LOG')
 	{
-		$this->log->log($data, $level);
+		$this->logManager->log($data, $level);
 	}
 
 	/**

@@ -20,6 +20,7 @@
 
 namespace WildPHP;
 
+use WildPHP\Bot;
 use WildPHP\Manager;
 use WildPHP\Timer\Timer;
 
@@ -30,6 +31,17 @@ class TimerManager extends Manager
 	 * @var array<string, Timer>
 	 */
 	protected $timers = array();
+
+	/**
+	 * Hook into events and get everything set up.
+	 * @param Bot $bot The bot object.
+	 */
+	public function __construct(Bot $bot)
+	{
+		parent::__construct($bot);
+
+		$this->bot->getEventManager()->getEvent('Loop')->registerListener(array($this, 'trigger'));
+	}
 
 	/**
 	 * Adds a timer.

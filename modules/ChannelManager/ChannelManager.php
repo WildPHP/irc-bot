@@ -23,9 +23,9 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Validation;
 use WildPHP\Event\CommandEvent;
-use WildPHP\EventManager\RegisteredEvent;
-use WildPHP\Event\ChannelJoinEvent;
-use WildPHP\Event\ChannelPartEvent;
+use WildPHP\EventManager\RegisteredModuleEvent;
+use WildPHP\Modules\ChannelManager\Event\ChannelJoinEvent;
+use WildPHP\Modules\ChannelManager\Event\ChannelPartEvent;
 
 class ChannelManager extends BaseModule
 {
@@ -61,8 +61,11 @@ class ChannelManager extends BaseModule
 		$helpmodule->registerHelp('part', 'Leaves a channel. Usage: part [channel] [channel] [...]');
 
 		// Register a new event.
-		$channelJoin = new RegisteredEvent('ChannelJoinEvent');
+		$channelJoin = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelJoinEvent');
 		$this->evman()->register('ChannelJoin', $channelJoin);
+
+		$channelPart = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelPartEvent');
+		$this->evman()->register('ChannelPart', $channelPart);
 
 		// We also have a listener.
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
@@ -129,8 +132,6 @@ class ChannelManager extends BaseModule
 			{
 				$this->joinChannel($chan);
 			}
-
-			$this->evman()->getEvent('IRCMessageInbound')->removeListener(array($this, 'initialJoin'));
 		}
 	}
 
@@ -140,10 +141,10 @@ class ChannelManager extends BaseModule
 	 */
 	public function joinChannel($channel)
 	{
-		if(!empty($channel) && Validation::isChannel($channel))
-		{
-			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
-			$this->bot->sendData('JOIN ' . $channel);
-		}
+		if(empty($channel) || !Validation::isChannel($channel))
+			return;
+
+		$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
+		$this->bot->sendData('JOIN ' . $channel);
 	}
 }

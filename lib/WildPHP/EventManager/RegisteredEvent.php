@@ -136,19 +136,29 @@ class RegisteredEvent
 	}
 
 	/**
+	 * Checks if the given class is a valid event to trigger for.
+	 *
+	 * @param IEvent $event The event to check.
+	 * @return boolean
+	 */
+	public function assertValidClass(IEvent $event)
+	{
+		return is_a($event, self::EVENT_NAMESPACE . '\\' . $this->className);
+	}
+
+	/**
 	 * Triggers the event, going through each listener according to their priority.
 	 * Each listener gets executed and passed the event.
 	 * Listeners with the same priority get executed in arbitrary order
 	 * (usually from the first registered one to the last registered)
-	 * 
+	 *
 	 * @param IEvent $event The event that gets passed to the listeners.
 	 * @return int The number of listeners that were called.
 	 */
 	public function trigger(IEvent $event)
 	{
-
 		// make sure that the event we got is of the promised type (or a subclass)
-		if(!is_a($event, self::EVENT_NAMESPACE . '\\' . $this->className))
+		if(!$this->assertValidClass($event))
 			throw new InvalidEventTypeException('Cannot trigger event: Expected class ' . $this->className . ' or its subclass, got ' . get_class($event) . '.');
 
 		// sort the listener array so that we actually run it in the correct order

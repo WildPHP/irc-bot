@@ -36,7 +36,7 @@ use InvalidArgumentException;
 class EventManager extends Manager
 {
 
-	const EVENT_NAME_PATTERN = '/^[a-z]+$/i';
+	const EVENT_NAME_PATTERN = '/^[a-z\\\]+$/i';
 
 	/**
 	 * Holds registered events, their hooks and other data.

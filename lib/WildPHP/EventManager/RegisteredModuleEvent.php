@@ -17,37 +17,22 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\EventManager;
 
-namespace WildPHP;
+use \WildPHP\EventManager\ListenerPriority as Priority,
+	WildPHP\Event\IEvent,
+	\RuntimeException,
+	\InvalidArgumentException;
 
-class ModuleAutoloader
+
+/**
+ * Represents a registered event from within a module within the event manager.
+ * This is not as strict as RegisteredEvent as it allows loading events from anywhere.
+ */
+class RegisteredModuleEvent extends RegisteredEvent
 {
-	public static function load($class)
-	{
-        if (strtolower(substr($class, 0, 15)) == 'wildphp\\modules')
-            $class = substr($class, 16);
-		else
-			return false;
-
-		// Split $class to the "path" and "classname" parts
-		$class = explode('\\', $class);
-
-		$classpath = $class;
-		array_pop($classpath);
-		$classname = end($class) . '.php';
-
-		// Assemble path
-		$classpath = implode('/', $classpath) . '/';
-
-		$path = WPHP_MODULE_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
-
-		if(file_exists($path))
-		{
-			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
-			require $path;
-			return true;
-		}
-
-		return false;
-	}
+    public function assertValidClass(IEvent $event)
+    {
+        return parent::assertValidClass($event) || is_a($event, $this->className);
+    }
 }

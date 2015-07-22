@@ -69,6 +69,9 @@ class LogManager extends Manager
 	{
 		parent::__construct($bot);
 
+		// Make sure we end up clean when quitting.
+		register_shutdown_function(array($this, 'logShutdown'));
+
 		// Fetch the configuration.
 		$config = $bot->getConfig('log');
 

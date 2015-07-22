@@ -25,6 +25,7 @@ use WildPHP\EventManager\RegisteredEvent;
 use WildPHP\Manager;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\Event\IRCMessageOutgoingEvent;
+use WildPHP\Event\ConnectEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\IRC\MessageLengthException;
 use RuntimeException;
@@ -79,6 +80,9 @@ class ConnectionManager extends Manager
 
 		$IRCMessageOutgoingEvent = new RegisteredEvent('IIRCMessageOutgoingEvent');
 		$bot->getEventManager()->register('IRCMessageOutgoing', $IRCMessageOutgoingEvent);
+
+		$ConnectEvent = new RegisteredEvent('IConnectEvent');
+		$bot->getEventManager()->register('Connect', $ConnectEvent);
 	}
 
 	/**
@@ -110,6 +114,9 @@ class ConnectionManager extends Manager
 		$this->sendData('NICK ' . $this->nick);
 
 		$this->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.');
+
+		// And fire the onConnect event.
+		$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
 	}
 
 	/**
