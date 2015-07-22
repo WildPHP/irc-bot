@@ -30,32 +30,42 @@ class Watchdog extends BaseModule
 	 * Last ping request.
 	 * @var int
 	 */
-	protected $lastPing = 0;
+	protected $lastActivity = 0;
 
 	/**
 	 * Set up the module.
 	 */
 	public function setup()
 	{
-		// Register our command.
+		// Register our listeners.
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'pingListener'));
+		$this->evman()->getEvent('IRCMessageOutgoing')->registerListener(array($this, 'activityListener'));
 
 		// Register a timer to check for ping timeouts.
 		$this->timeman()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, array($this, 'pingTimer')));
 	}
 
 	/**
-	 * Respond to various messages.
+	 * Respond to PING messages
 	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
 	public function pingListener($e)
 	{
 		if ($e->getMessage()->getCommand() != 'PING')
 			return;
-		
+
 		$this->bot->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
 
-		$this->lastPing = time();
+		$this->lastActivity = time();
+	}
+
+	/**
+	 * Update the internal timer when activity occurs.
+	 * @param IRCMessageOutgoingEvent $e The data that is going to be sent.
+	 */
+	public function activityListener($e)
+	{
+		$this->lastActivity = time();
 	}
 
 	/**
@@ -64,7 +74,7 @@ class Watchdog extends BaseModule
 	 */
 	public function pingTimer($e)
 	{
-		if ($this->lastPing + self::TIMEOUT < time())
+		if ($this->lastActivity + self::TIMEOUT < time())
 		{
 			// Ping timed out. Reconnecting time!
 			$this->bot->log('Ping timeout detected. Attempting to reconnect.', 'WATCHDOG');
