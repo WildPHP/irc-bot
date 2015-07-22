@@ -33,7 +33,7 @@ class QueueManager extends Manager
 
 	/**
 	 * Stores the queues as an array of pointers to first and last elements of the queue.
-	 * @var array<QueuePriority, array<'first'<QueueItem>,'last'<QueueItem>>>
+	 * @var array<QueuePriority, array<'first'<QueueItem>,'last'<QueueItem>>>|array<QueuePriority, array<int, string>>
 	 */
 	protected $queues;
 
@@ -227,7 +227,7 @@ class QueueManager extends Manager
 	{
 		// Start empty.
 		$messages = array();
-		
+
 		// Handle all the other queues
 		foreach($this->queues as $priority => $queue)
 		{

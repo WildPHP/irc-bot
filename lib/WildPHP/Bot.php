@@ -118,15 +118,6 @@ class Bot
 		$LoopEvent = new RegisteredEvent('IEvent');
 		$this->eventManager->register('Loop', $LoopEvent);
 
-		// Ping handler
-		$IRCMessageInboundEvent->registerEventHandler(
-			function($e)
-			{
-				if($e->getMessage()->getCommand() === 'PING')
-					$this->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
-			}
-		);
-
 		$IRCMessageInboundEvent->registerEventHandler(
 			function($e)
 			{

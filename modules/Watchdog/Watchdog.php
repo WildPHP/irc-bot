@@ -31,7 +31,7 @@ class Watchdog extends BaseModule
 	 * @var int
 	 */
 	protected $lastPing = 0;
-	
+
 	/**
 	 * Set up the module.
 	 */
@@ -39,11 +39,11 @@ class Watchdog extends BaseModule
 	{
 		// Register our command.
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'pingListener'));
-		
+
 		// Register a timer to check for ping timeouts.
 		$this->timeman()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, array($this, 'pingTimer')));
 	}
-	
+
 	/**
 	 * Respond to various messages.
 	 * @param IRCMessageInboundEvent $e The last data received.
@@ -53,9 +53,11 @@ class Watchdog extends BaseModule
 		if ($e->getMessage()->getCommand() != 'PING')
 			return;
 		
+		$this->bot->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
+
 		$this->lastPing = time();
 	}
-	
+
 	/**
 	 * Checks if ping timed out.
 	 * @param Timer $e The timer.
@@ -68,9 +70,9 @@ class Watchdog extends BaseModule
 			$this->bot->log('Ping timeout detected. Attempting to reconnect.', 'WATCHDOG');
 			$this->bot->reconnect();
 		}
-		
+
 		// Check back in another round.
 		$e->extend(self::TIMEOUT);
 	}
-	
+
 }

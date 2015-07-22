@@ -105,7 +105,7 @@ class EventManager extends Manager
 	 */
 	public function remove($eventName)
 	{
-		// check if it is registered first - it also validates the name, no need to do that twice
+		// Is the event registered? Can't remove it otherwise.
 		if(!$this->isRegistered($eventName))
 			throw new EventDoesNotExistException('Could not remove registered event: Event ' . $eventName . ' is not registered.');
 
@@ -119,7 +119,7 @@ class EventManager extends Manager
 	 */
 	public function getEvent($eventName)
 	{
-		// check if it is registered first - it also validates the name, no need to do that twice
+		// If the event is not registered, we can't retrieve it.
 		if(!$this->isRegistered($eventName))
 			throw new EventDoesNotExistException('Event ' . $eventName . ' is not registered.');
 
