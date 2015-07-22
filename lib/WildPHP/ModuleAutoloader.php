@@ -29,7 +29,6 @@ class ModuleAutoloader
 		else
 			return false;
 
-		echo var_dump($class);
 		// Split $class to the "path" and "classname" parts
 		$class = explode('\\', $class);
 
