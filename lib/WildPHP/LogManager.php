@@ -76,20 +76,20 @@ class LogManager extends Manager
 		$config = $bot->getConfig('log');
 
 		// Can't log to a file not set.
-		if(empty($config['file']))
+		if (empty($config['file']))
 			trigger_error('LogManager: A log file needs to be set to use logging. Aborting.', E_USER_ERROR);
 
 		// Check for log dir and create it if necessary
-		if(!file_exists($logDir))
-			if(!mkdir($logDir, 0775))
+		if (!file_exists($logDir))
+			if (!mkdir($logDir, 0775))
 				throw new RuntimeException('Log directory (' . $logDir . ') does not exist. Attempt to create it failed.');
 
 		// Check if the log dir is in fact a directory
-		if(!is_dir($logDir))
+		if (!is_dir($logDir))
 			throw new RuntimeException($logDir . ': ' . __CLASS__ . ' expected directory.');
 
 		// Also can't log to a directory we can't write to.
-		if(!is_writable($logDir))
+		if (!is_writable($logDir))
 			throw new RuntimeException('Log directory (' . $logDir . ') has insufficient write permissions.');
 
 		// Start off with the base path to the file.
@@ -101,13 +101,13 @@ class LogManager extends Manager
 		{
 			$i++;
 		}
-		while(file_exists($this->logFile . $i . '.log'));
+		while (file_exists($this->logFile . $i . '.log'));
 
 		// And fix up the final log name.
 		$this->logFile = $this->logFile . $i . '.log';
 
 		// Ready!
-		if($this->handle = fopen($this->logFile, 'w'))
+		if ($this->handle = fopen($this->logFile, 'w'))
 			$this->log('Using log file ' . $this->logFile);
 
 		// Well this went great...
@@ -123,7 +123,7 @@ class LogManager extends Manager
 	public function log($data, $status = '')
 	{
 		// No status? Use log.
-		if(empty($status))
+		if (empty($status))
 			$status = 'LOG';
 
 		// Add the date and status to the message.
@@ -133,13 +133,13 @@ class LogManager extends Manager
 		echo trim($msg) . PHP_EOL;
 
 		// Are we using a buffer? If so, queue the message; we'll write it later.
-		if($this->useBuffer)
+		if ($this->useBuffer)
 			$this->buffer = $this->buffer . $msg;
 
 		// Otherwise, we can just write it.
 		else
 		{
-			if(!fwrite($this->handle, $msg))
+			if (!fwrite($this->handle, $msg))
 				echo 'Failed to write message to file...';
 		}
 	}
@@ -150,7 +150,7 @@ class LogManager extends Manager
 	public function flush()
 	{
 		// We can't flush a buffer we don't have.
-		if(!$this->hasBuffer())
+		if (!$this->hasBuffer())
 		{
 			$this->log('No buffer to flush. Either the buffer is disabled or has no data.', 'WARNING');
 			return false;
@@ -175,7 +175,7 @@ class LogManager extends Manager
 	public function intervalFlush()
 	{
 		// Time yet?
-		if(!$this->useBuffer || (microtime(true) < ($this->lastFlushed + $this->flushInterval)))
+		if (!$this->useBuffer || (microtime(true) < ($this->lastFlushed + $this->flushInterval)))
 			return;
 
 		// Make notes.
@@ -208,7 +208,7 @@ class LogManager extends Manager
 	public function logShutdown()
 	{
 		$this->log('Shutdown function called, closing log...');
-		if($this->hasBuffer())
+		if ($this->hasBuffer())
 			$this->flush();
 		$this->close();
 	}

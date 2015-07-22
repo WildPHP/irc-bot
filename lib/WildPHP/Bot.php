@@ -176,7 +176,7 @@ class Bot
 	 */
 	public function start()
 	{
-		while($this->connectionManager->isConnected())
+		while ($this->connectionManager->isConnected())
 		{
 			// Let anything hook into the main loop for its own business.
 			$this->eventManager->getEvent('Loop')->trigger(new Event\LoopEvent());
@@ -249,11 +249,11 @@ class Bot
 	 */
 	public function say($to, $text = '')
 	{
-		if(empty($to) && empty($text))
+		if (empty($to) && empty($text))
 			return false;
 
 		// Some people are just too lazy.
-		elseif(empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG')
+		elseif (empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG')
 		{
 			$text = $to;
 			$to = $this->connectionManager->getLastData()->get()['targets'][0];
@@ -268,34 +268,34 @@ class Bot
 			return false;
 
 		// Nothing to send?
-		if(empty($text) || empty($to))
+		if (empty($text) || empty($to))
 			return false;
 
 		// Split multiple lines into separate messages *for each member of the input array* (or string, possibly)
 		// Also removes empty lines and other garbage and splits the line if it's too long
 		$out = array();
-		foreach((array) $text as $part)
+		foreach ((array) $text as $part)
 		{
 			$part = (string) $part;
 			$part = preg_replace('/[\n\r]+/', "\n", $part);
 
 			$lines = explode("\n", (string) $part);
-			foreach($lines as $lines2)
+			foreach ($lines as $lines2)
 			{
 				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
 				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
 				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
-				foreach($lines2 as $line)
+				foreach ($lines2 as $line)
 				{
 					// We finally have the correct line
 					$line = trim($line);
-					if(!empty($line))
+					if (!empty($line))
 						array_push($out, $line);
 				}
 			}
 		}
 
-		foreach($out as $msg)
+		foreach ($out as $msg)
 			$this->sendData('PRIVMSG ' . $to . ' :' . $msg);
 
 		return true;
@@ -317,7 +317,7 @@ class Bot
 	 */
 	public function stop($message = 'WildPHP <http://wildphp.com/>')
 	{
-		if(empty($message))
+		if (empty($message))
 			$message = 'WildPHP <http://wildphp.com/>';
 
 		$this->sendData('QUIT :' . $message);
@@ -357,7 +357,7 @@ class Bot
 		// $output contains the output string
 		$output = curl_exec($ch);
 
-		if(!empty($decode) && ($output = json_decode($output)) === null)
+		if (!empty($decode) && ($output = json_decode($output)) === null)
 			$output = false;
 
 		// close curl resource to free up system resources

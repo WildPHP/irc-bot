@@ -24,14 +24,14 @@ use WildPHP\Bot;
 error_reporting(E_ALL);
 
 // Check if we are running as root and quit
-if(function_exists('posix_getuid') && posix_getuid() === 0)
+if (function_exists('posix_getuid') && posix_getuid() === 0)
 {
 	echo 'Running wildphp as root is not allowed.' . PHP_EOL;
 	exit(128);
 }
 
 // Check if we are running high enough PHP version
-if(version_compare(PHP_VERSION, '5.3.9', '<'))
+if (version_compare(PHP_VERSION, '5.3.9', '<'))
 {
 	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
 	echo 'Please use PHP 5.3.9 or later.';

@@ -21,7 +21,6 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
-use WildPHP\IRC\CommandPRIVMSG;
 
 class Dev extends BaseModule
 {
