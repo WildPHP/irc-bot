@@ -41,12 +41,12 @@ class ConfigurationManager extends Manager
 		{
 			// Open the file and surpress errors; we'll do our own error handling here.
 			$data = @file_get_contents($config);
-			if(!empty($data) && is_string($data))
+			if (!empty($data) && is_string($data))
 				$this->config = Neon::decode(file_get_contents($config));
 			else
 				throw new ConfigurationException('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
 		}
-		catch(\Exception $e)
+		catch (\Exception $e)
 		{
 			throw new ConfigurationException('Configuration syntax error: ' . $e->getMessage());
 		}
@@ -62,9 +62,9 @@ class ConfigurationManager extends Manager
 		$pieces = explode('.', $key);
 
 		$lastPiece = $this->config;
-		foreach($pieces as $piece)
+		foreach ($pieces as $piece)
 		{
-			if(array_key_exists($piece, $lastPiece))
+			if (array_key_exists($piece, $lastPiece))
 				$lastPiece = $lastPiece[$piece];
 			else
 				return false;

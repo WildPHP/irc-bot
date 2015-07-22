@@ -23,9 +23,9 @@ use WildPHP\IRC\ServerMessage;
 
 interface IIRCMessageInboundEvent extends IIRCMessageEvent
 {
-    /**
-     * Returns the message associated with this event.
-     * @return ServerMessage
-     */
-    public function getMessage();
+	/**
+	 * Returns the message associated with this event.
+	 * @return ServerMessage
+	 */
+	public function getMessage();
 }

@@ -67,10 +67,10 @@ class RegisteredEvent
 	 */
 	public function registerListener(callable $listener, Priority $priority = null)
 	{
-		if($priority === null)
+		if ($priority === null)
 			$priority = new Priority(Priority::NORMAL);
 
-		if($this->isListenerRegistered($listener))
+		if ($this->isListenerRegistered($listener))
 			throw new ListenerAlreadyRegisteredException('Attempt to register event listener failed: listener already attached.');
 
 		$this->isSorted = false;
@@ -94,8 +94,8 @@ class RegisteredEvent
 	 */
 	public function isListenerRegistered(callable $listener)
 	{
-		foreach($this->listeners as $priority)
-			if(in_array($listener, $priority, true))
+		foreach ($this->listeners as $priority)
+			if (in_array($listener, $priority, true))
 				return true;
 
 		return false;
@@ -108,8 +108,8 @@ class RegisteredEvent
 	 */
 	public function removeListener(callable $listener)
 	{
-		foreach($this->listeners as $level => $priority)
-			if(($key = array_search($listener, $priority, true)) !== false)
+		foreach ($this->listeners as $level => $priority)
+			if (($key = array_search($listener, $priority, true)) !== false)
 			{
 				unset($this->listeners[$level][$key]);
 				return;
@@ -125,7 +125,7 @@ class RegisteredEvent
 	 */
 	public function sortListeners($force = false)
 	{
-		if(!$this->isSorted || $force)
+		if (!$this->isSorted || $force)
 		{
 			ksort($this->listeners, SORT_NUMERIC);
 			$this->isSorted = true;
@@ -158,15 +158,15 @@ class RegisteredEvent
 	public function trigger(IEvent $event)
 	{
 		// make sure that the event we got is of the promised type (or a subclass)
-		if(!$this->assertValidClass($event))
+		if (!$this->assertValidClass($event))
 			throw new InvalidEventTypeException('Cannot trigger event: Expected class ' . $this->className . ' or its subclass, got ' . get_class($event) . '.');
 
 		// sort the listener array so that we actually run it in the correct order
 		$this->sortListeners();
 
 		$count = 0;
-		foreach($this->listeners as $priority)
-			foreach($priority as $listener)
+		foreach ($this->listeners as $priority)
+			foreach ($priority as $listener)
 			{
 				call_user_func($listener, $event);
 				$count++;

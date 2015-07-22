@@ -86,7 +86,7 @@ class ChannelManager extends BaseModule
 			return;
 		}
 
-		foreach($e->getParams() as $chan)
+		foreach ($e->getParams() as $chan)
 		{
 			$this->bot->log('Joining channel ' . $chan . '...', 'CHANMAN');
 			$this->channels[] = $chan;
@@ -107,7 +107,7 @@ class ChannelManager extends BaseModule
 		else
 			$c = $e->getParams();
 
-		foreach($c as $chan)
+		foreach ($c as $chan)
 		{
 			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
 			$this->bot->sendData('PART ' . $chan);
@@ -128,7 +128,7 @@ class ChannelManager extends BaseModule
 		{
 			$channels = $this->bot->getConfig('channels');
 
-			foreach($channels as $chan)
+			foreach ($channels as $chan)
 			{
 				$this->joinChannel($chan);
 			}
@@ -141,7 +141,7 @@ class ChannelManager extends BaseModule
 	 */
 	public function joinChannel($channel)
 	{
-		if(empty($channel) || !Validation::isChannel($channel))
+		if (empty($channel) || !Validation::isChannel($channel))
 			return;
 
 		$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));

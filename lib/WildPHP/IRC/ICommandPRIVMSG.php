@@ -48,11 +48,11 @@ interface ICommandPRIVMSG extends IServerMessage
 	 */
 	public function getUserMessage();
     
-    /**
-     * Returns the nickname of the user who sent the message.
-     * @return string The username.
-     */
-    public function getNickname();
+	/**
+	 * Returns the nickname of the user who sent the message.
+	 * @return string The username.
+	 */
+	public function getNickname();
     
 	/**
 	 * Returns the bot command, if found.

@@ -20,8 +20,6 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP\Event\CommandEvent;
-
 class Auth extends \WildPHP\BaseModule
 {
 	/**

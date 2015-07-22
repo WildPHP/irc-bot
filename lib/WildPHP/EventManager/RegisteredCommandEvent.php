@@ -73,9 +73,9 @@ class RegisteredCommandEvent extends RegisteredEvent
 	}
 
 	/**
-	* Removes a command.
-	* @param string $command
-	*/
+	 * Removes a command.
+	 * @param string $command
+	 */
 	public function removeCommand($command)
 	{
 		if (empty($command))

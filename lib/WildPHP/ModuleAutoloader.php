@@ -41,7 +41,7 @@ class ModuleAutoloader
 
 		$path = WPHP_MODULE_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
 
-		if(file_exists($path))
+		if (file_exists($path))
 		{
 			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
 			require $path;

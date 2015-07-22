@@ -90,7 +90,7 @@ class ConnectionManager extends Manager
 	 */
 	public function __destruct()
 	{
-		if($this->isConnected())
+		if ($this->isConnected())
 			$this->disconnect();
 	}
 
@@ -102,12 +102,12 @@ class ConnectionManager extends Manager
 	{
 		// Open a connection.
 		$this->socket = stream_socket_client($this->server . ':' . $this->port, $errno, $errstr);
-		if(!$this->isConnected())
-			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '" (' . $errno .  ': ' . $errstr . ')');
+		if (!$this->isConnected())
+			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '" (' . $errno . ': ' . $errstr . ')');
 
 		socket_set_blocking($this->socket, 0);
 
-		if(!empty($this->password))
+		if (!empty($this->password))
 			$this->sendData('PASS ' . $this->password);
 
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
@@ -126,7 +126,7 @@ class ConnectionManager extends Manager
 	 */
 	public function disconnect()
 	{
-		if($this->isConnected())
+		if ($this->isConnected())
 			return fclose($this->socket);
 		return false;
 	}
@@ -149,11 +149,11 @@ class ConnectionManager extends Manager
 	public function sendData($data)
 	{
 		$data = trim($data);
-		if(strlen($data) > 510)
+		if (strlen($data) > 510)
 			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
 
 		$numBytes = fwrite($this->socket, $data . "\r\n");
-		if($numBytes === false)
+		if ($numBytes === false)
 		{
 			$errno = socket_last_error();
 			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
@@ -175,13 +175,13 @@ class ConnectionManager extends Manager
 	protected function getData()
 	{
 		$read = array($this->socket);
-		$write = NULL;
-		$except = NULL;
+		$write = null;
+		$except = null;
 		$changed = stream_select($read, $write, $except, 1);
 		if ($changed === false)
 			return null;
 
-		if($changed > 0)
+		if ($changed > 0)
 			return trim(fgets($read[0]), self::STREAM_TRIM_CHARACTERS);
 		else
 			return null;
@@ -196,7 +196,7 @@ class ConnectionManager extends Manager
 	{
 		$data = $this->getData();
 
-		if($data === null)
+		if ($data === null)
 			return false;
 
 		$this->logDebug('<< ' . $data);

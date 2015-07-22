@@ -125,7 +125,7 @@ class ChannelAdmin extends BaseModule
 
 				$cdata = explode(' ', $e->getParams());
 
-				if(count($cdata) < 2)
+				if (count($cdata) < 2)
 						return;
 
 				$user = array_shift($cdata);

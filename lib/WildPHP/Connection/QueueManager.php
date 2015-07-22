@@ -21,7 +21,6 @@
 namespace WildPHP\Connection;
 
 use SplQueue;
-
 use WildPHP\Manager;
 use WildPHP\Bot;
 
@@ -96,16 +95,16 @@ class QueueManager extends Manager
 	 */
 	public function setFloodLimits($linesPerSecond, $linesMaxBurst = 1)
 	{
-		if(!is_int($linesPerSecond) && !is_float($linesPerSecond))
+		if (!is_int($linesPerSecond) && !is_float($linesPerSecond))
 			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: expeted double, got ' . gettype($linesPerSecond) . '.');
 
-		if(!is_int($linesMaxBurst))
+		if (!is_int($linesMaxBurst))
 			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: expeted integer, got ' . gettype($linesPerSecond) . '.');
 
-		if($linesPerSecond < 0)
+		if ($linesPerSecond < 0)
 			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');
 
-		if($linesMaxBurst < 1)
+		if ($linesMaxBurst < 1)
 			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.');
 
 		$this->linesPerSecond = $linesPerSecond;
@@ -124,7 +123,7 @@ class QueueManager extends Manager
 		// Lines that were replenished in that time
 		$linesAvail = (int) ceil($timeDiff * $this->linesPerSecond);
 
-		if($linesAvail > $this->linesMaxBurst)
+		if ($linesAvail > $this->linesMaxBurst)
 			$this->burst = $this->linesMaxBurst;
 		else
 			$this->burst = $linesAvail;
@@ -139,16 +138,16 @@ class QueueManager extends Manager
 	 */
 	public function enqueue($message, QueuePriority $priority = null)
 	{
-		if($priority === null)
+		if ($priority === null)
 			$priority = QueuePriority::NORMAL;
 		else
 			$priority = $priority->getValue();
 
-		if(!is_string($message))
+		if (!is_string($message))
 			throw new InvalidArgumentException('Parameter $message is invalid: expected string, got ' . gettype($data) . '.');
 
 		// Message goes to void - discarding
-		if($priority === QueuePriority::VOID)
+		if ($priority === QueuePriority::VOID)
 			return;
 
 		// We willl be adding a retreivable message; increase message count
@@ -159,7 +158,7 @@ class QueueManager extends Manager
 			It is implemented as an array since it's faster,
 			but this is a somewhat ugly way to do that.
 		*/
-		if($priority === QueuePriority::IMMEDIATE)
+		if ($priority === QueuePriority::IMMEDIATE)
 		{
 			$this->queues[QueuePriority::IMMEDIATE][] = $message;
 			return;
@@ -176,7 +175,7 @@ class QueueManager extends Manager
 	public function getQueuedItems()
 	{
 		// when there are no messages we don't need to do much
-		if(!$this->linesAvailable)
+		if (!$this->linesAvailable)
 			return array();
 
 		$this->floodCheck();
@@ -201,7 +200,7 @@ class QueueManager extends Manager
 		$queue = &$this->queues[QueuePriority::IMMEDIATE];
 
 		// Return empty-handed if we are ... empty.
-		if(empty($queue))
+		if (empty($queue))
 			return array();
 
 		// Grab a copy and clear the queue
@@ -229,14 +228,14 @@ class QueueManager extends Manager
 		$messages = array();
 
 		// Handle all the other queues
-		foreach($this->queues as $priority => $queue)
+		foreach ($this->queues as $priority => $queue)
 		{
 			// Immediate queue has already been processed
-			if($priority === QueuePriority::IMMEDIATE)
+			if ($priority === QueuePriority::IMMEDIATE)
 				continue;
 
 			// Get messages until limits stop us or the queue is empty
-			while(!$queue->isEmpty() && ($this->burst > 0) && ($this->messageCount > 0))
+			while (!$queue->isEmpty() && ($this->burst > 0) && ($this->messageCount > 0))
 			{
 				$messages[] = $this->queues[QueuePriority::IMMEDIATE]->dequeue();
 				$this->messageCount--;
@@ -244,7 +243,7 @@ class QueueManager extends Manager
 			}
 
 			// we can't take more / there are no more messages, so we just stop
-			if($this->burst <= 0 || $this->messageCount <= 0)
+			if ($this->burst <= 0 || $this->messageCount <= 0)
 				break;
 		}
 
@@ -270,7 +269,7 @@ class QueueManager extends Manager
 		foreach (QueuePriority::toArray() as $priority)
 		{
 			// Neither the IMMEDIATE or the VOID queue are real queues, so we don't create them here
-			if($priority === QueuePriority::IMMEDIATE || $priority === QueuePriority::VOID)
+			if ($priority === QueuePriority::IMMEDIATE || $priority === QueuePriority::VOID)
 				continue;
 
 			$this->queues[$priority] = new SplQueue();

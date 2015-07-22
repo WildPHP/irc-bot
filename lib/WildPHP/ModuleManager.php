@@ -67,7 +67,7 @@ class ModuleManager extends Manager
 	public function setup()
 	{
 		// Perform the initial load of modules, but only when there are no loaded modules.
-		if(empty($this->loadedModules))
+		if (empty($this->loadedModules))
 		{
 			// Scan for modules.
 			$this->scanModules();
@@ -84,9 +84,9 @@ class ModuleManager extends Manager
 	public function loadModules($modules)
 	{
 		$success = true;
-		foreach($modules as $module)
+		foreach ($modules as $module)
 		{
-			if(!$this->loadModule($module))
+			if (!$this->loadModule($module))
 				$success = false;
 		}
 		return $success;
@@ -101,16 +101,16 @@ class ModuleManager extends Manager
 	{
 		$module_full = 'WildPHP\\modules\\' . $module;
 
-		if(array_key_exists($module, $this->status) && $this->status[$module] === false)
+		if (array_key_exists($module, $this->status) && $this->status[$module] === false)
 			return false;
 
-		if($this->moduleLoaded($module))
+		if ($this->moduleLoaded($module))
 			return true;
 
 		$this->logDebug('Loading module ' . $module . '...');
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
-		if(!$this->moduleAvailable($module) || !class_exists($module_full))
+		if (!$this->moduleAvailable($module) || !class_exists($module_full))
 		{
 			$this->log('Could not load non-existing module ' . $module . '; module not initialised.');
 			$this->status[$module] = false;
@@ -121,12 +121,12 @@ class ModuleManager extends Manager
 		$requires = $this->checkModuleDependencies($module);
 
 		// Looks like we have some modules to load before anything else happens.
-		if(!is_bool($requires))
+		if (!is_bool($requires))
 		{
 			$this->logDebug('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.');
 
 			// The function returned a list of modules we need. Load those first.
-			if(!$this->loadModules($requires))
+			if (!$this->loadModules($requires))
 			{
 				$this->log('Could not satisfy dependencies of module ' . $module . '; module not initialised.');
 				$this->status[$module] = false;
@@ -151,30 +151,30 @@ class ModuleManager extends Manager
 		$module_full = 'WildPHP\\modules\\' . $module;
 
 		// It has no dependencies? Good!
-		if(!method_exists($module_full, 'getDependencies'))
+		if (!method_exists($module_full, 'getDependencies'))
 			return true;
 
 		// Get the dependencies.
 		$deps = $module_full::getDependencies();
 
 		// Only arrays accepted, sorry.
-		if(!is_array($deps))
+		if (!is_array($deps))
 			return false;
 
 		// So it should have dependencies, but it doesn't... Okay. Skip over.
-		elseif(is_array($deps) && empty($deps))
+		elseif (is_array($deps) && empty($deps))
 			return true;
 
 		$needs = array();
-		foreach($deps as $dep)
+		foreach ($deps as $dep)
 		{
 			// If it's not loaded, we need it.
-			if(!$this->moduleLoaded($dep))
+			if (!$this->moduleLoaded($dep))
 				$needs[] = $dep;
 		}
 
 		// If all dependencies are satisfied, return true. Else, the required dependencies.
-		if(empty($needs))
+		if (empty($needs))
 			return true;
 		else
 			return $needs;
@@ -187,7 +187,7 @@ class ModuleManager extends Manager
 	 */
 	public function unloadModule($module)
 	{
-		if(!$this->moduleLoaded($module))
+		if (!$this->moduleLoaded($module))
 			return false;
 
 		// Remove any instance of the module.
@@ -203,7 +203,7 @@ class ModuleManager extends Manager
 	{
 		$class = str_replace('WildPHP\\modules\\', '', $class);
 
-		if(file_exists($this->moduleDir . $class . '/' . $class . '.php'))
+		if (file_exists($this->moduleDir . $class . '/' . $class . '.php'))
 			require_once($this->moduleDir . $class . '/' . $class . '.php');
 	}
 
@@ -233,9 +233,9 @@ class ModuleManager extends Manager
 	public function scanModules()
 	{
 		// Scan the modules directory for any available modules
-		foreach(scandir($this->moduleDir) as $file)
+		foreach (scandir($this->moduleDir) as $file)
 		{
-			if(is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
+			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
 			{
 				$this->logDebug('Module ' . $file . ' registered.');
 				$this->modules[] = $file;
@@ -268,7 +268,7 @@ class ModuleManager extends Manager
 	 */
 	public function getModuleInstance($module)
 	{
-		if(!$this->moduleLoaded($module))
+		if (!$this->moduleLoaded($module))
 			return false;
 
 		return $this->loadedModules[$module];

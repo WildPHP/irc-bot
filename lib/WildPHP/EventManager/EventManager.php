@@ -53,7 +53,7 @@ class EventManager extends Manager
 	 */
 	public static function assertValidName($name, $message = 'Invalid name.')
 	{
-		if(!is_string($name) || !preg_match(self::EVENT_NAME_PATTERN, $name))
+		if (!is_string($name) || !preg_match(self::EVENT_NAME_PATTERN, $name))
 			throw new InvalidArgumentException($message . ' Name was "' . $name . '".');
 	}
 
@@ -71,10 +71,10 @@ class EventManager extends Manager
 		self::assertValidName($registeredEvent->getClassName(), 'Event registration failed: Invalid event class name.');
 
 		// check if it is registered first - it also validates the name, no need to do that twice
-		if($this->isRegistered($eventName))
+		if ($this->isRegistered($eventName))
 		{
 			// check whether the event we are registering is the same class (or subclass) of what we have already registered
-			if(is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
+			if (is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
 				$this->log('Event ' . $eventName . ' has been previously registered, skipping request.');
 			else
 				throw new EventAlreadyRegisteredException('Event registration failed: Event ' . $eventName . ' has been previously registered with a different class name (' . $this->events[$eventName]->getClassName() . ').');
@@ -106,7 +106,7 @@ class EventManager extends Manager
 	public function remove($eventName)
 	{
 		// Is the event registered? Can't remove it otherwise.
-		if(!$this->isRegistered($eventName))
+		if (!$this->isRegistered($eventName))
 			throw new EventDoesNotExistException('Could not remove registered event: Event ' . $eventName . ' is not registered.');
 
 		unset($this->events[$eventName]);
@@ -120,7 +120,7 @@ class EventManager extends Manager
 	public function getEvent($eventName)
 	{
 		// If the event is not registered, we can't retrieve it.
-		if(!$this->isRegistered($eventName))
+		if (!$this->isRegistered($eventName))
 			throw new EventDoesNotExistException('Event ' . $eventName . ' is not registered.');
 
 		return $this->events[$eventName];
