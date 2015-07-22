@@ -81,13 +81,13 @@ class Bot
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
-        // Set up all managers.
-        $this->initializeManagers($configFile);
+		// Set up all managers.
+		$this->initializeManagers($configFile);
 
 		// Then set up the database.
 		$this->db = new \SQLite3($this->getConfig('database'));
 
-        $this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
+		$this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
 			function($e)
 			{
 				if ($e->getMessage()->getCommand() != 'PRIVMSG')
@@ -107,12 +107,12 @@ class Bot
 		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleInstance('Auth'));
 	}
 
-    /**
-     * Get all managers locked and loaded.
-     * @param string $configFile The config file to load.
-     */
-    protected function initializeManagers($configFile)
-    {
+	/**
+	 * Get all managers locked and loaded.
+	 * @param string $configFile The config file to load.
+	 */
+	protected function initializeManagers($configFile)
+	{
 		// Configuration Manager
 		$this->configurationManager = new ConfigurationManager($this, $configFile);
 
@@ -121,7 +121,7 @@ class Bot
 
 		// Event Manager
 		$this->eventManager = new EventManager($this);
-        $this->initializeEvents();
+		$this->initializeEvents();
 
 		// Timer Manager
 		$this->timerManager = new TimerManager($this);
@@ -129,17 +129,17 @@ class Bot
 		// Connection Manager
 		$this->connectionManager = new ConnectionManager($this);
 
-        // Module Manager
+		// Module Manager
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
     }
 
-    /**
-     * Initialize all core events.
-     */
-    public function initializeEvents()
-    {
-        // BotCommand - Triggered when the bot receives a command from a user.
+	/**
+	 * Initialize all core events.
+	 */
+	public function initializeEvents()
+	{
+		// BotCommand - Triggered when the bot receives a command from a user.
 		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
 		$this->getEventManager()->register('BotCommand', $BotCommandEvent);
 
@@ -150,7 +150,7 @@ class Bot
 		// Loop - Triggered at every iteration of the bot's main loop.
 		$LoopEvent = new RegisteredEvent('IEvent');
 		$this->getEventManager()->register('Loop', $LoopEvent);
-    }
+	}
 
 	/**
 	 * Set up the connection for the bot.
