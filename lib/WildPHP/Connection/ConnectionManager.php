@@ -20,8 +20,11 @@
 
 namespace WildPHP\Connection;
 
+use WildPHP\Bot;
+use WildPHP\EventManager\RegisteredEvent;
 use WildPHP\Manager;
 use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\Event\IRCMessageOutgoingEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\IRC\MessageLengthException;
 use RuntimeException;
@@ -56,12 +59,27 @@ class ConnectionManager extends Manager
 
 	private $name = '';
 	private $nick = '';
-	
+
 	/**
 	 * The last data received.
 	 * @var ServerMessage
 	 */
 	protected $lastdata = array();
+
+	/**
+	 * Set up some initial events.
+	 * @param Bot The bot object.
+	 */
+	public function __construct(Bot $bot)
+	{
+		$this->bot = $bot;
+
+		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
+		$bot->getEventManager()->register('IRCMessageInbound', $IRCMessageInboundEvent);
+
+		$IRCMessageOutgoingEvent = new RegisteredEvent('IIRCMessageOutgoingEvent');
+		$bot->getEventManager()->register('IRCMessageOutgoing', $IRCMessageOutgoingEvent);
+	}
 
 	/**
 	 * Close the connection.
@@ -82,7 +100,7 @@ class ConnectionManager extends Manager
 		$this->socket = stream_socket_client($this->server . ':' . $this->port, $errno, $errstr);
 		if(!$this->isConnected())
 			throw new ConnectionException('Unable to connect to server via fsockopen with server: "' . $this->server . '" and port: "' . $this->port . '" (' . $errno .  ': ' . $errstr . ')');
-		
+
 		socket_set_blocking($this->socket, 0);
 
 		if(!empty($this->password))
@@ -134,6 +152,11 @@ class ConnectionManager extends Manager
 			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
 		}
 
+		// Trigger a new Outgoing event.
+		$this->bot->getEventManager()->getEvent('IRCMessageOutgoing')->trigger(
+			new IRCMessageOutgoingEvent(new ServerMessage($data))
+		);
+
 		return $numBytes;
 	}
 
@@ -150,7 +173,7 @@ class ConnectionManager extends Manager
 		$changed = stream_select($read, $write, $except, 1);
 		if ($changed === false)
 			return null;
-		
+
 		if($changed > 0)
 			return trim(fgets($read[0]), self::STREAM_TRIM_CHARACTERS);
 		else
@@ -170,9 +193,9 @@ class ConnectionManager extends Manager
 			return false;
 
 		$this->logDebug('<< ' . $data);
-		
+
 		$data = new ServerMessage($data);
-		
+
 		$this->lastdata = $data;
 
 		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
@@ -241,7 +264,7 @@ class ConnectionManager extends Manager
 	{
 		$this->nick = (string) $nick;
 	}
-	
+
 	/**
 	 * Returns the last data received.
 	 * @return ServerMessage

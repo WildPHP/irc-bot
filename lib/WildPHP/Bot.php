@@ -90,7 +90,7 @@ class Bot
 		register_shutdown_function(array($this->log, 'logShutdown'));
 
 		// Then set up the database.
-		$this->db = new \SQLite3($this->configurationManager->get('database'));
+		//$this->db = new \SQLite3($this->configurationManager->get('database'));
 
 		// Set up the timer manager.
 		$this->timerManager = new TimerManager($this);
@@ -98,27 +98,26 @@ class Bot
 		// And we'd like an event manager.
 		$this->eventManager = new EventManager($this);
 
-		// Register some default events.
-		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
-		$this->eventManager->register('IRCMessageInbound', $IRCMessageInboundEvent);
-
 		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
-		$this->eventManager->register('BotCommand', $BotCommandEvent);
+		$this->getEventManager()->register('BotCommand', $BotCommandEvent);
 
 		// Say event, used in the Say method before saying something. This event is cancellable.
 		$SayEvent = new RegisteredEvent('ISayEvent');
-		$this->eventManager->register('Say', $SayEvent);
+		$this->getEventManager()->register('Say', $SayEvent);
 
 		// Connect event... Used at startup, right after connecting.
 		// You can use this to e.g. initialise databases, if you haven't done so yet.
 		$ConnectEvent = new RegisteredEvent('IConnectEvent');
-		$this->eventManager->register('Connect', $ConnectEvent);
+		$this->getEventManager()->register('Connect', $ConnectEvent);
 
 		// Loop event.
 		$LoopEvent = new RegisteredEvent('IEvent');
-		$this->eventManager->register('Loop', $LoopEvent);
+		$this->getEventManager()->register('Loop', $LoopEvent);
 
-		$IRCMessageInboundEvent->registerEventHandler(
+		// Set up a connection.
+		$this->connectionManager = new ConnectionManager($this);
+
+        $this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
 			function($e)
 			{
 				if ($e->getMessage()->getCommand() != 'PRIVMSG')
@@ -139,10 +138,7 @@ class Bot
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
 
-		$this->eventManager->getEvent('BotCommand')->setAuthModule($this->moduleManager->getModuleInstance('Auth'));
-
-		// Set up a connection.
-		$this->connectionManager = new ConnectionManager($this);
+		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->moduleManager->getModuleInstance('Auth'));
 	}
 
 	/**
