@@ -72,7 +72,7 @@ class ConnectionManager extends Manager
 	 */
 	public function __construct(Bot $bot)
 	{
-		$this->bot = $bot;
+		parent::__construct($bot);
 
 		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
 		$bot->getEventManager()->register('IRCMessageInbound', $IRCMessageInboundEvent);
