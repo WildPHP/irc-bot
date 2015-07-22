@@ -30,7 +30,7 @@ class TimerManager extends Manager
 	 * @var array<string, Timer>
 	 */
 	protected $timers = array();
-	
+
 	/**
 	 * Adds a timer.
 	 * @param string $name The name to set for the timer.
@@ -40,14 +40,14 @@ class TimerManager extends Manager
 	{
 		if (!is_object($timer) || !($timer instanceof Timer) || empty($name))
 			throw new \InvalidArgumentException('Unable to add timer with invalid parameters.');
-		
+
 		if ($this->exists($name))
 			throw new TimerExistsException('The specified timer already exists.');
-		
-		$this->bot->log('Added new timer ' . $name . '. Next trigger in ' . ($timer->getTime() - time()) . ' seconds.', 'TIMERMAN');		
+
+		$this->bot->log('Added new timer ' . $name . '. Next trigger in ' . ($timer->getTime() - time()) . ' seconds.', 'TIMERMAN');
 		$this->timers[$name] = $timer;
 	}
-	
+
 	/**
 	 * Checks if a timer exists, searching on the name.
 	 * @param string $name
@@ -56,7 +56,7 @@ class TimerManager extends Manager
 	{
 		return array_key_exists($name, $this->timers);
 	}
-	
+
 	/**
 	 * Removes a timer.
 	 * @param string $name The timer to remove.
@@ -65,11 +65,11 @@ class TimerManager extends Manager
 	{
 		if (!$this->exists($name))
 			throw new TimerDoesNotExistException();
-		
+
 		unset($this->timers[$name]);
 		$this->bot->log('Removed timer ' . $name, 'TIMERMAN');
 	}
-	
+
 	/**
 	 * Trigger all timers for this time or past times.
 	 */
@@ -79,21 +79,21 @@ class TimerManager extends Manager
 		{
 			if ($object->isSuspended())
 				continue;
-			
+
 			if ($object->getTime() <= time())
 			{
 				$this->bot->log('Triggering timer ' . $name, 'TIMERMAN');
 				$oldtime = $object->getTime();
-				
+
 				if (!is_callable($object->getCall()))
 				{
 					$this->bot->log('Cleaning up timer ' . $name . ' because it is no longer(?) callable.', 'TIMERMAN');
 					$this->remove($name);
 					continue;
 				}
-				
+
 				call_user_func($object->getCall(), $object);
-				
+
 				if ($object->getTime() == $oldtime)
 				{
 					if ($object->getAutoCleanup())
@@ -101,7 +101,7 @@ class TimerManager extends Manager
 						$this->bot->log('Automatically cleaning up timer ' . $name . ' because it was not extended and thus timed out.', 'TIMERMAN');
 						$this->remove($name);
 					}
-					
+
 					// If we're not allowed to automatically remove it, we'll just suspend it. Extending it will undo this.
 					else
 					{
@@ -112,7 +112,7 @@ class TimerManager extends Manager
 			}
 		}
 	}
-	
+
 	/**
 	 * Get all timers for the specific time, allowing for fluctuation.
 	 * @param int $time The time to get timers for.
@@ -124,17 +124,17 @@ class TimerManager extends Manager
 	{
 		if (!is_int($time) || $time <= 0 || !is_int($fluctuationPositive) || !is_int($fluctuationNegative))
 			throw new \InvalidArgumentException();
-		
+
 		$return = array();
 		foreach ($this->timers as $name => $timer)
 		{
 			if ($timer->getTime() == $time || (($time - $fluctuationNegative <= $timer->getTime()) && ($timer->getTime() <= $time + $fluctuationPositive)))
 				$return[] = $name;
 		}
-		
+
 		return $return;
 	}
-	
+
 	/**
 	 * Gets a specific timer by name.
 	 * @param string $name The timer name.
@@ -144,10 +144,10 @@ class TimerManager extends Manager
 	{
 		if (empty($name) || !is_string($name))
 			throw new \InvalidArgumentException();
-		
+
 		if (!$this->exists($name))
 			throw new TimerDoesNotExistException();
-		
+
 		return $this->timers[$name];
 	}
 }
