@@ -26,7 +26,6 @@ use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
 use WildPHP\EventManager\RegisteredCommandEvent;
 use WildPHP\Event\SayEvent;
-use WildPHP\Event\ConnectEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -132,7 +131,7 @@ class Bot
 		// Module Manager
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
-    }
+	}
 
 	/**
 	 * Initialize all core events.

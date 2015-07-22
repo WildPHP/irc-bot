@@ -24,8 +24,8 @@ class ModuleAutoloader
 {
 	public static function load($class)
 	{
-        if (strtolower(substr($class, 0, 15)) == 'wildphp\\modules')
-            $class = substr($class, 16);
+		if (strtolower(substr($class, 0, 15)) == 'wildphp\\modules')
+			$class = substr($class, 16);
 		else
 			return false;
 

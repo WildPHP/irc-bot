@@ -31,8 +31,8 @@ use \WildPHP\EventManager\ListenerPriority as Priority,
  */
 class RegisteredModuleEvent extends RegisteredEvent
 {
-    public function assertValidClass(IEvent $event)
-    {
-        return parent::assertValidClass($event) || is_a($event, $this->className);
-    }
+	public function assertValidClass(IEvent $event)
+	{
+		return parent::assertValidClass($event) || is_a($event, $this->className);
+	}
 }
