@@ -19,26 +19,20 @@
 */
 namespace WildPHP\Event;
 
-class SayEvent implements ISayEvent
+class SayEvent extends CancellableEvent implements ISayEvent
 {
-	/**
-	 * Boolean determining the state of the event.
-	 * @var bool
-	 */
-	protected $cancelled = false;
-    
 	/**
 	 * The text that's going to be said.
 	 * @var string
 	 */
 	protected $text = '';
-    
+
 	/**
 	 * The recipients.
 	 * @var string[]
 	 */
 	protected $recipients = array();
-    
+
 	/**
 	 * Construct method.
 	 * @param string $text The initial text to send.
@@ -49,17 +43,17 @@ class SayEvent implements ISayEvent
 		$this->setText($text);
 		$this->addRecipient($to);
 	}
-    
+
 	public function setText($text)
 	{
 		$this->text = $text;
 	}
-    
+
 	public function getText()
 	{
 		return $this->text;
 	}
-    
+
 	public function addRecipient($to)
 	{
 		if (is_array($to))
@@ -78,7 +72,7 @@ class SayEvent implements ISayEvent
 				$this->recipients[] = $to;
 		}
 	}
-    
+
 	public function removeRecipient($to)
 	{
 		if (is_array($to))
@@ -95,24 +89,14 @@ class SayEvent implements ISayEvent
 				unset($this->recipients[array_search($to, $this->recipients)]);
 		}
 	}
-    
+
 	public function recipientExists($to)
 	{
 		return in_array($to, $this->recipients);
 	}
-    
+
 	public function getRecipients()
 	{
 		return $this->recipients;
-	}
-    
-	public function setCancelled($cancel = true)
-	{
-		$this->cancelled = (bool) $cancel;
-	}
-    
-	public function isCancelled()
-	{
-		return $this->cancelled;
 	}
 }
