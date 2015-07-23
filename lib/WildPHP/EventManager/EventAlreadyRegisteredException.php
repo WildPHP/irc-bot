@@ -19,7 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
-class EventAlreadyRegisteredException extends RuntimeException
+class EventAlreadyRegisteredException extends \RuntimeException
 {
 
 }

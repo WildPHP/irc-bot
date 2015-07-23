@@ -19,7 +19,9 @@
 */
 namespace WildPHP\Modules\ChannelManager\Event;
 
-interface IChannelEvent extends \WildPHP\Event\IEvent
+use WildPHP\Event\IEvent;
+
+interface IChannelEvent extends IEvent
 {
 	/**
 	 * Returns the current command.

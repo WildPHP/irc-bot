@@ -20,8 +20,6 @@
 
 namespace WildPHP;
 
-use WildPHP\Bot;
-use WildPHP\Manager;
 use WildPHP\Timer\Timer;
 
 class TimerManager extends Manager
@@ -63,6 +61,7 @@ class TimerManager extends Manager
 	/**
 	 * Checks if a timer exists, searching on the name.
 	 * @param string $name
+	 * @return boolean
 	 */
 	public function exists($name)
 	{

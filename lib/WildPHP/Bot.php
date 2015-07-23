@@ -87,6 +87,9 @@ class Bot
 		$this->db = new \SQLite3($this->getConfig('database'));
 
 		$this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
+			/**
+			 * @param Event\IRCMessageInboundEvent $e
+			 */
 			function($e)
 			{
 				if ($e->getMessage()->getCommand() != 'PRIVMSG')
@@ -197,7 +200,7 @@ class Bot
 	/**
 	 * Returns a module.
 	 * @param string $module The module to get an instance from.
-	 * @return object|false The module instance on success, false on failure.
+	 * @return BaseModule|false The module instance on success, false on failure.
 	 */
 	public function getModuleInstance($module)
 	{

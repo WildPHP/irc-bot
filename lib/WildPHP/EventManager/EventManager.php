@@ -20,9 +20,6 @@
 namespace WildPHP\EventManager;
 
 use WildPHP\Manager;
-use WildPHP\Bot;
-use WildPHP\EventManager\RegisteredEvent;
-use RuntimeException;
 use InvalidArgumentException;
 
 /**
@@ -41,6 +38,7 @@ class EventManager extends Manager
 	/**
 	 * Holds registered events, their hooks and other data.
 	 * Each event is stored as array()
+	 * @var array<string, RegisteredEvent>
 	 */
 	private $events = array();
 
@@ -115,7 +113,7 @@ class EventManager extends Manager
 	/**
 	 * Returns a registered event allowing you to manipulate it.
 	 * @param string $eventName The event to get.
-	 * @return RegisteredEvent The events with their hooks.
+	 * @return RegisteredEvent|RegisteredCommandEvent The events with their hooks.
 	 */
 	public function getEvent($eventName)
 	{

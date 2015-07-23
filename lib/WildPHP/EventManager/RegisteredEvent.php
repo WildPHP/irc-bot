@@ -19,10 +19,8 @@
 */
 namespace WildPHP\EventManager;
 
-use \WildPHP\EventManager\ListenerPriority as Priority,
-	WildPHP\Event\IEvent,
-	\RuntimeException,
-	\InvalidArgumentException;
+use WildPHP\EventManager\ListenerPriority as Priority;
+use WildPHP\Event\IEvent;
 
 
 /**
@@ -80,11 +78,12 @@ class RegisteredEvent
 	/**
 	 * Registers the final event handler.
 	 * This is basically just a listener that is guaranteed to run last.
+	 * @param callable $listener The handler to add.
 	 * @see registerListener($listener, Priority::HANDLER())
 	 */
 	public function registerEventHandler(callable $listener)
 	{
-		return $this->registerListener($listener, new Priority(Priority::HANDLER));
+		$this->registerListener($listener, new Priority(Priority::HANDLER));
 	}
 
 	/**

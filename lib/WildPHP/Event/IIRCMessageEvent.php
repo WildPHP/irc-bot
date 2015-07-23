@@ -19,11 +19,13 @@
 */
 namespace WildPHP\Event;
 
+use WildPHP\IRC\ServerMessage;
+
 interface IIRCMessageEvent extends IEvent
 {
 	/**
 	 * Returns the IRCMessage object that caused this event.
-	 * @return IIRCMessage The message.
+	 * @return ServerMessage The message.
 	 */
 	public function getMessage();
 }

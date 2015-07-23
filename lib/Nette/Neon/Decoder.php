@@ -96,8 +96,10 @@ class Decoder
 
 
 	/**
-	 * @param  string  indentation (for block-parser)
-	 * @param  mixed
+	 * @param  string  $indent indentation (for block-parser)
+	 * @param mixed $result
+	 * @param  string $key
+	 * @param boolean $hasKey
 	 * @return array
 	 */
 	private function parse($indent, $result = NULL, $key = NULL, $hasKey = FALSE)

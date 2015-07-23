@@ -20,8 +20,6 @@
 
 namespace WildPHP;
 
-use WildPHP\Manager;
-
 class ModuleManager extends Manager
 {
 	/**

@@ -75,6 +75,9 @@ class QueueManager extends Manager
 
 	/**
 	 * Initializes the queues. You can specify custom flood limits, but the defaults should be safe for most servers.
+	 * @param Bot $bot The bot object
+	 * @param int $linesPerSecond Maximum lines per second that will be sent to the output. 0 for no limit.
+	 * @param int $linesMaxBurst Maximum lines that will be sent initially.
 	 * @see setFloodLimits()
 	 */
 	public function __construct(Bot $bot, $linesPerSecond = 2, $linesMaxBurst = 4)
@@ -91,21 +94,21 @@ class QueueManager extends Manager
 	 *
 	 * @param double $linesPerSecond Maximum lines per second that will be sent to output. Set to zero for no limit. Must be >= 0.
 	 * @param int $linesMaxBurst Maximum lines that will be sent as an initial burst. Defaults to 1. Must be >= 1.
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function setFloodLimits($linesPerSecond, $linesMaxBurst = 1)
 	{
 		if (!is_int($linesPerSecond) && !is_float($linesPerSecond))
-			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: expeted double, got ' . gettype($linesPerSecond) . '.');
+			throw new \InvalidArgumentException('Argument $linesPerSecond is invalid: expeted double, got ' . gettype($linesPerSecond) . '.');
 
 		if (!is_int($linesMaxBurst))
-			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: expeted integer, got ' . gettype($linesPerSecond) . '.');
+			throw new \InvalidArgumentException('Argument $linesMaxBurst is invalid: expeted integer, got ' . gettype($linesPerSecond) . '.');
 
 		if ($linesPerSecond < 0)
-			throw new InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');
+			throw new \InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');
 
 		if ($linesMaxBurst < 1)
-			throw new InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.');
+			throw new \InvalidArgumentException('Argument $linesMaxBurst is invalid: must be greater than or equal to zero.');
 
 		$this->linesPerSecond = $linesPerSecond;
 		$this->linesMaxBurst = $linesMaxBurst;
@@ -134,7 +137,7 @@ class QueueManager extends Manager
 	 * @param string $message The message.
 	 * @param null|QueuePriority $priority The desired priority. Defaults to NORMAL.
 	 * @return void
-	 * @throws InvalidArgumentException when $message is not a string.
+	 * @throws \InvalidArgumentException when $message is not a string.
 	 */
 	public function enqueue($message, QueuePriority $priority = null)
 	{
@@ -144,13 +147,13 @@ class QueueManager extends Manager
 			$priority = $priority->getValue();
 
 		if (!is_string($message))
-			throw new InvalidArgumentException('Parameter $message is invalid: expected string, got ' . gettype($data) . '.');
+			throw new \InvalidArgumentException('Parameter $message is invalid: expected string, got ' . gettype($message) . '.');
 
 		// Message goes to void - discarding
 		if ($priority === QueuePriority::VOID)
 			return;
 
-		// We willl be adding a retreivable message; increase message count
+		// We will be adding a retrievable message; increase message count
 		$this->messageCount++;
 
 		/*

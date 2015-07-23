@@ -20,8 +20,6 @@
 
 namespace WildPHP;
 
-use WildPHP\Bot;
-
 /**
  * A class used as a base for all managers.
  */

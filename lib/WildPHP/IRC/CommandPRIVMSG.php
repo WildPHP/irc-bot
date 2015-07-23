@@ -19,8 +19,6 @@
 */
 namespace WildPHP\IRC;
 
-use Phergie\Irc\Parser as PhergieParser;
-
 class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 {
 	protected $message;
@@ -29,10 +27,10 @@ class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 	public function __construct(ServerMessage $ircMessage, $commandPrefix)
 	{
 		if (!($ircMessage instanceof ServerMessage))
-			throw new InvalidArgumentException('The provided argument is not an instance of ServerMessage.');
+			throw new \InvalidArgumentException('The provided argument is not an instance of ServerMessage.');
 
 		if ($ircMessage->getCommand() != 'PRIVMSG')
-			throw new InvalidArgumentException('The provided message is not a PRIVMSG command.');
+			throw new \InvalidArgumentException('The provided message is not a PRIVMSG command.');
 
 		$this->message = $ircMessage;
 		$this->prefix = (string) $commandPrefix;

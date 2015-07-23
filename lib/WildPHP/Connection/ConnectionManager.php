@@ -28,7 +28,6 @@ use WildPHP\Event\IRCMessageOutgoingEvent;
 use WildPHP\Event\ConnectEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\IRC\MessageLengthException;
-use RuntimeException;
 
 class ConnectionManager extends Manager
 {

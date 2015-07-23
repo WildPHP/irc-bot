@@ -21,7 +21,6 @@
 namespace WildPHP;
 
 use WildPHP\EventManager\EventManager;
-use WildPHP\TimerManager;
 
 class BaseModule
 {

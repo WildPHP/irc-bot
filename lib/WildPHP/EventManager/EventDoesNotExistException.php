@@ -19,7 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
-class EventDoesNotExistException extends RuntimeException
+class EventDoesNotExistException extends \RuntimeException
 {
 
 }

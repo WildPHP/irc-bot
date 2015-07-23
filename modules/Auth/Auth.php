@@ -20,7 +20,9 @@
 
 namespace WildPHP\Modules;
 
-class Auth extends \WildPHP\BaseModule
+use WildPHP\BaseModule;
+
+class Auth extends BaseModule
 {
 	/**
 	 * List of hostnames to accept. Boolean false on failure.

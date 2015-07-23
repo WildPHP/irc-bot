@@ -22,6 +22,8 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Timer\Timer;
+use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\Event\IRCMessageOutgoingEvent;
 
 class Watchdog extends BaseModule
 {

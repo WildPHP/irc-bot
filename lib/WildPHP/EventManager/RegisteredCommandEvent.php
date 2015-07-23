@@ -19,6 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
+use WildPHP\BaseModule;
 use WildPHP\Modules\Auth;
 use WildPHP\Event\CommandEvent;
 use WildPHP\Event\IEvent;
@@ -42,12 +43,12 @@ class RegisteredCommandEvent extends RegisteredEvent
 
 	/**
 	 * Sets the authentication module for this event.
-	 * @param Auth $auth
+	 * @param BaseModule $auth
 	 */
-	public function setAuthModule(Auth $auth)
+	public function setAuthModule(BaseModule $auth)
 	{
 		if ($this->auth instanceof Auth)
-			return;
+			throw new \InvalidArgumentException('Could not add Auth module to RegisteredCommandEvent; the specified module is not the Auth module.');
 
 		$this->auth = $auth;
 	}
@@ -90,6 +91,7 @@ class RegisteredCommandEvent extends RegisteredEvent
 	/**
 	 * Checks if a command already exists.
 	 * @param string $command
+	 * @return boolean
 	 */
 	public function commandExists($command)
 	{
@@ -98,7 +100,9 @@ class RegisteredCommandEvent extends RegisteredEvent
 
 	/**
 	 * Triggers the event.
-	 * @param CommandEvent $event The event that gets passed to the listeners.
+	 * @param IEvent $event The event that gets passed to the listeners.
+	 * @throws \InvalidArgumentException
+	 * @return void
 	 */
 	public function trigger(IEvent $event)
 	{

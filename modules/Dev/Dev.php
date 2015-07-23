@@ -21,6 +21,8 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\Event\CommandEvent;
+use WildPHP\Event\IRCMessageInboundEvent;
 
 class Dev extends BaseModule
 {
@@ -71,6 +73,7 @@ class Dev extends BaseModule
 
 	/**
 	 * Simply a test listener. Dump any code you want in here.
+	 * @param IRCMessageInboundEvent $e
 	 */
 	public function testListener($e)
 	{

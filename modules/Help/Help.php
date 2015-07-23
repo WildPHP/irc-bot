@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\Event\CommandEvent;
 
 class Help extends BaseModule
 {

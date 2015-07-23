@@ -29,7 +29,7 @@ class ServerMessage implements IServerMessage
 
 	/**
 	 * Create a parsed IRC message from string.
-	 * @param string The string to be parsed.
+	 * @param string $ircMessage The string to be parsed.
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct($ircMessage)

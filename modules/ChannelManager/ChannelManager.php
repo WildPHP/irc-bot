@@ -23,6 +23,7 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Validation;
 use WildPHP\Event\CommandEvent;
+use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\EventManager\RegisteredModuleEvent;
 use WildPHP\Modules\ChannelManager\Event\ChannelJoinEvent;
 use WildPHP\Modules\ChannelManager\Event\ChannelPartEvent;
@@ -111,6 +112,7 @@ class ChannelManager extends BaseModule
 		{
 			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
 			$this->bot->sendData('PART ' . $chan);
+			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($chan));
 		}
 	}
 

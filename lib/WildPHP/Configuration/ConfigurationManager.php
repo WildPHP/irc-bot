@@ -30,6 +30,7 @@ class ConfigurationManager extends Manager
 
 	/**
 	 * Loads the config file and parses it.
+	 * @param Bot $bot The bot object
 	 * @param string $config The path to the config file.
 	 * @throws \Exception on read error.
 	 */
