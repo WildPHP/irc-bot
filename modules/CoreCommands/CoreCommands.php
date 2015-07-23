@@ -70,6 +70,9 @@ class CoreCommands extends BaseModule
 	 */
 	public function sayCommand($e)
 	{
+        if (empty($e->getParams()))
+            return;
+
 		if (Validation::isChannel($e->getParams()[0]))
 		{
 			$args = $e->getParams();
