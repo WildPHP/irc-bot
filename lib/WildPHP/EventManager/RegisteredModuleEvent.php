@@ -19,10 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
-use \WildPHP\EventManager\ListenerPriority as Priority,
-	WildPHP\Event\IEvent,
-	\RuntimeException,
-	\InvalidArgumentException;
+use WildPHP\Event\IEvent;
 
 
 /**
