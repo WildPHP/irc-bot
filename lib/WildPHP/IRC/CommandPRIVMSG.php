@@ -38,7 +38,7 @@ class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 
 	public function getHostname()
 	{
-		return $this->message->get()['user'];
+		return $this->message->get()['prefix'];
 	}
 
 	public function getSender()
