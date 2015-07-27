@@ -152,7 +152,8 @@ class LogManager extends Manager
 	public function error($message, array $context = array())
 	{
 		$message = $this->prepareMessage($message, 'ERROR', $context);
-		$this->log($message);
+		if (!empty($message))
+			$this->log($message);
 	}
 
 	/**
@@ -163,7 +164,8 @@ class LogManager extends Manager
 	public function warning($message, array $context = array())
 	{
 		$message = $this->prepareMessage($message, 'WARNING', $context);
-		$this->log($message);
+		if (!empty($message))
+			$this->log($message);
 	}
 
 	/**
@@ -174,7 +176,8 @@ class LogManager extends Manager
 	public function info($message, array $context = array())
 	{
 		$message = $this->prepareMessage($message, 'INFO', $context);
-		$this->log($message);
+		if (!empty($message))
+			$this->log($message);
 	}
 
 	/**
@@ -185,7 +188,8 @@ class LogManager extends Manager
 	public function debug($message, array $context = array())
 	{
 		$message = $this->prepareMessage($message, 'DEBUG', $context);
-		$this->log($message, $this->printDebug, $this->writeDebug);
+		if (!empty($message))
+			$this->log($message, $this->printDebug, $this->writeDebug);
 	}
 
 	/**
@@ -196,7 +200,8 @@ class LogManager extends Manager
 	public function channel($message, array $context = array())
 	{
 		$message = $this->prepareMessage($message, 'CHANNEL', $context);
-		$this->log($message, $this->writeDebug, $this->writeChannel);
+		if (!empty($message))
+			$this->log($message, $this->writeDebug, $this->writeChannel);
 	}
 
 	/**
