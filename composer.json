@@ -2,6 +2,7 @@
     "name": "wildphp/wild-irc-bot",
     "description": "A modular IRC bot written in PHP",
     "require": {
+        "php": ">=5.3.9",
         "nette/neon": "^2.3",
         "myclabs/php-enum": "^1.4",
         "phergie/phergie-irc-parser": "^2.1"

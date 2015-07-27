@@ -1,7 +1,18 @@
 # Wild IRC Bot ([wildphp.com](http://wildphp.com/))
+----------
+[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
+
 A modular IRC Bot built in PHP with the use of object-oriented programming.
 
 It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP installation.
+
+## System requirements
+In order to run WildPHP, we ask a few things from your system. Notably:
+
+- A PHP version equal to or higher than **5.3.9**.
+- **SSH** or other local access to the system you plan on running WildPHP on.
+	- WildPHP does **NOT** run on services where you can host your website.
+- For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
 
 ## IRC Community & Support
 If you need help or just want to idle in the IRC channel join us at
@@ -22,10 +33,16 @@ Apart from being awesome, this bot features the following functions:
 - Timers that trigger after a set time,
 
 ## Installation
-1. Copy config.example.neon to config.neon
-2. Open config.neon with your favourite text editor and change the settings to your liking (check the wiki for more information)
-3. Launch the bot with the following command: `php wildphp.php`
-4. Profit!
+1. Download the latest release.
+2. Copy config.example.neon to config.neon
+3. Open config.neon with your favourite text editor and change the settings to your liking (check the wiki for more information)
+4. Launch the bot with the following command: `php wildphp.php`
+5. Profit!
+
+### Installing the latest revision
+To install the latest development build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
+
+	composer create-project wildphp/wild-irc-bot directory-name
 
 ### Configuration
 
