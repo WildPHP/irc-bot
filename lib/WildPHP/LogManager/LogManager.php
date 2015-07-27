@@ -201,7 +201,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'CHANNEL', $context);
 		if (!empty($message))
-			$this->log($message, $this->writeDebug, $this->writeChannel);
+			$this->log($message, $this->printChannel, $this->writeChannel);
 	}
 
 	/**
