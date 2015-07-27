@@ -19,6 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
+use WildPHP\LogManager\LogLevels;
 use WildPHP\Manager;
 use InvalidArgumentException;
 
@@ -73,14 +74,14 @@ class EventManager extends Manager
 		{
 			// check whether the event we are registering is the same class (or subclass) of what we have already registered
 			if (is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
-				$this->log('Event ' . $eventName . ' has been previously registered, skipping request.');
+				$this->log('Event {name} has been previously registered, skipping request.', array('name' => $eventName), LogLevels::DEBUG);
 			else
 				throw new EventAlreadyRegisteredException('Event registration failed: Event ' . $eventName . ' has been previously registered with a different class name (' . $this->events[$eventName]->getClassName() . ').');
 			return false;
 		}
 
 		$this->events[$eventName] = $registeredEvent;
-		$this->log('Registered event ' . $eventName . ' (with class ' . $registeredEvent->getClassName() . ').');
+		$this->log('Registered event {name} (with class {class}).', array('name' => $eventName, 'class' => $registeredEvent->getClassName()), LogLevels::DEBUG);
 		return true;
 	}
 

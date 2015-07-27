@@ -20,6 +20,8 @@
 
 namespace WildPHP;
 
+use WildPHP\LogManager\LogLevels;
+
 class ModuleManager extends Manager
 {
 	/**
@@ -105,12 +107,12 @@ class ModuleManager extends Manager
 		if ($this->moduleLoaded($module))
 			return true;
 
-		$this->logDebug('Loading module ' . $module . '...');
+		$this->log('Loading module {module}...', array('module' => $module), LogLevels::DEBUG);
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
 		if (!$this->moduleAvailable($module) || !class_exists($module_full))
 		{
-			$this->log('Could not load non-existing module ' . $module . '; module not initialised.');
+			$this->log('Could not load non-existing module {module}; module not initialised.', array('module' => $module), LogLevels::WARNING);
 			$this->status[$module] = false;
 			return false;
 		}
@@ -121,12 +123,12 @@ class ModuleManager extends Manager
 		// Looks like we have some modules to load before anything else happens.
 		if (!is_bool($requires))
 		{
-			$this->logDebug('Module ' . $module . ' needs extra dependencies (' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.');
+			$this->log('Module {module} needs extra dependencies ({deps}' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.', array('module' => $module, 'deps' => implode(', ', $requires)), LogLevels::DEBUG);
 
 			// The function returned a list of modules we need. Load those first.
 			if (!$this->loadModules($requires))
 			{
-				$this->log('Could not satisfy dependencies of module ' . $module . '; module not initialised.');
+				$this->log('Could not satisfy dependencies of module {module}; module not initialised.', array('module' => $module), LogLevels::WARNING);
 				$this->status[$module] = false;
 				return false;
 			}
@@ -134,7 +136,7 @@ class ModuleManager extends Manager
 
 		// Okay, so the class exists.
 		$this->loadedModules[$module] = new $module_full($this->bot);
-		$this->log('Module ' . $module . ' loaded.');
+		$this->log('Module {module} loaded and initialised.', array('module' => $module), LogLevels::INFO);
 		$this->status[$module] = true;
 		return true;
 	}
@@ -235,7 +237,7 @@ class ModuleManager extends Manager
 		{
 			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
 			{
-				$this->logDebug('Module ' . $file . ' registered.');
+				$this->log('Module {module} found and registered.', array('module' => $file), LogLevels::DEBUG);
 				$this->modules[] = $file;
 			}
 		}

@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\LogManager\LogLevels;
 
 class Auth extends BaseModule
 {
@@ -50,7 +51,7 @@ class Auth extends BaseModule
 		$hostnonick = preg_replace('/(:)[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/', '', $hostname);
 		$result = !empty($hostname) && (in_array($hostname, $this->hostnames) || in_array($hostnonick, $this->hostnames));
 
-		$this->bot->log('Checking authorization for hostname ' . $hostname . ': ' . ($result ? 'Authorized' : 'Unauthorized'), 'AUTH');
+		$this->bot->log('Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::INFO);
 		
 		if (!$result && !empty($notify))
 		{

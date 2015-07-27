@@ -18,35 +18,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\LogManager;
 
-class ModuleAutoloader
+class LogLevels
 {
-	public static function load($class)
-	{
-		if (strtolower(substr($class, 0, 15)) == 'wildphp\\modules')
-			$class = substr($class, 16);
-		else
-			return false;
+    const ERROR = 'error';
+    const WARNING = 'warning';
+    const INFO = 'info';
+    const DEBUG = 'debug';
 
-		// Split $class to the "path" and "classname" parts
-		$class = explode('\\', $class);
-
-		$classpath = $class;
-		array_pop($classpath);
-		$classname = end($class) . '.php';
-
-		// Assemble path
-		$classpath = implode('/', $classpath) . '/';
-
-		$path = WPHP_MODULE_DIR . $classpath . $classname; // Check for files in lib/classpath/classname.php
-
-		if (file_exists($path))
-		{
-			require $path;
-			return true;
-		}
-
-		return false;
-	}
+    // Special mode for channel data.
+    const CHANNEL = 'channel';
 }

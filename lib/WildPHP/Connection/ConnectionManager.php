@@ -22,6 +22,7 @@ namespace WildPHP\Connection;
 
 use WildPHP\Bot;
 use WildPHP\EventManager\RegisteredEvent;
+use WildPHP\LogManager\LogLevels;
 use WildPHP\Manager;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\Event\IRCMessageOutgoingEvent;
@@ -112,7 +113,7 @@ class ConnectionManager extends Manager
 		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
 		$this->sendData('NICK ' . $this->nick);
 
-		$this->log('Connection to server ' . $this->server . ':' . $this->port . ' set up with nick ' . $this->nick . '; ready to use.');
+		$this->log('Connection to server {server}:{port} set up with nick {nick}; ready to use.', array('server' => $this->server, 'port' => $this->port, 'nick' => $this->nick), LogLevels::INFO);
 
 		// And fire the onConnect event.
 		$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
@@ -197,8 +198,6 @@ class ConnectionManager extends Manager
 
 		if ($data === null)
 			return false;
-
-		$this->logDebug('<< ' . $data);
 
 		$data = new ServerMessage($data);
 

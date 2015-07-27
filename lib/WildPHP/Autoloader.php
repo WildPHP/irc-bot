@@ -39,7 +39,7 @@ class Autoloader
 			
 		if (file_exists($path))
 		{
-			echo '[AUTOLOAD] Loaded "' . $path . '"' . PHP_EOL;
+
 			require $path;
 			return true;
 		}

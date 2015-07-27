@@ -22,6 +22,8 @@ namespace WildPHP;
 
 use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
+use WildPHP\LogManager\LogManager;
+use WildPHP\LogManager\LogLevels;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
 use WildPHP\EventManager\RegisteredCommandEvent;
@@ -120,6 +122,7 @@ class Bot
 
 		// Log Manager
 		$this->logManager = new LogManager($this);
+		new ErrorHandler($this);
 
 		// Event Manager
 		$this->eventManager = new EventManager($this);
@@ -240,7 +243,6 @@ class Bot
 	 */
 	public function sendData($data)
 	{
-		$this->log($data, 'DATAOUT');
 		$this->connectionManager->sendData($data);
 	}
 
@@ -306,12 +308,13 @@ class Bot
 
 	/**
 	 * Log data.
-	 * @param string $data  The data to log.
-	 * @param string $level The level to log the data at; can be anything.
+	 * @param string $message The message to log.
+	 * @param array $context The context to use.
+	 * @param string $level The level to log the data at.
 	 */
-	public function log($data, $level = 'LOG')
+	public function log($message, $context = array(), $level = LogLevels::DEBUG)
 	{
-		$this->logManager->log($data, $level);
+		call_user_func(array($this->logManager, $level), $message, $context);
 	}
 
 	/**

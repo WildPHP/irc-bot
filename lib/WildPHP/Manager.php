@@ -20,6 +20,8 @@
 
 namespace WildPHP;
 
+use WildPHP\LogManager\LogLevels;
+
 /**
  * A class used as a base for all managers.
  */
@@ -44,19 +46,11 @@ abstract class Manager
 	/**
 	 * Sends a message to the log.
 	 * @param string $message the message to be logged.
+	 * @param array $context The context to use.
+	 * @param string $level The level to log at. Defaults to debug.
 	 */
-	protected function log($message)
+	protected function log($message, $context = array(), $level = LogLevels::DEBUG)
 	{
-		$this->bot->log($message, __CLASS__);
-	}
-
-	/**
-	 * Sends a message to the debug log.
-	 * @todo Implement this properly when the log manager is changed.
-	 * @param string $message the message to be logged.
-	 */
-	protected function logDebug($message)
-	{
-		$this->bot->log($message, __CLASS__ . '-DEBUG');
+		$this->bot->log($message, $context, $level);
 	}
 }
