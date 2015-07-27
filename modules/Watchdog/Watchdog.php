@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\LogManager\LogLevels;
 use WildPHP\Timer\Timer;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\Event\IRCMessageOutgoingEvent;
@@ -79,7 +80,7 @@ class Watchdog extends BaseModule
 		if ($this->lastActivity + self::TIMEOUT < time())
 		{
 			// Ping timed out. Reconnecting time!
-			$this->bot->log('Ping timeout detected. Attempting to reconnect.', 'WATCHDOG');
+			$this->bot->log('Ping timeout detected. Attempting to reconnect.', array(), LogLevels::WARNING);
 			$this->bot->reconnect();
 		}
 

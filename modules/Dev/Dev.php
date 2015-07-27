@@ -23,6 +23,7 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Event\CommandEvent;
 use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\LogManager\LogLevels;
 
 class Dev extends BaseModule
 {
@@ -67,7 +68,7 @@ class Dev extends BaseModule
 			return;
 		}
 
-		$this->bot->log('Running command "' . implode(' ', $e->getParams()) . '"');
+		$this->bot->log('Running command "{command}"', array('command' => implode(' ', $e->getParams())), LogLevels::INFO);
 		eval(implode(' ', $e->getParams()));
 	}
 
