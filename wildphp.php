@@ -54,9 +54,7 @@ set_error_handler(
 );
 
 // Register the autoloader
-require_once(WPHP_LIB_DIR . 'WildPHP/Autoloader.php');
-spl_autoload_register('WildPHP\Autoloader::load');
-spl_autoload_register('WildPHP\ModuleAutoloader::load');
+require_once('vendor/autoload.php');
 
 // Create a new bot and start it up
 $bot = new Bot();

@@ -34,8 +34,8 @@ class ServerMessage implements IServerMessage
 	 */
 	public function __construct($ircMessage)
 	{
-		if (!is_string($ircMessage))
-			throw new InvalidArgumentException('ircMessage is of invalid type: expected string, got ' . gettype($ircMessage) . '.');
+		if (!is_string($ircMessage) || empty($ircMessage))
+			throw new InvalidArgumentException('ircMessage is of invalid type or empty: expected string, got ' . gettype($ircMessage) . '.');
 
 		$parser = new PhergieParser();
 		$this->message = $parser->parse($ircMessage);
@@ -48,7 +48,10 @@ class ServerMessage implements IServerMessage
 
 	public function getCommand()
 	{
-		return $this->message['command'];
+		if (!empty($this->message['command']))
+			return $this->message['command'];
+		else
+			return false;
 	}
 
 	public function getParams()

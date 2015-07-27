@@ -9,3 +9,5 @@ config.neon
 .idea
 *.log
 php_errors
+
+/vendor/

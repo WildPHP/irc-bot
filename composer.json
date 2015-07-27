@@ -1,0 +1,17 @@
+{
+    "name": "wildphp/wild-irc-bot",
+    "description": "A modular IRC bot written in PHP",
+    "require": {
+        "nette/neon": "^2.3",
+        "myclabs/php-enum": "^1.4",
+        "phergie/phergie-irc-parser": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "WildPHP\\Modules\\": "modules/",
+            "": "lib/"
+        }
+    },
+    "license": "GPL-3.0",
+    "authors": []
+}
