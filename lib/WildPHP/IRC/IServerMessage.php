@@ -67,6 +67,12 @@ interface IServerMessage
 	 * @return string|false
 	 */
 	public function getTargets();
+
+	/**
+	 * Gets the code of the message, if available.
+	 * @return string|false
+	 */
+	public function getCode();
     
 	/**
 	 * Returns the IRC message as parsed by Phergie.

@@ -105,7 +105,7 @@ class ChannelManager extends BaseModule
 			}
 
 			$this->channels[] = $chan;
-			$this->bot->sendData('JOIN ' . $chan);
+			$this->joinChannel($chan);
 		}
 	}
 
@@ -117,19 +117,13 @@ class ChannelManager extends BaseModule
 	{
 		// If no argument specified, attempt to leave the current channel.
 		if (empty($e->getParams()))
-			$c = array($e->getMessage()->getTargets());
+			$c = array($e->getMessage()->getChannel());
 
 		else
 			$c = $e->getParams();
 
 		foreach ($c as $chan)
 		{
-			if (!$this->isInChannel($chan))
-			{
-				$this->bot->log('Could not leave channel {channel} because I am not in it.', array('channel' => $chan), LogLevels::CHANNEL);
-				continue;
-			}
-
 			$this->bot->sendData('PART ' . $chan);
 		}
 	}
@@ -211,7 +205,7 @@ class ChannelManager extends BaseModule
 	 */
 	public function gateWatcher($e)
 	{
-		if (!empty($e->getMessage()->get()['code']) && $e->getMessage()->get()['code'] == 'RPL_TOPIC')
+		if (!empty($e->getMessage()->get()['code']) && $e->getMessage()->getCode() == 'RPL_TOPIC')
 		{
 			$channel = $e->getMessage()->getParams()[1];
 			$this->bot->log('Joined channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
@@ -219,17 +213,9 @@ class ChannelManager extends BaseModule
 			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
 		}
 
-		if ($e->getMessage()->getCommand() == 'KICK' && $e->getMessage()->getParams()['user'] == $this->bot->getNickname())
+		if (($e->getMessage()->getCommand() == 'KICK' || $e->getMessage()->getCommand() == 'PART') && $e->getMessage()->getNickname() == $this->bot->getNickname())
 		{
 			$channel = $e->getMessage()->getParams()['channel'];
-			$this->bot->log('Kicked from channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
-			$this->removeChannel($channel);
-			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($channel));
-		}
-
-		if ($e->getMessage()->getCommand() == 'PART' && $e->getMessage()->get()['nick'] == $this->bot->getNickname())
-		{
-			$channel = $e->getMessage()->getParams()['channels'];
 			$this->bot->log('Left channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
 			$this->removeChannel($channel);
 			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($channel));

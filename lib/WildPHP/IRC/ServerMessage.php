@@ -78,6 +78,11 @@ class ServerMessage implements IServerMessage
 	{
 		return !empty($this->message['targets']) ? $this->message['targets'] : false;
 	}
+
+	public function getCode()
+	{
+		return !empty($this->message['code']) ? $this->message['code'] : false;
+	}
 	
 	public function get()
 	{

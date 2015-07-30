@@ -192,7 +192,7 @@ class ConnectionManager extends Manager
 	/**
 	 * Looks for new data, parses them and triggers an event with the data.
 	 *
-	 * @return bool|ServerMessage False when there were no data to process, ServerMessage otherwise.
+	 * @return false|ServerMessage False when there were no data to process, ServerMessage otherwise.
 	 */
 	public function processReceivedData()
 	{

@@ -135,7 +135,7 @@ class ChannelAdmin extends BaseModule
 		/**
 		 * Try to get a channel out of the gathered data.
 		 * @param CommandEvent $e The last data received.
-		 * @return boolean|string|string[] False on failure, channel as string on success.
+		 * @return false|string\ False on failure, channel as string on success.
 		 */
 		public function parseChannel($e)
 		{
