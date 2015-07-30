@@ -234,7 +234,7 @@ class LogManager extends Manager
 	 * @param array $context The context.
 	 * @return string|false
 	 */
-	protected function interpolate($message, array $context)
+	protected function interpolate($message, array $context = array())
 	{
 		if (empty($message))
 			return false;

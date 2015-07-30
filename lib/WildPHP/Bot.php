@@ -22,6 +22,7 @@ namespace WildPHP;
 
 use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
+use WildPHP\IRC\ServerMessage;
 use WildPHP\LogManager\LogManager;
 use WildPHP\LogManager\LogLevels;
 use WildPHP\EventManager\EventManager;
@@ -77,6 +78,12 @@ class Bot
 	public $db;
 
 	/**
+	 * The current nickname of the bot.
+	 * @var string
+	 */
+	protected $nickname;
+
+	/**
 	 * Sets up the bot for initial load.
 	 * @param string $configFile Optionally load a custom config file
 	 */
@@ -84,6 +91,8 @@ class Bot
 	{
 		// Set up all managers.
 		$this->initializeManagers($configFile);
+
+		$this->nickname = $this->getConfig('nick');
 
 		// Then set up the database.
 		$this->db = new \SQLite3($this->getConfig('database'));
@@ -238,12 +247,91 @@ class Bot
 	}
 
 	/**
+	 * Gets the current nickname.
+	 * @return string
+	 */
+	public function getNickname()
+	{
+		return $this->nickname;
+	}
+
+	/**
+	 * Change the nickname of the bot.
+	 * @param string $newnick
+	 * @return boolean True on success, false on failure.
+	 */
+	public function changeNickname($newnick)
+	{
+		if (empty($newnick))
+			return false;
+
+		$this->sendData('NICK ' . $newnick);
+
+		$data = $this->waitReply();
+		if (!empty($data))
+		{
+			if (!empty($data[0]->get()['code']) && in_array($data[0]->get()['code'], array('ERR_NICKNAMEINUSE', 'ERR_ERRONEUSNICKNAME', 'ERR_NICKCOLLISION')))
+				return false;
+		}
+
+		$this->nickname = $newnick;
+
+		return true;
+	}
+
+	/**
+	 * Set the nickname of the bot. Please try to use changeNickname instead.
+	 * @param string $newnick
+	 */
+	public function setNickname($newnick)
+	{
+		$this->nickname = $newnick;
+	}
+
+	/**
 	 * Send data to the remote.
 	 * @param string $data The data to send.
 	 */
 	public function sendData($data)
 	{
 		$this->connectionManager->sendData($data);
+	}
+
+	/**
+	 * Gets data from the remote.
+	 * @return ServerMessage|boolean
+	 */
+	public function getData()
+	{
+		return $this->connectionManager->processReceivedData();
+	}
+
+	/**
+	 * Waits for and gets a reply from the server.
+	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
+	 * @param int $lines The amount of lines to listen for.
+	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
+	 * @return array<int, ServerMessage>
+	 */
+	public function waitReply($lines = 1, $timeout = 3)
+	{
+		$currtime = time();
+		$receivedLines = array();
+
+		do
+		{
+			$data = $this->getData();
+
+			if ($data == false)
+				continue;
+
+			$receivedLines[] = $data;
+
+			if (count($receivedLines) == $lines)
+				break;
+		} while (count($receivedLines) < $lines && time() < $currtime + $timeout);
+
+		return $receivedLines;
 	}
 
 	/**

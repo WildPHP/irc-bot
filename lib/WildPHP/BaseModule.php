@@ -92,4 +92,16 @@ class BaseModule
 	{
 		return $this->bot->getTimerManager();
 	}
+
+	/**
+	 * Waits for and gets a reply from the server.
+	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
+	 * @param int $lines The amount of lines to listen for.
+	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
+	 * @return array<ServerMessage>
+	 */
+	public function waitReply($lines = 1, $timeout = 3)
+	{
+		return $this->bot->waitReply($lines, $timeout);
+	}
 }

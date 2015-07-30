@@ -49,6 +49,24 @@ interface IServerMessage
 	 * @return string The message prefix.
 	 */
 	public function getPrefix();
+
+	/**
+	 * Returns the nickname of the user who sent the message, if available. False otherwise.
+	 * @return string|false
+	 */
+	public function getNickname();
+
+	/**
+	 * Returns the channel parameter or false if not available.
+	 * @return string|false
+	 */
+	public function getChannel();
+
+	/**
+	 * Returns the targets for this message, or false if unavailable.
+	 * @return string|false
+	 */
+	public function getTargets();
     
 	/**
 	 * Returns the IRC message as parsed by Phergie.

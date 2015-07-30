@@ -46,9 +46,14 @@ class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 		return new HostMask($this->getHostname());
 	}
 
-	public function getTargets()
+	public function getChannel()
 	{
 		return $this->message->get()['params']['receivers'];
+	}
+
+	public function getTargets()
+	{
+		return $this->getChannel();
 	}
 
 	public function getUserMessage()

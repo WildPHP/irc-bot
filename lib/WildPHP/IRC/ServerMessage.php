@@ -63,6 +63,21 @@ class ServerMessage implements IServerMessage
 	{
 		return (string) $this->message['prefix'];
 	}
+
+	public function getNickname()
+	{
+		return !empty($this->message['nick']) ? $this->message['nick'] : false;
+	}
+
+	public function getChannel()
+	{
+		return !empty($this->getParams()['channel']) ? $this->getParams()['channel'] : false;
+	}
+
+	public function getTargets()
+	{
+		return !empty($this->message['targets']) ? $this->message['targets'] : false;
+	}
 	
 	public function get()
 	{

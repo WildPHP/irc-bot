@@ -21,6 +21,9 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\IRC\CommandPRIVMSG;
+use WildPHP\LogManager\LogLevels;
+use WildPHP\Modules\ChannelManager\Event\ChannelMessageEvent;
 use WildPHP\Validation;
 use WildPHP\Event\CommandEvent;
 use WildPHP\Event\IRCMessageInboundEvent;
@@ -68,10 +71,16 @@ class ChannelManager extends BaseModule
 		$channelPart = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelPartEvent');
 		$this->evman()->register('ChannelPart', $channelPart);
 
-		// We also have a listener.
-		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
+		$channelMessage = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelMessageEvent');
+		$this->evman()->register('ChannelMessage', $channelMessage);
 
-		// Get the auth module.
+		// We also have a listener. Or more.
+		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
+		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'channelMessageListener'));
+		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'gateWatcher'));
+		$this->evman()->getEvent('ChannelMessage')->registerListener(array($this, 'channelMessageLogger'));
+
+			// Get the auth module.
 		$this->auth = $this->bot->getModuleInstance('Auth');
 	}
 
@@ -79,7 +88,7 @@ class ChannelManager extends BaseModule
 	 * The Join command.
 	 * @param CommandEvent $e The last data received.
 	 */
-	public function joinCommand($e)
+	public function joinCommand(CommandEvent $e)
 	{
 		if (empty($e->getParams()))
 		{
@@ -89,7 +98,12 @@ class ChannelManager extends BaseModule
 
 		foreach ($e->getParams() as $chan)
 		{
-			$this->bot->log('Joining channel ' . $chan . '...', 'CHANMAN');
+			if ($this->isInChannel($chan))
+			{
+				$this->bot->log('Not joining channel {channel} because I am already part of it.', array('channel' => $chan), LogLevels::CHANNEL);
+				continue;
+			}
+
 			$this->channels[] = $chan;
 			$this->bot->sendData('JOIN ' . $chan);
 		}
@@ -99,7 +113,7 @@ class ChannelManager extends BaseModule
 	 * The Part command.
 	 * @param CommandEvent $e The last data received.
 	 */
-	public function partCommand($e)
+	public function partCommand(CommandEvent $e)
 	{
 		// If no argument specified, attempt to leave the current channel.
 		if (empty($e->getParams()))
@@ -110,17 +124,33 @@ class ChannelManager extends BaseModule
 
 		foreach ($c as $chan)
 		{
-			$this->bot->log('Parting channel ' . $chan . '...', 'CHANMAN');
+			if (!$this->isInChannel($chan))
+			{
+				$this->bot->log('Could not leave channel {channel} because I am not in it.', array('channel' => $chan), LogLevels::CHANNEL);
+				continue;
+			}
+
 			$this->bot->sendData('PART ' . $chan);
-			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($chan));
 		}
+	}
+
+	/**
+	 * Join a channel.
+	 * @param string $channel The channel name.
+	 */
+	public function joinChannel($channel)
+	{
+		if (empty($channel) || !Validation::isChannel($channel))
+			return;
+
+		$this->bot->sendData('JOIN ' . $channel);
 	}
 
 	/**
 	 * This function handles the initial joining of channels.
 	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
-	public function initialJoin($e)
+	public function initialJoin(IRCMessageInboundEvent $e)
 	{
 		// Are we ready?
 		$status = $e->getMessage()->getCommand() == '376' && $e->getMessage()->get()['code'] == 'RPL_ENDOFMOTD';
@@ -138,15 +168,110 @@ class ChannelManager extends BaseModule
 	}
 
 	/**
-	 * Join a channel.
-	 * @param string $channel The channel name.
+	 * This function handles raising channelMessage events.
+	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
-	public function joinChannel($channel)
+	public function channelMessageListener(IRCMessageInboundEvent $e)
 	{
-		if (empty($channel) || !Validation::isChannel($channel))
+		if ($e->getMessage()->getCommand() != 'PRIVMSG')
 			return;
 
-		$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
-		$this->bot->sendData('JOIN ' . $channel);
+		$message = new CommandPRIVMSG($e->getMessage(), $this->bot->getConfig('prefix'));
+
+		$this->evman()->getEvent('ChannelMessage')->trigger(new ChannelMessageEvent($message->getTargets(), $message));
+	}
+
+	/**
+	 * This function just logs data for channels.
+	 * @param ChannelMessageEvent $e
+	 */
+	public function channelMessageLogger(ChannelMessageEvent $e)
+	{
+		$message = $e->getMessage();
+		$umessage = $message->getUserMessage();
+
+		if (substr($umessage, 0, 7) == chr(1) . 'ACTION')
+		{
+			$umessage = '*' . trim(substr(substr($umessage, 7), 0, -1)) . '*';
+		}
+
+		$this->bot->log(
+			'({channel}) <{user}> {message}',
+			array(
+				'channel' => $message->getTargets(),
+				'user' => $message->getNickname(),
+				'message' => $umessage
+			),
+			LogLevels::CHANNEL);
+	}
+
+	/**
+	 * This function watches for channel joins and parts, and keeps track of them.
+	 * @param IRCMessageInboundEvent $e
+	 */
+	public function gateWatcher($e)
+	{
+		if (!empty($e->getMessage()->get()['code']) && $e->getMessage()->get()['code'] == 'RPL_TOPIC')
+		{
+			$channel = $e->getMessage()->getParams()[1];
+			$this->bot->log('Joined channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
+			$this->addChannel($channel);
+			$this->evman()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
+		}
+
+		if ($e->getMessage()->getCommand() == 'KICK' && $e->getMessage()->getParams()['user'] == $this->bot->getNickname())
+		{
+			$channel = $e->getMessage()->getParams()['channel'];
+			$this->bot->log('Kicked from channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
+			$this->removeChannel($channel);
+			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($channel));
+		}
+
+		if ($e->getMessage()->getCommand() == 'PART' && $e->getMessage()->get()['nick'] == $this->bot->getNickname())
+		{
+			$channel = $e->getMessage()->getParams()['channels'];
+			$this->bot->log('Left channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
+			$this->removeChannel($channel);
+			$this->evman()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($channel));
+		}
+	}
+
+	/**
+	 * Adds a channel to the list.
+	 * @param string $channel
+	 */
+	public function addChannel($channel)
+	{
+		if (!in_array($channel, $this->channels))
+			$this->channels[] = $channel;
+	}
+
+	/**
+	 * Removes a channel from the list.
+	 * @param string $channel
+	 */
+	public function removeChannel($channel)
+	{
+		if (in_array($channel, $this->channels))
+			unset($this->channels[array_search($channel, $this->channels)]);
+	}
+
+	/**
+	 * Checks if the bot is in a channel.
+	 * @param string $channel
+	 * @return boolean
+	 */
+	public function isInChannel($channel)
+	{
+		return in_array($channel, $this->channels);
+	}
+
+	/**
+	 * List all channels the bot is in
+	 * @return string[]
+	 */
+	public function listChannels()
+	{
+		return $this->channels;
 	}
 }

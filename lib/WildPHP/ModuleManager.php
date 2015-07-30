@@ -123,7 +123,7 @@ class ModuleManager extends Manager
 		// Looks like we have some modules to load before anything else happens.
 		if (!is_bool($requires))
 		{
-			$this->log('Module {module} needs extra dependencies ({deps}' . implode(', ', $requires) . '). Queued up until dependencies are satisfied.', array('module' => $module, 'deps' => implode(', ', $requires)), LogLevels::DEBUG);
+			$this->log('Module {module} needs extra dependencies ({deps}). Queued up until dependencies are satisfied.', array('module' => $module, 'deps' => implode(', ', $requires)), LogLevels::DEBUG);
 
 			// The function returned a list of modules we need. Load those first.
 			if (!$this->loadModules($requires))

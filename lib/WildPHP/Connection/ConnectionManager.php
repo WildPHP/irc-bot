@@ -159,6 +159,8 @@ class ConnectionManager extends Manager
 			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
 		}
 
+		$this->bot->log('>> {data}', array('data' => $data), LogLevels::DEBUG);
+
 		// Trigger a new Outgoing event.
 		$this->bot->getEventManager()->getEvent('IRCMessageOutgoing')->trigger(
 			new IRCMessageOutgoingEvent(new ServerMessage($data))
@@ -190,7 +192,7 @@ class ConnectionManager extends Manager
 	/**
 	 * Looks for new data, parses them and triggers an event with the data.
 	 *
-	 * @return bool False when there were no data to process, true otherwise.
+	 * @return bool|ServerMessage False when there were no data to process, ServerMessage otherwise.
 	 */
 	public function processReceivedData()
 	{
@@ -198,6 +200,8 @@ class ConnectionManager extends Manager
 
 		if ($data === null)
 			return false;
+
+		$this->bot->log('<< {data}', array('data' => $data), LogLevels::DEBUG);
 
 		$data = new ServerMessage($data);
 
@@ -210,7 +214,7 @@ class ConnectionManager extends Manager
 			)
 		);
 
-		return true;
+		return $data;
 	}
 
 	/**

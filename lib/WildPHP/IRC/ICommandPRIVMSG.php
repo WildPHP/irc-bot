@@ -37,8 +37,14 @@ interface ICommandPRIVMSG extends IServerMessage
 	public function getSender();
 
 	/**
-	 * Returns the target user/channel name.
-	 * @return array Name of the target user/channel of this message.
+	 * Returns the target user/channel.
+	 * @return string
+	 */
+	public function getChannel();
+
+	/**
+	 * Alias of getChannel. Returns the target user/channel name.
+	 * @return string
 	 */
 	public function getTargets();
 
