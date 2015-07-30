@@ -40,7 +40,7 @@ class ErrorHandler extends Manager
      * @param string $errstr The error message.
      * @param string $errfile The error file.
      * @param string $errline The line the error occured.
-     * @return bool False to jump to the regular error handler.
+     * @return null|bool False to jump to the regular error handler.
      */
     public function handler($errno, $errstr, $errfile, $errline)
     {
