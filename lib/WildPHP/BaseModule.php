@@ -98,7 +98,7 @@ class BaseModule
 	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
 	 * @param int $lines The amount of lines to listen for.
 	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
-	 * @return array<ServerMessage>
+	 * @return ServerMEssage[]
 	 */
 	public function waitReply($lines = 1, $timeout = 3)
 	{
