@@ -65,6 +65,9 @@ class ConfigurationManager extends Manager
 		$lastPiece = $this->config;
 		foreach ($pieces as $piece)
 		{
+			if (empty($lastPiece))
+				return false;
+
 			if (array_key_exists($piece, $lastPiece))
 				$lastPiece = $lastPiece[$piece];
 			else
