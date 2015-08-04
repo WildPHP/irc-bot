@@ -22,6 +22,7 @@ namespace WildPHP;
 
 use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
+use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\LogManager\LogManager;
 use WildPHP\LogManager\LogLevels;
@@ -98,10 +99,7 @@ class Bot
 		$this->db = new \SQLite3($this->getConfig('database'));
 
 		$this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
-			/**
-			 * @param Event\IRCMessageInboundEvent $e
-			 */
-			function($e)
+			function(IRCMessageInboundEvent $e)
 			{
 				if ($e->getMessage()->getCommand() != 'PRIVMSG')
 					return;
@@ -339,6 +337,7 @@ class Bot
 	 * @param string[]|string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
 	 * @param string $text The string to be sent or an array of strings. Newlines separate messages.
 	 * @return bool False on failure (or when cancelled), true on success.
+	 * @throws \InvalidArgumentException When you use the shorthand yet no channel data is available.
 	 */
 	public function say($to, $text = '')
 	{

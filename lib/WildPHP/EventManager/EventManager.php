@@ -101,6 +101,7 @@ class EventManager extends Manager
 	 * Removes a registered event from this manager.
 	 * @param string $eventName The event to remove.
 	 * @return boolean|null Boolean determining if the operation succeeded.
+	 * @throws EventDoesNotExistException When the event does not exist.
 	 */
 	public function remove($eventName)
 	{
@@ -115,6 +116,7 @@ class EventManager extends Manager
 	 * Returns a registered event allowing you to manipulate it.
 	 * @param string $eventName The event to get.
 	 * @return RegisteredEvent|RegisteredCommandEvent The events with their hooks.
+	 * @throws EventDoesNotExistException When the event is not registered or does not exist.
 	 */
 	public function getEvent($eventName)
 	{
