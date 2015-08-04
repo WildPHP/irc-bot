@@ -107,16 +107,13 @@ class ConnectionManager extends Manager
 
 		socket_set_blocking($this->socket, 0);
 
-		if (!empty($this->password))
-			$this->sendData('PASS ' . $this->password);
+        // And fire the onConnect event.
+        $this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
 
-		$this->sendData('USER ' . $this->nick . ' Layne-Obserdia.de ' . $this->nick . ' :' . $this->name);
 		$this->sendData('NICK ' . $this->nick);
+        $this->sendData('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
 
-		$this->log('Connection to server {server}:{port} set up with nick {nick}; ready to use.', array('server' => $this->server, 'port' => $this->port, 'nick' => $this->nick), LogLevels::INFO);
-
-		// And fire the onConnect event.
-		$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
+		$this->log('Connection to server {server}:{port} set up with nick {nick}; firing up.', array('server' => $this->server, 'port' => $this->port, 'nick' => $this->nick), LogLevels::INFO);
 	}
 
 	/**
