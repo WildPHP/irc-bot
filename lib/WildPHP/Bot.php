@@ -210,7 +210,7 @@ class Bot
 	/**
 	 * Returns a module.
 	 * @param string $module The module to get an instance from.
-	 * @return BaseModule|false The module instance on success, false on failure.
+	 * @return BaseModule The module instance.
 	 */
 	public function getModuleInstance($module)
 	{

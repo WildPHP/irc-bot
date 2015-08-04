@@ -48,6 +48,7 @@ class Dev extends BaseModule
 		$this->evman()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
 
 		$helpmodule = $this->bot->getModuleInstance('Help');
+
 		$helpmodule->registerHelp('exec', 'Executes code in the bot\'s process. Usage: exec [code]');
 
 		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));

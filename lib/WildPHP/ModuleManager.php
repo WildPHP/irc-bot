@@ -264,12 +264,12 @@ class ModuleManager extends Manager
 	/**
 	 * Returns the loaded instance of the module, for use by other modules.
 	 * @param string $module The module name.
-	 * @return object|false The module instance.
+	 * @return BaseModule The module instance.
 	 */
 	public function getModuleInstance($module)
 	{
 		if (!$this->moduleLoaded($module))
-			return false;
+			throw new \InvalidArgumentException('Module ' . $module . ' does not exist.');
 
 		return $this->loadedModules[$module];
 	}
