@@ -8,7 +8,6 @@ server: irc.freenode.org
 port: 6667
 nick: phpbot
 name: phpbot
-nickserv: NickServ
 
 # Database settings. Paths are relative to the root path.
 database: database.db
