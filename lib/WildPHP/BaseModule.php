@@ -21,6 +21,7 @@
 namespace WildPHP;
 
 use WildPHP\EventManager\EventManager;
+use WildPHP\IRC\ServerMessage;
 
 class BaseModule
 {
