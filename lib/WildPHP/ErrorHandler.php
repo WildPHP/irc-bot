@@ -51,7 +51,6 @@ class ErrorHandler extends Manager
                 $level = LogLevels::ERROR;
                 $this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
                 exit(1);
-                break;
 
             case E_USER_WARNING:
             case E_WARNING:
