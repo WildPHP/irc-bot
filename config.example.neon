@@ -6,7 +6,6 @@
 # IRC server connection details
 server: irc.freenode.org
 port: 6667
-password: ''
 nick: phpbot
 name: phpbot
 nickserv: NickServ
