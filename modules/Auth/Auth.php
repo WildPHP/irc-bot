@@ -47,26 +47,36 @@ class Auth extends BaseModule
 	 */
 	public function authUser($hostname, $notify = true)
 	{
-		// Remove the nickname from the hostname to also match with that. The nickname doesn't have to always be the same!
-		$hostnonick = preg_replace('/(:)[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/', '', $hostname);
-		$result = !empty($hostname) && (in_array($hostname, $this->hostnames) || in_array($hostnonick, $this->hostnames));
+		// Remove the nickname from the hostname to also match with that.
+		$result = $this->isAllowed($hostname);
 
-		$this->bot->log('Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
-		
+		$this->bot->log('[AUTH] Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
 		if (!$result && !empty($notify))
 		{
-			// Need to do it like this, we might not have a PRIVMSG as last data!
 			try
 			{
 				$this->bot->say('You do not have permission to access that.');
 			}
-
 			// We catch the InvalidArgumentException here, because we might not be able to send a message to a 'last channel'.
-			// We don't really need error handling here.
 			catch (\InvalidArgumentException $e) {}
 		}
-
 		return $result;
+	}
+
+	/**
+	 * Checks if a hostname is allowed to perform an administrative action.
+	 * @param string $hostname The hostname to check.
+	 * @return boolean
+	 */
+	public function isAllowed($hostname)
+	{
+		if (empty($hostname) || !is_string($hostname))
+			throw new \InvalidArgumentException('No valid argument passed to Auth::isAllowed.');
+
+		// Chop off the nickname.
+		$hostnonick = preg_replace('/(:)[a-zA-Z0-9_\-\\\[\]\{\}\^`\|]+\!/', '', $hostname);
+
+		return in_array($hostname, $this->hostnames) || (!empty($hostnonick) && in_array($hostnonick, $this->hostnames));
 	}
 	
 	/**
