@@ -11,3 +11,14 @@ config.neon
 php_errors
 
 /vendor/
+
+
+# Ignore all modules except the defaults
+modules/*
+!modules/Auth
+!modules/ChannelAdmin
+!modules/ChannelManager
+!modules/CoreCommands
+!modules/Dev
+!modules/Help
+!modules/Watchdog
