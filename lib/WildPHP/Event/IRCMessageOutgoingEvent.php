@@ -23,7 +23,6 @@ use WildPHP\IRC\IServerMessage;
 
 class IRCMessageOutgoingEvent implements IIRCMessageOutgoingEvent
 {
-
 	protected $ircMessage;
 
 	public function __construct(IServerMessage $ircMessage)
