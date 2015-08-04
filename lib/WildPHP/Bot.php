@@ -348,7 +348,7 @@ class Bot
 		// Some people are just too lazy.
 		elseif (empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG')
 		{
-			$text = $to;
+			$text = (string) $to;
 			$to = $this->connectionManager->getLastData()->get()['targets'][0];
 		}
 		elseif (empty($text))
