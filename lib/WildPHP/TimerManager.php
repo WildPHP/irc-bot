@@ -27,7 +27,7 @@ class TimerManager extends Manager
 {
 	/**
 	 * The timers. Stored as array<timestamp, callable>
-	 * @var array<string, Timer>
+	 * @var Timer[]
 	 */
 	protected $timers = array();
 
@@ -47,12 +47,12 @@ class TimerManager extends Manager
 	 * @param string $name The name to set for the timer.
 	 * @param Timer $timer The timer object to add.
 	 */
-	public function add($name, $timer)
+	public function add($name, Timer $timer)
 	{
 		if (!is_object($timer) || !($timer instanceof Timer) || empty($name))
 			throw new \InvalidArgumentException('Unable to add timer with invalid parameters.');
 
-		if ($this->exists($name))
+		if ($this->exists($name) || $this->existsByObject($timer))
 			throw new TimerExistsException('The specified timer already exists.');
 
 		$this->bot->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', array('name' => $name, 'nextTrigger' => ($timer->getTime() - time())), LogLevels::DEBUG);
@@ -69,8 +69,18 @@ class TimerManager extends Manager
 		return array_key_exists($name, $this->timers);
 	}
 
+    /**
+     * Checks if a timer exists, searching by object.
+     * @param Timer $timer
+     * @return boolean
+     */
+    public function existsByObject(Timer $timer)
+    {
+        return in_array($timer, $this->timers);
+    }
+
 	/**
-	 * Removes a timer.
+	 * Removes a timer by name.
 	 * @param string $name The timer to remove.
 	 */
 	public function remove($name)
@@ -80,6 +90,15 @@ class TimerManager extends Manager
 
 		unset($this->timers[$name]);
 		$this->bot->log('Removed timer {name}', array('name' => $name), LogLevels::DEBUG);
+	}
+
+	/**
+	 * Removes a timer by timer object.
+	 * @param Timer $timer
+	 */
+	public function removeByObject(Timer $timer)
+	{
+		$this->remove(array_search($timer, $this->timers));
 	}
 
 	/**

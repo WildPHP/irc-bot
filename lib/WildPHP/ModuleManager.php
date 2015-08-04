@@ -81,7 +81,7 @@ class ModuleManager extends Manager
 	 * @param array $modules An array containing the names of the modules to load.
 	 * @return bool True if all modules were loaded, false if one or more modules failed to load.
 	 */
-	public function loadModules($modules)
+	public function loadModules(array $modules)
 	{
 		$success = true;
 		foreach ($modules as $module)
