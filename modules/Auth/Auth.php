@@ -60,6 +60,9 @@ class Auth extends BaseModule
 			{
 				$this->bot->say('You do not have permission to access that.');
 			}
+
+			// We catch the InvalidArgumentException here, because we might not be able to send a message to a 'last channel'.
+			// We don't really need error handling here.
 			catch (\InvalidArgumentException $e) {}
 		}
 
