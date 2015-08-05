@@ -74,10 +74,10 @@ class TimerManager extends Manager
 	}
 
 	/**
-	* Checks if a timer exists, searching by object.
-	* @param Timer $timer
-	* @return boolean
-	*/
+	 * Checks if a timer exists, searching by object.
+	 * @param Timer $timer
+	 * @return boolean
+	 */
 	public function existsByObject(Timer $timer)
 	{
 		return in_array($timer, $this->timers);
