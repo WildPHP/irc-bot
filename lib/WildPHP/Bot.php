@@ -124,25 +124,19 @@ class Bot
 	 */
 	protected function initializeManagers($configFile)
 	{
-		// Configuration Manager
 		$this->configurationManager = new ConfigurationManager($this, $configFile);
-        date_default_timezone_set($this->getConfig('timezone'));
+		date_default_timezone_set($this->getConfig('timezone'));
 
-		// Log Manager
 		$this->logManager = new LogManager($this);
 		new ErrorHandler($this);
 
-		// Event Manager
 		$this->eventManager = new EventManager($this);
 		$this->initializeEvents();
 
-		// Timer Manager
 		$this->timerManager = new TimerManager($this);
 
-		// Connection Manager
 		$this->connectionManager = new ConnectionManager($this);
 
-		// Module Manager
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
 	}
