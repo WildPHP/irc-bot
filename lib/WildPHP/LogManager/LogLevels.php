@@ -22,11 +22,11 @@ namespace WildPHP\LogManager;
 
 class LogLevels
 {
-    const ERROR = 'error';
-    const WARNING = 'warning';
-    const INFO = 'info';
-    const DEBUG = 'debug';
+	const ERROR = 'error';
+	const WARNING = 'warning';
+	const INFO = 'info';
+	const DEBUG = 'debug';
 
-    // Special mode for channel data.
-    const CHANNEL = 'channel';
+	// Special mode for channel data.
+	const CHANNEL = 'channel';
 }
