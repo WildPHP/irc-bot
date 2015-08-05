@@ -108,7 +108,7 @@ class ConnectionManager extends Manager
 		socket_set_blocking($this->socket, 0);
 
 		// And fire the onConnect event.
-		//$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
+		$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
 
 		$this->sendData('NICK ' . $this->nick);
 		$this->sendData('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
