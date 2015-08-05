@@ -23,7 +23,6 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Event\CommandEvent;
 use WildPHP\Modules\Help\HelpAlreadyRegisteredException;
-use WildPHP\Modules\Help\HelpAlreadyRegisteredExecption;
 use WildPHP\Modules\Help\HelpForNonexistingCommandException;
 
 class Help extends BaseModule
