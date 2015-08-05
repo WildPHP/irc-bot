@@ -156,6 +156,7 @@ class TimerManager extends Manager
 	 * @param int $fluctuationPositive The fluctuation to allow in the positive range.
 	 * @param int $fluctuationNegative The fluctuation to allow in the negative range.
 	 * @return string[] The callable timers.
+	 * @throws \InvalidArgumentException when any of the parameters are negative or not an int.
 	 */
 	public function find($time, $fluctuationPositive = 5, $fluctuationNegative = 5)
 	{
@@ -176,6 +177,8 @@ class TimerManager extends Manager
 	 * Gets a specific timer by name.
 	 * @param string $name The timer name.
 	 * @return Timer
+	 * @throws \InvalidArgumentException when an invalid $name is passed.
+	 * @throws TimerDoesNotExistException when the timer does not exist.
 	 */
 	public function get($name)
 	{
