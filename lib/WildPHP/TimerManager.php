@@ -22,6 +22,8 @@ namespace WildPHP;
 
 use WildPHP\LogManager\LogLevels;
 use WildPHP\Timer\Timer;
+use WildPHP\Timer\TimerDoesNotExistException;
+use WildPHP\Timer\TimerExistsException;
 
 class TimerManager extends Manager
 {
@@ -46,6 +48,8 @@ class TimerManager extends Manager
 	 * Adds a timer.
 	 * @param string $name The name to set for the timer.
 	 * @param Timer $timer The timer object to add.
+	 * @throws \InvalidArgumentException when no name is specified or an invalid timer is passed.
+	 * @throws TimerExistsException when a timer already exists either by the same name or object.
 	 */
 	public function add($name, Timer $timer)
 	{
@@ -82,6 +86,7 @@ class TimerManager extends Manager
 	/**
 	 * Removes a timer by name.
 	 * @param string $name The timer to remove.
+	 * @throws TimerDoesNotExistException when the timer does not exist.
 	 */
 	public function remove($name)
 	{
@@ -111,35 +116,36 @@ class TimerManager extends Manager
 			if ($object->isSuspended())
 				continue;
 
-			if ($object->getTime() <= time())
+			if ($object->getTime() > time())
+				continue;
+
+			$this->bot->log('Triggering timer {name}', array('name' => $name), LogLevels::DEBUG);
+			$oldtime = $object->getTime();
+
+			if (!is_callable($object->getCall()))
 			{
-				$this->bot->log('Triggering timer {name}', array('name' => $name), LogLevels::DEBUG);
-				$oldtime = $object->getTime();
+				$this->bot->log('Cleaning up timer {name} because it is no longer(?) callable.', array('name' => $name), LogLevels::DEBUG);
+				$this->remove($name);
+				continue;
+			}
 
-				if (!is_callable($object->getCall()))
-				{
-					$this->bot->log('Cleaning up timer {name} because it is no longer(?) callable.', array('name' => $name), LogLevels::DEBUG);
-					$this->remove($name);
-					continue;
-				}
+			call_user_func($object->getCall(), $object);
 
-				call_user_func($object->getCall(), $object);
+			// If the timer extended itself, keep it in the queue.
+			if ($object->getTime() != $oldtime)
+				continue;
 
-				if ($object->getTime() == $oldtime)
-				{
-					if ($object->getAutoCleanup())
-					{
-						$this->bot->log('Automatically cleaning up timer {name} because it was not extended and thus timed out.', array('name' => $name), LogLevels::DEBUG);
-						$this->remove($name);
-					}
+			if ($object->getAutoCleanup())
+			{
+				$this->bot->log('Automatically cleaning up timer {name} because it was not extended and thus timed out.', array('name' => $name), LogLevels::DEBUG);
+				$this->remove($name);
+			}
 
-					// If we're not allowed to automatically remove it, we'll just suspend it. Extending it will undo this.
-					else
-					{
-						$this->bot->log('Suspending timer {name} because it is set to not be automatically removed but has timed out.', array('name' => $name), LogLevels::DEBUG);
-						$object->suspend();
-					}
-				}
+			// If we're not allowed to automatically remove it, we'll just suspend it. Extending it will undo this.
+			else
+			{
+				$this->bot->log('Suspending timer {name} because it is set to not be automatically removed but has timed out.', array('name' => $name), LogLevels::DEBUG);
+				$object->suspend();
 			}
 		}
 	}
@@ -181,11 +187,4 @@ class TimerManager extends Manager
 
 		return $this->timers[$name];
 	}
-}
-
-class TimerExistsException extends \RuntimeException
-{
-}
-class TimerDoesNotExistException extends \RuntimeException
-{
 }
