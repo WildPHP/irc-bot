@@ -23,36 +23,36 @@ use WildPHP\IRC\CommandPRIVMSG;
 
 class ChannelMessageEvent implements IChannelEvent
 {
-    /**
-     * The channel.
-     * @var string
-     */
-    protected $channel;
+	/**
+	 * The channel.
+	 * @var string
+	 */
+	protected $channel;
 
-    /**
-     * The message.
-     * @var CommandPRIVMSG
-     */
-    protected $message;
+	/**
+	 * The message.
+	 * @var CommandPRIVMSG
+	 */
+	protected $message;
 
-    /**
-     * Constructs the event.
-     * @param string $channel The channel that is being joined.
-     * @param CommandPRIVMSG $message The message that is received.
-     */
-    public function __construct($channel, CommandPRIVMSG $message)
-    {
-        $this->channel = $channel;
-        $this->message = $message;
-    }
+	/**
+	 * Constructs the event.
+	 * @param string $channel The channel that is being joined.
+	 * @param CommandPRIVMSG $message The message that is received.
+	 */
+	public function __construct($channel, CommandPRIVMSG $message)
+	{
+		$this->channel = $channel;
+		$this->message = $message;
+	}
 
-    public function getChannel()
-    {
-        return $this->channel;
-    }
+	public function getChannel()
+	{
+		return $this->channel;
+	}
 
-    public function getMessage()
-    {
-        return $this->message;
-    }
+	public function getMessage()
+	{
+		return $this->message;
+	}
 }
