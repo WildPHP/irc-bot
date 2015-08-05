@@ -126,6 +126,7 @@ class Bot
 	{
 		// Configuration Manager
 		$this->configurationManager = new ConfigurationManager($this, $configFile);
+        date_default_timezone_set($this->getConfig('timezone'));
 
 		// Log Manager
 		$this->logManager = new LogManager($this);
