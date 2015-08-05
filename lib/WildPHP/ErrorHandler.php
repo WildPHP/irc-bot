@@ -23,51 +23,50 @@ use WildPHP\LogManager\LogLevels;
 
 class ErrorHandler extends Manager
 {
-    /**
-     * Setup the Error Handler.
-     * @param Bot $bot
-     */
-    public function __construct(Bot $bot)
-    {
-        parent::__construct($bot);
+	/**
+	 * Setup the Error Handler.
+	 * @param Bot $bot
+	 */
+	public function __construct(Bot $bot)
+	{
+		parent::__construct($bot);
+		set_error_handler(array($this, 'handler'));
+	}
 
-        set_error_handler(array($this, 'handler'));
-    }
+	/**
+	 * Handle errors.
+	 * @param int $errno The error number.
+	 * @param string $errstr The error message.
+	 * @param string $errfile The error file.
+	 * @param string $errline The line the error occured.
+	 * @return null|bool False to jump to the regular error handler.
+	 */
+	public function handler($errno, $errstr, $errfile, $errline)
+	{
+		switch ($errno)
+		{
+			case E_USER_ERROR:
+			case E_ERROR:
+				$level = LogLevels::ERROR;
+				$this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+				exit(1);
 
-    /**
-     * Handle errors.
-     * @param int $errno The error number.
-     * @param string $errstr The error message.
-     * @param string $errfile The error file.
-     * @param string $errline The line the error occured.
-     * @return null|bool False to jump to the regular error handler.
-     */
-    public function handler($errno, $errstr, $errfile, $errline)
-    {
-        switch ($errno)
-        {
-            case E_USER_ERROR:
-            case E_ERROR:
-                $level = LogLevels::ERROR;
-                $this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
-                exit(1);
+			case E_USER_WARNING:
+			case E_WARNING:
+				$level = LogLevels::WARNING;
+				break;
 
-            case E_USER_WARNING:
-            case E_WARNING:
-                $level = LogLevels::WARNING;
-                break;
+			case E_USER_NOTICE:
+			case E_NOTICE:
+				$level = LogLevels::INFO;
+				break;
 
-            case E_USER_NOTICE:
-            case E_NOTICE:
-                $level = LogLevels::INFO;
-                break;
+			default:
+				$level = LogLevels::DEBUG;
+				break;
+		}
 
-            default:
-                $level = LogLevels::DEBUG;
-                break;
-        }
-
-        $this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
-        return true;
-    }
+		$this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+		return true;
+	}
 }
