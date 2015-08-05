@@ -22,6 +22,9 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Event\CommandEvent;
+use WildPHP\Modules\Help\HelpAlreadyRegisteredException;
+use WildPHP\Modules\Help\HelpAlreadyRegisteredExecption;
+use WildPHP\Modules\Help\HelpForNonexistingCommandException;
 
 class Help extends BaseModule
 {
@@ -68,25 +71,24 @@ class Help extends BaseModule
 		{
 			// All commands are...
 			$this->bot->say('Available commands: ' . implode(', ', $commands));
+			return;
 		}
-		else
+
+		$command = strtolower($e->getParams()[0]);
+
+		if (!in_array($command, $commands))
 		{
-			$command = strtolower($e->getParams()[0]);
-
-			if (!in_array($command, $commands))
-			{
-				$this->bot->say('Command ' . $command . ' does not exist or is not known to me.');
-				return;
-			}
-
-			if (!array_key_exists($command, $this->strings))
-			{
-				$this->bot->say('There is no help available for command ' . $command);
-				return;
-			}
-
-			$this->bot->say($command . ': ' . $this->strings[$command]);
+			$this->bot->say('Command ' . $command . ' does not exist or is not known to me.');
+			return;
 		}
+
+		if (!array_key_exists($command, $this->strings))
+		{
+			$this->bot->say('There is no help available for command ' . $command);
+			return;
+		}
+
+		$this->bot->say($command . ': ' . $this->strings[$command]);
 	}
 
 	/**
@@ -94,6 +96,8 @@ class Help extends BaseModule
 	 * @param string $command The command to set help for.
 	 * @param string $string The help string to set for it.
 	 * @param boolean $overwrite Overwrite existing help if already set?
+	 * @throws HelpForNonexistingCommandException When the command does not exist.
+	 * @throws HelpAlreadyRegisteredException When the specified help already exists and we are not overwriting.
 	 */
 	public function registerHelp($command, $string, $overwrite = false)
 	{
@@ -103,19 +107,11 @@ class Help extends BaseModule
 		$cmd = $this->evman()->getEvent('BotCommand');
 
 		if (!$cmd->commandExists($command))
-			throw new HelpForNonexistingCommand();
+			throw new HelpForNonexistingCommandException();
 
 		if (array_key_exists($command, $this->strings) && !$overwrite)
-			throw new HelpAlreadyRegistered();
+			throw new HelpAlreadyRegisteredException();
 
 		$this->strings[strtolower($command)] = $string;
 	}
-}
-
-class HelpForNonexistingCommand extends \RuntimeException
-{
-}
-
-class HelpAlreadyRegistered extends \RuntimeException
-{
 }
