@@ -196,18 +196,7 @@ class ModuleManager extends Manager
 		$module_full = 'WildPHP\\Modules\\' . $module;
 
 		// It has no dependencies? Good!
-		if (!method_exists($module_full, 'getDependencies'))
-			return true;
-
-		// Get the dependencies.
-		$deps = $module_full::getDependencies();
-
-		// Only arrays accepted, sorry.
-		if (!is_array($deps))
-			return false;
-
-		// So it should have dependencies, but it doesn't... Okay. Skip over.
-		elseif (empty($deps))
+		if (!method_exists($module_full, 'getDependencies') || !is_array($deps = $module_full::getDependencies()) || empty($deps))
 			return true;
 
 		$needs = array();
