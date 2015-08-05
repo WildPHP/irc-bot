@@ -70,9 +70,9 @@ class ModuleManager extends Manager
 		if (empty($this->loadedModules))
 		{
 			// Scan for modules.
-			$this->scanModules();
+			$this->scan();
 
-			$this->loadModules($this->modules);
+			$this->loadMultiple($this->modules);
 		}
 	}
 
@@ -81,12 +81,12 @@ class ModuleManager extends Manager
 	 * @param array $modules An array containing the names of the modules to load.
 	 * @return bool True if all modules were loaded, false if one or more modules failed to load.
 	 */
-	public function loadModules(array $modules)
+	public function loadMultiple(array $modules)
 	{
 		$success = true;
 		foreach ($modules as $module)
 		{
-			if (!$this->loadModule($module))
+			if (!$this->load($module))
 				$success = false;
 		}
 		return $success;
@@ -97,47 +97,92 @@ class ModuleManager extends Manager
 	 * @param string $module The module name.
 	 * @return bool True upon success, false upon failure.
 	 */
-	public function loadModule($module)
+	public function load($module)
 	{
-		$module_full = 'WildPHP\\modules\\' . $module;
+		$module_full = 'WildPHP\\Modules\\' . $module;
 
-		if (array_key_exists($module, $this->status) && $this->status[$module] === false)
+		// We already failed to load this module.
+		if ($this->getStatus($module) === false)
 			return false;
 
-		if ($this->moduleLoaded($module))
+		if ($this->isLoaded($module))
 			return true;
 
 		$this->log('Loading module {module}...', array('module' => $module), LogLevels::DEBUG);
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
-		if (!$this->moduleAvailable($module) || !class_exists($module_full))
+		if (!$this->isAvailable($module) || !class_exists($module_full))
 		{
 			$this->log('Could not load non-existing module {module}; module not initialised.', array('module' => $module), LogLevels::WARNING);
-			$this->status[$module] = false;
-			return false;
+			return $this->setStatus($module, false);
 		}
 
-		// Need any dependencies?
-		$requires = $this->checkModuleDependencies($module);
-
-		// Looks like we have some modules to load before anything else happens.
-		if (!is_bool($requires))
-		{
-			$this->log('Module {module} needs extra dependencies ({deps}). Queued up until dependencies are satisfied.', array('module' => $module, 'deps' => implode(', ', $requires)), LogLevels::DEBUG);
-
-			// The function returned a list of modules we need. Load those first.
-			if (!$this->loadModules($requires))
-			{
-				$this->log('Could not satisfy dependencies of module {module}; module not initialised.', array('module' => $module), LogLevels::WARNING);
-				$this->status[$module] = false;
-				return false;
-			}
-		}
+		if (!$this->resolveDependencies($module))
+			return $this->setStatus($module, false);
 
 		// Okay, so the class exists.
 		$this->loadedModules[$module] = new $module_full($this->bot);
 		$this->log('Module {module} loaded and initialised.', array('module' => $module), LogLevels::INFO);
-		$this->status[$module] = true;
+		return $this->setStatus($module, true);
+	}
+
+	/**
+	 * Sets module status. Always returns the status you set.
+	 * @param string $module The module to set status for.
+	 * @param boolean $status The status to set. Default is false.
+	 * @return boolean Always returns $status, or false on failure.
+	 */
+	public function setStatus($module, $status = false)
+	{
+		// Do not check if the module exists.
+		if ($status !== true && $status !== false)
+			return false;
+
+		$this->status[$module] = $status;
+		return $status;
+	}
+
+	/**
+	 * Gets the status for a module. Returns null if it does not exist.
+	 * @param string $module
+	 * @return boolean|null
+	 */
+	public function getStatus($module)
+	{
+		if (!array_key_exists($module, $this->status))
+			return null;
+
+		return $this->status[$module];
+	}
+
+	/**
+	 * Resolves module dependencies.
+	 * @param string $module The module to resolve dependencies for.
+	 * @return bool
+	 */
+	public function resolveDependencies($module)
+	{
+		if (!$this->isAvailable($module))
+			return false;
+
+		// Need any dependencies?
+		$requires = $this->checkDependencies($module);
+
+		// Looks like we have some modules to load before anything else happens.
+		if (!is_bool($requires))
+		{
+			$this->log('Resolving extra dependencies for module {module} ({deps}).', array('module' => $module, 'deps' => implode(', ', $requires)), LogLevels::DEBUG);
+
+			// The function returned a list of modules we need. Load those first.
+			if (!$this->loadMultiple($requires))
+			{
+				$this->log('Could not satisfy dependencies for module {module}.', array('module' => $module), LogLevels::WARNING);
+				return false;
+			}
+		}
+		elseif ($requires === false)
+			return false;
+
 		return true;
 	}
 
@@ -146,9 +191,9 @@ class ModuleManager extends Manager
 	 * @param string $module The module to check dependencies for.
 	 * @return array|bool Array of dependencies or true (if no dependencies) on success, or false upon failure.
 	 */
-	public function checkModuleDependencies($module)
+	public function checkDependencies($module)
 	{
-		$module_full = 'WildPHP\\modules\\' . $module;
+		$module_full = 'WildPHP\\Modules\\' . $module;
 
 		// It has no dependencies? Good!
 		if (!method_exists($module_full, 'getDependencies'))
@@ -169,7 +214,7 @@ class ModuleManager extends Manager
 		foreach ($deps as $dep)
 		{
 			// If it's not loaded, we need it.
-			if (!$this->moduleLoaded($dep))
+			if (!$this->isLoaded($dep))
 				$needs[] = $dep;
 		}
 
@@ -185,9 +230,9 @@ class ModuleManager extends Manager
 	 * @param string $module The module name.
 	 * @return bool True or false depending on whether the operation succeeded.
 	 */
-	public function unloadModule($module)
+	public function unload($module)
 	{
-		if (!$this->moduleLoaded($module))
+		if (!$this->isLoaded($module))
 			return false;
 
 		// Remove any instance of the module.
@@ -201,7 +246,7 @@ class ModuleManager extends Manager
 	 */
 	public function autoLoad($class)
 	{
-		$class = str_replace('WildPHP\\modules\\', '', $class);
+		$class = str_replace('WildPHP\\Modules\\', '', $class);
 
 		if (file_exists($this->moduleDir . $class . '/' . $class . '.php'))
 			require_once($this->moduleDir . $class . '/' . $class . '.php');
@@ -212,9 +257,9 @@ class ModuleManager extends Manager
 	 * @param string $module The module name.
 	 * @return bool True or false depending on whether the module is loaded.
 	 */
-	public function moduleLoaded($module)
+	public function isLoaded($module)
 	{
-		return array_key_exists($module, $this->loadedModules) && is_object($this->loadedModules[$module]);
+		return $this->getStatus($module) && array_key_exists($module, $this->loadedModules) && is_object($this->loadedModules[$module]);
 	}
 
 	/**
@@ -222,7 +267,7 @@ class ModuleManager extends Manager
 	 * @param string $module The module name.
 	 * @return bool True or false depending whether the module is registered and available.
 	 */
-	public function moduleAvailable($module)
+	public function isAvailable($module)
 	{
 		return in_array($module, $this->modules);
 	}
@@ -230,12 +275,12 @@ class ModuleManager extends Manager
 	/**
 	 * Scan for (new) modules and register them.
 	 */
-	public function scanModules()
+	public function scan()
 	{
 		// Scan the modules directory for any available modules
 		foreach (scandir($this->moduleDir) as $file)
 		{
-			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->moduleAvailable($file))
+			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->isAvailable($file))
 			{
 				$this->log('Module {module} found and registered.', array('module' => $file), LogLevels::DEBUG);
 				$this->modules[] = $file;
@@ -268,7 +313,7 @@ class ModuleManager extends Manager
 	 */
 	public function getModuleInstance($module)
 	{
-		if (!$this->moduleLoaded($module))
+		if (!$this->isLoaded($module))
 			throw new \InvalidArgumentException('Module ' . $module . ' does not exist.');
 
 		return $this->loadedModules[$module];
