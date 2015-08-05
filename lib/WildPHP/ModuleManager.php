@@ -207,7 +207,7 @@ class ModuleManager extends Manager
 			return false;
 
 		// So it should have dependencies, but it doesn't... Okay. Skip over.
-		elseif (is_array($deps) && empty($deps))
+		elseif (empty($deps))
 			return true;
 
 		$needs = array();
@@ -221,8 +221,8 @@ class ModuleManager extends Manager
 		// If all dependencies are satisfied, return true. Else, the required dependencies.
 		if (empty($needs))
 			return true;
-		else
-			return $needs;
+
+		return $needs;
 	}
 
 	/**
