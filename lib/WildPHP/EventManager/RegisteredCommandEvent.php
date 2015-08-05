@@ -58,6 +58,8 @@ class RegisteredCommandEvent extends RegisteredEvent
 	 * @param string $command The command, like 'say'.
 	 * @param callable $call The callable to call.
 	 * @param bool $auth Whether the command needs pre-execution authentication.
+	 * @throws \InvalidArgumentException when an invalid command is being added.
+	 * @throws CommandExistsException when the command already exists.
 	 */
 	public function registerCommand($command, $call, $auth = false)
 	{
@@ -76,6 +78,8 @@ class RegisteredCommandEvent extends RegisteredEvent
 	/**
 	 * Removes a command.
 	 * @param string $command
+	 * @throws \InvalidArgumentException when $command is empty.
+	 * @throws CommandDoesNotExistException when the command does not exist.
 	 */
 	public function removeCommand($command)
 	{
@@ -101,7 +105,7 @@ class RegisteredCommandEvent extends RegisteredEvent
 	/**
 	 * Triggers the event.
 	 * @param IEvent $event The event that gets passed to the listeners.
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException when an invalid event type is passed.
 	 * @return void
 	 */
 	public function trigger(IEvent $event)
@@ -128,12 +132,4 @@ class RegisteredCommandEvent extends RegisteredEvent
 	{
 		return array_keys($this->commands);
 	}
-}
-
-class CommandExistsException extends \RuntimeException
-{
-}
-
-class CommandDoesNotExistException extends \RuntimeException
-{
 }
