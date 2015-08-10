@@ -22,6 +22,7 @@ namespace WildPHP;
 
 use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
+use WildPHP\Connection\QueueManager;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\IRC\ServerMessage;
 use WildPHP\LogManager\LogManager;
@@ -65,6 +66,12 @@ class Bot
 	 * @var TimerManager
 	 */
 	protected $timerManager;
+
+	/**
+	 * The Queue manager.
+	 * @var QueueManager
+	 */
+	protected $queueManager;
 
 	/**
 	 * The log manager.
@@ -136,6 +143,9 @@ class Bot
 		$this->timerManager = new TimerManager($this);
 
 		$this->connectionManager = new ConnectionManager($this);
+
+		// TODO: Make its settings configurable.
+		$this->queueManager = new QueueManager($this);
 
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
@@ -344,6 +354,10 @@ class Bot
 		{
 			$text = (string) $to;
 			$to = $this->connectionManager->getLastData()->get()['targets'][0];
+
+			// Are we talking to ourself?
+			if ($to == $this->getNickname())
+				$to = $this->connectionManager->getLastData()->getNickname();
 		}
 		elseif (empty($text))
 			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');

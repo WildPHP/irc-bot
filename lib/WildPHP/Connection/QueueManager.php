@@ -23,6 +23,7 @@ namespace WildPHP\Connection;
 use SplQueue;
 use WildPHP\Manager;
 use WildPHP\Bot;
+use WildPHP\Timer\Timer;
 
 class QueueManager extends Manager
 {
@@ -87,6 +88,10 @@ class QueueManager extends Manager
 
 		// Prepares the queues array so that we can later easily iterate over them
 		$this->recreateQueues();
+
+		// Sets a timer.
+		//$timer = new Timer(1, array($this, 'flush'));
+		//$this->bot->getTimerManager()->add('QueueTimer', $timer);
 	}
 
 	/**
@@ -281,6 +286,15 @@ class QueueManager extends Manager
 		$this->queues[QueuePriority::IMMEDIATE] = array();
 
 		ksort($this->queues, SORT_NUMERIC);
+	}
+
+	/**
+	 * Flushes queues. Called by timer.
+	 * @param Timer $e The timer that called this method.
+	 */
+	public function flush(Timer $e)
+	{
+		$e->extend(5);
 	}
 
 }
