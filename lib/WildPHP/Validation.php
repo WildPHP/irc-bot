@@ -43,6 +43,7 @@ class Validation
 	 */
 	public static function isNickname($nick)
 	{
-
+		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
+		return $pmatch !== 0 && $pmatch !== false;
 	}
 }
