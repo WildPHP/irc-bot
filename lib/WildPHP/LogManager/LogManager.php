@@ -38,28 +38,16 @@ class LogManager extends Manager
 	private $logFile = '';
 
 	/**
-	 * Do we write debug items to the log file?
-	 * @var boolean
+	 * What entries do we write?
+	 * @var string[]
 	 */
-	protected $writeDebug = false;
+	protected $write = array();
 
 	/**
-	 * Do we print debug items to screen?
-	 * @var boolean
+	 * And which do we print?
+	 * @var string[]
 	 */
-	protected $printDebug = false;
-
-	/**
-	 * Do we write channel items to the log file?
-	 * @var boolean
-	 */
-	protected $writeChannel = false;
-
-	/**
-	 * Do we print channel items to screen?
-	 * @var boolean
-	 */
-	protected $printChannel = false;
+	protected $print = array();
 
 	/**
 	 * Set up the class.
@@ -77,10 +65,8 @@ class LogManager extends Manager
 		$config = $bot->getConfig('log');
 
 		// Set some flags.
-		$this->writeDebug = $bot->getConfig('log.writeDebug');
-		$this->printDebug = $bot->getConfig('log.printDebug');
-		$this->writeChannel = $bot->getConfig('log.writeChannel');
-		$this->printChannel = $bot->getConfig('log.printChannel');
+		$this->write = $this->bot->getConfig('log.items');
+		$this->print = $this->bot->getConfig('log.print');
 
 		// Can't log to a file not set.
 		if (empty($config['file']))
@@ -153,7 +139,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'ERROR', $context);
 		if (!empty($message))
-			$this->log($message);
+			$this->log($message, in_array('error', $this->print), in_array('error', $this->write));
 	}
 
 	/**
@@ -165,7 +151,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'WARNING', $context);
 		if (!empty($message))
-			$this->log($message);
+			$this->log($message, in_array('warning', $this->print), in_array('warning', $this->write));
 	}
 
 	/**
@@ -177,7 +163,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'INFO', $context);
 		if (!empty($message))
-			$this->log($message);
+			$this->log($message, in_array('info', $this->print), in_array('info', $this->write));
 	}
 
 	/**
@@ -189,7 +175,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'DEBUG', $context);
 		if (!empty($message))
-			$this->log($message, $this->printDebug, $this->writeDebug);
+			$this->log($message, in_array('debug', $this->print), in_array('debug', $this->write));
 	}
 
 	/**
@@ -201,7 +187,7 @@ class LogManager extends Manager
 	{
 		$message = $this->prepareMessage($message, 'CHANNEL', $context);
 		if (!empty($message))
-			$this->log($message, $this->printChannel, $this->writeChannel);
+			$this->log($message, in_array('channel', $this->print), in_array('channel', $this->write));
 	}
 
 	/**
