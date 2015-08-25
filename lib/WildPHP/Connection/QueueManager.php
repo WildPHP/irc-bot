@@ -104,10 +104,10 @@ class QueueManager extends Manager
 	public function setFloodLimits($linesPerSecond, $linesMaxBurst = 1)
 	{
 		if (!is_int($linesPerSecond) && !is_float($linesPerSecond))
-			throw new \InvalidArgumentException('Argument $linesPerSecond is invalid: expeted double, got ' . gettype($linesPerSecond) . '.');
+			throw new \InvalidArgumentException('Argument $linesPerSecond is invalid: expected double, got ' . gettype($linesPerSecond) . '.');
 
 		if (!is_int($linesMaxBurst))
-			throw new \InvalidArgumentException('Argument $linesMaxBurst is invalid: expeted integer, got ' . gettype($linesPerSecond) . '.');
+			throw new \InvalidArgumentException('Argument $linesMaxBurst is invalid: expected integer, got ' . gettype($linesPerSecond) . '.');
 
 		if ($linesPerSecond < 0)
 			throw new \InvalidArgumentException('Argument $linesPerSecond is invalid: must be greater than or equal to zero.');

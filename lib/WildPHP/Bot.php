@@ -144,8 +144,7 @@ class Bot
 
 		$this->connectionManager = new ConnectionManager($this);
 
-		// TODO: Make its settings configurable.
-		$this->queueManager = new QueueManager($this);
+		$this->queueManager = new QueueManager($this, $this->getConfig('flood.linespersecond'), $this->getConfig('flood.burst'));
 
 		$this->moduleManager = new ModuleManager($this);
 		$this->moduleManager->setup();
