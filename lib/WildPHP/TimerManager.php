@@ -56,7 +56,7 @@ class TimerManager extends Manager
 		if (!is_object($timer) || !($timer instanceof Timer) || empty($name))
 			throw new \InvalidArgumentException('Unable to add timer with invalid parameters.');
 
-		if ($this->exists($name) || $this->existsByObject($timer))
+		if ($this->exists($name))
 			throw new TimerExistsException('The specified timer already exists.');
 
 		$this->bot->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', array('name' => $name, 'nextTrigger' => ($timer->getTime() - time())), LogLevels::DEBUG);
