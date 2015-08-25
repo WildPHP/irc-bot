@@ -3,28 +3,72 @@
 # You can use tabs or spaces for indentation.
 # Strings with special characters need to be in single (') or double (") quotes.
 
-# IRC server connection details
+# The server to connect to. Do not append port numbers.
 server: irc.freenode.org
+
+# The port number to use.
 port: 6667
-nick: phpbot
-name: phpbot
+
+# The nickname to use when connecting.
+# Every character allowed, except spaces, newlines and the at (@) symbol.
+nick: WildPHP-Bot
+
+# The ident to use for the bot.
+name: WildPHP-Bot
 
 # Database settings. Paths are relative to the root path.
+# TODO
 database: database.db
 
-# General bot settings
+# What timezone to use?
+# Default: America/New_York
 timezone: America/New_York
+
+# How many reconnects should we use before giving up?
+# Default: 1
 max_reconnects: 1
+
+# The command prefix to use.
+# Default: '!'
 prefix: '!'
 
+# Channels to autojoin.
 channels:
 	- '#wildphp'
 
+# Log related settings.
 log:
+	# The file name to use. The number of the log will be suffixed.
+	# E.g.: log21.log with file set to 'log'.
+	# Default: log
 	file: log
+
+	# Where do we store the logs?
+	# Default: ./logs
 	dir: ./logs
 
-# Set up the 'masters' of the bot here using 'ident@hostmask' syntax
+	# What levels do we write in the log?
+	# Possible levels are error, warning, info, debug and channel.
+	# Default: [error, warning, info]
+	items: [error, warning, info]
+
+	# And what levels do we print to the on-screen output?
+	# Default: [error, warning, info, channel]
+	print: [error, warning, info, channel]
+
+# Flood control settings.
+flood:
+	# The amount of lines per second that will be processed. Do not set this too high.
+	# Default: 2
+	linespersecond: 2
+
+	# The amount of lines that will be sent initially before flood control kicks in. Do not set this too high.
+	# Default: 4
+	burst: 4
+
+# Set up the 'masters' of the bot here using 'ident@hostmask' syntax.
+# These people have more power over the bot and can use commands a regular user can't use.
+# You can usually find this by using the /whois command in your IRC client.
 hosts:
 	- ~notident@example.com
 	- idented@example.net
