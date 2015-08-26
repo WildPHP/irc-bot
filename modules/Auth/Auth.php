@@ -51,7 +51,7 @@ class Auth extends BaseModule
 		// Remove the nickname from the hostname to also match with that.
 		$result = $this->isAllowed($hostname);
 
-		//$this->log('[AUTH] Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
+		$this->log('[AUTH] Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
 		if (!$result && !empty($notify))
 		{
 			try
