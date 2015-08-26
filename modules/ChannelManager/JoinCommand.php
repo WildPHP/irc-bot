@@ -58,7 +58,7 @@ class JoinCommand extends IRCData
 
     /**
      * Gets the channel list.
-     * @return string
+     * @return string[]
      */
     public function getChannels()
     {
