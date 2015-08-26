@@ -26,12 +26,6 @@ use WildPHP\IRC\ServerMessage;
 class BaseModule
 {
 	/**
-	 * Dependencies of this module.
-	 * @var string[]
-	 */
-	protected static $dependencies = array();
-
-	/**
 	 * The Bot object. Used to interact with the main thread.
 	 * @var Bot
 	 */
@@ -65,15 +59,6 @@ class BaseModule
 	public function getWorkingDir()
 	{
 		return $this->dir;
-	}
-
-	/**
-	 * Returns the module dependencies.
-	 * @return string[] The array containing the module names of the dependencies.
-	 */
-	public static function getDependencies()
-	{
-		return static::$dependencies;
 	}
 
 	/**
