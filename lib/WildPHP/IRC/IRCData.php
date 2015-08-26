@@ -24,6 +24,7 @@ abstract class IRCData
 {
     /**
      * Transforms the object into a string that can be sent to client or server.
+	 * @return string
      */
     public abstract function __toString();
 }
