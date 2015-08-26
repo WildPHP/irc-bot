@@ -23,5 +23,5 @@ use WildPHP\IRC\MessageLengthException;
 
 class Mode extends Privmsg
 {
- 
+
 }
