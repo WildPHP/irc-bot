@@ -17,38 +17,45 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\IRC\Commands;
 
-namespace WildPHP;
+use WildPHP\IRC\IRCData;
+use WildPHP\IRC\MessageLengthException;
 
-class BaseModule extends Api
+class Custom extends IRCData
 {
-	/**
-	 * The module directory.
-	 * @var string
-	 */
-	private $dir;
+    /**
+     * @var string
+     */
+    protected $command = '';
 
-	/**
-	 * Set up the module.
-	 * @param Bot $bot The Bot object.
-	 */
-	public function __construct(Bot $bot)
-	{
-		parent::__construct($bot);
+    /**
+     * @param string $command
+     */
+    public function __construct($command)
+    {
+        $this->setCommand($command);
+    }
 
-		$dirname = explode('\\', get_class($this));
-		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
+    /**
+     * Sets the command.
+     * @param string $command
+     */
+    public function setCommand($command)
+    {
+        $this->command = $command;
+    }
 
-		if (method_exists($this, 'setup'))
-			$this->setup();
-	}
+    /**
+     * Gets the command.
+     */
+    public function getCommand()
+    {
+        return $this->command;
+    }
 
-	/**
-	 * Return the working directory of this module.
-	 * @return string
-	 */
-	public function getWorkingDir()
-	{
-		return $this->dir;
-	}
+    public function __toString()
+    {
+        return $this->getCommand();
+    }
 }

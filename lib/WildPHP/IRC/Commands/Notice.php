@@ -17,38 +17,21 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\IRC\Commands;
 
-namespace WildPHP;
+use WildPHP\IRC\MessageLengthException;
 
-class BaseModule extends Api
+// A NOTICE is essentially the same as a PRIVMSG, but with different command.
+class Notice extends Privmsg
 {
-	/**
-	 * The module directory.
-	 * @var string
-	 */
-	private $dir;
-
-	/**
-	 * Set up the module.
-	 * @param Bot $bot The Bot object.
-	 */
-	public function __construct(Bot $bot)
+	public function __toString()
 	{
-		parent::__construct($bot);
+		if (strlen($this->getMessage()) > 510 - 9 - strlen($this->getRecipient()))
+			throw new MessageLengthException('Message passed to IRC\\Commands\\NoticePrivmsg is too long.');
 
-		$dirname = explode('\\', get_class($this));
-		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
+		if (empty($this->getRecipient()) || empty($this->getMessage()))
+			return null;
 
-		if (method_exists($this, 'setup'))
-			$this->setup();
-	}
-
-	/**
-	 * Return the working directory of this module.
-	 * @return string
-	 */
-	public function getWorkingDir()
-	{
-		return $this->dir;
+		return 'NOTICE ' . $this->getRecipient() . ' :' . $this->getMessage();
 	}
 }

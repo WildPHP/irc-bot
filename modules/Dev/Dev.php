@@ -23,6 +23,7 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Event\CommandEvent;
 use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\LogManager\LogLevels;
 
 class Dev extends BaseModule
@@ -45,16 +46,16 @@ class Dev extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
+		$this->getEventManager()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
 
-		$helpmodule = $this->bot->getModuleInstance('Help');
+		$helpmodule = $this->getModule('Help');
 
 		$helpmodule->registerHelp('exec', 'Executes code in the bot\'s process. Usage: exec [code]');
 
-		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
+		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
 
 		// Get the auth module in here.
-		$this->auth = $this->bot->getModuleInstance('Auth');
+		$this->auth = $this->getModule('Auth');
 	}
 
 	/**
@@ -65,11 +66,11 @@ class Dev extends BaseModule
 	{
 		if (empty($e->getParams()))
 		{
-			$this->bot->say('Not enough parameters. Usage: exec [code to execute]');
+			$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: exec [code to execute]'));
 			return;
 		}
 
-		$this->bot->log('Running command "{command}"', array('command' => implode(' ', $e->getParams())), LogLevels::INFO);
+		$this->log('Running command "{command}"', array('command' => implode(' ', $e->getParams())), LogLevels::INFO);
 		eval(implode(' ', $e->getParams()));
 	}
 

@@ -48,7 +48,7 @@ class ErrorHandler extends Manager
 			case E_USER_ERROR:
 			case E_ERROR:
 				$level = LogLevels::ERROR;
-				$this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+				$this->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
 				exit(1);
 
 			case E_USER_WARNING:
@@ -66,7 +66,7 @@ class ErrorHandler extends Manager
 				break;
 		}
 
-		$this->bot->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+		$this->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
 		return true;
 	}
 }

@@ -22,6 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\Event\CommandEvent;
+use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\Modules\Help\HelpAlreadyRegisteredException;
 use WildPHP\Modules\Help\HelpForNonexistingCommandException;
 
@@ -51,11 +52,11 @@ class Help extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerCommand('help', array($this, 'helpCommand'));
+		$this->getEventManager()->getEvent('BotCommand')->registerCommand('help', array($this, 'helpCommand'));
 		$this->registerHelp('help', 'You just used it correctly.');
 
 		// Get the auth module in here.
-		$this->auth = $this->bot->getModuleInstance('Auth');
+		$this->auth = $this->getModule('Auth');
 	}
 
 	/**
@@ -64,12 +65,12 @@ class Help extends BaseModule
 	 */
 	public function helpCommand($e)
 	{
-		$commands = $this->evman()->getEvent('BotCommand')->getCommands();
+		$commands = $this->getEventManager()->getEvent('BotCommand')->getCommands();
 
 		if (empty($e->getParams()))
 		{
 			// All commands are...
-			$this->bot->say('Available commands: ' . implode(', ', $commands));
+			$this->sendData(new Privmsg($this->getLastChannel(), 'Available commands: ' . implode(', ', $commands)));
 			return;
 		}
 
@@ -77,17 +78,17 @@ class Help extends BaseModule
 
 		if (!in_array($command, $commands))
 		{
-			$this->bot->say('Command ' . $command . ' does not exist or is not known to me.');
+			$this->sendData(new Privmsg($this->getLastChannel(), 'Command ' . $command . ' does not exist or is not known to me.'));
 			return;
 		}
 
 		if (!array_key_exists($command, $this->strings))
 		{
-			$this->bot->say('There is no help available for command ' . $command);
+			$this->sendData(new Privmsg($this->getLastChannel(), 'There is no help available for command ' . $command));
 			return;
 		}
 
-		$this->bot->say($command . ': ' . $this->strings[$command]);
+		$this->sendData(new Privmsg($this->getLastChannel(), $command . ': ' . $this->strings[$command]));
 	}
 
 	/**
@@ -103,7 +104,7 @@ class Help extends BaseModule
 		if (empty($command) || empty($string) || !is_string($command) || !is_string($string))
 			throw new \InvalidArgumentException();
 
-		$cmd = $this->evman()->getEvent('BotCommand');
+		$cmd = $this->getEventManager()->getEvent('BotCommand');
 
 		if (!$cmd->commandExists($command))
 			throw new HelpForNonexistingCommandException();

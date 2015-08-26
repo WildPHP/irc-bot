@@ -22,6 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\LogManager\LogLevels;
+use WildPHP\IRC\Commands\Privmsg;
 
 class Auth extends BaseModule
 {
@@ -50,12 +51,12 @@ class Auth extends BaseModule
 		// Remove the nickname from the hostname to also match with that.
 		$result = $this->isAllowed($hostname);
 
-		$this->bot->log('[AUTH] Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
+		//$this->log('[AUTH] Checking authorization for hostname {hostname}: ' . ($result ? 'Authorized' : 'Unauthorized'), array('hostname' => $hostname), LogLevels::DEBUG);
 		if (!$result && !empty($notify))
 		{
 			try
 			{
-				$this->bot->say('You do not have permission to access that.');
+				$this->sendData(new Privmsg($this->getLastChannel(), 'You do not have permission to access that.'));
 			}
 			// We catch the InvalidArgumentException here, because we might not be able to send a message to a 'last channel'.
 			catch (\InvalidArgumentException $e) {}
@@ -84,6 +85,6 @@ class Auth extends BaseModule
 	 */
 	public function forceHostnamesReload()
 	{
-		$this->hostnames = $this->bot->getConfig('hosts');
+		$this->hostnames = $this->getConfig('hosts');
 	}
 }

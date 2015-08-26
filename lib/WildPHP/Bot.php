@@ -80,7 +80,7 @@ class Bot
 	protected $logManager;
 
 	/**
-	 * The database object.
+	 * The database object. TODO
 	 * @var \SQLite3
 	 */
 	public $db;
@@ -122,7 +122,7 @@ class Bot
 			}
 		);
 
-		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleInstance('Auth'));
+		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleManager()->getModuleInstance('Auth'));
 	}
 
 	/**
@@ -174,18 +174,18 @@ class Bot
 	public function connect()
 	{
 		// Pass over the server and port details.
-		$this->connectionManager->setServer($this->getConfig('server'));
-		$this->connectionManager->setPort($this->getConfig('port'));
+		$this->getConnectionManager()->setServer($this->getConfig('server'));
+		$this->getConnectionManager()->setPort($this->getConfig('port'));
 
 		// Then we insert the details for the bot.
-		$this->connectionManager->setNick($this->getConfig('nick'));
-		$this->connectionManager->setName($this->getConfig('nick'));
+		$this->getConnectionManager()->setNick($this->getConfig('nick'));
+		$this->getConnectionManager()->setName($this->getConfig('nick'));
 
 		// Optionally, a password, too.
-		$this->connectionManager->setPassword($this->getConfig('password'));
+		$this->getConnectionManager()->setPassword($this->getConfig('password'));
 
 		// Start the connection.
-		$this->connectionManager->connect();
+		$this->getConnectionManager()->connect();
 	}
 
 	/**
@@ -193,11 +193,11 @@ class Bot
 	 */
 	public function start()
 	{
-		while ($this->connectionManager->isConnected())
+		while ($this->getConnectionManager()->isConnected())
 		{
 			// Let anything hook into the main loop for its own business.
-			$this->eventManager->getEvent('Loop')->trigger(new Event\LoopEvent());
-			$this->connectionManager->processReceivedData();
+			$this->getEventManager()->getEvent('Loop')->trigger(new Event\LoopEvent());
+			$this->getConnectionManager()->processReceivedData();
 		}
 	}
 
@@ -212,13 +212,12 @@ class Bot
 	}
 
 	/**
-	 * Returns a module.
-	 * @param string $module The module to get an instance from.
-	 * @return BaseModule The module instance.
+	 * Returns the Connection Manager
+	 * @return ConnectionManager The Connection Manager
 	 */
-	public function getModuleInstance($module)
+	public function getConnectionManager()
 	{
-		return $this->moduleManager->getModuleInstance($module);
+		return $this->connectionManager;
 	}
 
 	/**
@@ -267,9 +266,9 @@ class Bot
 		if (empty($newnick))
 			return false;
 
-		$this->sendData('NICK ' . $newnick);
+		$this->getConnectionManager()->sendData('NICK ' . $newnick);
 
-		$data = $this->waitReply();
+		$data = $this->getConnectionManager()->waitReply();
 		if (!empty($data))
 		{
 			if (!empty($data[0]->get()['code']) && in_array($data[0]->get()['code'], array('ERR_NICKNAMEINUSE', 'ERR_ERRONEUSNICKNAME', 'ERR_NICKCOLLISION')))
@@ -288,117 +287,6 @@ class Bot
 	public function setNickname($newnick)
 	{
 		$this->nickname = $newnick;
-	}
-
-	/**
-	 * Send data to the remote.
-	 * @param string $data The data to send.
-	 */
-	public function sendData($data)
-	{
-		$this->connectionManager->sendData($data);
-	}
-
-	/**
-	 * Gets data from the remote.
-	 * @return ServerMessage|false
-	 */
-	public function getData()
-	{
-		return $this->connectionManager->processReceivedData();
-	}
-
-	/**
-	 * Waits for and gets a reply from the server.
-	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
-	 * @param int $lines The amount of lines to listen for.
-	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
-	 * @return ServerMessage[]
-	 */
-	public function waitReply($lines = 1, $timeout = 3)
-	{
-		$currtime = time();
-		$receivedLines = array();
-
-		do
-		{
-			$data = $this->getData();
-
-			if ($data == false)
-				continue;
-
-			$receivedLines[] = $data;
-
-			if (count($receivedLines) == $lines)
-				break;
-		} while (count($receivedLines) < $lines && time() < $currtime + $timeout);
-
-		return $receivedLines;
-	}
-
-	/**
-	 * Say something to a channel.
-	 * @param string[]|string $to The channel to send to, or, if one parameter passed, the text to send to the current channel.
-	 * @param string $text The string to be sent or an array of strings. Newlines separate messages.
-	 * @return bool False on failure (or when cancelled), true on success.
-	 * @throws \InvalidArgumentException When you use the shorthand yet no channel data is available.
-	 */
-	public function say($to, $text = '')
-	{
-		if (empty($to) && empty($text))
-			return false;
-
-		// Some people are just too lazy.
-		elseif (empty($text) && $this->connectionManager->getLastData()->getCommand() == 'PRIVMSG')
-		{
-			$text = (string) $to;
-			$to = $this->connectionManager->getLastData()->get()['targets'][0];
-
-			// Are we talking to ourself?
-			if ($to == $this->getNickname())
-				$to = $this->connectionManager->getLastData()->getNickname();
-		}
-		elseif (empty($text))
-			throw new \InvalidArgumentException('The last data received was NOT a PRIVMSG command and you did not specify a channel to say to.');
-
-		$e = new SayEvent($text, $to);
-		$this->eventManager->getEvent('Say')->trigger($e);
-
-		if ($e->isCancelled())
-			return false;
-
-		// Nothing to send?
-		if (empty($text) || empty($to))
-			return false;
-
-		// Split multiple lines into separate messages *for each member of the input array* (or string, possibly)
-		// Also removes empty lines and other garbage and splits the line if it's too long
-		$out = array();
-		foreach ((array) $text as $part)
-		{
-			$part = (string) $part;
-			$part = preg_replace('/[\n\r]+/', "\n", $part);
-
-			$lines = explode("\n", (string) $part);
-			foreach ($lines as $lines2)
-			{
-				// We have the line we could potentially send. That's nice but it can be too long, so there is another split
-				// The maximum without the last CRLF is 510 characters, minus the PRIVMSG stuff (10 chars) gives us something like this:
-				$lines2 = str_split($lines2, 510 - 10 - strlen($to));
-				foreach ($lines2 as $line)
-				{
-					// We finally have the correct line
-					$line = trim($line);
-					if (!empty($line))
-						array_push($out, $line);
-				}
-			}
-		}
-
-		foreach ($out as $msg)
-			$this->sendData('PRIVMSG ' . $to . ' :' . $msg);
-
-		return true;
 	}
 
 	/**
@@ -421,48 +309,8 @@ class Bot
 		if (empty($message))
 			$message = 'WildPHP <http://wildphp.com/>';
 
-		$this->sendData('QUIT :' . $message);
-		$this->connectionManager->disconnect();
+		$this->getConnectionManager()->sendData('QUIT :' . $message);
+		$this->getConnectionManager()->disconnect();
 		exit;
-	}
-
-	/**
-	 * Reconnects the bot.
-	 */
-	public function reconnect()
-	{
-		$this->connectionManager->reconnect();
-	}
-
-	/**
-	 * Fetches data from $uri
-	 * @param string $uri    The URI to fetch data from.
-	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
-	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.
-	 */
-	public static function fetch($uri, $decode = false)
-	{
-		// create curl resource
-		$ch = curl_init();
-
-		// set url
-		curl_setopt($ch, CURLOPT_URL, $uri);
-
-		// user agent.
-		curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
-
-		//return the transfer as a string
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-
-		// $output contains the output string
-		$output = curl_exec($ch);
-
-		if (!empty($decode) && ($output = json_decode($output)) === null)
-			$output = false;
-
-		// close curl resource to free up system resources
-		curl_close($ch);
-		return $output;
 	}
 }

@@ -41,7 +41,7 @@ class TimerManager extends Manager
 	{
 		parent::__construct($bot);
 
-		$this->bot->getEventManager()->getEvent('Loop')->registerListener(array($this, 'trigger'));
+		$this->getEventManager()->getEvent('Loop')->registerListener(array($this, 'trigger'));
 	}
 
 	/**
@@ -59,7 +59,7 @@ class TimerManager extends Manager
 		if ($this->exists($name))
 			throw new TimerExistsException('The specified timer already exists.');
 
-		$this->bot->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', array('name' => $name, 'nextTrigger' => ($timer->getTime() - time())), LogLevels::DEBUG);
+		$this->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', array('name' => $name, 'nextTrigger' => ($timer->getTime() - time())), LogLevels::DEBUG);
 		$this->timers[$name] = $timer;
 	}
 
@@ -94,7 +94,7 @@ class TimerManager extends Manager
 			throw new TimerDoesNotExistException();
 
 		unset($this->timers[$name]);
-		$this->bot->log('Removed timer {name}', array('name' => $name), LogLevels::DEBUG);
+		$this->log('Removed timer {name}', array('name' => $name), LogLevels::DEBUG);
 	}
 
 	/**
@@ -116,12 +116,12 @@ class TimerManager extends Manager
 			if ($object->isSuspended() || $object->getTime() > time())
 				continue;
 
-			$this->bot->log('Triggering timer {name}', array('name' => $name), LogLevels::DEBUG);
+			$this->log('Triggering timer {name}', array('name' => $name), LogLevels::DEBUG);
 			$oldtime = $object->getTime();
 
 			if (!is_callable($object->getCall()))
 			{
-				$this->bot->log('Cleaning up timer because it is no longer(?) callable.');
+				$this->log('Cleaning up timer because it is no longer(?) callable.');
 				$this->remove($name);
 				continue;
 			}
@@ -146,14 +146,14 @@ class TimerManager extends Manager
 
 		if ($timer->getAutoCleanup())
 		{
-			$this->bot->log('Automatically cleaning up timer because it was not extended and thus timed out.');
+			$this->log('Automatically cleaning up timer because it was not extended and thus timed out.');
 			$this->removeByObject($timer);
 		}
 
 		// If we're not allowed to automatically remove it, we'll just suspend it. Extending it will undo this.
 		else
 		{
-			$this->bot->log('Suspending timer because it is set to not be automatically removed but has timed out.');
+			$this->log('Suspending timer because it is set to not be automatically removed but has timed out.');
 			$timer->suspend();
 		}
 	}

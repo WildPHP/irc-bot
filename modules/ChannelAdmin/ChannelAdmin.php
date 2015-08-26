@@ -23,6 +23,7 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\Validation;
 use WildPHP\Event\CommandEvent;
+use WildPHP\IRC\Commands\Privmsg;
 
 class ChannelAdmin extends BaseModule
 {
@@ -44,7 +45,7 @@ class ChannelAdmin extends BaseModule
 		public function setup()
 		{
 				// Register our commands.
-				$botCommand = $this->evman()->getEvent('BotCommand');
+				$botCommand = $this->getEventManager()->getEvent('BotCommand');
 				$botCommand->registerCommand('op', array($this, 'opCommand'), true);
 				$botCommand->registerCommand('deop', array($this, 'deOpCommand'), true);
 				$botCommand->registerCommand('voice', array($this, 'voiceCommand'), true);
@@ -52,7 +53,7 @@ class ChannelAdmin extends BaseModule
 				$botCommand->registerCommand('kick', array($this, 'kickCommand'), true);
 
 				// Help module.
-				$helpmodule = $this->bot->getModuleInstance('Help');
+				$helpmodule = $this->getModule('Help');
 				$helpmodule->registerHelp('op', 'OPs a user. Usage: op [channel|user] [user] [user] [...]');
 				$helpmodule->registerHelp('deop', 'Undos an OP flag. Usage: deop [channel|user] [user] [user] [...]');
 				$helpmodule->registerHelp('voice', 'Voices a user. Usage: voice [channel|user] [user] [user] [...]');
@@ -60,7 +61,7 @@ class ChannelAdmin extends BaseModule
 				$helpmodule->registerHelp('kick', 'Kicks a user from the channel. Usage: kick [channel]');
 
 				// Get the auth module.
-				$this->auth = $this->bot->getModuleInstance('Auth');
+				$this->auth = $this->getModule('Auth');
 		}
 
 		/**
@@ -70,7 +71,7 @@ class ChannelAdmin extends BaseModule
 		public function opCommand($e)
 		{
 				if (($chan = $this->parseChannel($e)) === false)
-						$this->bot->say('Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]');
+					$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 				$this->bot->sendData('MODE ' . $chan . ' +o ' . implode(' ', $e->getParams()));
 		}
@@ -82,7 +83,7 @@ class ChannelAdmin extends BaseModule
 		public function deOpCommand($e)
 		{
 				if (($chan = $this->parseChannel($e)) === false)
-						$this->bot->say('Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]');
+					$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 				$this->bot->sendData('MODE ' . $chan . ' -o ' . implode(' ', $e->getParams()));
 		}

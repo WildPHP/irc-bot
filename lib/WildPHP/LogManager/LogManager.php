@@ -65,8 +65,8 @@ class LogManager extends Manager
 		$config = $bot->getConfig('log');
 
 		// Set some flags.
-		$this->write = $this->bot->getConfig('log.items');
-		$this->print = $this->bot->getConfig('log.print');
+		$this->write = $this->getConfig('log.items');
+		$this->print = $this->getConfig('log.print');
 
 		// Can't log to a file not set.
 		if (empty($config['file']))

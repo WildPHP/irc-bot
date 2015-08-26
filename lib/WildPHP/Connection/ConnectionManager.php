@@ -108,7 +108,7 @@ class ConnectionManager extends Manager
 		socket_set_blocking($this->socket, 0);
 
 		// And fire the onConnect event.
-		$this->bot->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
+		$this->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
 
 		$this->sendData('NICK ' . $this->nick);
 		$this->sendData('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
@@ -156,10 +156,10 @@ class ConnectionManager extends Manager
 			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
 		}
 
-		$this->bot->log('>> {data}', array('data' => $data), LogLevels::DEBUG);
+		$this->log('>> {data}', array('data' => $data), LogLevels::DEBUG);
 
 		// Trigger a new Outgoing event.
-		$this->bot->getEventManager()->getEvent('IRCMessageOutgoing')->trigger(
+		$this->getEventManager()->getEvent('IRCMessageOutgoing')->trigger(
 			new IRCMessageOutgoingEvent(new ServerMessage($data))
 		);
 
@@ -198,20 +198,48 @@ class ConnectionManager extends Manager
 		if ($data === null)
 			return false;
 
-		$this->bot->log('<< {data}', array('data' => $data), LogLevels::DEBUG);
+		$this->log('<< {data}', array('data' => $data), LogLevels::DEBUG);
 
 		$data = new ServerMessage($data);
 
 		$this->lastdata = $data;
 
 		// This triggers the event with new ServerMessage as the event data. ServerMessage also does the parsing.
-		$this->bot->getEventManager()->getEvent('IRCMessageInbound')->trigger(
+		$this->getEventManager()->getEvent('IRCMessageInbound')->trigger(
 			new IRCMessageInboundEvent(
 				$data
 			)
 		);
 
 		return $data;
+	}
+
+	/**
+	 * Waits for and gets a reply from the server.
+	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
+	 * @param int $lines The amount of lines to listen for.
+	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
+	 * @return ServerMessage[]
+	 */
+	public function waitReply($lines = 1, $timeout = 3)
+	{
+		$currtime = time();
+		$receivedLines = array();
+
+		do
+		{
+			$data = $this->processReceivedData();
+
+			if ($data == false)
+				continue;
+
+			$receivedLines[] = $data;
+
+			if (count($receivedLines) == $lines)
+				break;
+		} while (count($receivedLines) < $lines && time() < $currtime + $timeout);
+
+		return $receivedLines;
 	}
 
 	/**

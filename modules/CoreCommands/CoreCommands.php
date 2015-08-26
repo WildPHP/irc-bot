@@ -21,6 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
+use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\Validation;
 use WildPHP\Event\CommandEvent;
 
@@ -44,15 +45,15 @@ class CoreCommands extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->evman()->getEvent('BotCommand')->registerCommand('quit', array($this, 'quitCommand'), true);
-		$this->evman()->getEvent('BotCommand')->registerCommand('say', array($this, 'sayCommand'), true);
+		$this->getEventManager()->getEvent('BotCommand')->registerCommand('quit', array($this, 'quitCommand'), true);
+		$this->getEventManager()->getEvent('BotCommand')->registerCommand('say', array($this, 'sayCommand'), true);
 
-		$helpmodule = $this->bot->getModuleInstance('Help');
+		$helpmodule = $this->getModule('Help');
 		$helpmodule->registerHelp('quit', 'Shuts down the bot. Usage: quit ([message])');
 		$helpmodule->registerHelp('say', 'Makes the bot say something to a channel. Usage: say ([channel]) [message]');
 
 		// Get the auth module in here.
-		$this->auth = $this->bot->getModuleInstance('Auth');
+		$this->auth = $this->getModule('Auth');
 	}
 
 	/**
@@ -61,7 +62,8 @@ class CoreCommands extends BaseModule
 	 */
 	public function quitCommand($e)
 	{
-		$this->bot->stop(!empty($e->getParams()) ? implode(' ', $e->getParams()) : null);
+		//TODO Fix this.
+		//$this->(!empty($e->getParams()) ? implode(' ', $e->getParams()) : null);
 	}
 
 	/**
@@ -88,6 +90,6 @@ class CoreCommands extends BaseModule
 		if ($to === null)
 			return;
 
-		$this->bot->say($to, $message);
+		$this->sendData(new Privmsg($to, $message));
 	}
 }

@@ -22,6 +22,7 @@ namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
 use WildPHP\LogManager\LogLevels;
+use WildPHP\Modules\Watchdog\PongCommand;
 use WildPHP\Timer\Timer;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\Event\IRCMessageOutgoingEvent;
@@ -41,11 +42,11 @@ class Watchdog extends BaseModule
 	public function setup()
 	{
 		// Register our listeners.
-		$this->evman()->getEvent('IRCMessageInbound')->registerListener(array($this, 'pingListener'));
-		$this->evman()->getEvent('IRCMessageOutgoing')->registerListener(array($this, 'activityListener'));
+		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'pingListener'));
+		$this->getEventManager()->getEvent('IRCMessageOutgoing')->registerListener(array($this, 'activityListener'));
 
 		// Register a timer to check for ping timeouts.
-		$this->timeman()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, array($this, 'pingTimer')));
+		$this->getTimerManager()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, array($this, 'pingTimer')));
 	}
 
 	/**
@@ -57,8 +58,7 @@ class Watchdog extends BaseModule
 		if ($e->getMessage()->getCommand() != 'PING')
 			return;
 
-		$this->bot->sendData('PONG ' . substr($e->getMessage()->getMessage(), 5));
-
+		$this->sendData(new PongCommand(substr($e->getMessage()->getMessage(), 5)));
 		$this->lastActivity = time();
 	}
 
@@ -80,8 +80,8 @@ class Watchdog extends BaseModule
 		if ($this->lastActivity + self::TIMEOUT < time())
 		{
 			// Ping timed out. Reconnecting time!
-			$this->bot->log('Ping timeout detected. Attempting to reconnect.', array(), LogLevels::WARNING);
-			$this->bot->reconnect();
+			$this->log('Ping timeout detected. Attempting to reconnect.', array(), LogLevels::WARNING);
+			$this->getConnectionManager()->reconnect();
 		}
 
 		// Check back in another round.

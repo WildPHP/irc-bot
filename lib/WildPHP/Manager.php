@@ -25,32 +25,30 @@ use WildPHP\LogManager\LogLevels;
 /**
  * A class used as a base for all managers.
  */
-abstract class Manager
+abstract class Manager extends Api
 {
-
 	/**
-	 * Instance of the bot.
+	 * The bot object.
 	 * @var Bot
 	 */
-	protected $bot;
+	private $bot = null;
 
 	/**
-	 * Sets up the module manager.
-	 * @param Bot $bot An instance of the bot this manager is running under.
+	 * Set up the module.
+	 * @param Bot $bot The Bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
+		parent::__construct($bot);
 		$this->bot = $bot;
 	}
 
 	/**
-	 * Sends a message to the log.
-	 * @param string $message the message to be logged.
-	 * @param array $context The context to use.
-	 * @param string $level The level to log at. Defaults to debug.
+	 * Gets the bot object.
+	 * @return Bot
 	 */
-	protected function log($message, $context = array(), $level = LogLevels::DEBUG)
+	protected function getBot()
 	{
-		$this->bot->log($message, $context, $level);
+		return $this->bot;
 	}
 }

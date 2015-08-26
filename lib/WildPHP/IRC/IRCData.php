@@ -17,38 +17,13 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+namespace WildPHP\IRC;
 
-namespace WildPHP;
-
-class BaseModule extends Api
+// Base for IRC outgoing data.
+abstract class IRCData
 {
-	/**
-	 * The module directory.
-	 * @var string
-	 */
-	private $dir;
-
-	/**
-	 * Set up the module.
-	 * @param Bot $bot The Bot object.
-	 */
-	public function __construct(Bot $bot)
-	{
-		parent::__construct($bot);
-
-		$dirname = explode('\\', get_class($this));
-		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
-
-		if (method_exists($this, 'setup'))
-			$this->setup();
-	}
-
-	/**
-	 * Return the working directory of this module.
-	 * @return string
-	 */
-	public function getWorkingDir()
-	{
-		return $this->dir;
-	}
+    /**
+     * Transforms the object into a string that can be sent to client or server.
+     */
+    public abstract function __toString();
 }

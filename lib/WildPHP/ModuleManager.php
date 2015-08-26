@@ -115,7 +115,7 @@ class ModuleManager extends Manager
 			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $module);
 
 		// Okay, so the class exists.
-		$this->loadedModules[$module] = new $module_full($this->bot);
+		$this->loadedModules[$module] = new $module_full($this->getBot());
 		$this->log('Module {module} loaded and initialised.', array('module' => $module), LogLevels::INFO);
 		return $this->setStatus($module, true);
 	}
