@@ -44,7 +44,6 @@ class Privmsg extends IRCData
      */
     public function __construct($recipient, $message)
     {
-        var_dump($recipient, $message);
         $this->setRecipient($recipient);
         $this->setMessage($message);
     }
