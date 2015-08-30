@@ -18,6 +18,7 @@ modules/*
 !modules/Auth
 !modules/ChannelAdmin
 !modules/ChannelManager
+!modules/CommandParser
 !modules/CoreCommands
 !modules/Dev
 !modules/Help
