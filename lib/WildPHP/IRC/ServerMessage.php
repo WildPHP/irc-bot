@@ -29,6 +29,7 @@ class ServerMessage implements IServerMessage
 
 	/**
 	 * Create a parsed IRC message from string.
+	 *
 	 * @param string $ircMessage The string to be parsed.
 	 * @throws InvalidArgumentException
 	 */
@@ -56,12 +57,12 @@ class ServerMessage implements IServerMessage
 
 	public function getParams()
 	{
-		return (array) $this->message['params'];
+		return (array)$this->message['params'];
 	}
 
 	public function getPrefix()
 	{
-		return (string) $this->message['prefix'];
+		return (string)$this->message['prefix'];
 	}
 
 	public function getNickname()
@@ -83,7 +84,7 @@ class ServerMessage implements IServerMessage
 	{
 		return !empty($this->message['code']) ? $this->message['code'] : false;
 	}
-	
+
 	public function get()
 	{
 		return $this->message;

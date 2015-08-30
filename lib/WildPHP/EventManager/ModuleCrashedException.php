@@ -17,11 +17,21 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace WildPHP\IRC\Commands;
+namespace WildPHP\EventManager;
 
-use WildPHP\IRC\MessageLengthException;
+use WildPHP\BaseModule;
 
-class Mode extends Privmsg
+class ModuleCrashedException extends \RuntimeException
 {
+	protected $module = null;
 
+	public function __construct(BaseModule $module)
+	{
+		$this->module = $module;
+	}
+
+	public function getModule()
+	{
+		return $this->module;
+	}
 }

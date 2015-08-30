@@ -23,41 +23,54 @@ namespace WildPHP\Modules;
 use WildPHP\BaseModule;
 use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\Validation;
-use WildPHP\Event\CommandEvent;
+use WildPHP\Modules\CommandParser\Event\CommandEvent;
 
 class CoreCommands extends BaseModule
 {
 	/**
 	 * The Auth module's object.
+	 *
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
 
 	/**
 	 * Dependencies of this module.
+	 *
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth', 'Help');
+	protected static $dependencies = ['Auth', 'Help'];
 
 	/**
 	 * Set up the module.
 	 */
 	public function setup()
 	{
-		// Register our command.
-		$this->getEventManager()->getEvent('BotCommand')->registerCommand('quit', array($this, 'quitCommand'), true);
-		$this->getEventManager()->getEvent('BotCommand')->registerCommand('say', array($this, 'sayCommand'), true);
-
-		$helpmodule = $this->getModule('Help');
-		$helpmodule->registerHelp('quit', 'Shuts down the bot. Usage: quit ([message])');
-		$helpmodule->registerHelp('say', 'Makes the bot say something to a channel. Usage: say ([channel]) [message]');
-
 		// Get the auth module in here.
 		$this->auth = $this->getModule('Auth');
 	}
 
 	/**
+	 * Register the commands.
+	 */
+	public function registerCommands()
+	{
+		return [
+			'quit' => [
+				'callback' => 'quitCommand',
+				'help'     => 'Shuts down the bot. Usage: quit ([message])',
+				'auth'     => true
+			],
+			'say'  => [
+				'callback' => 'sayCommand',
+				'help'     => 'Makes the bot say something to a channel. Usage: say ([channel]) [message]'
+			]
+		];
+	}
+
+	/**
 	 * The Quit command.
+	 *
 	 * @param CommandEvent $e The data received.
 	 */
 	public function quitCommand($e)
@@ -68,12 +81,13 @@ class CoreCommands extends BaseModule
 
 	/**
 	 * The Say command.
+	 *
 	 * @param CommandEvent $e The data received.
 	 */
 	public function sayCommand($e)
 	{
-        	if (empty($e->getParams()))
-            		return;
+		if (empty($e->getParams()))
+			return;
 
 		if (Validation::isChannel($e->getParams()[0]))
 		{

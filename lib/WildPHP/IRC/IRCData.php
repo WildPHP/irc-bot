@@ -22,9 +22,10 @@ namespace WildPHP\IRC;
 // Base for IRC outgoing data.
 abstract class IRCData
 {
-    /**
-     * Transforms the object into a string that can be sent to client or server.
+	/**
+	 * Transforms the object into a string that can be sent to client or server.
+	 *
 	 * @return string
-     */
-    abstract  public function __toString();
+	 */
+	abstract public function __toString();
 }

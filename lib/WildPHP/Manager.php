@@ -20,8 +20,6 @@
 
 namespace WildPHP;
 
-use WildPHP\LogManager\LogLevels;
-
 /**
  * A class used as a base for all managers.
  */
@@ -29,12 +27,14 @@ abstract class Manager extends Api
 {
 	/**
 	 * The bot object.
+	 *
 	 * @var Bot
 	 */
 	private $bot = null;
 
 	/**
 	 * Set up the module.
+	 *
 	 * @param Bot $bot The Bot object.
 	 */
 	public function __construct(Bot $bot)
@@ -45,6 +45,7 @@ abstract class Manager extends Api
 
 	/**
 	 * Gets the bot object.
+	 *
 	 * @return Bot
 	 */
 	protected function getBot()

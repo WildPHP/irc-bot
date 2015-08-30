@@ -24,49 +24,52 @@ use WildPHP\Validation;
 
 class JoinCommand extends IRCData
 {
-    /**
-     * The password to send.
-     * @var string[]
-     */
-    protected $channels = array();
+	/**
+	 * The password to send.
+	 *
+	 * @var string[]
+	 */
+	protected $channels = [];
 
-    /**
-     * @param string|string[] $channels The password to send.
-     */
-    public function __construct($channels)
-    {
-        if (is_array($channels))
-        {
-            foreach ($channels as $chan)
-                $this->addChannel($chan);
-        }
-        else
-            $this->addChannel($channels);
-    }
+	/**
+	 * @param string|string[] $channels The password to send.
+	 */
+	public function __construct($channels)
+	{
+		if (is_array($channels))
+		{
+			foreach ($channels as $chan)
+				$this->addChannel($chan);
+		}
+		else
+			$this->addChannel($channels);
+	}
 
-    /**
-     * Overwrite current channel list with a new one.
-     * @param string $chan
-     */
-    public function addChannel($chan)
-    {
-        if (!Validation::isChannel($chan))
-            throw new \InvalidArgumentException('The channel given to ChannelManager\\PartCommand::addChannel is not a valid channel.');
+	/**
+	 * Overwrite current channel list with a new one.
+	 *
+	 * @param string $chan
+	 */
+	public function addChannel($chan)
+	{
+		if (!Validation::isChannel($chan))
+			throw new \InvalidArgumentException('The channel given to ChannelManager\\PartCommand::addChannel is not a valid channel.');
 
-        $this->channels[] = $chan;
-    }
+		$this->channels[] = $chan;
+	}
 
-    /**
-     * Gets the channel list.
-     * @return string[]
-     */
-    public function getChannels()
-    {
-        return $this->channels;
-    }
+	/**
+	 * Gets the channel list.
+	 *
+	 * @return string[]
+	 */
+	public function getChannels()
+	{
+		return $this->channels;
+	}
 
-    public function __toString()
-    {
-        return 'JOIN ' . implode(',', $this->getChannels());
-    }
+	public function __toString()
+	{
+		return 'JOIN ' . implode(',', $this->getChannels());
+	}
 }

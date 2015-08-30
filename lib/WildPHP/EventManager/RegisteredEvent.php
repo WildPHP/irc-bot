@@ -19,6 +19,8 @@
 */
 namespace WildPHP\EventManager;
 
+use WildPHP\Api;
+use WildPHP\BaseModule;
 use WildPHP\EventManager\ListenerPriority as Priority;
 use WildPHP\Event\IEvent;
 
@@ -39,7 +41,7 @@ class RegisteredEvent
 	/**
 	 * An array of all listeners that are attached to this event.
 	 */
-	protected $listeners = array();
+	protected $listeners = [];
 
 	/**
 	 * Boolean telling if the listener array needs sorting.
@@ -47,23 +49,44 @@ class RegisteredEvent
 	protected $isSorted = true;
 
 	/**
+	 * The WildPHP Api
+	 *
+	 * @var Api
+	 */
+	protected $api = null;
+
+	/**
 	 * Creates a registered event with the specified class name.
+	 *
 	 * @param string $className the event's class name.
 	 */
 	public function __construct($className)
 	{
-		$this->className = (string) $className;
+		$this->className = (string)$className;
+	}
+
+	/**
+	 * Inject the API.
+	 *
+	 * @param Api $api
+	 */
+	public function injectApi(Api $api)
+	{
+		$this->api = $api;
 	}
 
 	/**
 	 * Registers a listener for this event at given priority.
 	 * The listener function must be able to accept the event as its first parameter.
 	 * Throws an exception when the listener is attempted to be registered for a second time.
-	 * @param callable $listener The listener (as a callable function or method) that will be called when the event is triggered
-	 * @param null|Priority $priority The priority this event will be ran with. Defaults to normal.
+	 *
+	 * @param callable        $listener The listener (as a callable function or method) that will be called when
+	 *                                  the event is triggered
+	 * @param null|BaseModule $module   null when module is not important, BaseModule otherwise.
+	 * @param null|Priority   $priority The priority this event will be ran with. Defaults to normal.
 	 * @throws ListenerAlreadyRegisteredException
 	 */
-	public function registerListener(callable $listener, Priority $priority = null)
+	public function registerListener(callable $listener, $module = null, Priority $priority = null)
 	{
 		if ($priority === null)
 			$priority = new Priority(Priority::NORMAL);
@@ -72,22 +95,25 @@ class RegisteredEvent
 			throw new ListenerAlreadyRegisteredException('Attempt to register event listener failed: listener already attached.');
 
 		$this->isSorted = false;
-		$this->listeners[$priority->getValue()][] = $listener;
+		$this->listeners[$priority->getValue()][] = ['callback' => $listener, 'module' => $module];
 	}
 
 	/**
 	 * Registers the final event handler.
 	 * This is basically just a listener that is guaranteed to run last.
-	 * @param callable $listener The handler to add.
+	 *
+	 * @param callable        $listener The handler to add.
+	 * @param null|BaseModule $module   null when module is not important, BaseModule otherwise.
 	 * @see registerListener($listener, Priority::HANDLER())
 	 */
-	public function registerEventHandler(callable $listener)
+	public function registerEventHandler(callable $listener, $module = null)
 	{
-		$this->registerListener($listener, new Priority(Priority::HANDLER));
+		$this->registerListener($listener, $module, new Priority(Priority::HANDLER));
 	}
 
 	/**
 	 * Checks whether a listener is already attached to this event.
+	 *
 	 * @param callable $listener The listener we are looking for.
 	 * @return bool true when the listener is registered, false otherwise.
 	 */
@@ -102,6 +128,7 @@ class RegisteredEvent
 
 	/**
 	 * Removes a listener from this event.
+	 *
 	 * @param callable $listener The listener we are removing.
 	 * @throws ListenerNotRegisteredException if the listener is not registered.
 	 */
@@ -119,6 +146,7 @@ class RegisteredEvent
 
 	/**
 	 * Sorts the listeners array (if necessary).
+	 *
 	 * @param bool $force Forces the sorting.
 	 * @return bool True if the listeners were sorted, false otherwise.
 	 */
@@ -153,6 +181,9 @@ class RegisteredEvent
 	 *
 	 * @param IEvent $event The event that gets passed to the listeners.
 	 * @return int The number of listeners that were called.
+	 *
+	 * @throws ModuleCrashedException When a module crashed during an event.
+	 * @throws \Exception
 	 */
 	public function trigger(IEvent $event)
 	{
@@ -167,8 +198,21 @@ class RegisteredEvent
 		foreach ($this->listeners as $priority)
 			foreach ($priority as $listener)
 			{
-				call_user_func($listener, $event);
-				$count++;
+				try
+				{
+					call_user_func($listener['callback'], $event);
+					$count++;
+				}
+				catch (\Exception $e)
+				{
+					// No module to kick..? Well, nothing to catch... Re-throw.
+					if (!($listener['module'] instanceof BaseModule))
+						throw $e;
+
+					// Kick the module from the stack.
+					$this->api->log('Module caused exception: ' . $e->getMessage());
+					$this->api->getModuleManager()->kickByObject($listener['module']);
+				}
 			}
 
 		return $count;
@@ -176,6 +220,7 @@ class RegisteredEvent
 
 	/**
 	 * Returns this event's class name.
+	 *
 	 * @return string the class name.
 	 */
 	public function getClassName()

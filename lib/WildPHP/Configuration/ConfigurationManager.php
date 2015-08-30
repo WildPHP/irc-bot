@@ -26,11 +26,12 @@ use Nette\Neon\Neon;
 
 class ConfigurationManager extends Manager
 {
-	private $config = array();
+	private $config = [];
 
 	/**
 	 * Loads the config file and parses it.
-	 * @param Bot $bot The bot object
+	 *
+	 * @param Bot    $bot    The bot object
 	 * @param string $config The path to the config file.
 	 * @throws \Exception on read error.
 	 */
@@ -55,6 +56,7 @@ class ConfigurationManager extends Manager
 
 	/**
 	 * Returns an item stored in the configuration.
+	 *
 	 * @param string $key The key of the configuration item to get.
 	 * @return false|mixed False on failure; mixed on success.
 	 */

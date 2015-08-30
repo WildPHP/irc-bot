@@ -25,6 +25,7 @@ interface IChannelEvent extends IEvent
 {
 	/**
 	 * Returns the current command.
+	 *
 	 * @return string
 	 */
 	public function getChannel();

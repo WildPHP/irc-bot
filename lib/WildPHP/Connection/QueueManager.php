@@ -33,24 +33,29 @@ class QueueManager extends Manager
 
 	/**
 	 * Stores the queues as an array of pointers to first and last elements of the queue.
-	 * @var array<QueuePriority, array<'first'<QueueItem>,'last'<QueueItem>>>|array<QueuePriority, array<int, string>>
+	 *
+	 * @var array<QueuePriority, array<'first'<QueueItem>,'last'<QueueItem>>>|array<QueuePriority, array<int,
+	 *      string>>
 	 */
 	protected $queues;
 
 	/**
 	 * The flood limit for max. lines per second that will be returned from the queues.
+	 *
 	 * @var int|double
 	 */
 	protected $linesPerSecond;
 
 	/**
 	 * The burst of lines that will be returned from the queues if nothing was returned previously
+	 *
 	 * @var int
 	 */
 	protected $linesMaxBurst;
 
 	/**
 	 * Current burst of lines available to be returned from the queues.
+	 *
 	 * @var int
 	 */
 	protected $burst;
@@ -58,27 +63,32 @@ class QueueManager extends Manager
 	/**
 	 * Stores when was the last flood check processed.
 	 * Used to refill $burst from the limits.
+	 *
 	 * @var float
 	 */
 	protected $lastFloodCheck;
 
 	/**
 	 * Stores the total amount of lines in all queues.
+	 *
 	 * @var int
 	 */
 	protected $linesAvailable = 0;
 
 	/**
 	 * The message count.
+	 *
 	 * @var int
 	 */
 	protected $messageCount = 0;
 
 	/**
-	 * Initializes the queues. You can specify custom flood limits, but the defaults should be safe for most servers.
-	 * @param Bot $bot The bot object
+	 * Initializes the queues. You can specify custom flood limits, but the defaults should be safe for most
+	 * servers.
+	 *
+	 * @param Bot $bot            The bot object
 	 * @param int $linesPerSecond Maximum lines per second that will be sent to the output. 0 for no limit.
-	 * @param int $linesMaxBurst Maximum lines that will be sent initially.
+	 * @param int $linesMaxBurst  Maximum lines that will be sent initially.
 	 * @see setFloodLimits()
 	 */
 	public function __construct(Bot $bot, $linesPerSecond = 2, $linesMaxBurst = 4)
@@ -97,8 +107,10 @@ class QueueManager extends Manager
 	/**
 	 * Sets new flood limits.
 	 *
-	 * @param double $linesPerSecond Maximum lines per second that will be sent to output. Set to zero for no limit. Must be >= 0.
-	 * @param int $linesMaxBurst Maximum lines that will be sent as an initial burst. Defaults to 1. Must be >= 1.
+	 * @param double $linesPerSecond Maximum lines per second that will be sent to output. Set to zero for no
+	 *                               limit. Must be >= 0.
+	 * @param int    $linesMaxBurst  Maximum lines that will be sent as an initial burst. Defaults to 1. Must be >=
+	 *                               1.
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFloodLimits($linesPerSecond, $linesMaxBurst = 1)
@@ -129,7 +141,7 @@ class QueueManager extends Manager
 		$this->lastFloodCheck = microtime(true);
 
 		// Lines that were replenished in that time
-		$linesAvail = (int) ceil($timeDiff * $this->linesPerSecond);
+		$linesAvail = (int)ceil($timeDiff * $this->linesPerSecond);
 
 		if ($linesAvail > $this->linesMaxBurst)
 			$this->burst = $this->linesMaxBurst;
@@ -139,7 +151,8 @@ class QueueManager extends Manager
 
 	/**
 	 * Queues a new message at given priority.
-	 * @param string $message The message.
+	 *
+	 * @param string             $message  The message.
 	 * @param null|QueuePriority $priority The desired priority. Defaults to NORMAL.
 	 * @return void
 	 * @throws \InvalidArgumentException when $message is not a string.
@@ -178,13 +191,14 @@ class QueueManager extends Manager
 
 	/**
 	 * Returns an array of queued messages respecting the limits and removing the messages from their queues.
+	 *
 	 * @return string[] Array of messages from the queues.
 	 */
 	public function getQueuedItems()
 	{
 		// when there are no messages we don't need to do much
 		if (!$this->linesAvailable)
-			return array();
+			return [];
 
 		$this->floodCheck();
 
@@ -200,6 +214,7 @@ class QueueManager extends Manager
 	/**
 	 * Returns contents of the immediate "queue" array.
 	 * The messages count toward flood limits and the array is reset.
+	 *
 	 * @return string[] messages from the immediate queue
 	 */
 	protected function getImmediateQueueContents()
@@ -209,11 +224,11 @@ class QueueManager extends Manager
 
 		// Return empty-handed if we are ... empty.
 		if (empty($queue))
-			return array();
+			return [];
 
 		// Grab a copy and clear the queue
 		$messages = $queue;
-		$queue = array();
+		$queue = [];
 
 		// Reduce the burst and amount of "lines available"
 		$messageCount = count($messages);
@@ -228,12 +243,13 @@ class QueueManager extends Manager
 
 	/**
 	 * Returns contents of all queues but the immediate queue.
+	 *
 	 * @return string[]
 	 */
 	public function getQueueContents()
 	{
 		// Start empty.
-		$messages = array();
+		$messages = [];
 
 		// Handle all the other queues
 		foreach ($this->queues as $priority => $queue)
@@ -260,6 +276,7 @@ class QueueManager extends Manager
 
 	/**
 	 * Returns the amount of messages that are available for retreival
+	 *
 	 * @return int count of available messages
 	 */
 	public function getMessageCount()
@@ -283,13 +300,14 @@ class QueueManager extends Manager
 			$this->queues[$priority] = new SplQueue();
 		}
 
-		$this->queues[QueuePriority::IMMEDIATE] = array();
+		$this->queues[QueuePriority::IMMEDIATE] = [];
 
 		ksort($this->queues, SORT_NUMERIC);
 	}
 
 	/**
 	 * Flushes queues. Called by timer.
+	 *
 	 * @param Timer $e The timer that called this method.
 	 */
 	public function flush(Timer $e)

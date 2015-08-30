@@ -27,6 +27,7 @@ class Validation
 {
 	/**
 	 * Checks if a channel name conforms to RFC2812's grammar rules.
+	 *
 	 * @param string $chan The channel name to check.
 	 * @return bool
 	 */
@@ -38,6 +39,7 @@ class Validation
 
 	/**
 	 * Checks if a nickname conforms to RFC2812's grammar rules.
+	 *
 	 * @param string $nick The nickname to check.
 	 * @return bool
 	 */

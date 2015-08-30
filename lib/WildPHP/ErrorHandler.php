@@ -25,18 +25,20 @@ class ErrorHandler extends Manager
 {
 	/**
 	 * Setup the Error Handler.
+	 *
 	 * @param Bot $bot
 	 */
 	public function __construct(Bot $bot)
 	{
 		parent::__construct($bot);
-		set_error_handler(array($this, 'handler'));
+		set_error_handler([$this, 'handler']);
 	}
 
 	/**
 	 * Handle errors.
-	 * @param int $errno The error number.
-	 * @param string $errstr The error message.
+	 *
+	 * @param int    $errno   The error number.
+	 * @param string $errstr  The error message.
 	 * @param string $errfile The error file.
 	 * @param string $errline The line the error occured.
 	 * @return null|bool False to jump to the regular error handler.
@@ -48,7 +50,7 @@ class ErrorHandler extends Manager
 			case E_USER_ERROR:
 			case E_ERROR:
 				$level = LogLevels::ERROR;
-				$this->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+				$this->log('{string} on line {line} in file {file}', ['string' => $errstr, 'line' => $errline, 'file' => $errfile], $level);
 				exit(1);
 
 			case E_USER_WARNING:
@@ -66,7 +68,7 @@ class ErrorHandler extends Manager
 				break;
 		}
 
-		$this->log('{string} on line {line} in file {file}', array('string' => $errstr, 'line' => $errline, 'file' => $errfile), $level);
+		$this->log('{string} on line {line} in file {file}', ['string' => $errstr, 'line' => $errline, 'file' => $errfile], $level);
 		return true;
 	}
 }

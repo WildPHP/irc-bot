@@ -23,40 +23,43 @@ use WildPHP\IRC\IRCData;
 
 class PongCommand extends IRCData
 {
-    /**
-     * The server to send to.
-     * @var string
-     */
-    protected $server = '';
+	/**
+	 * The server to send to.
+	 *
+	 * @var string
+	 */
+	protected $server = '';
 
-    /**
-     * @param string $server The server to send to.
-     */
-    public function __construct($server)
-    {
-        $this->setServer($server);
-    }
+	/**
+	 * @param string $server The server to send to.
+	 */
+	public function __construct($server)
+	{
+		$this->setServer($server);
+	}
 
-    /**
-     * Sets the server to send to.
-     * @param string $server
-     */
-    public function setServer($server)
-    {
-        $this->server = $server;
-    }
+	/**
+	 * Sets the server to send to.
+	 *
+	 * @param string $server
+	 */
+	public function setServer($server)
+	{
+		$this->server = $server;
+	}
 
-    /**
-     * Gets the server.
-     * @return string
-     */
-    public function getServer()
-    {
-        return $this->server;
-    }
+	/**
+	 * Gets the server.
+	 *
+	 * @return string
+	 */
+	public function getServer()
+	{
+		return $this->server;
+	}
 
-    public function __toString()
-    {
-        return 'PONG ' . $this->getServer();
-    }
+	public function __toString()
+	{
+		return 'PONG ' . $this->getServer();
+	}
 }

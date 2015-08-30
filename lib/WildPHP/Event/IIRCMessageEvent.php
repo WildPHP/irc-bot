@@ -25,6 +25,7 @@ interface IIRCMessageEvent extends IEvent
 {
 	/**
 	 * Returns the IRCMessage object that caused this event.
+	 *
 	 * @return ServerMessage The message.
 	 */
 	public function getMessage();

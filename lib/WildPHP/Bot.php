@@ -23,14 +23,11 @@ namespace WildPHP;
 use WildPHP\Configuration\ConfigurationManager;
 use WildPHP\Connection\ConnectionManager;
 use WildPHP\Connection\QueueManager;
-use WildPHP\Event\IRCMessageInboundEvent;
-use WildPHP\IRC\ServerMessage;
+use WildPHP\EventManager\ModuleCrashedException;
 use WildPHP\LogManager\LogManager;
 use WildPHP\LogManager\LogLevels;
 use WildPHP\EventManager\EventManager;
 use WildPHP\EventManager\RegisteredEvent;
-use WildPHP\EventManager\RegisteredCommandEvent;
-use WildPHP\Event\SayEvent;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -39,60 +36,70 @@ class Bot
 {
 	/**
 	 * The configuration manager.
+	 *
 	 * @var ConfigurationManager
 	 */
 	protected $configurationManager;
 
 	/**
 	 * The module manager.
+	 *
 	 * @var ModuleManager
 	 */
 	protected $moduleManager;
 
 	/**
 	 * The event manager.
+	 *
 	 * @var EventManager
 	 */
 	protected $eventManager;
 
 	/**
 	 * The connection manager.
+	 *
 	 * @var ConnectionManager
 	 */
 	protected $connectionManager;
 
 	/**
 	 * The TimerManager
+	 *
 	 * @var TimerManager
 	 */
 	protected $timerManager;
 
 	/**
 	 * The Queue manager.
+	 *
 	 * @var QueueManager
 	 */
 	protected $queueManager;
 
 	/**
 	 * The log manager.
+	 *
 	 * @var LogManager
 	 */
 	protected $logManager;
 
 	/**
 	 * The database object. TODO
+	 *
 	 * @var \SQLite3
 	 */
 	public $db;
 
 	/**
 	 * The current nickname of the bot.
+	 *
 	 * @var string
 	 */
 	protected $nickname;
 
 	/**
 	 * Sets up the bot for initial load.
+	 *
 	 * @param string $configFile Optionally load a custom config file
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
@@ -127,6 +134,7 @@ class Bot
 
 	/**
 	 * Get all managers locked and loaded.
+	 *
 	 * @param string $configFile The config file to load.
 	 */
 	protected function initializeManagers($configFile)
@@ -195,14 +203,23 @@ class Bot
 	{
 		while ($this->getConnectionManager()->isConnected())
 		{
-			// Let anything hook into the main loop for its own business.
-			$this->getEventManager()->getEvent('Loop')->trigger(new Event\LoopEvent());
-			$this->getConnectionManager()->processReceivedData();
+			try
+			{
+				// Let anything hook into the main loop for its own business.
+				$this->getEventManager()->getEvent('Loop')->trigger(new Event\LoopEvent());
+				$this->getConnectionManager()->processReceivedData();
+			}
+			catch (ModuleCrashedException $e)
+			{
+				// Oh dear. A module crashed.
+				$this->getModuleManager()->kickByObject($e->getModule());
+			}
 		}
 	}
 
 	/**
 	 * Returns an item stored in the configuration.
+	 *
 	 * @param string $item The configuration item to get.
 	 * @return false|mixed The item stored called by key, or false on failure.
 	 */
@@ -213,6 +230,7 @@ class Bot
 
 	/**
 	 * Returns the Connection Manager
+	 *
 	 * @return ConnectionManager The Connection Manager
 	 */
 	public function getConnectionManager()
@@ -222,6 +240,7 @@ class Bot
 
 	/**
 	 * Returns the EventManager.
+	 *
 	 * @return EventManager The Event Manager.
 	 */
 	public function getEventManager()
@@ -231,6 +250,7 @@ class Bot
 
 	/**
 	 * Returns the Timer Manager
+	 *
 	 * @returns TimerManager The Timer Manager.
 	 */
 	public function getTimerManager()
@@ -240,6 +260,7 @@ class Bot
 
 	/**
 	 * Returns the ModuleManager.
+	 *
 	 * @return ModuleManager The Module Manager.
 	 */
 	public function getModuleManager()
@@ -249,6 +270,7 @@ class Bot
 
 	/**
 	 * Gets the current nickname.
+	 *
 	 * @return string
 	 */
 	public function getNickname()
@@ -258,6 +280,7 @@ class Bot
 
 	/**
 	 * Change the nickname of the bot.
+	 *
 	 * @param string $newnick
 	 * @return boolean True on success, false on failure.
 	 */
@@ -271,7 +294,7 @@ class Bot
 		$data = $this->getConnectionManager()->waitReply();
 		if (!empty($data))
 		{
-			if (!empty($data[0]->get()['code']) && in_array($data[0]->get()['code'], array('ERR_NICKNAMEINUSE', 'ERR_ERRONEUSNICKNAME', 'ERR_NICKCOLLISION')))
+			if (!empty($data[0]->get()['code']) && in_array($data[0]->get()['code'], ['ERR_NICKNAMEINUSE', 'ERR_ERRONEUSNICKNAME', 'ERR_NICKCOLLISION']))
 				return false;
 		}
 
@@ -282,6 +305,7 @@ class Bot
 
 	/**
 	 * Set the nickname of the bot. Please try to use changeNickname instead.
+	 *
 	 * @param string $newnick
 	 */
 	public function setNickname($newnick)
@@ -291,17 +315,19 @@ class Bot
 
 	/**
 	 * Log data.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
-	 * @param string $level The level to log the data at.
+	 * @param array  $context The context to use.
+	 * @param string $level   The level to log the data at.
 	 */
-	public function log($message, $context = array(), $level = LogLevels::DEBUG)
+	public function log($message, $context = [], $level = LogLevels::DEBUG)
 	{
-		call_user_func(array($this->logManager, $level), $message, $context);
+		call_user_func([$this->logManager, $level], $message, $context);
 	}
 
 	/**
 	 * Disconnects the bot and stops.
+	 *
 	 * @param string $message Send a custom message along with the QUIT command.
 	 */
 	public function stop($message = 'WildPHP <http://wildphp.com/>')

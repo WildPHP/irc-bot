@@ -19,22 +19,53 @@
 */
 namespace WildPHP\Event;
 
-abstract class CancellableEvent implements ICancellableEvent
+use WildPHP\BaseModule;
+
+class NewCommandEvent implements IEvent
 {
 	/**
-	 * Boolean determining the state of the event.
+	 * The command that was registered.
 	 *
-	 * @var bool
+	 * @var string
 	 */
-	protected $cancelled = false;
+	protected $command = null;
 
-	public function setCancelled($cancel = true)
+	/**
+	 * The module that registered this.
+	 *
+	 * @var BaseModule|null
+	 */
+	protected $module = null;
+
+	/**
+	 * Construct method.
+	 *
+	 * @param string $command The command that was registered.
+	 * @param BaseModule|null
+	 */
+	public function __construct($command, $module = null)
 	{
-		$this->cancelled = (bool)$cancel;
+		$this->setCommand($command);
+		$this->setModule($module);
 	}
 
-	public function isCancelled()
+	public function setCommand($command)
 	{
-		return $this->cancelled;
+		$this->command = $command;
+	}
+
+	public function getCommand()
+	{
+		return $this->command;
+	}
+
+	public function setModule($module)
+	{
+		$this->module = $module;
+	}
+
+	public function getModule()
+	{
+		return $this->module;
 	}
 }

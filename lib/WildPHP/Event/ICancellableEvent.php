@@ -23,6 +23,7 @@ interface ICancellableEvent extends IEvent
 {
 	/**
 	 * Marks the event as cancelled.
+	 *
 	 * @param bool $cancel If set to false, the event will be un-cancelled. Defaults to true.
 	 * @return void
 	 */
@@ -30,6 +31,7 @@ interface ICancellableEvent extends IEvent
 
 	/**
 	 * Tells whether the event has been cancelled.
+	 *
 	 * @return bool True when cancelled, false otherwise.
 	 */
 	public function isCancelled();

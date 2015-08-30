@@ -25,6 +25,7 @@ interface IIRCMessageOutgoingEvent extends IIRCMessageEvent
 {
 	/**
 	 * Returns the message associated with this event.
+	 *
 	 * @return ServerMessage
 	 */
 	public function getMessage();

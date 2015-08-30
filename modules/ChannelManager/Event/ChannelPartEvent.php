@@ -23,12 +23,14 @@ class ChannelPartEvent implements IChannelEvent
 {
 	/**
 	 * The channel.
+	 *
 	 * @var string
 	 */
 	protected $channel;
 
 	/**
 	 * Constructs the event.
+	 *
 	 * @param string $channel The channel that is being parted.
 	 */
 	public function __construct($channel)

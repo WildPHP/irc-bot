@@ -26,49 +26,43 @@ interface ICommandPRIVMSG extends IServerMessage
 {
 	/**
 	 * Returns the hostname of the user sending the message.
+	 *
 	 * @return string The hostname.
 	 */
 	public function getHostname();
-    
+
 	/**
 	 * Returns the sender object.
+	 *
 	 * @return HostMask The sender object.
 	 */
 	public function getSender();
 
 	/**
 	 * Returns the target user/channel.
+	 *
 	 * @return string
 	 */
 	public function getChannel();
 
 	/**
 	 * Alias of getChannel. Returns the target user/channel name.
+	 *
 	 * @return string
 	 */
 	public function getTargets();
 
 	/**
 	 * Returns the sent message.
+	 *
 	 * @return string The message which was sent.
 	 */
 	public function getUserMessage();
-    
+
 	/**
 	 * Returns the nickname of the user who sent the message.
+	 *
 	 * @return string The username.
 	 */
 	public function getNickname();
-    
-	/**
-	 * Returns the bot command, if found.
-	 * @return boolean|string False if no command found, string with the command otherwise.
-	 */
-	public function getBotCommand();
-    
-	/**
-	 * Returns the command parameters.
-	 * @return string[]
-	 */
-	public function getBotCommandParams();
 }

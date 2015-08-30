@@ -21,45 +21,30 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
-use WildPHP\Event\CommandEvent;
-use WildPHP\Event\IRCMessageInboundEvent;
+use WildPHP\Modules\CommandParser\Event\CommandEvent;
 use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\LogManager\LogLevels;
 
 class Dev extends BaseModule
 {
 	/**
-	 * The Auth module's object.
-	 * @var \WildPHP\Modules\Auth
+	 * Register our commands.
+	 * @return array
 	 */
-	private $auth;
-
-	/**
-	 * Dependencies of this module.
-	 * @var string[]
-	 */
-	protected static $dependencies = array('Auth', 'Help');
-
-	/**
-	 * Set up the module.
-	 */
-	public function setup()
+	public function registerCommands()
 	{
-		// Register our command.
-		$this->getEventManager()->getEvent('BotCommand')->registerCommand('exec', array($this, 'execCommand'), true);
-
-		$helpmodule = $this->getModule('Help');
-
-		$helpmodule->registerHelp('exec', 'Executes code in the bot\'s process. Usage: exec [code]');
-
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'testListener'));
-
-		// Get the auth module in here.
-		$this->auth = $this->getModule('Auth');
+		return [
+			'exec' => [
+				'callback' => 'execCommand',
+				'help' => 'Executes PHP code in the bot\'s process. Usage: exec [code]',
+				'auth' => true
+			]
+		];
 	}
 
 	/**
 	 * Executes a command.
+	 *
 	 * @param CommandEvent $e The data received.
 	 */
 	public function execCommand($e)
@@ -70,16 +55,7 @@ class Dev extends BaseModule
 			return;
 		}
 
-		$this->log('Running command "{command}"', array('command' => implode(' ', $e->getParams())), LogLevels::INFO);
+		$this->log('Running command "{command}"', ['command' => implode(' ', $e->getParams())], LogLevels::INFO);
 		eval(implode(' ', $e->getParams()));
-	}
-
-	/**
-	 * Simply a test listener. Dump any code you want in here.
-	 * @param IRCMessageInboundEvent $e
-	 */
-	public function testListener($e)
-	{
-		//echo var_dump($e);
 	}
 }

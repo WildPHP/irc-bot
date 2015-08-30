@@ -22,9 +22,8 @@ namespace WildPHP\IRC;
 class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 {
 	protected $message;
-	protected $prefix;
 
-	public function __construct(ServerMessage $ircMessage, $commandPrefix)
+	public function __construct(ServerMessage $ircMessage)
 	{
 		if (!($ircMessage instanceof ServerMessage))
 			throw new \InvalidArgumentException('The provided argument is not an instance of ServerMessage.');
@@ -33,7 +32,6 @@ class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 			throw new \InvalidArgumentException('The provided message is not a PRIVMSG command.');
 
 		$this->message = $ircMessage;
-		$this->prefix = (string) $commandPrefix;
 	}
 
 	public function getHostname()
@@ -58,31 +56,11 @@ class CommandPRIVMSG extends ServerMessage implements ICommandPRIVMSG
 
 	public function getUserMessage()
 	{
-		return (string) $this->message->getParams()['text'];
+		return (string)$this->message->getParams()['text'];
 	}
 
 	public function getNickname()
 	{
 		return $this->message->get()['nick'];
-	}
-
-	public function getBotCommand()
-	{
-		$pieces = explode(' ', $this->getUserMessage());
-
-		if (substr($pieces[0], 0, strlen($this->prefix)) != $this->prefix)
-			return false;
-
-		return substr($pieces[0], strlen($this->prefix));
-	}
-
-	public function getBotCommandParams()
-	{
-		if ($this->getBotCommand() === false)
-			return false;
-
-		$pieces = explode(' ', $this->getUserMessage());
-		array_shift($pieces);
-		return $pieces;
 	}
 }

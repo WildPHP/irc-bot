@@ -23,20 +23,23 @@ class SayEvent extends CancellableEvent implements ISayEvent
 {
 	/**
 	 * The text that's going to be said.
+	 *
 	 * @var string
 	 */
 	protected $text = '';
 
 	/**
 	 * The recipients.
+	 *
 	 * @var string[]
 	 */
-	protected $recipients = array();
+	protected $recipients = [];
 
 	/**
 	 * Construct method.
-	 * @param string $text The initial text to send.
-	 * @param string|string[] $to The recipients.
+	 *
+	 * @param string          $text The initial text to send.
+	 * @param string|string[] $to   The recipients.
 	 */
 	public function __construct($text, $to)
 	{

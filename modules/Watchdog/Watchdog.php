@@ -32,6 +32,7 @@ class Watchdog extends BaseModule
 	const TIMEOUT = 350;
 	/**
 	 * Last ping request.
+	 *
 	 * @var int
 	 */
 	protected $lastActivity = 0;
@@ -42,15 +43,16 @@ class Watchdog extends BaseModule
 	public function setup()
 	{
 		// Register our listeners.
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'pingListener'));
-		$this->getEventManager()->getEvent('IRCMessageOutgoing')->registerListener(array($this, 'activityListener'));
+		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener([$this, 'pingListener']);
+		$this->getEventManager()->getEvent('IRCMessageOutgoing')->registerListener([$this, 'activityListener']);
 
 		// Register a timer to check for ping timeouts.
-		$this->getTimerManager()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, array($this, 'pingTimer')));
+		$this->getTimerManager()->add('PingTimeoutTimer', new Timer(self::TIMEOUT, [$this, 'pingTimer']));
 	}
 
 	/**
 	 * Respond to PING messages
+	 *
 	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
 	public function pingListener($e)
@@ -64,6 +66,7 @@ class Watchdog extends BaseModule
 
 	/**
 	 * Update the internal timer when activity occurs.
+	 *
 	 * @param IRCMessageOutgoingEvent $e The data that is going to be sent.
 	 */
 	public function activityListener($e)
@@ -73,6 +76,7 @@ class Watchdog extends BaseModule
 
 	/**
 	 * Checks if ping timed out.
+	 *
 	 * @param Timer $e The timer.
 	 */
 	public function pingTimer($e)
@@ -80,7 +84,7 @@ class Watchdog extends BaseModule
 		if ($this->lastActivity + self::TIMEOUT < time())
 		{
 			// Ping timed out. Reconnecting time!
-			$this->log('Ping timeout detected. Attempting to reconnect.', array(), LogLevels::WARNING);
+			$this->log('Ping timeout detected. Attempting to reconnect.', [], LogLevels::WARNING);
 			$this->getConnectionManager()->reconnect();
 		}
 

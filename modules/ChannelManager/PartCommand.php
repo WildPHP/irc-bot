@@ -19,47 +19,47 @@
 */
 namespace WildPHP\Modules\ChannelManager;
 
-use WildPHP\IRC\IRCData;
-use WildPHP\Validation;
-
 class PartCommand extends JoinCommand
 {
-    /**
-     * The message to send along. Is optional.
-     * @var string
-     */
-    protected $message = '';
+	/**
+	 * The message to send along. Is optional.
+	 *
+	 * @var string
+	 */
+	protected $message = '';
 
-    /**
-     * @param string|string[] $channels The password to send.
-     * @param string $message The message to send.
-     */
-    public function __construct($channels, $message = '')
-    {
-        parent::__construct($channels);
-        $this->setMessage($message);
-    }
+	/**
+	 * @param string|string[] $channels The password to send.
+	 * @param string          $message  The message to send.
+	 */
+	public function __construct($channels, $message = '')
+	{
+		parent::__construct($channels);
+		$this->setMessage($message);
+	}
 
-    /**
-     * Sets the message to send.
-     * @param string $message
-     */
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
+	/**
+	 * Sets the message to send.
+	 *
+	 * @param string $message
+	 */
+	public function setMessage($message)
+	{
+		$this->message = $message;
+	}
 
-    /**
-     * Gets the message.
-     * @return string
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
+	/**
+	 * Gets the message.
+	 *
+	 * @return string
+	 */
+	public function getMessage()
+	{
+		return $this->message;
+	}
 
-    public function __toString()
-    {
-        return 'PART ' . implode(',', $this->getChannels()) . (!empty($this->getMessage()) ? ' :' . $this->getMessage() : '');
-    }
+	public function __toString()
+	{
+		return 'PART ' . implode(',', $this->getChannels()) . (!empty($this->getMessage()) ? ' :' . $this->getMessage() : '');
+	}
 }

@@ -20,42 +20,42 @@
 namespace WildPHP\IRC\Commands;
 
 use WildPHP\IRC\IRCData;
-use WildPHP\IRC\MessageLengthException;
 
 class Custom extends IRCData
 {
-    /**
-     * @var string
-     */
-    protected $command = '';
+	/**
+	 * @var string
+	 */
+	protected $command = '';
 
-    /**
-     * @param string $command
-     */
-    public function __construct($command)
-    {
-        $this->setCommand($command);
-    }
+	/**
+	 * @param string $command
+	 */
+	public function __construct($command)
+	{
+		$this->setCommand($command);
+	}
 
-    /**
-     * Sets the command.
-     * @param string $command
-     */
-    public function setCommand($command)
-    {
-        $this->command = $command;
-    }
+	/**
+	 * Sets the command.
+	 *
+	 * @param string $command
+	 */
+	public function setCommand($command)
+	{
+		$this->command = $command;
+	}
 
-    /**
-     * Gets the command.
-     */
-    public function getCommand()
-    {
-        return $this->command;
-    }
+	/**
+	 * Gets the command.
+	 */
+	public function getCommand()
+	{
+		return $this->command;
+	}
 
-    public function __toString()
-    {
-        return $this->getCommand();
-    }
+	public function __toString()
+	{
+		return $this->getCommand();
+	}
 }

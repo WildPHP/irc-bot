@@ -25,18 +25,21 @@ interface ICommandEvent extends IEvent
 {
 	/**
 	 * Returns the current command.
+	 *
 	 * @return string
 	 */
 	public function getCommand();
 
 	/**
 	 * Returns the parameters for this command.
+	 *
 	 * @return string[]
 	 */
 	public function getParams();
 
 	/**
 	 * Returns the assiciated command.
+	 *
 	 * @return CommandPRIVMSG
 	 */
 	public function getMessage();

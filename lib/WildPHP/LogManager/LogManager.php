@@ -27,31 +27,36 @@ class LogManager extends Manager
 {
 	/**
 	 * The file handle, used for manipulating the current log file.
+	 *
 	 * @var resource
 	 */
 	private $handle = '';
 
 	/**
 	 * The path to the current log file.
+	 *
 	 * @var string
 	 */
 	private $logFile = '';
 
 	/**
 	 * What entries do we write?
+	 *
 	 * @var string[]
 	 */
-	protected $write = array();
+	protected $write = [];
 
 	/**
 	 * And which do we print?
+	 *
 	 * @var string[]
 	 */
-	protected $print = array();
+	protected $print = [];
 
 	/**
 	 * Set up the class.
-	 * @param Bot $bot The bot object
+	 *
+	 * @param Bot    $bot    The bot object
 	 * @param string $logDir The directory to store logs in
 	 */
 	public function __construct(Bot $bot, $logDir = WPHP_LOG_DIR)
@@ -59,7 +64,7 @@ class LogManager extends Manager
 		parent::__construct($bot);
 
 		// Make sure we end up clean when quitting.
-		register_shutdown_function(array($this, 'logShutdown'));
+		register_shutdown_function([$this, 'logShutdown']);
 
 		// Fetch the configuration.
 		$config = $bot->getConfig('log');
@@ -110,11 +115,12 @@ class LogManager extends Manager
 
 	/**
 	 * Add data to the log.
-	 * @param string $message The data to log.
-	 * @param boolean $print Whether to print the data to screen.
-	 * @param boolean $write Whether to write the data to file.
+	 *
+	 * @param string  $message The data to log.
+	 * @param boolean $print   Whether to print the data to screen.
+	 * @param boolean $write   Whether to write the data to file.
 	 */
-	protected function log($message, $print = true, $write = true)
+	public function log($message, $print = true, $write = true)
 	{
 		if ($print)
 		{
@@ -132,10 +138,11 @@ class LogManager extends Manager
 
 	/**
 	 * Log a critical error.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
+	 * @param array  $context The context to use.
 	 */
-	public function error($message, array $context = array())
+	public function error($message, array $context = [])
 	{
 		$message = $this->prepareMessage($message, 'ERROR', $context);
 		if (!empty($message))
@@ -144,10 +151,11 @@ class LogManager extends Manager
 
 	/**
 	 * Log a warning.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
+	 * @param array  $context The context to use.
 	 */
-	public function warning($message, array $context = array())
+	public function warning($message, array $context = [])
 	{
 		$message = $this->prepareMessage($message, 'WARNING', $context);
 		if (!empty($message))
@@ -156,10 +164,11 @@ class LogManager extends Manager
 
 	/**
 	 * Log an informational message.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
+	 * @param array  $context The context to use.
 	 */
-	public function info($message, array $context = array())
+	public function info($message, array $context = [])
 	{
 		$message = $this->prepareMessage($message, 'INFO', $context);
 		if (!empty($message))
@@ -168,10 +177,11 @@ class LogManager extends Manager
 
 	/**
 	 * Log a debug message.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
+	 * @param array  $context The context to use.
 	 */
-	public function debug($message, array $context = array())
+	public function debug($message, array $context = [])
 	{
 		$message = $this->prepareMessage($message, 'DEBUG', $context);
 		if (!empty($message))
@@ -180,10 +190,11 @@ class LogManager extends Manager
 
 	/**
 	 * Log a message from a channel.
+	 *
 	 * @param string $message The message to log.
-	 * @param array $context The context to use.
+	 * @param array  $context The context to use.
 	 */
-	public function channel($message, array $context = array())
+	public function channel($message, array $context = [])
 	{
 		$message = $this->prepareMessage($message, 'CHANNEL', $context);
 		if (!empty($message))
@@ -192,12 +203,13 @@ class LogManager extends Manager
 
 	/**
 	 * Prepares a message to be logged.
+	 *
 	 * @param string $message The message.
-	 * @param string $level The level to log at.
-	 * @param array $context The context that is to be used.
+	 * @param string $level   The level to log at.
+	 * @param array  $context The context that is to be used.
 	 * @return string|false
 	 */
-	protected function prepareMessage($message, $level = '', array $context = array())
+	protected function prepareMessage($message, $level = '', array $context = [])
 	{
 		if (empty($message))
 			return false;
@@ -216,11 +228,12 @@ class LogManager extends Manager
 
 	/**
 	 * Merge the context into a message.
+	 *
 	 * @param string $message The message.
-	 * @param array $context The context.
+	 * @param array  $context The context.
 	 * @return string|false
 	 */
-	protected function interpolate($message, array $context = array())
+	protected function interpolate($message, array $context = [])
 	{
 		if (empty($message))
 			return false;
@@ -228,7 +241,7 @@ class LogManager extends Manager
 		if (empty($context))
 			return $message;
 
-		$replace = array();
+		$replace = [];
 
 		foreach ($context as $key => $value)
 		{

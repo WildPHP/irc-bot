@@ -21,7 +21,7 @@
 namespace WildPHP\Modules;
 
 use WildPHP\BaseModule;
-use WildPHP\Event\CommandEvent;
+use WildPHP\Modules\CommandParser\Event\CommandEvent;
 use WildPHP\IRC\Commands\Privmsg;
 use WildPHP\Modules\Help\HelpAlreadyRegisteredException;
 use WildPHP\Modules\Help\HelpForNonexistingCommandException;
@@ -30,29 +30,32 @@ class Help extends BaseModule
 {
 	/**
 	 * The Auth module's object.
+	 *
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
 
 	/**
 	 * Dependencies of this module.
+	 *
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth');
+	protected static $dependencies = ['Auth'];
 
 	/**
 	 * The registered help strings.
+	 *
 	 * @var array<string, string>
 	 */
-	protected $strings = array();
+	protected $strings = [];
 
 	/**
 	 * Set up the module.
 	 */
 	public function setup()
 	{
-		// Register our command.
-		$this->getEventManager()->getEvent('BotCommand')->registerCommand('help', array($this, 'helpCommand'));
+		// Register our command. Done like this because we aren't set up yet.
+		$this->getEventManager()->getEvent('BotCommand')->registerCommand('help', [$this, 'helpCommand'], $this);
 		$this->registerHelp('help', 'You just used it correctly.');
 
 		// Get the auth module in here.
@@ -61,13 +64,14 @@ class Help extends BaseModule
 
 	/**
 	 * The help command itself.
+	 *
 	 * @param CommandEvent $e The data received.
 	 */
 	public function helpCommand($e)
 	{
 		$commands = $this->getEventManager()->getEvent('BotCommand')->getCommands();
 
-		if (empty($e->getParams()))
+		if (empty($e->getParams()[0]))
 		{
 			// All commands are...
 			$this->sendData(new Privmsg($this->getLastChannel(), 'Available commands: ' . implode(', ', $commands)));
@@ -93,8 +97,9 @@ class Help extends BaseModule
 
 	/**
 	 * Register help for a command.
-	 * @param string $command The command to set help for.
-	 * @param string $string The help string to set for it.
+	 *
+	 * @param string  $command   The command to set help for.
+	 * @param string  $string    The help string to set for it.
 	 * @param boolean $overwrite Overwrite existing help if already set?
 	 * @throws HelpForNonexistingCommandException When the command does not exist.
 	 * @throws HelpAlreadyRegisteredException When the specified help already exists and we are not overwriting.

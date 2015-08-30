@@ -36,24 +36,28 @@ class ConnectionManager extends Manager
 
 	/**
 	 * The server you want to connect to.
+	 *
 	 * @var string
 	 */
 	private $server = '';
 
 	/**
 	 * The port of the server you want to connect to.
+	 *
 	 * @var integer
 	 */
 	private $port = 0;
 
 	/**
 	 * The TCP/IP connection.
+	 *
 	 * @var resource
 	 */
 	protected $socket;
 
 	/**
 	 * The password used for connecting.
+	 *
 	 * @var string
 	 */
 	private $password = '';
@@ -63,12 +67,14 @@ class ConnectionManager extends Manager
 
 	/**
 	 * The last data received.
+	 *
 	 * @var ServerMessage
 	 */
-	protected $lastdata = array();
+	protected $lastdata = [];
 
 	/**
 	 * Set up some initial events.
+	 *
 	 * @param Bot $bot The bot object.
 	 */
 	public function __construct(Bot $bot)
@@ -96,6 +102,7 @@ class ConnectionManager extends Manager
 
 	/**
 	 * Establishs the connection to the server. If no arguments passed, will use the defaults.
+	 *
 	 * @return boolean|null True or false, depending on whether the connection succeeded.
 	 */
 	public function connect()
@@ -113,7 +120,7 @@ class ConnectionManager extends Manager
 		$this->sendData('NICK ' . $this->nick);
 		$this->sendData('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
 
-		$this->log('Connection to server {server}:{port} set up with nick {nick}; firing up.', array('server' => $this->server, 'port' => $this->port, 'nick' => $this->nick), LogLevels::INFO);
+		$this->log('Connection to server {server}:{port} set up with nick {nick}; firing up.', ['server' => $this->server, 'port' => $this->port, 'nick' => $this->nick], LogLevels::INFO);
 	}
 
 	/**
@@ -173,7 +180,7 @@ class ConnectionManager extends Manager
 	 */
 	protected function getData()
 	{
-		$read = array($this->socket);
+		$read = [$this->socket];
 		$write = null;
 		$except = null;
 		$changed = stream_select($read, $write, $except, 1);
@@ -198,7 +205,7 @@ class ConnectionManager extends Manager
 		if ($data === null)
 			return false;
 
-		$this->log('<< {data}', array('data' => $data), LogLevels::DEBUG);
+		$this->log('<< {data}', ['data' => $data], LogLevels::DEBUG);
 
 		$data = new ServerMessage($data);
 
@@ -217,14 +224,15 @@ class ConnectionManager extends Manager
 	/**
 	 * Waits for and gets a reply from the server.
 	 * THIS HALTS THE TIMERS FOR THE SPECIFIED TIME.
-	 * @param int $lines The amount of lines to listen for.
+	 *
+	 * @param int $lines   The amount of lines to listen for.
 	 * @param int $timeout Timeout for listening to data. Defaults to 3 seconds.
 	 * @return ServerMessage[]
 	 */
 	public function waitReply($lines = 1, $timeout = 3)
 	{
 		$currtime = time();
-		$receivedLines = array();
+		$receivedLines = [];
 
 		do
 		{
@@ -237,7 +245,8 @@ class ConnectionManager extends Manager
 
 			if (count($receivedLines) == $lines)
 				break;
-		} while (count($receivedLines) < $lines && time() < $currtime + $timeout);
+		}
+		while (count($receivedLines) < $lines && time() < $currtime + $timeout);
 
 		return $receivedLines;
 	}
@@ -255,52 +264,58 @@ class ConnectionManager extends Manager
 	/**
 	 * Sets the server.
 	 * E.g. irc.quakenet.org or irc.freenode.org
+	 *
 	 * @param string $server The server to set.
 	 */
 	public function setServer($server)
 	{
-		$this->server = (string) $server;
+		$this->server = (string)$server;
 	}
 
 	/**
 	 * Sets the port.
 	 * E.g. 6667
+	 *
 	 * @param integer $port The port to set.
 	 */
 	public function setPort($port)
 	{
-		$this->port = (int) $port;
+		$this->port = (int)$port;
 	}
 
 	/**
 	 * Set the password used for connecting.
+	 *
 	 * @param string $pass The password to set.
 	 */
 	public function setPassword($pass)
 	{
-		$this->password = (string) $pass;
+		$this->password = (string)$pass;
 	}
 
 	/**
 	 * Set the hostname used for connecting.
+	 *
 	 * @param string $name The hostname to set.
 	 */
 	public function setName($name)
 	{
-		$this->name = (string) $name;
+		$this->name = (string)$name;
 	}
 
 	/**
 	 * Set the nick used for connecting.
+	 *
 	 * @param string $nick The nickname to set.
 	 */
 	public function setNick($nick)
 	{
-		$this->nick = (string) $nick;
+		$this->nick = (string)$nick;
 	}
 
 	/**
 	 * Returns the last data received.
+	 *
 	 * @return ServerMessage
 	 */
 	public function getLastData()

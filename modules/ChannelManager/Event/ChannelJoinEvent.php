@@ -23,12 +23,14 @@ class ChannelJoinEvent implements IChannelEvent
 {
 	/**
 	 * The channel.
+	 *
 	 * @var string
 	 */
 	protected $channel;
 
 	/**
 	 * Constructs the event.
+	 *
 	 * @param string $channel The channel that is being joined.
 	 */
 	public function __construct($channel)

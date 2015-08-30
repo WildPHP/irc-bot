@@ -29,25 +29,28 @@ class TimerManager extends Manager
 {
 	/**
 	 * The timers. Stored as array<timestamp, callable>
+	 *
 	 * @var Timer[]
 	 */
-	protected $timers = array();
+	protected $timers = [];
 
 	/**
 	 * Hook into events and get everything set up.
+	 *
 	 * @param Bot $bot The bot object.
 	 */
 	public function __construct(Bot $bot)
 	{
 		parent::__construct($bot);
 
-		$this->getEventManager()->getEvent('Loop')->registerListener(array($this, 'trigger'));
+		$this->getEventManager()->getEvent('Loop')->registerListener([$this, 'trigger']);
 	}
 
 	/**
 	 * Adds a timer.
-	 * @param string $name The name to set for the timer.
-	 * @param Timer $timer The timer object to add.
+	 *
+	 * @param string $name  The name to set for the timer.
+	 * @param Timer  $timer The timer object to add.
 	 * @throws \InvalidArgumentException when no name is specified or an invalid timer is passed.
 	 * @throws TimerExistsException when a timer already exists either by the same name or object.
 	 */
@@ -59,12 +62,13 @@ class TimerManager extends Manager
 		if ($this->exists($name))
 			throw new TimerExistsException('The specified timer already exists.');
 
-		$this->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', array('name' => $name, 'nextTrigger' => ($timer->getTime() - time())), LogLevels::DEBUG);
+		$this->log('Added new timer {name}. Next trigger in {nextTrigger} seconds.', ['name' => $name, 'nextTrigger' => ($timer->getTime() - time())], LogLevels::DEBUG);
 		$this->timers[$name] = $timer;
 	}
 
 	/**
 	 * Checks if a timer exists, searching on the name.
+	 *
 	 * @param string $name
 	 * @return boolean
 	 */
@@ -75,6 +79,7 @@ class TimerManager extends Manager
 
 	/**
 	 * Checks if a timer exists, searching by object.
+	 *
 	 * @param Timer $timer
 	 * @return boolean
 	 */
@@ -85,6 +90,7 @@ class TimerManager extends Manager
 
 	/**
 	 * Removes a timer by name.
+	 *
 	 * @param string $name The timer to remove.
 	 * @throws TimerDoesNotExistException when the timer does not exist.
 	 */
@@ -94,11 +100,12 @@ class TimerManager extends Manager
 			throw new TimerDoesNotExistException();
 
 		unset($this->timers[$name]);
-		$this->log('Removed timer {name}', array('name' => $name), LogLevels::DEBUG);
+		$this->log('Removed timer {name}', ['name' => $name], LogLevels::DEBUG);
 	}
 
 	/**
 	 * Removes a timer by timer object.
+	 *
 	 * @param Timer $timer
 	 */
 	public function removeByObject(Timer $timer)
@@ -116,7 +123,7 @@ class TimerManager extends Manager
 			if ($object->isSuspended() || $object->getTime() > time())
 				continue;
 
-			$this->log('Triggering timer {name}', array('name' => $name), LogLevels::DEBUG);
+			$this->log('Triggering timer {name}', ['name' => $name], LogLevels::DEBUG);
 			$oldtime = $object->getTime();
 
 			if (!is_callable($object->getCall()))
@@ -136,6 +143,7 @@ class TimerManager extends Manager
 
 	/**
 	 * Handles autocleanup of timers.
+	 *
 	 * @param Timer $timer The timer that needs to be checked.
 	 * @throws TimerDoesNotExistException when the timer does not exist.
 	 */
@@ -160,7 +168,8 @@ class TimerManager extends Manager
 
 	/**
 	 * Get all timers for the specific time, allowing for fluctuation.
-	 * @param int $time The time to get timers for.
+	 *
+	 * @param int $time                The time to get timers for.
 	 * @param int $fluctuationPositive The fluctuation to allow in the positive range.
 	 * @param int $fluctuationNegative The fluctuation to allow in the negative range.
 	 * @return string[] The callable timers.
@@ -171,7 +180,7 @@ class TimerManager extends Manager
 		if (!is_int($time) || $time <= 0 || !is_int($fluctuationPositive) || !is_int($fluctuationNegative))
 			throw new \InvalidArgumentException();
 
-		$return = array();
+		$return = [];
 		foreach ($this->timers as $name => $timer)
 		{
 			if ($timer->getTime() == $time || (($time - $fluctuationNegative <= $timer->getTime()) && ($timer->getTime() <= $time + $fluctuationPositive)))
@@ -183,6 +192,7 @@ class TimerManager extends Manager
 
 	/**
 	 * Gets a specific timer by name.
+	 *
 	 * @param string $name The timer name.
 	 * @return Timer
 	 * @throws \InvalidArgumentException when an invalid $name is passed.

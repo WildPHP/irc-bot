@@ -19,6 +19,7 @@
 */
 namespace WildPHP\EventManager;
 
+use WildPHP\Bot;
 use WildPHP\LogManager\LogLevels;
 use WildPHP\Manager;
 use InvalidArgumentException;
@@ -39,13 +40,27 @@ class EventManager extends Manager
 	/**
 	 * Holds registered events, their hooks and other data.
 	 * Each event is stored as array()
+	 *
 	 * @var array<string, RegisteredEvent>
 	 */
-	private $events = array();
+	private $events = [];
+
+	/**
+	 * Sets up the module manager.
+	 *
+	 * @param Bot $bot An instance of the bot.
+	 */
+	public function __construct(Bot $bot)
+	{
+		parent::__construct($bot);
+		$this->register('NewListener', new RegisteredEvent('NewListenerEvent', $this));
+		$this->register('NewCommand', new RegisteredEvent('NewCommandEvent', $this));
+	}
 
 	/**
 	 * Validates a name using EVENT_NAME_PATTERN, throwing an exception when the name is invalid.
-	 * @param string $name The name that will be checked
+	 *
+	 * @param string $name    The name that will be checked
 	 * @param string $message Optional message that is thrown with the exception.
 	 * @return void
 	 * @throws InvalidArgumentException
@@ -60,7 +75,8 @@ class EventManager extends Manager
 	 * Registers a new event with this manager under a specific event name.
 	 * If you attempt to register already registered event nothing happens unless
 	 * the classes mismatch. In that case an exception is thrown.
-	 * @param string  $eventName Name of the event that is being registered.
+	 *
+	 * @param string          $eventName       Name of the event that is being registered.
 	 * @param RegisteredEvent $registeredEvent The class instance to use for this event.
 	 * @throws EventAlreadyRegisteredException on critical failure
 	 * @return bool True on success, false on failure.
@@ -74,19 +90,21 @@ class EventManager extends Manager
 		{
 			// check whether the event we are registering is the same class (or subclass) of what we have already registered
 			if (is_a($registeredEvent->getClassName(), $this->events[$eventName]->getClassName(), true))
-				$this->log('Event {name} has been previously registered, skipping request.', array('name' => $eventName), LogLevels::DEBUG);
+				$this->log('Event {name} has been previously registered, skipping request.', ['name' => $eventName], LogLevels::DEBUG);
 			else
 				throw new EventAlreadyRegisteredException('Event registration failed: Event ' . $eventName . ' has been previously registered with a different class name (' . $this->events[$eventName]->getClassName() . ').');
 			return false;
 		}
 
 		$this->events[$eventName] = $registeredEvent;
-		$this->log('Registered event {name} (with class {class}).', array('name' => $eventName, 'class' => $registeredEvent->getClassName()), LogLevels::DEBUG);
+		$registeredEvent->injectApi($this->newApiInstance());
+		$this->log('Registered event {name} (with class {class}).', ['name' => $eventName, 'class' => $registeredEvent->getClassName()], LogLevels::DEBUG);
 		return true;
 	}
 
 	/**
 	 * Checks whether an event is registered with this manager.
+	 *
 	 * @param string $eventName The event to check.
 	 * @return bool true if event exists, false otherwise.
 	 */
@@ -99,6 +117,7 @@ class EventManager extends Manager
 
 	/**
 	 * Removes a registered event from this manager.
+	 *
 	 * @param string $eventName The event to remove.
 	 * @return boolean|null Boolean determining if the operation succeeded.
 	 * @throws EventDoesNotExistException When the event does not exist.
@@ -114,6 +133,7 @@ class EventManager extends Manager
 
 	/**
 	 * Returns a registered event allowing you to manipulate it.
+	 *
 	 * @param string $eventName The event to get.
 	 * @return RegisteredEvent|RegisteredCommandEvent The events with their hooks.
 	 * @throws EventDoesNotExistException When the event is not registered or does not exist.
@@ -125,5 +145,19 @@ class EventManager extends Manager
 			throw new EventDoesNotExistException('Event ' . $eventName . ' is not registered.');
 
 		return $this->events[$eventName];
+	}
+
+	/**
+	 * Finds the event name for an object.
+	 *
+	 * @param RegisteredEvent $event
+	 * @return string|false
+	 */
+	public function findNameByObject(RegisteredEvent $event)
+	{
+		if (!in_array($event, $this->events))
+			return false;
+
+		return array_search($event, $this->events);
 	}
 }

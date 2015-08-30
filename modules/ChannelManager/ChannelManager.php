@@ -27,7 +27,7 @@ use WildPHP\Modules\ChannelManager\Event\ChannelMessageEvent;
 use WildPHP\Modules\ChannelManager\JoinCommand;
 use WildPHP\Modules\ChannelManager\PartCommand;
 use WildPHP\Validation;
-use WildPHP\Event\CommandEvent;
+use WildPHP\Modules\CommandParser\Event\CommandEvent;
 use WildPHP\Event\IRCMessageInboundEvent;
 use WildPHP\EventManager\RegisteredModuleEvent;
 use WildPHP\Modules\ChannelManager\Event\ChannelJoinEvent;
@@ -39,34 +39,27 @@ class ChannelManager extends BaseModule
 	/**
 	 * List of channels the bot is currently in.
 	 */
-	private $channels = array();
+	private $channels = [];
 
 	/**
 	 * The Auth module's object.
+	 *
 	 * @var \WildPHP\Modules\Auth
 	 */
 	private $auth;
 
 	/**
 	 * Dependencies of this module.
+	 *
 	 * @var string[]
 	 */
-	protected static $dependencies = array('Auth', 'Help');
+	protected static $dependencies = ['Auth', 'Help'];
 
 	/**
 	 * Set up the module.
 	 */
 	public function setup()
 	{
-		// Register our commands.
-		$botCommand = $this->getEventManager()->getEvent('BotCommand');
-		$botCommand->registerCommand('join', array($this, 'joinCommand'), true);
-		$botCommand->registerCommand('part', array($this, 'partCommand'), true);
-
-		$helpmodule = $this->getModule('Help');
-		$helpmodule->registerHelp('join', 'Joins a channel. Usage: join [channel] [channel] [...]');
-		$helpmodule->registerHelp('part', 'Leaves a channel. Usage: part [channel] [channel] [...]');
-
 		// Register a new event.
 		$channelJoin = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelJoinEvent');
 		$this->getEventManager()->register('ChannelJoin', $channelJoin);
@@ -77,18 +70,45 @@ class ChannelManager extends BaseModule
 		$channelMessage = new RegisteredModuleEvent('WildPHP\\Modules\\ChannelManager\\Event\\ChannelMessageEvent');
 		$this->getEventManager()->register('ChannelMessage', $channelMessage);
 
-		// We also have a listener. Or more.
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'initialJoin'));
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'channelMessageListener'));
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerListener(array($this, 'gateWatcher'));
-		$this->getEventManager()->getEvent('ChannelMessage')->registerListener(array($this, 'channelMessageLogger'));
-
-			// Get the auth module.
+		// Get the auth module.
 		$this->auth = $this->getModule('Auth');
 	}
 
 	/**
+	 * Register commands.
+	 */
+	public function registerCommands()
+	{
+		return [
+			'join' => [
+				'callback' => 'joinCommand',
+				'help'     => 'Joins a channel. Usage: join [channel] [channel] [...]',
+				'auth'     => true
+			],
+			'part' => [
+				'callback' => 'partCommand',
+				'help'     => 'Leaves a channel. Usage: part [channel] [channel] [...]',
+				'auth'     => true
+			]
+		];
+	}
+
+	/**
+	 * Register listeners.
+	 */
+	public function registerListeners()
+	{
+		return [
+			'initialJoin'            => 'IRCMessageInbound',
+			'channelMessageListener' => 'IRCMessageInbound',
+			'gateWatcher'            => 'IRCMessageInbound',
+			'channelMessageLogger'   => 'ChannelMessage'
+		];
+	}
+
+	/**
 	 * The Join command.
+	 *
 	 * @param CommandEvent $e The last data received.
 	 */
 	public function joinCommand(CommandEvent $e)
@@ -103,7 +123,7 @@ class ChannelManager extends BaseModule
 		{
 			if ($this->isInChannel($chan))
 			{
-				$this->log('Not joining channel {channel} because I am already part of it.', array('channel' => $chan), LogLevels::CHANNEL);
+				$this->log('Not joining channel {channel} because I am already part of it.', ['channel' => $chan], LogLevels::CHANNEL);
 				continue;
 			}
 
@@ -114,13 +134,14 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * The Part command.
+	 *
 	 * @param CommandEvent $e The last data received.
 	 */
 	public function partCommand(CommandEvent $e)
 	{
 		// If no argument specified, attempt to leave the current channel.
 		if (empty($e->getParams()))
-			$c = array($e->getMessage()->getChannel());
+			$c = [$e->getMessage()->getChannel()];
 
 		else
 			$c = $e->getParams();
@@ -130,12 +151,13 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * Join a channel.
+	 *
 	 * @param string|string[] $channel The channel name(s).
 	 */
 	public function joinChannel($channel)
 	{
 		if (!is_array($channel))
-			$channel = array($channel);
+			$channel = [$channel];
 
 		foreach ($channel as $id => $chan)
 		{
@@ -148,6 +170,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function handles the initial joining of channels.
+	 *
 	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
 	public function initialJoin(IRCMessageInboundEvent $e)
@@ -169,6 +192,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function handles raising channelMessage events.
+	 *
 	 * @param IRCMessageInboundEvent $e The last data received.
 	 */
 	public function channelMessageListener(IRCMessageInboundEvent $e)
@@ -183,6 +207,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * This function just logs data for channels.
+	 *
 	 * @param ChannelMessageEvent $e
 	 */
 	public function channelMessageLogger(ChannelMessageEvent $e)
@@ -197,16 +222,17 @@ class ChannelManager extends BaseModule
 
 		$this->log(
 			'({channel}) <{user}> {message}',
-			array(
+			[
 				'channel' => $message->getTargets(),
-				'user' => $message->getNickname(),
+				'user'    => $message->getNickname(),
 				'message' => $umessage
-			),
+			],
 			LogLevels::CHANNEL);
 	}
 
 	/**
 	 * This function watches for channel joins and parts, and keeps track of them.
+	 *
 	 * @param IRCMessageInboundEvent $e
 	 */
 	public function gateWatcher($e)
@@ -214,7 +240,7 @@ class ChannelManager extends BaseModule
 		if (!empty($e->getMessage()->get()['code']) && $e->getMessage()->getCode() == 'RPL_TOPIC')
 		{
 			$channel = $e->getMessage()->getParams()[1];
-			$this->log('Joined channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
+			$this->log('Joined channel {channel}', ['channel' => $channel], LogLevels::CHANNEL);
 			$this->addChannel($channel);
 			$this->getEventManager()->getEvent('ChannelJoin')->trigger(new ChannelJoinEvent($channel));
 		}
@@ -222,7 +248,7 @@ class ChannelManager extends BaseModule
 		if (($e->getMessage()->getCommand() == 'KICK' || $e->getMessage()->getCommand() == 'PART') && $e->getMessage()->getNickname() == $this->getNickname())
 		{
 			$channel = $e->getMessage()->getParams()['channel'];
-			$this->log('Left channel {channel}', array('channel' => $channel), LogLevels::CHANNEL);
+			$this->log('Left channel {channel}', ['channel' => $channel], LogLevels::CHANNEL);
 			$this->removeChannel($channel);
 			$this->getEventManager()->getEvent('ChannelPart')->trigger(new ChannelPartEvent($channel));
 		}
@@ -230,6 +256,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * Adds a channel to the list.
+	 *
 	 * @param string $channel
 	 */
 	public function addChannel($channel)
@@ -240,6 +267,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * Removes a channel from the list.
+	 *
 	 * @param string $channel
 	 */
 	public function removeChannel($channel)
@@ -250,6 +278,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * Checks if the bot is in a channel.
+	 *
 	 * @param string $channel
 	 * @return boolean
 	 */
@@ -260,6 +289,7 @@ class ChannelManager extends BaseModule
 
 	/**
 	 * List all channels the bot is in
+	 *
 	 * @return string[]
 	 */
 	public function listChannels()

@@ -26,23 +26,26 @@ use WildPHP\Event\IEvent;
 
 /**
  * Represents a registered event within the event manager.
-*/
-class RegisteredCommandEvent extends RegisteredEvent
+ */
+class RegisteredCommandEvent extends RegisteredModuleEvent
 {
 	/**
 	 * The Auth module.
+	 *
 	 * @var Auth
 	 */
 	protected $auth;
 
 	/**
 	 * The list of commands.
+	 *
 	 * @var array<string, array>
 	 */
-	protected $commands = array();
+	protected $commands = [];
 
 	/**
 	 * Sets the authentication module for this event.
+	 *
 	 * @param BaseModule $auth
 	 */
 	public function setAuthModule(BaseModule $auth)
@@ -55,13 +58,15 @@ class RegisteredCommandEvent extends RegisteredEvent
 
 	/**
 	 * Registers a new command.
-	 * @param string $command The command, like 'say'.
-	 * @param callable $call The callable to call.
-	 * @param bool $auth Whether the command needs pre-execution authentication.
+	 *
+	 * @param string     $command The command, like 'say'.
+	 * @param callable   $call    The callable to call.
+	 * @param BaseModule $module  The module this command originates in.
+	 * @param bool       $auth    Whether the command needs pre-execution authentication.
 	 * @throws \InvalidArgumentException when an invalid command is being added.
 	 * @throws CommandExistsException when the command already exists.
 	 */
-	public function registerCommand($command, $call, $auth = false)
+	public function registerCommand($command, $call, BaseModule $module, $auth = false)
 	{
 		if (empty($command) || empty($call) || !is_callable($call))
 			throw new \InvalidArgumentException();
@@ -69,14 +74,18 @@ class RegisteredCommandEvent extends RegisteredEvent
 		if ($this->commandExists($command))
 			throw new CommandExistsException();
 
-		$this->commands[$command] = array(
-			'auth' => (bool) $auth,
-			'call' => $call
-		);
+		$this->api->getEventManager()->getEvent('NewCommand')->trigger(new NewCommandEvent($command, $module));
+
+		$this->commands[$command] = [
+			'auth'   => (bool)$auth,
+			'call'   => $call,
+			'module' => $module
+		];
 	}
 
 	/**
 	 * Removes a command.
+	 *
 	 * @param string $command
 	 * @throws \InvalidArgumentException when $command is empty.
 	 * @throws CommandDoesNotExistException when the command does not exist.
@@ -94,6 +103,7 @@ class RegisteredCommandEvent extends RegisteredEvent
 
 	/**
 	 * Checks if a command already exists.
+	 *
 	 * @param string $command
 	 * @return boolean
 	 */
@@ -104,28 +114,44 @@ class RegisteredCommandEvent extends RegisteredEvent
 
 	/**
 	 * Triggers the event.
+	 *
 	 * @param IEvent $event The event that gets passed to the listeners.
 	 * @throws \InvalidArgumentException when an invalid event type is passed.
+	 * @throws \Exception
+	 * @throws ModuleCrashedException when a module threw an exception.
 	 * @return void
 	 */
 	public function trigger(IEvent $event)
 	{
-		if (!($event instanceof CommandEvent))
-			throw new \InvalidArgumentException('For triggering a RegisteredCommandEvent, you need to pass a CommandEvent.');
+		if (!($event instanceof ICommandEvent))
+			throw new \InvalidArgumentException('For triggering a RegisteredCommandEvent, you need to pass something implementing ICommandEvent.');
 
 		if (!$this->commandExists($event->getCommand()))
 			return;
 
 		// Needs authorization?
 		if ($this->commands[$event->getCommand()]['auth'] && !$this->auth->authUser($event->getMessage()->getHostname()))
-				return;
+			return;
 
 		// Do the call.
-		call_user_func($this->commands[$event->getCommand()]['call'], $event);
+		try
+		{
+			call_user_func($this->commands[$event->getCommand()]['call'], $event);
+		}
+		catch (\Exception $e)
+		{
+			// No module to kick..? Well, nothing to catch... Re-throw.
+			if (!($this->commands[$event->getCommand()]['module'] instanceof BaseModule))
+				throw $e;
+
+			// Kick the module from the stack. Will be handled in the bot itself.
+			throw new ModuleCrashedException($this->commands[$event->getCommand()]['module']);
+		}
 	}
 
 	/**
 	 * List all available commands.
+	 *
 	 * @return string[]
 	 */
 	public function getCommands()
