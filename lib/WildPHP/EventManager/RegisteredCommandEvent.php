@@ -20,9 +20,11 @@
 namespace WildPHP\EventManager;
 
 use WildPHP\BaseModule;
-use WildPHP\Modules\Auth;
-use WildPHP\Event\CommandEvent;
+use WildPHP\Event\ICommandEvent;
 use WildPHP\Event\IEvent;
+use WildPHP\Event\NewCommandEvent;
+use WildPHP\Modules\Auth;
+use WildPHP\Modules\CommandParser\Event\CommandEvent;
 
 /**
  * Represents a registered event within the event manager.

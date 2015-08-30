@@ -112,23 +112,6 @@ class Bot
 		// Then set up the database.
 		$this->db = new \SQLite3($this->getConfig('database'));
 
-		$this->getEventManager()->getEvent('IRCMessageInbound')->registerEventHandler(
-			function(IRCMessageInboundEvent $e)
-			{
-				if ($e->getMessage()->getCommand() != 'PRIVMSG')
-					return;
-
-				$msg = new IRC\CommandPRIVMSG($e->getMessage(), $this->getConfig('prefix'));
-
-				if ($msg->getBotCommand() === false)
-					return;
-
-				$this->getEventManager()->getEvent('BotCommand')->trigger(
-					new Event\CommandEvent($msg)
-				);
-			}
-		);
-
 		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleManager()->getModuleInstance('Auth'));
 	}
 
@@ -163,16 +146,8 @@ class Bot
 	 */
 	public function initializeEvents()
 	{
-		// BotCommand - Triggered when the bot receives a command from a user.
-		$BotCommandEvent = new RegisteredCommandEvent('ICommandEvent');
-		$this->getEventManager()->register('BotCommand', $BotCommandEvent);
-
-		// Say - When the bot is going to "say" (PRIVMSG) to a channel.
-		$SayEvent = new RegisteredEvent('ISayEvent');
-		$this->getEventManager()->register('Say', $SayEvent);
-
 		// Loop - Triggered at every iteration of the bot's main loop.
-		$LoopEvent = new RegisteredEvent('IEvent');
+		$LoopEvent = new RegisteredEvent('IEvent', $this->getEventManager());
 		$this->getEventManager()->register('Loop', $LoopEvent);
 	}
 
@@ -289,7 +264,7 @@ class Bot
 		if (empty($newnick))
 			return false;
 
-		$this->getConnectionManager()->sendData('NICK ' . $newnick);
+		$this->getConnectionManager()->send('NICK ' . $newnick);
 
 		$data = $this->getConnectionManager()->waitReply();
 		if (!empty($data))
@@ -335,7 +310,7 @@ class Bot
 		if (empty($message))
 			$message = 'WildPHP <http://wildphp.com/>';
 
-		$this->getConnectionManager()->sendData('QUIT :' . $message);
+		$this->getConnectionManager()->send('QUIT :' . $message);
 		$this->getConnectionManager()->disconnect();
 		exit;
 	}

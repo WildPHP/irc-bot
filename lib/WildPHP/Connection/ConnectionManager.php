@@ -81,13 +81,13 @@ class ConnectionManager extends Manager
 	{
 		parent::__construct($bot);
 
-		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent');
+		$IRCMessageInboundEvent = new RegisteredEvent('IIRCMessageInboundEvent', $this->getEventManager());
 		$bot->getEventManager()->register('IRCMessageInbound', $IRCMessageInboundEvent);
 
-		$IRCMessageOutgoingEvent = new RegisteredEvent('IIRCMessageOutgoingEvent');
+		$IRCMessageOutgoingEvent = new RegisteredEvent('IIRCMessageOutgoingEvent', $this->getEventManager());
 		$bot->getEventManager()->register('IRCMessageOutgoing', $IRCMessageOutgoingEvent);
 
-		$ConnectEvent = new RegisteredEvent('IConnectEvent');
+		$ConnectEvent = new RegisteredEvent('IConnectEvent', $this->getEventManager());
 		$bot->getEventManager()->register('Connect', $ConnectEvent);
 	}
 
@@ -117,8 +117,8 @@ class ConnectionManager extends Manager
 		// And fire the onConnect event.
 		$this->getEventManager()->getEvent('Connect')->trigger(new ConnectEvent());
 
-		$this->sendData('NICK ' . $this->nick);
-		$this->sendData('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
+		$this->send('NICK ' . $this->nick);
+		$this->send('USER ' . $this->nick . ' ' . gethostname() . ' ' . $this->nick . ' :' . $this->name);
 
 		$this->log('Connection to server {server}:{port} set up with nick {nick}; firing up.', ['server' => $this->server, 'port' => $this->port, 'nick' => $this->nick], LogLevels::INFO);
 	}
@@ -150,11 +150,24 @@ class ConnectionManager extends Manager
 	 * @throws MessageLengthException when $data exceed maximum lenght.
 	 * @throws ConnectionException on socket write error.
 	 */
-	public function sendData($data)
+	public function send($data)
 	{
 		$data = trim($data);
 		if (strlen($data) > 510)
 			throw new MessageLengthException('The data that were supposed to be sent to the server exceed the maximum length of 512 bytes. The data lost were: ' . $data);
+
+		// Trigger a new Outgoing event.
+		$tr = $this->getEventManager()->getEvent('IRCMessageOutgoing');
+		$event = new IRCMessageOutgoingEvent(new ServerMessage($data));
+		$tr->trigger(
+			$event
+		);
+
+		if ($event->isCancelled())
+		{
+			$this->log('An IRCMessageOutgoing event was cancelled and thus no data were written to the server.');
+			return 0;
+		}
 
 		$numBytes = fwrite($this->socket, $data . "\r\n");
 		if ($numBytes === false)
@@ -163,12 +176,7 @@ class ConnectionManager extends Manager
 			throw new ConnectionException('Writing to socket failed unexpectadly. Error code ' . $errno . ' (' . socket_strerror($errno) . ').');
 		}
 
-		$this->log('>> {data}', array('data' => $data), LogLevels::DEBUG);
-
-		// Trigger a new Outgoing event.
-		$this->getEventManager()->getEvent('IRCMessageOutgoing')->trigger(
-			new IRCMessageOutgoingEvent(new ServerMessage($data))
-		);
+		$this->log('>> {data}', ['data' => $data], LogLevels::DEBUG);
 
 		return $numBytes;
 	}
