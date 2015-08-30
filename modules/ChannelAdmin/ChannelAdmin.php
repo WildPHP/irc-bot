@@ -150,7 +150,8 @@ class ChannelAdmin extends BaseModule
 	 */
 	public function opCommand($e)
 	{
-		if (($chan = $this->parseChannel($e)) === false)
+		$chan = $this->parseChannel($e);
+		if ($chan === false)
 			$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 		$this->sendData(new Mode('+o', $chan, implode(' ', $e->getParams())));
@@ -163,7 +164,8 @@ class ChannelAdmin extends BaseModule
 	 */
 	public function deOpCommand($e)
 	{
-		if (($chan = $this->parseChannel($e)) === false)
+		$chan = $this->parseChannel($e);
+		if ($chan === false)
 			$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 		$this->sendData(new Mode('-o', $chan, implode(' ', $e->getParams())));
@@ -176,7 +178,8 @@ class ChannelAdmin extends BaseModule
 	 */
 	public function voiceCommand($e)
 	{
-		if (($chan = $this->parseChannel($e)) === false)
+		$chan = $this->parseChannel($e);
+		if ($chan === false)
 			$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 		$this->sendData(new Mode('+v', $chan, implode(' ', $e->getParams())));
@@ -189,7 +192,8 @@ class ChannelAdmin extends BaseModule
 	 */
 	public function deVoiceCommand($e)
 	{
-		if (($chan = $this->parseChannel($e)) === false)
+		$chan = $this->parseChannel($e);
+		if ($chan === false)
 			$this->sendData(new Privmsg($this->getLastChannel(), 'Not enough parameters. Usage: devoice [#channel] [user] or devoice [user]'));
 
 		$this->sendData(new Mode('-v', $chan, implode(' ', $e->getParams())));
