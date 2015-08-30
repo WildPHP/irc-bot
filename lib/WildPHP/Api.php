@@ -27,157 +27,192 @@ use WildPHP\LogManager\LogLevels;
 
 class Api
 {
-    /**
-     * The bot object.
-     * @var Bot
-     */
-    private $bot = null;
+	/**
+	 * The bot object.
+	 *
+	 * @var Bot
+	 */
+	private $bot = null;
 
-    /**
-     * Set up the module.
-     * @param Bot $bot The Bot object.
-     */
-    public function __construct(Bot $bot)
-    {
-        $this->setBot($bot);
-    }
+	/**
+	 * Set up the module.
+	 *
+	 * @param Bot $bot The Bot object.
+	 */
+	public function __construct(Bot $bot)
+	{
+		$this->setBot($bot);
+	}
 
-    /**
-     * Sets the bot object.
-     * @param Bot $bot
-     */
-    private function setBot(Bot $bot)
-    {
-        $this->bot = $bot;
-    }
+	/**
+	 * Sets the bot object.
+	 *
+	 * @param Bot $bot
+	 */
+	private function setBot(Bot $bot)
+	{
+		$this->bot = $bot;
+	}
 
-    /**
-     * Helper function for using the Event Manager.
-     * @return EventManager
-     */
-    public function getEventManager()
-    {
-        return $this->bot->getEventManager();
-    }
+	/**
+	 * Helper function for using the Event Manager.
+	 *
+	 * @return EventManager
+	 */
+	public function getEventManager()
+	{
+		return $this->bot->getEventManager();
+	}
 
-    /**
-     * Helper function for using the Timer Manager.
-     * @return TimerManager
-     */
-    public function getTimerManager()
-    {
-        return $this->bot->getTimerManager();
-    }
+	/**
+	 * Helper function for using the Timer Manager.
+	 *
+	 * @return TimerManager
+	 */
+	public function getTimerManager()
+	{
+		return $this->bot->getTimerManager();
+	}
 
-    /**
-     * Return the connection manager.
-     * @return ConnectionManager
-     */
-    public function getConnectionManager()
-    {
-        return $this->bot->getConnectionManager();
-    }
+	/**
+	 * Return the connection manager.
+	 *
+	 * @return ConnectionManager
+	 */
+	public function getConnectionManager()
+	{
+		return $this->bot->getConnectionManager();
+	}
 
-    /**
-     * Gets a module from the module manager.
-     * @param string $module The module name.
-     * @return BaseModule
-     */
-    public function getModule($module)
-    {
-        return $this->bot->getModuleManager()->getModuleInstance($module);
-    }
+	/**
+	 * Return the module manager.
+	 *
+	 * @return ModuleManager
+	 */
+	public function getModuleManager()
+	{
+		return $this->bot->getModuleManager();
+	}
 
-    /**
-     * Fetches data from $uri
-     * @param string $uri    The URI to fetch data from.
-     * @param bool   $decode Whether to attempt to decode the received data using json_decode.
-     * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or false if it failed.
-     */
-    public static function fetch($uri, $decode = false)
-    {
-        // create curl resource
-        $ch = curl_init();
+	/**
+	 * Gets a module from the module manager.
+	 *
+	 * @param string $module The module name.
+	 * @return BaseModule
+	 */
+	public function getModule($module)
+	{
+		return $this->bot->getModuleManager()->getModuleInstance($module);
+	}
 
-        // set url
-        curl_setopt($ch, CURLOPT_URL, $uri);
+	/**
+	 * Fetches data from $uri
+	 *
+	 * @param string $uri    The URI to fetch data from.
+	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
+	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or
+	 *               false if it failed.
+	 */
+	public static function fetch($uri, $decode = false)
+	{
+		// create curl resource
+		$ch = curl_init();
 
-        // user agent.
-        curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
+		// set url
+		curl_setopt($ch, CURLOPT_URL, $uri);
 
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+		// user agent.
+		curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
 
-        // $output contains the output string
-        $output = curl_exec($ch);
+		//return the transfer as a string
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
 
-        if (!empty($decode) && ($output = json_decode($output)) === null)
-            $output = false;
+		// $output contains the output string
+		$output = curl_exec($ch);
 
-        // close curl resource to free up system resources
-        curl_close($ch);
-        return $output;
-    }
+		if (!empty($decode) && ($output = json_decode($output)) === null)
+			$output = false;
 
-    /**
-     * Returns an item stored in the configuration.
-     * @param string $item The configuration item to get.
-     * @return false|mixed The item stored called by key, or false on failure.
-     */
-    public function getConfig($item)
-    {
-        return $this->bot->getConfig($item);
-    }
+		// close curl resource to free up system resources
+		curl_close($ch);
+		return $output;
+	}
 
-    /**
-     * Send data out.
-     * @param IRCData $data The data to send.
-     */
-    public function sendData(IRCData $data)
-    {
-        if (empty((string) $data))
-            return;
+	/**
+	 * Returns an item stored in the configuration.
+	 *
+	 * @param string $item The configuration item to get.
+	 * @return false|mixed The item stored called by key, or false on failure.
+	 */
+	public function getConfig($item)
+	{
+		return $this->bot->getConfig($item);
+	}
 
-        $this->bot->getConnectionManager()->sendData((string) $data);
-    }
+	/**
+	 * Send data out.
+	 *
+	 * @param IRCData $data The data to send.
+	 */
+	public function sendData(IRCData $data)
+	{
+		if (empty((string)$data))
+			return;
 
-    /**
-     * Gets the last channel something was said to.
-     * @return string|null Null when no data available, string if there is.
-     */
-    public function getLastChannel()
-    {
-        $targets = $this->bot->getConnectionManager()->getLastData()->getTargets();
-        return !empty($targets) ? $targets[0] : null;
-    }
+		$this->getConnectionManager()->send((string)$data);
+	}
 
-    /**
-     * Sets the bot nickname.
-     * @param string $nickname
-     */
-    public function setNickname($nickname)
-    {
-        $this->bot->setNickname($nickname);
-    }
+	/**
+	 * Gets the last channel something was said to.
+	 *
+	 * @return string|null Null when no data available, string if there is.
+	 */
+	public function getLastChannel()
+	{
+		$targets = $this->bot->getConnectionManager()->getLastData()->getTargets();
+		return !empty($targets) ? $targets[0] : null;
+	}
 
-    /**
-     * Gets the nickname.
-     * @return string
-     */
-    public function getNickname()
-    {
-        return $this->bot->getNickname();
-    }
+	/**
+	 * Sets the bot nickname.
+	 *
+	 * @param string $nickname
+	 */
+	public function setNickname($nickname)
+	{
+		$this->bot->setNickname($nickname);
+	}
 
-    /**
-     * Sends a message to the log.
-     * @param string $message the message to be logged.
-     * @param array $context The context to use.
-     * @param string $level The level to log at. Defaults to debug.
-     */
-    protected function log($message, $context = array(), $level = LogLevels::DEBUG)
-    {
-        $this->bot->log($message, $context, $level);
-    }
+	/**
+	 * Gets the nickname.
+	 *
+	 * @return string
+	 */
+	public function getNickname()
+	{
+		return $this->bot->getNickname();
+	}
+
+	/**
+	 * Sends a message to the log.
+	 *
+	 * @param string $message the message to be logged.
+	 * @param array  $context The context to use.
+	 * @param string $level   The level to log at. Defaults to debug.
+	 */
+	public function log($message, $context = [], $level = LogLevels::DEBUG)
+	{
+		$this->bot->log($message, $context, $level);
+	}
+
+	/**
+	 * Creates a new Api instance.
+	 *
+	 * @return Api
+	 */
+	public function newApiInstance()
+	{
+		return new Api($this->bot);
+	}
 }
