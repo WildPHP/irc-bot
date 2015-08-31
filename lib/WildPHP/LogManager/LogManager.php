@@ -77,21 +77,21 @@ class LogManager extends Manager
 		if (empty($config['file']))
 			throw new \RuntimeException('LogManager: A log file needs to be set to use logging. Aborting.');
 
-		// Check for log dir and create it if necessary
-		if (!file_exists($logDir))
-			if (!mkdir($logDir, 0775))
-				throw new \RuntimeException('Log directory (' . $logDir . ') does not exist. Attempt to create it failed.');
+		$this->createLogFile($logDir);
+	}
 
-		// Check if the log dir is in fact a directory
-		if (!is_dir($logDir))
-			throw new \RuntimeException($logDir . ': ' . __CLASS__ . ' expected directory.');
-
-		// Also can't log to a directory we can't write to.
-		if (!is_writable($logDir))
-			throw new \RuntimeException('Log directory (' . $logDir . ') has insufficient write permissions.');
+	/**
+	 * Creates the log file.
+	 *
+	 * @param string $dir  The directory to store the log in.
+	 */
+	private function createLogFile($dir)
+	{
+		$this->checkLogDir($dir);
+		$base = $this->getConfig('log.file');
 
 		// Start off with the base path to the file.
-		$this->logFile = $logDir . '/' . $config['file'];
+		$this->logFile = $dir . '/' . $base;
 
 		// Now, we're going to count up until we find a file that doesn't yet exist.
 		$i = 0;
@@ -110,7 +110,28 @@ class LogManager extends Manager
 
 		// Well this went great...
 		else
-			trigger_error('LogManager: Cannot create file ' . $this->logFile . '. Aborting.', E_USER_ERROR);
+			throw new \RuntimeException('LogManager: Cannot create file ' . $this->logFile . '.');
+	}
+
+	/**
+	 * Checks a directory, if it is writable etc.
+	 *
+	 * @param string $dir The directory to check.
+	 * @throws \RuntimeException if something is wrong.
+	 */
+	private function checkLogDir($dir)
+	{
+		// Check for log dir and create it if necessary
+		if (!file_exists($dir) && !mkdir($dir, 0775))
+			throw new \RuntimeException('Log directory (' . $dir . ') does not exist. Attempt to create it failed.');
+
+		// Check if the log dir is in fact a directory
+		if (!is_dir($dir))
+			throw new \RuntimeException($dir . ': ' . __CLASS__ . ' expected directory.');
+
+		// Also can't log to a directory we can't write to.
+		if (!is_writable($dir))
+			throw new \RuntimeException('Log directory (' . $dir . ') has insufficient write permissions.');
 	}
 
 	/**
