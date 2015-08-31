@@ -246,7 +246,7 @@ class ConnectionManager extends Manager
 		{
 			$data = $this->processReceivedData();
 
-			if ($data == false)
+			if ($data === false)
 				continue;
 
 			$receivedLines[] = $data;
