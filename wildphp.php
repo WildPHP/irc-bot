@@ -58,5 +58,6 @@ require_once('vendor/autoload.php');
 
 // Create a new bot and start it up
 $bot = new Bot();
-$bot->connect();
 $bot->start();
+
+

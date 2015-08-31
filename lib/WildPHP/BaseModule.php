@@ -24,7 +24,7 @@ use WildPHP\EventManager\InvalidEventTypeException;
 use WildPHP\EventManager\RegisteredCommandEvent;
 use WildPHP\Modules\Help;
 
-class BaseModule extends Api
+class BaseModule
 {
 	/**
 	 * The module directory.
@@ -34,14 +34,20 @@ class BaseModule extends Api
 	private $dir;
 
 	/**
+	 * The Api.
+	 *
+	 * @var Api
+	 */
+	protected $api;
+
+	/**
 	 * Set up the module.
 	 *
-	 * @param Bot $bot The Bot object.
+	 * @param Api $api The current Api.
 	 */
-	public function __construct(Bot $bot)
+	public function __construct(Api $api)
 	{
-		parent::__construct($bot);
-
+		$this->api = $api;
 		$dirname = explode('\\', get_class($this));
 		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
 	}
@@ -57,18 +63,18 @@ class BaseModule extends Api
 
 			if ($result === false)
 			{
-				$this->log('Module initialisation canceled. The module will remain loaded.');
+				$this->api->getLogger()->debug('Module initialisation canceled. The module will remain loaded.');
 				return;
 			}
 		}
 
 		// Set up predefined events, then.
-		if (method_exists($this, 'registerEvents'))
+		/*if (method_exists($this, 'registerEvents'))
 			$this->handleEvents();
 
 		// And commands.
 		if (method_exists($this, 'registerCommands'))
-			$this->handleCommands();
+			$this->handleCommands();*/
 	}
 
 	/**
@@ -100,7 +106,7 @@ class BaseModule extends Api
 	/**
 	 * Handle event registering.
 	 */
-	private function handleEvents()
+	/*private function handleEvents()
 	{
 		if (!method_exists($this, 'registerEvents'))
 			throw new \RuntimeException('You may not call BaseModule::handleEvents when the module itself has no registerEvents method.');
@@ -119,12 +125,12 @@ class BaseModule extends Api
 
 			$this->getEventManager()->getEvent($event)->registerListener([$this, $callback], $this);
 		}
-	}
+	}*/
 
 	/**
 	 * Handle command registering.
 	 */
-	private function handleCommands()
+	/*private function handleCommands()
 	{
 		if (!method_exists($this, 'registerCommands'))
 			throw new \RuntimeException('You may not call BaseModule::handleCommands when the module itself has no registerCommands method.');
@@ -155,7 +161,7 @@ class BaseModule extends Api
 			if (!empty($data['help']))
 				$help->registerHelp($command, $data['help']);
 		}
-	}
+	}*/
 
 	/**
 	 * Return the working directory of this module.

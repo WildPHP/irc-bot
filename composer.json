@@ -5,7 +5,11 @@
         "php": ">=5.4.0",
         "nette/neon": "^2.3",
         "myclabs/php-enum": "^1.4",
-        "phergie/phergie-irc-parser": "^2.1"
+        "phergie/phergie-irc-parser": "^2.1",
+        "react/react": "^0.4.2",
+        "phergie/phergie-irc-generator": "^1.7",
+        "phergie/phergie-irc-connection": "^2.0",
+        "monolog/monolog": "^1.17"
     },
     "require-dev":
     {

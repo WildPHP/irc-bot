@@ -24,21 +24,18 @@ use WildPHP\Manager;
 use WildPHP\Bot;
 use Nette\Neon\Neon;
 
-class ConfigurationManager extends Manager
+class ConfigurationStorage
 {
 	private $config = [];
 
 	/**
 	 * Loads the config file and parses it.
 	 *
-	 * @param Bot    $bot    The bot object
 	 * @param string $config The path to the config file.
 	 * @throws \Exception on read error.
 	 */
-	public function __construct(Bot $bot, $config)
+	public function __construct($config)
 	{
-		parent::__construct($bot);
-
 		try
 		{
 			// Open the file and surpress errors; we'll do our own error handling here.
