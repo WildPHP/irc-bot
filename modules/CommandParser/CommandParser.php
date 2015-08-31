@@ -80,7 +80,7 @@ class CommandParser extends BaseModule
 		$params = '';
 		foreach ($tests as $test)
 		{
-			if (preg_match('/' . $test . '/', $msg->getUserMessage(), $out) == false)
+			if (preg_match('/' . $test . '/', $msg->getUserMessage(), $out) === false)
 				continue;
 
 			$command = $out[1];
