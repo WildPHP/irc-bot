@@ -69,12 +69,8 @@ class BaseModule
 		}
 
 		// Set up predefined events, then.
-		/*if (method_exists($this, 'registerEvents'))
-			$this->handleEvents();
-
-		// And commands.
-		if (method_exists($this, 'registerCommands'))
-			$this->handleCommands();*/
+		if (method_exists($this, 'registerListeners'))
+			$this->handleListeners();
 	}
 
 	/**
@@ -84,84 +80,32 @@ class BaseModule
 	 */
 	public function getListeners()
 	{
-		if (!method_exists($this, 'registerEvents'))
+		if (!method_exists($this, 'registerListeners'))
 			return [];
 
-		return $this->registerEvents();
-	}
-
-	/**
-	 * Return registered commands.
-	 *
-	 * @return array
-	 */
-	public function getCommands()
-	{
-		if (!method_exists($this, 'registerCommands'))
-			return [];
-
-		return array_keys($this->registerCommands());
+		return $this->registerListeners();
 	}
 
 	/**
 	 * Handle event registering.
 	 */
-	/*private function handleEvents()
+	private function handleListeners()
 	{
-		if (!method_exists($this, 'registerEvents'))
-			throw new \RuntimeException('You may not call BaseModule::handleEvents when the module itself has no registerEvents method.');
+		if (!method_exists($this, 'registerListeners'))
+			return;
 
-		$events = $this->registerEvents();
+		$events = $this->registerListeners();
 		if (!is_array($events))
-			throw new \InvalidArgumentException('BaseModule::handleEvents expects registerEvents to return an array in the format of \'callback\' => \'event\', ' . gettype($events) . ' given.');
+			return;
 
 		foreach ($events as $callback => $event)
 		{
 			if (!is_callable([$this, $callback]))
-				throw new \InvalidArgumentException('Please make sure the methods exist for the predefined event map in your module.');
+				return;
 
-			if (!$this->getEventManager()->isRegistered($event))
-				throw new \InvalidArgumentException('Please make sure you are mapping to existing and registered events. If you need to register an event, do so in your module\'s setup method.');
-
-			$this->getEventManager()->getEvent($event)->registerListener([$this, $callback], $this);
+			$this->api->getEmitter()->on($event, [$this, $callback]);
 		}
-	}*/
-
-	/**
-	 * Handle command registering.
-	 */
-	/*private function handleCommands()
-	{
-		if (!method_exists($this, 'registerCommands'))
-			throw new \RuntimeException('You may not call BaseModule::handleCommands when the module itself has no registerCommands method.');
-
-		// First make sure the CommandParser module is loaded.
-		$this->getModule('CommandParser');
-		$cmds = $this->registerCommands();
-		if (!is_array($cmds))
-			throw new \InvalidArgumentException('BaseModule::handleCommands expects registerCommands to return an array in the format of \'command\' => array(\'callback\' => callback, [\'help\' => string], [\'auth\' => boolean]), ' . gettype($cmds) . ' given.');
-
-		$botCommand = $this->getEventManager()->getEvent('BotCommand');
-
-		if (!($botCommand instanceof RegisteredCommandEvent))
-			throw new InvalidEventTypeException('BaseModule::handleCommands expects event BotCommand to be of type RegisteredCommandEvent, got ' . gettype($botCommand));
-
-		$help = $this->getModule('Help');
-
-		if (!($help instanceof Help))
-			throw new \RuntimeException('BaseModule could not find the Help module.');
-
-		foreach ($cmds as $command => $data)
-		{
-			if (empty($data) || empty($data['callback']) || !is_callable([$this, $data['callback']]))
-				throw new \InvalidArgumentException('registerCommands returned invalid result.');
-
-			$botCommand->registerCommand($command, [$this, $data['callback']], $this, !empty($data['auth']));
-
-			if (!empty($data['help']))
-				$help->registerHelp($command, $data['help']);
-		}
-	}*/
+	}
 
 	/**
 	 * Return the working directory of this module.

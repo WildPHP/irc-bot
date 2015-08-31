@@ -56,6 +56,13 @@ class IrcConnection
 	 */
 	protected $connectionDetails;
 
+    /**
+     * Partial message from last data process. It happens.
+     *
+     * @var string
+     */
+    protected $partial = '';
+
 	/**
 	 * @return ConnectionInterface
 	 */
@@ -121,17 +128,31 @@ class IrcConnection
 			$this->api->getEmitter()->emit('irc.connect', array($stream, $connection));
 			$this->write($this->api->getGenerator()->ircNick($connection->getNickname()));
 			$this->write($this->api->getGenerator()->ircUser($connection->getNickname(), gethostname(), $connection->getNickname(), $connection->getUsername()));
-			$stream->on('data', function ($data)
-			{
-				//var_dump($data);
-				echo '<< ' . $data;
-			});
-			$stream->on('error', function($error)
-			{
-				echo 'ERROR!' . $error;
-			});
+			$stream->on('data', array($this, 'processData'));
 		});
 	}
+
+	/**
+	 * Process incoming data.
+     *
+     * @param string $data
+	 */
+    public function processData($data)
+    {
+        $all = $this->partial . $data;
+        $messages = $this->api->getParser()->consumeAll($all);
+        $this->partial = $all;
+
+        foreach ($messages as $message)
+        {
+            $this->api->getLogger()->debug('<< ' . $message['message']);
+
+            // Fire both a generic irc.data.in and an irc.data.in.{command} event.
+            $this->api->getEmitter()->emit('irc.data.in', array($message));
+            if (!empty($message['command']))
+                $this->api->getEmitter()->emit('irc.data.in.' . strtolower($message['command']), array($message));
+        }
+    }
 
 	/**
 	 * Start up the stream.

@@ -283,6 +283,18 @@ class Api
 		$this->loop = $loop;
 	}
 
+    /**
+     * Returns a module instance.
+     *
+     * @param string $module
+     *
+     * @return BaseModule
+     */
+    public function getModule($module)
+    {
+        return $this->getModuleEmitter()->getModuleInstance($module);
+    }
+
 	/**
 	 * Fetches data from $uri
 	 *

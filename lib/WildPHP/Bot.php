@@ -86,6 +86,7 @@ class Bot
 	public function setIrcConnection(IrcConnection $ircConnection)
 	{
 		$this->ircConnection = $ircConnection;
+		$this->api->setIrcConnection($ircConnection);
 	}
 
 	/**
