@@ -163,4 +163,13 @@ class IrcConnection
 	{
 		$this->api->getLogger()->info('<< ' . $data);
 	}
+
+	/**
+	 * Disconnect the bot from IRC.
+	 */
+	public function disconnect()
+	{
+		$this->write($this->api->getGenerator()->ircQuit());
+		$this->stream->close();
+	}
 }
