@@ -26,12 +26,6 @@ class Notice extends Privmsg
 {
 	public function __toString()
 	{
-		if (strlen($this->getMessage()) > 510 - 9 - strlen($this->getRecipient()))
-			throw new MessageLengthException('Message passed to IRC\\Commands\\NoticePrivmsg is too long.');
-
-		if (empty($this->getRecipient()) || empty($this->getMessage()))
-			return null;
-
-		return 'NOTICE ' . $this->getRecipient() . ' :' . $this->getMessage();
+		parent::__toString('NOTICE');
 	}
 }

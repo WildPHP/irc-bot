@@ -93,7 +93,14 @@ class Privmsg extends IRCData
 		return $this->recipient;
 	}
 
-	public function __toString()
+	/**
+	 * Transform the object into a string. Use the optional $command parameter when overriding this class.
+	 * Done like this to allow more commands to be based on this concept.
+	 *
+	 * @param string $command
+	 * @return null|string
+	 */
+	public function __toString($command = 'PRIVMSG')
 	{
 		if (strlen($this->getMessage()) > 510 - 10 - strlen($this->getRecipient()))
 			throw new MessageLengthException('Message passed to IRC\\Commands\\Privmsg is too long.');
@@ -101,6 +108,6 @@ class Privmsg extends IRCData
 		if (empty($this->getRecipient()) || empty($this->getMessage()))
 			return null;
 
-		return 'PRIVMSG ' . $this->getRecipient() . ' :' . $this->getMessage();
+		return $command . ' ' . $this->getRecipient() . ' :' . $this->getMessage();
 	}
 }
