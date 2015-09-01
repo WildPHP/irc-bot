@@ -24,7 +24,7 @@ use WildPHP\EventManager\InvalidEventTypeException;
 use WildPHP\EventManager\RegisteredCommandEvent;
 use WildPHP\Modules\Help;
 
-class BaseModule
+abstract class BaseModule
 {
 	/**
 	 * The module directory.
@@ -69,8 +69,7 @@ class BaseModule
 		}
 
 		// Set up predefined events, then.
-		if (method_exists($this, 'registerListeners'))
-			$this->handleListeners();
+		$this->handleListeners();
 	}
 
 	/**
@@ -91,10 +90,27 @@ class BaseModule
 	 */
 	private function handleListeners()
 	{
-		if (!method_exists($this, 'registerListeners'))
+		if (!method_exists($this, 'registerListeners') && !method_exists($this, 'registerCommands'))
 			return;
 
-		$events = $this->registerListeners();
+		$events = [];
+		if (method_exists($this, 'registerListeners'))
+			$events = $this->registerListeners();
+
+		// Attempt to add command events into the same array.
+		if (method_exists($this, 'registerCommands'))
+		{
+			$commands = $this->registerCommands();
+
+			foreach ($commands as $command => $params)
+			{
+				$event = 'irc.command.' . $command;
+				$callback = $params['callback'];
+
+				$events[$callback] = $event;
+			}
+		}
+
 		if (!is_array($events))
 			return;
 

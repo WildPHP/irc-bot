@@ -56,8 +56,7 @@ class Bot
 	{
 		$configurationStorage = new ConfigurationStorage($configFile);
 		$this->getApi()->setConfigurationStorage($configurationStorage);
-		$modemit = $this->getApi()->getModuleEmitter();
-		$modemit->setup();
+		$this->getApi()->getModuleEmitter();
 
 		// Connect using the given data.
 		$connection = new Connection();

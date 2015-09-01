@@ -30,13 +30,6 @@ class ModuleEmitter
 	private $api;
 
 	/**
-	 * The directory to search for modules.
-	 *
-	 * @var string
-	 */
-	private $moduleDir;
-
-	/**
 	 * The list of available modules.
 	 *
 	 * @var array
@@ -58,44 +51,15 @@ class ModuleEmitter
 	private $status = [];
 
 	/**
-	 * Commands registered per module. Stored as 'module' => array('command', 'command', ...)
-	 *
-	 * @var array
-	 */
-	private $registeredCommands = [];
-
-	/**
-	 * Listeners registered per module. Stored as 'module' => array('listener' => array(callback, ...))
-	 *
-	 * @var array
-	 */
-	private $registeredListeners = [];
-
-	/**
 	 * Sets up the module manager.
 	 *
-	 * @param Api    $api An instance of the api.
-	 * @param string $dir The directory where the modules are in.
+	 * @param Api $api An instance of the api.
 	 */
-	public function __construct(Api $api, $dir = WPHP_MODULE_DIR)
+	public function __construct(Api $api)
 	{
 		$this->api = $api;
-		$this->moduleDir = $dir;
-		spl_autoload_register([$this, 'autoLoad']);
-	}
-
-	/**
-	 * Sets up the initial modules.
-	 */
-	public function setup()
-	{
-		// Perform the initial load of modules, but only when there are no loaded modules.
-		if (empty($this->loadedModules))
-		{
-			// Scan for modules.
-			$this->scan();
-			$this->loadMultiple($this->modules);
-		}
+		$modules = $this->api->getConfigurationStorage()->get('modules');
+		$this->loadMultiple($modules);
 	}
 
 	/**
@@ -118,32 +82,29 @@ class ModuleEmitter
 	/**
 	 * Load a module and its dependencies.
 	 *
-	 * @param string $module The module name.
+	 * @param string $class The module class.
 	 * @return bool True upon success.
 	 * @throws UnableToLoadModuleException when a module could not be loaded.
 	 */
-	public function load($module)
+	public function load($class)
 	{
-		$module_full = 'WildPHP\\Modules\\' . $module;
+		if ($this->getStatus($class) === false)
+			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $class);
 
-		// We already failed to load this module.
-		if ($this->getStatus($module) === false)
-			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $module);
-
-		if ($this->isLoaded($module))
+		if ($this->isLoaded($class))
 			return true;
 
-		$this->api->getLogger()->debug('Loading module {module}...', ['module' => $module]);
+		$this->api->getLogger()->debug('Loading module {module}...', ['module' => $class]);
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
-		if (!$this->isAvailable($module) || !class_exists($module_full))
-			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $module);
+		if (!class_exists($class))
+			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $class);
 
 		// Okay, so the class exists.
 		try
 		{
-			$this->loadedModules[$module] = new $module_full($this->api);
-			$this->loadedModules[$module]->init();
+			$this->loadedModules[$class] = new $class($this->api);
+			$this->loadedModules[$class]->init();
 		}
 
 			// Kick any module that failed off the stack.
@@ -151,13 +112,13 @@ class ModuleEmitter
 		{
 			$this->api->getLogger()->warning('Kicking module {module} off the stack because an exception was triggered during initialization: {exception}. You might want to fix this.',
 				array(
-					'module' => $module,
+					'module' => $class,
 					'exception' => $e->getMessage()
 				));
-			$this->kick($module);
+			$this->kick($class);
 		}
-		$this->api->getLogger()->info('Module {module} loaded and initialised.', ['module' => $module]);
-		return $this->setStatus($module, true);
+		$this->api->getLogger()->info('Module {module} loaded and initialised.', ['module' => $class]);
+		return $this->setStatus($class, true);
 	}
 
 	/**
@@ -222,31 +183,6 @@ class ModuleEmitter
 
 		if (array_key_exists($module, $this->status))
 			unset($this->status[$module]);
-
-		// Clean up their mess...
-		/*if (array_key_exists($module, $this->registeredCommands))
-		{
-			foreach ($this->registeredCommands[$module] as $command)
-			{
-				$this->getEventManager()->getEvent('BotCommand')->removeCommand($command);
-			}
-		}
-
-		// And more mess..
-		if (array_key_exists($module, $this->registeredListeners))
-		{
-			foreach ($this->registeredListeners[$module] as $event => $listeners)
-			{
-				$event = $this->getEventManager()->getEvent($event);
-				foreach ($listeners as $listener)
-				{
-					$event->removeListener($listener);
-				}
-			}
-		}
-
-		unset($this->modules[array_search($module, $this->modules)]);
-		$this->log('Module ' . $module . ' kicked from stack and cleaned up.');*/
 	}
 
 	/**
@@ -260,19 +196,6 @@ class ModuleEmitter
 			throw new \InvalidArgumentException('Cannot kick a module that is not loaded.');
 
 		$this->kick(array_search($module, $this->loadedModules));
-	}
-
-	/**
-	 * Simple autoloader for modules.
-	 *
-	 * @param string $class The class name for modules to load.
-	 */
-	public function autoLoad($class)
-	{
-		$class = str_replace('WildPHP\\Modules\\', '', $class);
-
-		if (file_exists($this->moduleDir . $class . '/' . $class . '.php'))
-			require_once($this->moduleDir . $class . '/' . $class . '.php');
 	}
 
 	/**

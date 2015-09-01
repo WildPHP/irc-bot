@@ -171,8 +171,18 @@ class IrcConnection
 	 */
 	public function write($data)
 	{
+		$parsed = $this->api->getParser()->parse($data);
+		if (empty($parsed))
+		{
+			$this->api->getLogger()->warning('Malformed outgoing message: ' . $data);
+			return;
+		}
 		$this->api->getLogger()->info('>> ' . $data);
 		$this->stream->write($data);
+
+		// Trigger a new irc.data.out event.
+		$this->api->getEmitter()->emit('irc.data.out', array($parsed));
+		$this->api->getEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), array($parsed));
 	}
 
 	/**

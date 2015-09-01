@@ -75,4 +75,22 @@ class ConfigurationStorage
 
 		return $lastPiece;
 	}
+
+	/**
+	 * Sets/overwrites an item stored in the configuration.
+	 *
+	 * @param string $key
+	 * @param string $value
+	 */
+	public function set($key, $value)
+	{
+		$pieces = explode('.', $key);
+
+		$lastPiece =& $this->config;
+		foreach ($pieces as $piece)
+		{
+			$lastPiece =& $lastPiece[$piece];
+		}
+		$lastPiece = $value;
+	}
 }

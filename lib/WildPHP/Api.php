@@ -283,25 +283,13 @@ class Api
 		$this->loop = $loop;
 	}
 
-    /**
-     * Returns a module instance.
-     *
-     * @param string $module
-     *
-     * @return BaseModule
-     */
-    public function getModule($module)
-    {
-        return $this->getModuleEmitter()->getModuleInstance($module);
-    }
-
 	/**
 	 * Fetches data from $uri
 	 *
 	 * @param string $uri    The URI to fetch data from.
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or
-	 *               false if it failed.
+	 *                       false if it failed.
 	 */
 	public static function fetch($uri, $decode = false)
 	{
