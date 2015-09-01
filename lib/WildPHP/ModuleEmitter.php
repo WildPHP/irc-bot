@@ -221,22 +221,6 @@ class ModuleEmitter
 	}
 
 	/**
-	 * Scan for (new) modules and register them.
-	 */
-	public function scan()
-	{
-		// Scan the modules directory for any available modules
-		foreach (scandir($this->moduleDir) as $file)
-		{
-			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->isAvailable($file))
-			{
-				$this->api->getLogger()->debug('Module {module} found and registered.', ['module' => $file]);
-				$this->modules[] = $file;
-			}
-		}
-	}
-
-	/**
 	 * Get all available modules.
 	 *
 	 * @return array The available modules.
