@@ -19,15 +19,16 @@
 */
 
 namespace WildPHP;
-
-use WildPHP\Configuration\ConfigurationManager;
-use WildPHP\Connection\ConnectionManager;
-use WildPHP\Connection\QueueManager;
-use WildPHP\EventManager\ModuleCrashedException;
-use WildPHP\LogManager\LogManager;
-use WildPHP\LogManager\LogLevels;
-use WildPHP\EventManager\EventManager;
-use WildPHP\EventManager\RegisteredEvent;
+use Evenement\EventEmitter;
+use Phergie\Irc\Connection;
+use Phergie\Irc\ConnectionInterface;
+use Phergie\Irc\GeneratorInterface;
+use Phergie\Irc\ParserInterface;
+use Psr\Log\LoggerInterface;
+use React\Dns\Resolver\Resolver;
+use React\EventLoop\LoopInterface;
+use WildPHP\Configuration\ConfigurationStorage;
+use WildPHP\Connection\IrcConnection;
 
 /**
  * The main bot class. Creates a single bot instance.
@@ -35,140 +36,185 @@ use WildPHP\EventManager\RegisteredEvent;
 class Bot
 {
 	/**
-	 * The configuration manager.
+	 * The Api instance.
 	 *
-	 * @var ConfigurationManager
+	 * @var Api
 	 */
-	protected $configurationManager;
+	protected $api;
 
 	/**
-	 * The module manager.
+	 * The IrcConnection.
 	 *
-	 * @var ModuleManager
+	 * @var IrcConnection
 	 */
-	protected $moduleManager;
+	protected $ircConnection;
 
 	/**
-	 * The event manager.
-	 *
-	 * @var EventManager
-	 */
-	protected $eventManager;
-
-	/**
-	 * The connection manager.
-	 *
-	 * @var ConnectionManager
-	 */
-	protected $connectionManager;
-
-	/**
-	 * The TimerManager
-	 *
-	 * @var TimerManager
-	 */
-	protected $timerManager;
-
-	/**
-	 * The Queue manager.
-	 *
-	 * @var QueueManager
-	 */
-	protected $queueManager;
-
-	/**
-	 * The log manager.
-	 *
-	 * @var LogManager
-	 */
-	protected $logManager;
-
-	/**
-	 * The database object. TODO
-	 *
-	 * @var \SQLite3
-	 */
-	public $db;
-
-	/**
-	 * The current nickname of the bot.
-	 *
-	 * @var string
-	 */
-	protected $nickname;
-
-	/**
-	 * Sets up the bot for initial load.
-	 *
-	 * @param string $configFile Optionally load a custom config file
+	 * Loads all modules.
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
-		// Set up all managers.
-		$this->initializeManagers($configFile);
+		$configurationStorage = new ConfigurationStorage($configFile);
+		$this->getApi()->setConfigurationStorage($configurationStorage);
+		$this->getApi()->getModuleEmitter();
 
-		$this->nickname = $this->getConfig('nick');
-
-		// Then set up the database.
-		$this->db = new \SQLite3($this->getConfig('database'));
-
-		$this->getEventManager()->getEvent('BotCommand')->setAuthModule($this->getModuleManager()->getModuleInstance('Auth'));
+		// Connect using the given data.
+		$connection = new Connection();
+		$connection->setServerHostname($configurationStorage->get('server'))
+			->setServerPort($configurationStorage->get('port'))
+			->setNickname($configurationStorage->get('nick'))
+			->setUsername($configurationStorage->get('name'))
+			->setRealname('A WildPHP Bot');
+		$this->connect($connection);
 	}
 
 	/**
-	 * Get all managers locked and loaded.
+	 * @return IrcConnection
+	 */
+	public function getIrcConnection()
+	{
+		if (!$this->ircConnection)
+			$this->setIrcConnection(new IrcConnection($this->getApi()));
+
+		return $this->ircConnection;
+	}
+
+	/**
+	 * @param IrcConnection $ircConnection
+	 */
+	public function setIrcConnection(IrcConnection $ircConnection)
+	{
+		$this->ircConnection = $ircConnection;
+		$this->api->setIrcConnection($ircConnection);
+	}
+
+	/**
+	 * @return GeneratorInterface
+	 */
+	public function getGenerator()
+	{
+		return $this->getApi()->getGenerator();
+	}
+
+	/**
+	 * @param GeneratorInterface $generator
+	 */
+	public function setGenerator(GeneratorInterface $generator)
+	{
+		$this->getApi()->setGenerator($generator);
+	}
+
+	/**
+	 * @return ParserInterface
+	 */
+	public function getParser()
+	{
+		return $this->getApi()->getParser();
+	}
+
+	/**
+	 * @param ParserInterface $parser
+	 */
+	public function setParser(ParserInterface $parser)
+	{
+		$this->getApi()->setParser($parser);
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver()
+	{
+		return $this->getApi()->getResolver();
+	}
+
+	/**
+	 * @param Resolver $resolver
+	 */
+	public function setResolver(Resolver $resolver)
+	{
+		$this->getApi()->setResolver($resolver);
+	}
+
+	/**
+	 * @return Api
+	 */
+	public function getApi()
+	{
+		if (!$this->api)
+			$this->setApi(new Api());
+
+		return $this->api;
+	}
+
+	/**
+	 * @param Api $api
+	 */
+	public function setApi(Api $api)
+	{
+		$this->api = $api;
+	}
+
+	/**
+	 * @return EventEmitter
+	 */
+	public function getEmitter()
+	{
+		return $this->getApi()->getEmitter();
+	}
+
+	/**
+	 * @param EventEmitter $emitter
+	 */
+	public function setEmitter(EventEmitter $emitter)
+	{
+		$this->getApi()->setEmitter($emitter);
+	}
+
+	/**
+	 * Returns the loop interface.
 	 *
-	 * @param string $configFile The config file to load.
+	 * @return \React\EventLoop\LoopInterface
 	 */
-	protected function initializeManagers($configFile)
+	public function getLoop()
 	{
-		$this->configurationManager = new ConfigurationManager($this, $configFile);
-		date_default_timezone_set($this->getConfig('timezone'));
-
-		$this->logManager = new LogManager($this);
-		new ErrorHandler($this);
-
-		$this->eventManager = new EventManager($this);
-		$this->initializeEvents();
-
-		$this->timerManager = new TimerManager($this);
-
-		$this->connectionManager = new ConnectionManager($this);
-
-		$this->queueManager = new QueueManager($this, $this->getConfig('flood.linespersecond'), $this->getConfig('flood.burst'));
-
-		$this->moduleManager = new ModuleManager($this);
-		$this->moduleManager->setup();
+		return $this->getApi()->getLoop();
 	}
 
 	/**
-	 * Initialize all core events.
+	 * @return \Psr\Log\LoggerInterface
 	 */
-	public function initializeEvents()
+	public function getLogger()
 	{
-		// Loop - Triggered at every iteration of the bot's main loop.
-		$LoopEvent = new RegisteredEvent('IEvent', $this->getEventManager());
-		$this->getEventManager()->register('Loop', $LoopEvent);
+		return $this->getApi()->getLogger();
 	}
 
 	/**
-	 * Set up the connection for the bot.
+	 * @param \Psr\Log\LoggerInterface $logger
 	 */
-	public function connect()
+	public function setLogger(LoggerInterface $logger)
 	{
-		// Pass over the server and port details.
-		$this->getConnectionManager()->setServer($this->getConfig('server'));
-		$this->getConnectionManager()->setPort($this->getConfig('port'));
+		$this->getApi()->setLogger($logger);
+	}
 
-		// Then we insert the details for the bot.
-		$this->getConnectionManager()->setNick($this->getConfig('nick'));
-		$this->getConnectionManager()->setName($this->getConfig('nick'));
+	/**
+	 * Sets the loop interface.
+	 *
+	 * @param \React\EventLoop\LoopInterface $loop
+	 */
+	public function setLoop(LoopInterface $loop)
+	{
+		$this->getApi()->setLoop($loop);
+	}
 
-		// Optionally, a password, too.
-		$this->getConnectionManager()->setPassword($this->getConfig('password'));
-
-		// Start the connection.
-		$this->getConnectionManager()->connect();
+	/**
+	 * Connects the bot to the given connection.
+	 *
+	 * @param ConnectionInterface $connection
+	 */
+	public function connect(ConnectionInterface $connection)
+	{
+		$this->getIrcConnection()->create($connection);
 	}
 
 	/**
@@ -176,142 +222,6 @@ class Bot
 	 */
 	public function start()
 	{
-		while ($this->getConnectionManager()->isConnected())
-		{
-			try
-			{
-				// Let anything hook into the main loop for its own business.
-				$this->getEventManager()->getEvent('Loop')->trigger(new Event\LoopEvent());
-				$this->getConnectionManager()->processReceivedData();
-			}
-			catch (ModuleCrashedException $e)
-			{
-				// Oh dear. A module crashed.
-				$this->getModuleManager()->kickByObject($e->getModule());
-			}
-		}
-	}
-
-	/**
-	 * Returns an item stored in the configuration.
-	 *
-	 * @param string $item The configuration item to get.
-	 * @return false|mixed The item stored called by key, or false on failure.
-	 */
-	public function getConfig($item)
-	{
-		return $this->configurationManager->get($item);
-	}
-
-	/**
-	 * Returns the Connection Manager
-	 *
-	 * @return ConnectionManager The Connection Manager
-	 */
-	public function getConnectionManager()
-	{
-		return $this->connectionManager;
-	}
-
-	/**
-	 * Returns the EventManager.
-	 *
-	 * @return EventManager The Event Manager.
-	 */
-	public function getEventManager()
-	{
-		return $this->eventManager;
-	}
-
-	/**
-	 * Returns the Timer Manager
-	 *
-	 * @returns TimerManager The Timer Manager.
-	 */
-	public function getTimerManager()
-	{
-		return $this->timerManager;
-	}
-
-	/**
-	 * Returns the ModuleManager.
-	 *
-	 * @return ModuleManager The Module Manager.
-	 */
-	public function getModuleManager()
-	{
-		return $this->moduleManager;
-	}
-
-	/**
-	 * Gets the current nickname.
-	 *
-	 * @return string
-	 */
-	public function getNickname()
-	{
-		return $this->nickname;
-	}
-
-	/**
-	 * Change the nickname of the bot.
-	 *
-	 * @param string $newnick
-	 * @return boolean True on success, false on failure.
-	 */
-	public function changeNickname($newnick)
-	{
-		if (empty($newnick))
-			return false;
-
-		$this->getConnectionManager()->send('NICK ' . $newnick);
-
-		$data = $this->getConnectionManager()->waitReply();
-		if (!empty($data))
-		{
-			if (!empty($data[0]->get()['code']) && in_array($data[0]->get()['code'], ['ERR_NICKNAMEINUSE', 'ERR_ERRONEUSNICKNAME', 'ERR_NICKCOLLISION']))
-				return false;
-		}
-
-		$this->nickname = $newnick;
-
-		return true;
-	}
-
-	/**
-	 * Set the nickname of the bot. Please try to use changeNickname instead.
-	 *
-	 * @param string $newnick
-	 */
-	public function setNickname($newnick)
-	{
-		$this->nickname = $newnick;
-	}
-
-	/**
-	 * Log data.
-	 *
-	 * @param string $message The message to log.
-	 * @param array  $context The context to use.
-	 * @param string $level   The level to log the data at.
-	 */
-	public function log($message, $context = [], $level = LogLevels::DEBUG)
-	{
-		call_user_func([$this->logManager, $level], $message, $context);
-	}
-
-	/**
-	 * Disconnects the bot and stops.
-	 *
-	 * @param string $message Send a custom message along with the QUIT command.
-	 */
-	public function stop($message = 'WildPHP <http://wildphp.com/>')
-	{
-		if (empty($message))
-			$message = 'WildPHP <http://wildphp.com/>';
-
-		$this->getConnectionManager()->send('QUIT :' . $message);
-		$this->getConnectionManager()->disconnect();
-		exit;
+		$this->getLoop()->run();
 	}
 }

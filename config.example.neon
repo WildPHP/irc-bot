@@ -32,6 +32,13 @@ max_reconnects: 1
 # Default: '!'
 prefix: '!'
 
+# List all module classes here.
+modules:
+	- WildPHP\Modules\CommandParser
+	- WildPHP\Modules\NickWatcher
+	- WildPHP\Modules\ChannelManager
+
+
 # Channels to autojoin.
 channels:
 	- '#wildphp'

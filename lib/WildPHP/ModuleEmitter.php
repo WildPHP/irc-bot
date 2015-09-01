@@ -20,18 +20,14 @@
 
 namespace WildPHP;
 
-use WildPHP\Event\NewCommandEvent;
-use WildPHP\Event\NewListenerEvent;
-use WildPHP\LogManager\LogLevels;
-
-class ModuleManager extends Manager
+class ModuleEmitter
 {
 	/**
-	 * The directory the modules are stored in.
+	 * The Api class.
 	 *
-	 * @var string
+	 * @var Api
 	 */
-	private $moduleDir;
+	private $api;
 
 	/**
 	 * The list of available modules.
@@ -55,49 +51,15 @@ class ModuleManager extends Manager
 	private $status = [];
 
 	/**
-	 * Commands registered per module. Stored as 'module' => array('command', 'command', ...)
-	 *
-	 * @var array
-	 */
-	private $registeredCommands = [];
-
-	/**
-	 * Listeners registered per module. Stored as 'module' => array('listener' => array(callback, ...))
-	 *
-	 * @var array
-	 */
-	private $registeredListeners = [];
-
-	/**
 	 * Sets up the module manager.
 	 *
-	 * @param Bot    $bot An instance of the bot.
-	 * @param string $dir The directory where the modules are in.
+	 * @param Api $api An instance of the api.
 	 */
-	public function __construct(Bot $bot, $dir = WPHP_MODULE_DIR)
+	public function __construct(Api $api)
 	{
-		parent::__construct($bot);
-
-		$this->moduleDir = $dir;
-		spl_autoload_register([$this, 'autoLoad']);
-
-		// Register ourself to events.
-		$this->getEventManager()->getEvent('NewListener')->registerListener([$this, 'catchListener']);
-		$this->getEventManager()->getEvent('NewCommand')->registerListener([$this, 'catchCommand']);
-	}
-
-	/**
-	 * Sets up the initial modules.
-	 */
-	public function setup()
-	{
-		// Perform the initial load of modules, but only when there are no loaded modules.
-		if (empty($this->loadedModules))
-		{
-			// Scan for modules.
-			$this->scan();
-			$this->loadMultiple($this->modules);
-		}
+		$this->api = $api;
+		$modules = $this->api->getConfigurationStorage()->get('modules');
+		$this->loadMultiple($modules);
 	}
 
 	/**
@@ -120,42 +82,43 @@ class ModuleManager extends Manager
 	/**
 	 * Load a module and its dependencies.
 	 *
-	 * @param string $module The module name.
+	 * @param string $class The module class.
 	 * @return bool True upon success.
 	 * @throws UnableToLoadModuleException when a module could not be loaded.
 	 */
-	public function load($module)
+	public function load($class)
 	{
-		$module_full = 'WildPHP\\Modules\\' . $module;
+		if ($this->getStatus($class) === false)
+			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $class);
 
-		// We already failed to load this module.
-		if ($this->getStatus($module) === false)
-			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $module);
-
-		if ($this->isLoaded($module))
+		if ($this->isLoaded($class))
 			return true;
 
-		$this->log('Loading module {module}...', ['module' => $module], LogLevels::DEBUG);
+		$this->api->getLogger()->debug('Loading module {module}...', ['module' => $class]);
 
 		// Uh, so this module does not exist. We can't load a module that does not exist...
-		if (!$this->isAvailable($module) || !class_exists($module_full))
-			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $module);
+		if (!class_exists($class))
+			throw new UnableToLoadModuleException('The Module Manager was unable to load module ' . $class);
 
 		// Okay, so the class exists.
 		try
 		{
-			$this->loadedModules[$module] = new $module_full($this->getBot());
-			$this->loadedModules[$module]->init();
+			$this->loadedModules[$class] = new $class($this->api);
+			$this->loadedModules[$class]->init();
 		}
 
 			// Kick any module that failed off the stack.
 		catch (\Exception $e)
 		{
-			$this->log('Kicking module {module} off the stack because an exception was triggered during initialization: ' . $e->getMessage() . '. You might want to fix this.');
-			$this->kick($module);
+			$this->api->getLogger()->warning('Kicking module {module} off the stack because an exception was triggered during initialization: {exception}. You might want to fix this.',
+				array(
+					'module' => $class,
+					'exception' => $e->getMessage()
+				));
+			$this->kick($class);
 		}
-		$this->log('Module {module} loaded and initialised.', ['module' => $module], LogLevels::INFO);
-		return $this->setStatus($module, true);
+		$this->api->getLogger()->info('Module {module} loaded and initialised.', ['module' => $class]);
+		return $this->setStatus($class, true);
 	}
 
 	/**
@@ -220,31 +183,6 @@ class ModuleManager extends Manager
 
 		if (array_key_exists($module, $this->status))
 			unset($this->status[$module]);
-
-		// Clean up their mess...
-		if (array_key_exists($module, $this->registeredCommands))
-		{
-			foreach ($this->registeredCommands[$module] as $command)
-			{
-				$this->getEventManager()->getEvent('BotCommand')->removeCommand($command);
-			}
-		}
-
-		// And more mess..
-		if (array_key_exists($module, $this->registeredListeners))
-		{
-			foreach ($this->registeredListeners[$module] as $event => $listeners)
-			{
-				$event = $this->getEventManager()->getEvent($event);
-				foreach ($listeners as $listener)
-				{
-					$event->removeListener($listener);
-				}
-			}
-		}
-
-		unset($this->modules[array_search($module, $this->modules)]);
-		$this->log('Module ' . $module . ' kicked from stack and cleaned up.');
 	}
 
 	/**
@@ -258,68 +196,6 @@ class ModuleManager extends Manager
 			throw new \InvalidArgumentException('Cannot kick a module that is not loaded.');
 
 		$this->kick(array_search($module, $this->loadedModules));
-	}
-
-	/**
-	 * Catches listeners that have been added.
-	 *
-	 * @param NewListenerEvent $e
-	 */
-	public function catchListener(NewListenerEvent $e)
-	{
-		if (is_null($e->getModule()))
-			return;
-
-		$module = $e->getModule();
-
-		// Find the module name.
-		if (!in_array($module, $this->loadedModules))
-			return;
-
-		$name = array_search($module, $this->loadedModules);
-		$ename = $this->getEventManager()->findNameByObject($e->getEvent());
-
-		$this->log('Listener caught for event ' . $ename . ' registered by module ' . $name);
-
-		// And note the listener.
-		$this->registeredListeners[$name][$ename][] = $e->getCall();
-	}
-
-	/**
-	 * Catches commands that have been added.
-	 *
-	 * @param NewCommandEvent $e
-	 */
-	public function catchCommand(NewCommandEvent $e)
-	{
-		if (is_null($e->getModule()))
-			return;
-
-		$module = $e->getModule();
-
-		// Find the module name.
-		if (!in_array($module, $this->loadedModules))
-			return;
-
-		$name = array_search($module, $this->loadedModules);
-
-		$this->log('Command ' . $e->getCommand() . ' registered by module ' . $name);
-
-		// And note the listener.
-		$this->registeredCommands[$name][] = $e->getCommand();
-	}
-
-	/**
-	 * Simple autoloader for modules.
-	 *
-	 * @param string $class The class name for modules to load.
-	 */
-	public function autoLoad($class)
-	{
-		$class = str_replace('WildPHP\\Modules\\', '', $class);
-
-		if (file_exists($this->moduleDir . $class . '/' . $class . '.php'))
-			require_once($this->moduleDir . $class . '/' . $class . '.php');
 	}
 
 	/**
@@ -342,22 +218,6 @@ class ModuleManager extends Manager
 	public function isAvailable($module)
 	{
 		return in_array($module, $this->modules);
-	}
-
-	/**
-	 * Scan for (new) modules and register them.
-	 */
-	public function scan()
-	{
-		// Scan the modules directory for any available modules
-		foreach (scandir($this->moduleDir) as $file)
-		{
-			if (is_dir($this->moduleDir . $file) && $file != '.' && $file != '..' && !$this->isAvailable($file))
-			{
-				$this->log('Module {module} found and registered.', ['module' => $file], LogLevels::DEBUG);
-				$this->modules[] = $file;
-			}
-		}
 	}
 
 	/**

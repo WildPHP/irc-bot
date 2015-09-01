@@ -20,89 +20,267 @@
 
 namespace WildPHP;
 
-use WildPHP\Connection\ConnectionManager;
-use WildPHP\EventManager\EventManager;
-use WildPHP\IRC\IRCData;
-use WildPHP\LogManager\LogLevels;
+use Evenement\EventEmitter;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Phergie\Irc\Generator;
+use Phergie\Irc\GeneratorInterface;
+use Phergie\Irc\ParserInterface;
+use Phergie\Irc\Parser;
+use React\EventLoop\Factory as LoopFactory;
+use React\Dns\Resolver\Resolver;
+use WildPHP\Configuration\ConfigurationStorage;
+use WildPHP\Connection\IrcConnection;
 
 class Api
 {
 	/**
-	 * The bot object.
+	 * The loop.
 	 *
-	 * @var Bot
+	 * @var \React\EventLoop\LoopInterface
 	 */
-	private $bot = null;
+	protected $loop;
 
 	/**
-	 * Set up the module.
+	 * The logger.
 	 *
-	 * @param Bot $bot The Bot object.
+	 * @var \Psr\Log\LoggerInterface
 	 */
-	public function __construct(Bot $bot)
+	protected $logger;
+
+	/**
+	 * An event emitter.
+	 *
+	 * @var EventEmitter
+	 */
+	protected $emitter;
+
+	/**
+	 * The DNS resolver.
+	 *
+	 * @var Resolver
+	 */
+	protected $resolver;
+
+	/**
+	 * IRC Message generator.
+	 *
+	 * @var GeneratorInterface
+	 */
+	protected $generator;
+
+	/**
+	 * IRC Message parser.
+	 *
+	 * @var ParserInterface
+	 */
+	protected $parser;
+
+	/**
+	 * The IRC connection.
+	 *
+	 * @var IrcConnection
+	 */
+	protected $ircConnection;
+
+	/**
+	 * The module manager.
+	 *
+	 * @var ModuleEmitter
+	 */
+	protected $moduleEmitter;
+
+	/**
+	 * The configuration storage.
+	 *
+	 * @var ConfigurationStorage
+	 */
+	protected $configurationStorage;
+
+	/**
+	 * @return ConfigurationStorage
+	 */
+	public function getConfigurationStorage()
 	{
-		$this->setBot($bot);
+		return $this->configurationStorage;
 	}
 
 	/**
-	 * Sets the bot object.
-	 *
-	 * @param Bot $bot
+	 * @param ConfigurationStorage $configurationStorage
 	 */
-	private function setBot(Bot $bot)
+	public function setConfigurationStorage(ConfigurationStorage $configurationStorage)
 	{
-		$this->bot = $bot;
+		$this->configurationStorage = $configurationStorage;
 	}
 
 	/**
-	 * Helper function for using the Event Manager.
-	 *
-	 * @return EventManager
+	 * @return ModuleEmitter
 	 */
-	public function getEventManager()
+	public function getModuleEmitter()
 	{
-		return $this->bot->getEventManager();
+		if (!$this->moduleEmitter)
+			$this->moduleEmitter = new ModuleEmitter($this);
+		return $this->moduleEmitter;
 	}
 
 	/**
-	 * Helper function for using the Timer Manager.
-	 *
-	 * @return TimerManager
+	 * @param ModuleEmitter $moduleEmitter
 	 */
-	public function getTimerManager()
+	public function setModuleEmitter(ModuleEmitter $moduleEmitter)
 	{
-		return $this->bot->getTimerManager();
+		$this->moduleEmitter = $moduleEmitter;
 	}
 
 	/**
-	 * Return the connection manager.
-	 *
-	 * @return ConnectionManager
+	 * @return IrcConnection
 	 */
-	public function getConnectionManager()
+	public function getIrcConnection()
 	{
-		return $this->bot->getConnectionManager();
+		return $this->ircConnection;
 	}
 
 	/**
-	 * Return the module manager.
-	 *
-	 * @return ModuleManager
+	 * @param IrcConnection $ircConnection
 	 */
-	public function getModuleManager()
+	public function setIrcConnection(IrcConnection $ircConnection)
 	{
-		return $this->bot->getModuleManager();
+		$this->ircConnection = $ircConnection;
 	}
 
 	/**
-	 * Gets a module from the module manager.
-	 *
-	 * @param string $module The module name.
-	 * @return BaseModule
+	 * @return GeneratorInterface
 	 */
-	public function getModule($module)
+	public function getGenerator()
 	{
-		return $this->bot->getModuleManager()->getModuleInstance($module);
+		if (!$this->generator)
+			$this->setGenerator(new Generator());
+
+		return $this->generator;
+	}
+
+	/**
+	 * @param GeneratorInterface $generator
+	 */
+	public function setGenerator(GeneratorInterface $generator)
+	{
+		$this->generator = $generator;
+	}
+
+	/**
+	 * @return ParserInterface
+	 */
+	public function getParser()
+	{
+		if (!$this->parser)
+			$this->setParser(new Parser());
+
+		return $this->parser;
+	}
+
+	/**
+	 * @param ParserInterface $parser
+	 */
+	public function setParser(ParserInterface $parser)
+	{
+		$this->parser = $parser;
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver()
+	{
+		if (!$this->resolver)
+		{
+			$factory = new \React\Dns\Resolver\Factory();
+			$this->setResolver($factory->createCached('8.8.8.8', $this->getLoop()));
+		}
+
+		return $this->resolver;
+	}
+
+	/**
+	 * @param Resolver $resolver
+	 */
+	public function setResolver($resolver)
+	{
+		$this->resolver = $resolver;
+	}
+
+	/**
+	 * @return EventEmitter
+	 */
+	public function getEmitter()
+	{
+		if (!$this->emitter)
+			$this->setEmitter(new EventEmitter());
+
+		return $this->emitter;
+	}
+
+	/**
+	 * @param EventEmitter $emitter
+	 */
+	public function setEmitter($emitter)
+	{
+		$this->emitter = $emitter;
+	}
+
+	/**
+	 * Returns the loop interface.
+	 *
+	 * @return \React\EventLoop\LoopInterface
+	 */
+	public function getLoop()
+	{
+		if (!$this->loop)
+			$this->setLoop(LoopFactory::create());
+
+		return $this->loop;
+	}
+
+	/**
+	 * @return \Psr\Log\LoggerInterface
+	 */
+	public function getLogger()
+	{
+		// As default we use an external library.
+		if (!$this->logger)
+		{
+			$logger = new Logger('WildPHP');
+
+			$i = 0;
+			do
+			{
+				$i++;
+			}
+			while (file_exists(WPHP_LOG_DIR . '/log_' . $i . '.log'));
+
+			$logger->pushHandler(new StreamHandler(WPHP_LOG_DIR . '/log_' . $i . '.log'));
+			$logger->pushHandler(new StreamHandler('php://stdout'));
+			$this->setLogger($logger);
+		}
+
+		return $this->logger;
+	}
+
+	/**
+	 * @param \Psr\Log\LoggerInterface $logger
+	 */
+	public function setLogger($logger)
+	{
+		$this->logger = $logger;
+	}
+
+	/**
+	 * Sets the loop interface.
+	 *
+	 * @param \React\EventLoop\LoopInterface $loop
+	 */
+	public function setLoop($loop)
+	{
+		$this->loop = $loop;
 	}
 
 	/**
@@ -111,7 +289,7 @@ class Api
 	 * @param string $uri    The URI to fetch data from.
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or
-	 *               false if it failed.
+	 *                       false if it failed.
 	 */
 	public static function fetch($uri, $decode = false)
 	{
@@ -137,82 +315,5 @@ class Api
 		// close curl resource to free up system resources
 		curl_close($ch);
 		return $output;
-	}
-
-	/**
-	 * Returns an item stored in the configuration.
-	 *
-	 * @param string $item The configuration item to get.
-	 * @return false|mixed The item stored called by key, or false on failure.
-	 */
-	public function getConfig($item)
-	{
-		return $this->bot->getConfig($item);
-	}
-
-	/**
-	 * Send data out.
-	 *
-	 * @param IRCData $data The data to send.
-	 */
-	public function sendData(IRCData $data)
-	{
-		if (empty((string)$data))
-			return;
-
-		$this->getConnectionManager()->send((string)$data);
-	}
-
-	/**
-	 * Gets the last channel something was said to.
-	 *
-	 * @return string|null Null when no data available, string if there is.
-	 */
-	public function getLastChannel()
-	{
-		$targets = $this->bot->getConnectionManager()->getLastData()->getTargets();
-		return !empty($targets) ? $targets[0] : null;
-	}
-
-	/**
-	 * Sets the bot nickname.
-	 *
-	 * @param string $nickname
-	 */
-	public function setNickname($nickname)
-	{
-		$this->bot->setNickname($nickname);
-	}
-
-	/**
-	 * Gets the nickname.
-	 *
-	 * @return string
-	 */
-	public function getNickname()
-	{
-		return $this->bot->getNickname();
-	}
-
-	/**
-	 * Sends a message to the log.
-	 *
-	 * @param string $message the message to be logged.
-	 * @param array  $context The context to use.
-	 * @param string $level   The level to log at. Defaults to debug.
-	 */
-	public function log($message, $context = [], $level = LogLevels::DEBUG)
-	{
-		$this->bot->log($message, $context, $level);
-	}
-
-	/**
-	 * Creates a new Api instance.
-	 *
-	 * @return Api
-	 */
-	public function newApiInstance()
-	{
-		return new Api($this->bot);
 	}
 }
