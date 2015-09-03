@@ -12,6 +12,11 @@
         "phergie/phergie-irc-connection": "^2.0",
         "monolog/monolog": "^1.17"
     },
+    "suggest": {
+        "wildphp/module-commandparser": "Allows your bot to interpret user commands.",
+        "wildphp/module-nickwatcher": "Avoids issues by updating internal references of the nickname when it is changed",
+        "wildphp/module-channelmanager": "Keeps track of what channels the bot is in; provides !join and !part user commands"
+    },
     "require-dev":
     {
         "phpunit/phpunit": "^4.8"
