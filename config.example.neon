@@ -34,9 +34,9 @@ prefix: '!'
 
 # List all module classes here.
 modules:
-	- WildPHP\Modules\CommandParser
-	- WildPHP\Modules\NickWatcher
-	- WildPHP\Modules\ChannelManager
+	# Refer to your module documentation on what class to put here.
+	# Modules have to be listed as such:
+	# - Module\Namespace\Class
 
 
 # Channels to autojoin.

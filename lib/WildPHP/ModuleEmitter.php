@@ -233,7 +233,7 @@ class ModuleEmitter
 	/**
 	 * Get all currently loaded modules. Be careful with this.
 	 *
-	 * @return array All currently loaded modules.
+	 * @return BaseModule[] All currently loaded modules.
 	 */
 	public function getLoadedModules()
 	{

@@ -90,9 +90,6 @@ abstract class BaseModule
 	 */
 	private function handleListeners()
 	{
-		if (!method_exists($this, 'registerListeners') && !method_exists($this, 'registerCommands'))
-			return;
-
 		$events = [];
 		if (method_exists($this, 'registerListeners'))
 			$events = $this->registerListeners();
@@ -112,6 +109,19 @@ abstract class BaseModule
 		}
 
 		if (!is_array($events))
+			return;
+
+		$this->registerEvents($events);
+	}
+
+	/**
+	 * Registers multiple events in an array.
+	 *
+	 * @param array $events The events to register, in the 'callback' => 'event' format.
+	 */
+	public function registerEvents(array $events)
+	{
+		if (empty($events))
 			return;
 
 		foreach ($events as $callback => $event)
