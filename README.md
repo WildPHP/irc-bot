@@ -9,7 +9,7 @@ It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP insta
 ## System requirements
 In order to run WildPHP, we ask a few things from your system. Notably:
 
-- A PHP version equal to or higher than **5.4.0**.
+- A PHP version equal to or higher than **5.5.0**.
 - **SSH** or other local access to the system you plan on running WildPHP on.
 	- WildPHP does **NOT** run on services where you can host your website.
 - For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
