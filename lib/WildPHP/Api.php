@@ -120,6 +120,7 @@ class Api
 	{
 		if (!$this->moduleEmitter)
 			$this->moduleEmitter = new ModuleEmitter($this);
+
 		return $this->moduleEmitter;
 	}
 
@@ -287,6 +288,7 @@ class Api
 	 *
 	 * @param string $uri    The URI to fetch data from.
 	 * @param bool   $decode Whether to attempt to decode the received data using json_decode.
+	 *
 	 * @return mixed Returns a string if $decode is set to false. Returns an array if json_decode succeeded, or
 	 *                       false if it failed.
 	 */
@@ -313,6 +315,7 @@ class Api
 
 		// close curl resource to free up system resources
 		curl_close($ch);
+
 		return $output;
 	}
 }
