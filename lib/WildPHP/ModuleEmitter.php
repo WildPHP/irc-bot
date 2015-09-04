@@ -59,7 +59,9 @@ class ModuleEmitter
 	{
 		$this->api = $api;
 		$modules = $this->api->getConfigurationStorage()->get('modules');
-		$this->loadMultiple($modules);
+
+		if (!empty($modules))
+			$this->loadMultiple($modules);
 	}
 
 	/**
