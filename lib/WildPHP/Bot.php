@@ -51,6 +51,8 @@ class Bot
 
 	/**
 	 * Loads all modules.
+	 *
+	 * @param string $configFile The configuration file to use for this bot instance.
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
