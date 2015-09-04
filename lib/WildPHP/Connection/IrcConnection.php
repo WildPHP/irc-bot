@@ -20,7 +20,6 @@
 
 namespace WildPHP\Connection;
 
-use Phergie\Irc\Connection;
 use Phergie\Irc\ConnectionInterface;
 use React\SocketClient\Connector;
 use React\Stream\Stream;

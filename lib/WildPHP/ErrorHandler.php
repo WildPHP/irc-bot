@@ -19,9 +19,7 @@
 */
 namespace WildPHP;
 
-use WildPHP\LogManager\LogLevels;
-
-class ErrorHandler extends Manager
+class ErrorHandler
 {
 	/**
 	 * Setup the Error Handler.

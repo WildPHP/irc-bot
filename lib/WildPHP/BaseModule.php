@@ -20,10 +20,6 @@
 
 namespace WildPHP;
 
-use WildPHP\EventManager\InvalidEventTypeException;
-use WildPHP\EventManager\RegisteredCommandEvent;
-use WildPHP\Modules\Help;
-
 abstract class BaseModule
 {
 	/**
