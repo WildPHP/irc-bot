@@ -1,0 +1,4 @@
+phpunit:
+    test: 'Hello world!'
+
+specialchars: '!@#$%^special'
