@@ -6,8 +6,11 @@ php:
   - hhvm
   - nightly
 
+install:
+  - composer install
+  
 script:
-  - phpunit --coverage-clover=coverage.clover --bootstrap=vendor/autoload.php tests
+  - phpunit --coverage-clover=coverage.clover --bootstrap=./vendor/autoload.php tests
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
