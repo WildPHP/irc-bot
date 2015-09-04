@@ -56,12 +56,12 @@ class IrcConnection
 	 */
 	protected $connectionDetails;
 
-    /**
-     * Partial message from last data process. It happens.
-     *
-     * @var string
-     */
-    protected $partial = '';
+	/**
+	 * Partial message from last data process. It happens.
+	 *
+	 * @var string
+	 */
+	protected $partial = '';
 
 	/**
 	 * @return ConnectionInterface
@@ -89,6 +89,7 @@ class IrcConnection
 			$loop = $this->api->getLoop();
 			$this->connector = new Connector($loop, $this->api->getResolver());
 		}
+
 		return $this->connector;
 	}
 
@@ -125,34 +126,34 @@ class IrcConnection
 		{
 			$this->setStream($stream);
 			$this->setConnectionDetails($connection);
-			$this->api->getEmitter()->emit('irc.connect', array($stream, $connection));
+			$this->api->getEmitter()->emit('irc.connect', [$stream, $connection]);
 			$this->write($this->api->getGenerator()->ircNick($connection->getNickname()));
 			$this->write($this->api->getGenerator()->ircUser($connection->getNickname(), gethostname(), $connection->getNickname(), $connection->getUsername()));
-			$stream->on('data', array($this, 'processData'));
+			$stream->on('data', [$this, 'processData']);
 		});
 	}
 
 	/**
 	 * Process incoming data.
-     *
-     * @param string $data
+	 *
+	 * @param string $data
 	 */
-    public function processData($data)
-    {
-        $all = $this->partial . $data;
-        $messages = $this->api->getParser()->consumeAll($all);
-        $this->partial = $all;
+	public function processData($data)
+	{
+		$all = $this->partial . $data;
+		$messages = $this->api->getParser()->consumeAll($all);
+		$this->partial = $all;
 
-        foreach ($messages as $message)
-        {
-            $this->api->getLogger()->debug('<< ' . $message['message']);
+		foreach ($messages as $message)
+		{
+			$this->api->getLogger()->debug('<< ' . $message['message']);
 
-            // Fire both a generic irc.data.in and an irc.data.in.{command} event.
-            $this->api->getEmitter()->emit('irc.data.in', array($message));
-            if (!empty($message['command']))
-                $this->api->getEmitter()->emit('irc.data.in.' . strtolower($message['command']), array($message));
-        }
-    }
+			// Fire both a generic irc.data.in and an irc.data.in.{command} event.
+			$this->api->getEmitter()->emit('irc.data.in', [$message]);
+			if (!empty($message['command']))
+				$this->api->getEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$message]);
+		}
+	}
 
 	/**
 	 * Start up the stream.
@@ -175,14 +176,15 @@ class IrcConnection
 		if (empty($parsed))
 		{
 			$this->api->getLogger()->warning('Malformed outgoing message: ' . $data);
+
 			return;
 		}
 		$this->api->getLogger()->info('>> ' . $data);
 		$this->stream->write($data);
 
 		// Trigger a new irc.data.out event.
-		$this->api->getEmitter()->emit('irc.data.out', array($parsed));
-		$this->api->getEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), array($parsed));
+		$this->api->getEmitter()->emit('irc.data.out', [$parsed]);
+		$this->api->getEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), [$parsed]);
 	}
 
 	/**
