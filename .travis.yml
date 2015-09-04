@@ -7,7 +7,7 @@ php:
   - nightly
 
 script:
-  - phpunit --coverage-clover=coverage.clover
+  - phpunit --coverage-clover=coverage.clover --bootstrap=vendor/autoload.php tests
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
