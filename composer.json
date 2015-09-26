@@ -2,6 +2,7 @@
     "name": "wildphp/wild-irc-bot",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
+    "version": "2.0.1-alpha",
     "require": {
         "php": ">=5.5.0",
         "nette/neon": "^2.3",
