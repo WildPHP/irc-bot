@@ -14,9 +14,10 @@
         "monolog/monolog": "^1.17"
     },
     "suggest": {
+        "wildphp/module-channelmanager": "Keeps track of what channels the bot is in; provides !join and !part user commands",
         "wildphp/module-commandparser": "Allows your bot to interpret user commands.",
         "wildphp/module-nickwatcher": "Avoids issues by updating internal references of the nickname when it is changed",
-        "wildphp/module-channelmanager": "Keeps track of what channels the bot is in; provides !join and !part user commands"
+        "wildphp/module-pingpong": "Allows the bot to stay online for longer periods of time."
     },
     "require-dev":
     {
