@@ -9,7 +9,7 @@ It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP insta
 ## System requirements
 In order to run WildPHP, we ask a few things from your system. Notably:
 
-- A PHP version equal to or higher than **5.5.0**.
+- A PHP version equal to or higher than **5.4.0**.
 - **SSH** or other local access to the system you plan on running WildPHP on.
 	- WildPHP does **NOT** run on services where you can host your website.
 - For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
@@ -19,41 +19,42 @@ If you need help or just want to idle in the IRC channel join us at
 [#wildphp@irc.freenode.net](http://webchat.freenode.net/?channels=wildphp)
 
 ## Features and Functions
-The bot itself has been designed to include the least features as possible. That means that only installing the core does **not** get you a functional bot.
+Apart from being awesome, this bot features the following functions:
 
-The bot relies completely on modules, or plugins if you will.
-
-Modules are installed using composer:
-
-    composer require [the package name of the module]
-     
-For example:
-
-    composer require wildphp/module-pingpong
-    
-After installation with composer, modules must be enabled in the configuration file. Please read the module description on how to do this.
-
-We have developed a few official modules:
-
-- [module-channelmanager](https://github.com/WildPHP/module-channelmanager), which provides the `join` and `part` commands, and provides auto-joining of channels.
-- [module-commandparser](https://github.com/WildPHP/module-commandparser), which allows other modules to listen to commands on the bot.
-- [module-nickwatcher](https://github.com/WildPHP/module-nickwatcher), which updates internal references to the nickname.
-- [module-pingpong](https://github.com/WildPHP/module-pingpong), which allows the bot to stay online for long periods.
-
-It is recommended to install all of those modules to get a basic bot working which sits in channels. Functionality can be extended from there on with more modules.
+- Pre-installed modules:
+	- Auth: Provides basic hostname-based authentication. Most modules depend on this
+	- ChannelAdmin: Provides commands like `op`, `voice`, `kick`
+	- ChannelManager: Provides commands like `join`, `part`, and keeps track of channel joins and parts
+	- CoreCommands: Provides `quit` and `say` commands.
+	- Help: Provides the `help` command
+	- Watchdog: Watches for PING PONG requests and automatically attempts to reconnect the bot if the connection is assumed lost
+- Easy to install modules, complete with dependency management
+- Full-featured event-driven API that's easy to hook into,
+- Timers that trigger after a set time,
 
 ## Installation
-To install the latest build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
+1. Download the latest release.
+2. Copy config.example.neon to config.neon
+3. Open config.neon with your favourite text editor and change the settings to your liking (check the wiki for more information)
+4. Launch the bot with the following command: `php wildphp.php`
+5. Profit!
 
-	composer create-project wildphp/wild-irc-bot directory-name --stability=alpha
-	
-Where directory-name is the name of the directory where to install the bot. The stability flag is required since the bot is in alpha stage.
+### Installing the latest revision
+To install the latest development build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
+
+	composer create-project wildphp/wild-irc-bot directory-name
 
 ### Configuration
 
 Copy the example configuration file and edit it to suit you. It uses the [Neon](http://ne-on.org/) syntax (borrowed from [Nette Framework](http://nette.org/en/)). It is similar to yaml but less strict and much faster to parse.
 
     cp config.example.neon config.neon
+
+## Installing modules
+Installing modules is as simple as dropping the module folder in the `modules` directory. The bot will automatically load it when it is next started.
+
+### Official extra modules
+Modules which have been tested to work with the latest version of the bot by us can be found [here](https://github.com/WildPHP/Wild-IRC-Bot-Plugins).
 
 ## Running the bot
 

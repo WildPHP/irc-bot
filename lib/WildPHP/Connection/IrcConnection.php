@@ -21,46 +21,40 @@
 namespace WildPHP\Connection;
 
 use Phergie\Irc\ConnectionInterface;
+use Psr\Log\LoggerInterface;
+use React\EventLoop\LoopInterface;
 use React\SocketClient\Connector;
 use React\Stream\Stream;
-use WildPHP\Api;
+
+use WildPHP\Traits\LoggerTrait;
+use WildPHP\Traits\LoopTrait;
 
 class IrcConnection
 {
-	/**
-	 * The API.
-	 *
-	 * @var Api
-	 */
-	protected $api;
+	use LoggerTrait;
+	use LoopTrait;
 
 	/**
-	 * Connector object.
-	 *
 	 * @var Connector
 	 */
 	protected $connector;
 
 	/**
-	 * Stream object.
-	 *
 	 * @var Stream
 	 */
 	protected $stream;
 
 	/**
-	 * The connection details.
-	 *
 	 * @var ConnectionInterface
 	 */
 	protected $connectionDetails;
 
-	/**
-	 * Partial message from last data process. It happens.
-	 *
-	 * @var string
-	 */
-	protected $partial = '';
+    /**
+     * Partial message from last data process.
+     *
+     * @var string
+     */
+    protected $partial = '';
 
 	/**
 	 * @return ConnectionInterface
@@ -84,11 +78,7 @@ class IrcConnection
 	public function getConnector()
 	{
 		if (!$this->connector)
-		{
-			$loop = $this->api->getLoop();
-			$this->connector = new Connector($loop, $this->api->getResolver());
-		}
-
+			$this->connector = new Connector($this->getLoop(), $this->getResolver());
 		return $this->connector;
 	}
 
@@ -101,13 +91,13 @@ class IrcConnection
 	}
 
 	/**
-	 * Inject the API.
-	 *
-	 * @param Api $api
+	 * @param LoggerInterface $logger
+	 * @param LoopInterface $loop
 	 */
-	public function __construct(Api $api)
+	public function __construct(LoggerInterface $logger, LoopInterface $loop)
 	{
-		$this->api = $api;
+		$this->setLogger($logger);
+		$this->setLoop($loop);
 	}
 
 	/**
@@ -125,34 +115,33 @@ class IrcConnection
 		{
 			$this->setStream($stream);
 			$this->setConnectionDetails($connection);
-			$this->api->getEmitter()->emit('irc.connect', [$stream, $connection]);
 			$this->write($this->api->getGenerator()->ircNick($connection->getNickname()));
 			$this->write($this->api->getGenerator()->ircUser($connection->getNickname(), gethostname(), $connection->getNickname(), $connection->getUsername()));
-			$stream->on('data', [$this, 'processData']);
+			$stream->on('data', array($this, 'processData'));
 		});
 	}
 
 	/**
 	 * Process incoming data.
-	 *
-	 * @param string $data
+     *
+     * @param string $data
 	 */
-	public function processData($data)
-	{
-		$all = $this->partial . $data;
-		$messages = $this->api->getParser()->consumeAll($all);
-		$this->partial = $all;
+    public function processData($data)
+    {
+        $all = $this->partial . $data;
+        $messages = $this->api->getParser()->consumeAll($all);
+        $this->partial = $all;
 
-		foreach ($messages as $message)
-		{
-			$this->api->getLogger()->debug('<< ' . $message['message']);
+        foreach ($messages as $message)
+        {
+            $this->api->getLogger()->debug('<< ' . $message['message']);
 
-			// Fire both a generic irc.data.in and an irc.data.in.{command} event.
-			$this->api->getEmitter()->emit('irc.data.in', [$message]);
-			if (!empty($message['command']))
-				$this->api->getEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$message]);
-		}
-	}
+            // Fire both a generic irc.data.in and an irc.data.in.{command} event.
+            $this->api->getEmitter()->emit('irc.data.in', array($message));
+            if (!empty($message['command']))
+                $this->api->getEmitter()->emit('irc.data.in.' . strtolower($message['command']), array($message));
+        }
+    }
 
 	/**
 	 * Start up the stream.
@@ -175,15 +164,14 @@ class IrcConnection
 		if (empty($parsed))
 		{
 			$this->api->getLogger()->warning('Malformed outgoing message: ' . $data);
-
 			return;
 		}
 		$this->api->getLogger()->info('>> ' . $data);
 		$this->stream->write($data);
 
 		// Trigger a new irc.data.out event.
-		$this->api->getEmitter()->emit('irc.data.out', [$parsed]);
-		$this->api->getEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), [$parsed]);
+		$this->api->getEmitter()->emit('irc.data.out', array($parsed));
+		$this->api->getEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), array($parsed));
 	}
 
 	/**

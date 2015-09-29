@@ -9,6 +9,9 @@ server: irc.freenode.org
 # The port number to use.
 port: 6667
 
+# Use a secure (SSL) connection?
+secure: false
+
 # The nickname to use when connecting.
 # Every character allowed, except spaces, newlines and the at (@) symbol.
 nick: WildPHP-Bot

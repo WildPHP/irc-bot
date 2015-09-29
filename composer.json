@@ -2,7 +2,6 @@
     "name": "wildphp/wild-irc-bot",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
-    "version": "2.0.1-alpha",
     "require": {
         "php": ">=5.5.0",
         "nette/neon": "^2.3",
@@ -12,12 +11,6 @@
         "phergie/phergie-irc-generator": "^1.7",
         "phergie/phergie-irc-connection": "^2.0",
         "monolog/monolog": "^1.17"
-    },
-    "suggest": {
-        "wildphp/module-channelmanager": "Keeps track of what channels the bot is in; provides !join and !part user commands",
-        "wildphp/module-commandparser": "Allows your bot to interpret user commands.",
-        "wildphp/module-nickwatcher": "Avoids issues by updating internal references of the nickname when it is changed",
-        "wildphp/module-pingpong": "Allows the bot to stay online for longer periods of time."
     },
     "require-dev":
     {

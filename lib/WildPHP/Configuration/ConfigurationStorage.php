@@ -20,6 +20,8 @@
 
 namespace WildPHP\Configuration;
 
+use WildPHP\Manager;
+use WildPHP\Bot;
 use Nette\Neon\Neon;
 
 class ConfigurationStorage
@@ -29,16 +31,14 @@ class ConfigurationStorage
 	/**
 	 * Loads the config file and parses it.
 	 *
-	 * @param string $config The path to the config file.
-	 * @throws \Exception on read error.
+	 * @param string $config Path to the configuration file.
+	 * @throws ConfigurationException
 	 */
 	public function __construct($config)
 	{
 		try
 		{
-			// Open the file and surpress errors; we'll do our own error handling here.
-			$data = @file_get_contents($config);
-			if (!empty($data) && is_string($data))
+			if (file_exists($config) && is_readable($config))
 				$this->config = Neon::decode(file_get_contents($config));
 			else
 				throw new ConfigurationException('The configuration could not be loaded. Please check the file ' . $config . ' exists and is readable/not corrupt.');
