@@ -21,10 +21,12 @@
 namespace WildPHP\Modules;
 
 use WildPHP\Traits\EventEmitterTrait;
+use WildPHP\Traits\LoopTrait;
 
 class ModuleProxy
 {
 	use EventEmitterTrait;
+	use LoopTrait;
 
 	/**
 	 * @var ModulePool
@@ -73,6 +75,7 @@ class ModuleProxy
 			}
 
 			$object->setEventEmitter($this->getEventEmitter());
+			$object->setLoop($this->getLoop());
 			$object->setModulePool($this->poolObject);
 
 			echo 'Storing module in module pool with key ' . $object->getShortName() . PHP_EOL;
@@ -102,5 +105,7 @@ class ModuleProxy
 				continue;
 			}
 		}
+
+		$this->getEventEmitter()->emit('wildphp.init.after');
 	}
 }

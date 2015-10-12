@@ -18,7 +18,23 @@ class DataLogger extends BaseModule
 	{
 		$this->getEventEmitter()->on('irc.data.in', function ($data)
 		{
-			$this->getLogger()->info('<< ' . $data['message']);
+			//$this->getLogger()->info('<< ' . $data['message']);
+		});
+
+		$this->getEventEmitter()->on('wildphp.init.after', function()
+		{
+			$configurationExists = $this->getModulePool()->existsByKey('Configuration');
+
+			if (!$configurationExists)
+			{
+				echo 'Uhm, I am missing my configuration...' . PHP_EOL;
+				return;
+			}
+
+			$configuration = $this->getModulePool()->get('Configuration');
+
+			$server = $configuration->get('server');
+			var_dump($server);
 		});
 	}
 }

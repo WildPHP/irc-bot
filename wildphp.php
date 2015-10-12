@@ -58,6 +58,10 @@ require_once('vendor/autoload.php');
 
 // Create a new bot and start it up
 $bot = new Bot();
+
+$dirScanner = new \WildPHP\Modules\ModuleProviders\DirectoryScanner(dirname(__FILE__) . '/lib/WildPHP/CoreModules');
+$bot->addModules($dirScanner->getValidModules());
+
 $bot->start();
 
 

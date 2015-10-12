@@ -18,11 +18,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Configuration;
+namespace WildPHP\CoreModules\Configuration;
 
-use RuntimeException;
-
-class ConfigurationException extends RuntimeException
+class ConfigurationException extends \RuntimeException
 {
 
 }

@@ -38,11 +38,9 @@ class Bot
 	use ModuleProxyTrait;
 
 	/**
-	 * Loads configuration, sets up a connection and loads modules.
-	 *
-	 * @param string $configFile
+	 * This initialises the event emitter, loop, and module proxy objects.
 	 */
-	public function __construct($configFile = WPHP_CONFIG)
+	public function __construct()
 	{
 		$this->setLoop(Factory::create());
 
@@ -51,12 +49,17 @@ class Bot
 		// Module proxy needs a bit of code.
 		$moduleProxy = new ModuleProxy();
 		$moduleProxy->setEventEmitter($this->getEventEmitter());
-
-		$dirScanner = new DirectoryScanner(dirname(__FILE__) . '/CoreModules');
-		$moduleProxy->loadModules($dirScanner->getValidModules());
-		$moduleProxy->initializeModules();
+		$moduleProxy->setLoop($this->getLoop());
 
 		$this->setModuleProxy($moduleProxy);
+	}
+
+	/**
+	 * @param string[] $modules
+	 */
+	public function addModules(array $modules)
+	{
+		$this->getModuleProxy()->loadModules($modules);
 	}
 
 	/**
@@ -64,6 +67,7 @@ class Bot
 	 */
 	public function start()
 	{
+		$this->getModuleProxy()->initializeModules();
 		$this->getLoop()->run();
 	}
 }

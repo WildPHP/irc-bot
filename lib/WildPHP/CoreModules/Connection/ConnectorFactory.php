@@ -18,7 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Connection;
+namespace WildPHP\CoreModules\Connection;
 
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
@@ -29,13 +29,11 @@ use React\Stream\Stream;
 
 use WildPHP\Traits\LoopTrait;
 use WildPHP\Traits\ResolverTrait;
-use WildPHP\Traits\StreamTrait;
 
 class ConnectorFactory
 {
 	use LoopTrait;
 	use ResolverTrait;
-	use StreamTrait;
 
 	public function __construct(LoopInterface $loop)
 	{
