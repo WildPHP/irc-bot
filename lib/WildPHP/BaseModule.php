@@ -20,11 +20,29 @@
 
 namespace WildPHP;
 
-use WildPHP\Traits\LoggerTrait;
+use WildPHP\Traits\EventEmitterTrait;
+use WildPHP\Modules\ModuleNeedsDependencyException;
+use WildPHP\Traits\ModulePoolTrait;
 
 abstract class BaseModule
 {
-	use LoggerTrait;
+	use EventEmitterTrait;
+	use ModulePoolTrait;
+
+	/**
+	 * @param string $module The module, referenced by key.
+	 * @param string $class The expected class of the module.
+	 *
+	 * @throws ModuleNeedsDependencyException if the module needs extra dependencies
+	 */
+	public function checkModuleAvailability($module, $class = null)
+	{
+		if (!$this->getModulePool()->existsByKey($module))
+			throw new ModuleNeedsDependencyException($module);
+
+		elseif (!empty($class) && $this->getModulePool()->isInstance($module, $class))
+			throw new \RuntimeException('Unable to load module of invalid type');
+	}
 
 	/**
 	 * @return string
@@ -47,7 +65,7 @@ abstract class BaseModule
 	 */
 	public function getShortName()
 	{
-		$rc = new \ReflectionClass($this);
-		return $rc->getShortName();
+		$reflectionClass = new \ReflectionClass($this);
+		return $reflectionClass->getShortName();
 	}
 }

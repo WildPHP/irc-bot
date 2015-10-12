@@ -22,7 +22,11 @@ namespace WildPHP\Connection;
 
 use Evenement\EventEmitterInterface;
 use Phergie\Irc\Parser;
+use React\Promise\Promise;
+use React\SocketClient\ConnectorInterface;
 use React\Stream\DuplexStreamInterface;
+use React\Stream\Stream;
+use WildPHP\Traits\ConnectorTrait;
 use WildPHP\Traits\EventEmitterTrait;
 use WildPHP\Traits\ParserTrait;
 use WildPHP\Traits\StreamTrait;
@@ -32,9 +36,9 @@ use WildPHP\Traits\StreamTrait;
  */
 class DataProcessor
 {
+	use ConnectorTrait;
 	use EventEmitterTrait;
 	use ParserTrait;
-	use StreamTrait;
 
 	/**
 	 * @var string
@@ -44,18 +48,22 @@ class DataProcessor
 	/**
 	 * Sets up initial events.
 	 *
-	 * @param DuplexStreamInterface $stream
+	 * @param Promise $connector
 	 * @param EventEmitterInterface $emitter
 	 */
-	public function __construct(DuplexStreamInterface $stream, EventEmitterInterface $emitter)
+	public function __construct(Promise $connector, EventEmitterInterface $emitter)
 	{
-		$this->setStream($stream);
+		$this->setConnector($connector);
 		$this->setEventEmitter($emitter);
 		$this->setParser(new Parser());
 
-		$stream->on('data', function ($data) use ($emitter)
+		$connector->then(function(Stream $stream) use ($emitter)
 		{
-			$emitter->emit('irc.data.raw.in', array($data));
+			$stream->on('data', function ($data) use ($emitter)
+			{
+				$emitter->emit('irc.data.raw.in', [$data]);
+			});
+			return $stream;
 		});
 
 		$emitter->on('irc.data.raw.in', array($this, 'parseData'));

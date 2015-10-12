@@ -20,29 +20,28 @@
 
 namespace WildPHP\Traits;
 
-use \Psr\Log\LoggerInterface;
+use WildPHP\Modules\ModulePool;
 
-trait LoggerTrait
+trait ModulePoolTrait
 {
-    /**
-     * @var LoggerInterface $loggerObject
-     */
-    protected $loggerObject;
+	/**
+	 * @var ModulePool $poolObject
+	 */
+	protected $poolObject;
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->loggerObject = $logger;
-    }
+	/**
+	 * @param ModulePool $pool
+	 */
+	public function setModulePool(ModulePool $pool)
+	{
+		$this->poolObject = $pool;
+	}
 
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger()
-    {
-        return $this->loggerObject;
-    }
-
+	/**
+	 * @return ModulePool
+	 */
+	public function getModulePool()
+	{
+		return $this->poolObject;
+	}
 }

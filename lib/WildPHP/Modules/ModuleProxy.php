@@ -20,11 +20,11 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP\Traits\LoggerTrait;
+use WildPHP\Traits\EventEmitterTrait;
 
 class ModuleProxy
 {
-	use LoggerTrait;
+	use EventEmitterTrait;
 
 	/**
 	 * @var ModulePool
@@ -53,11 +53,14 @@ class ModuleProxy
 	/**
 	 * @param string[] $modules
 	 */
-	public function loadModules(array $modules)
+	public function loadModules($modules)
 	{
+		if (empty($modules) || !is_array($modules))
+			return;
+
 		foreach ($modules as $module)
 		{
-			$this->getLogger()->debug('Attempting to load module ' . $module . '...');
+			echo 'Attempting to load module ' . $module . '...' . PHP_EOL;
 
 			try
 			{
@@ -65,13 +68,39 @@ class ModuleProxy
 			}
 			catch (\Exception $e)
 			{
-				$this->getLogger()->warning('Module ' . $module . ' could not be loaded due to an error and will be skipped for this run: ' . $e);
+				echo 'Module ' . $module . ' could not be loaded due to an error and will be skipped for this run: ' . $e->getMessage() . PHP_EOL;
 				continue;
 			}
-			$this->getLogger()->debug('Storing module in module pool with key ' . $object->getShortName());
+
+			$object->setEventEmitter($this->getEventEmitter());
+			$object->setModulePool($this->poolObject);
+
+			echo 'Storing module in module pool with key ' . $object->getShortName() . PHP_EOL;
 			$this->poolObject->add($object, $object->getShortName());
 
-			$this->getLogger()->info('Module ' . $module . ' loaded and initialized.');
+			echo 'Module ' . $module . ' loaded.' . PHP_EOL;
+		}
+	}
+
+	public function initializeModules()
+	{
+		$modules = $this->poolObject->getAll();
+
+		foreach ($modules as $key => $object)
+		{
+			try
+			{
+				if (method_exists($object, 'setup'))
+				{
+					call_user_func([$object, 'setup']);
+					echo 'setup() method exists and was called on module ' . $key . PHP_EOL;
+				}
+			}
+			catch (\Exception $e)
+			{
+				echo 'Module ' . $key . ' was loaded, but could not be properly initialised. This can cause instability. The message given: ' . $e->getMessage() . PHP_EOL;
+				continue;
+			}
 		}
 	}
 }

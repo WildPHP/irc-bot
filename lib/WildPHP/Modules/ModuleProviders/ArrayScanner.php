@@ -18,30 +18,19 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Traits;
+namespace WildPHP\Modules\ModuleProviders;
 
-use React\Stream\DuplexStreamInterface;
-
-trait StreamTrait
+class ArrayScanner extends BaseScanner
 {
-    /**
-     * @var DuplexStreamInterface $streamObject
-     */
-    protected $streamObject;
+	public function __construct(array $possibleModules)
+	{
+		// That's all, folks.
+		$this->scanArray($possibleModules);
+	}
 
-    /**
-     * @param DuplexStreamInterface $stream
-     */
-    public function setStream(DuplexStreamInterface $stream)
-    {
-        $this->streamObject = $stream;
-    }
-
-    /**
-     * @return DuplexStreamInterface
-     */
-    public function getStream()
-    {
-        return $this->streamObject;
-    }
+	public function scanArray(array $array)
+	{
+		foreach ($array as $module)
+			$this->tryAddValidModule($module);
+	}
 }

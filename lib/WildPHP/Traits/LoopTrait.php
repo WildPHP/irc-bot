@@ -20,6 +20,7 @@
 
 namespace WildPHP\Traits;
 
+use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 
 trait LoopTrait

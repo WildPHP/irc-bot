@@ -97,6 +97,14 @@ class ModulePool
     }
 
     /**
+     * @return string[BaseModule]
+     */
+    public function getAll()
+    {
+        return $this->pool;
+    }
+
+    /**
      * @param BaseModule $module
      * @return string
      */
@@ -106,5 +114,18 @@ class ModulePool
             throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
 
         return array_search($module, $this->pool);
+    }
+
+    /**
+     * @param string $key
+     * @param string $className
+     * @return boolean
+     */
+    public function isInstance($key, $className)
+    {
+        if (!$this->existsByKey($key))
+            return false;
+
+        return ($this->get($key) instanceof $className);
     }
 }

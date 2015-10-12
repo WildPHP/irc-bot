@@ -21,28 +21,21 @@
 namespace WildPHP;
 
 use Evenement\EventEmitter;
-use Monolog\Logger;
-use Phergie\Irc\Connection;
-use Phergie\Irc\ConnectionInterface;
-use WildPHP\Configuration\ConfigurationStorage;
-use WildPHP\Connection\DataProcessor;
-use WildPHP\Connection\StreamFactory;
-use WildPHP\Traits\ConfigurationTrait;
+use React\EventLoop\Factory;
+use WildPHP\Modules\ModuleProviders\DirectoryScanner;
+use WildPHP\Modules\ModuleProxy;
 use WildPHP\Traits\EventEmitterTrait;
-use WildPHP\Traits\LoggerTrait;
 use WildPHP\Traits\LoopTrait;
-use WildPHP\Traits\StreamTrait;
+use WildPHP\Traits\ModuleProxyTrait;
 
 /**
  * The main bot class. Creates a single bot instance.
  */
 class Bot
 {
-	use ConfigurationTrait;
 	use EventEmitterTrait;
-	use LoggerTrait;
 	use LoopTrait;
-	use StreamTrait;
+	use ModuleProxyTrait;
 
 	/**
 	 * Loads configuration, sets up a connection and loads modules.
@@ -51,40 +44,19 @@ class Bot
 	 */
 	public function __construct($configFile = WPHP_CONFIG)
 	{
-		// Setup the logger.
-		
-		$this->setLogger();
+		$this->setLoop(Factory::create());
+
 		$this->setEventEmitter(new EventEmitter());
-		$this->setConfigurationStorage(new ConfigurationStorage($configFile));
 
+		// Module proxy needs a bit of code.
+		$moduleProxy = new ModuleProxy();
+		$moduleProxy->setEventEmitter($this->getEventEmitter());
 
-		// Connect using the given data.
-		$connection = new Connection();
-		$connection->setServerHostname($this->getConfigurationStorage()->get('server'))
-			->setServerPort($this->getConfigurationStorage()->get('port'))
-			->setNickname($this->getConfigurationStorage()->get('nick'))
-			->setUsername($this->getConfigurationStorage()->get('name'))
-			->setRealname('A WildPHP Bot');
-	}
+		$dirScanner = new DirectoryScanner(dirname(__FILE__) . '/CoreModules');
+		$moduleProxy->loadModules($dirScanner->getValidModules());
+		$moduleProxy->initializeModules();
 
-	/**
-	 * Connects the bot to the given connection.
-	 *
-	 * @param ConnectionInterface $connection
-	 */
-	public function connect(ConnectionInterface $connection)
-	{
-		$factory = new StreamFactory($this->getLoop());
-
-		if ($this->getConfigurationStorage()->get('secure') == true)
-			$stream = $factory->createSecure($connection->getServerHostname(), $connection->getServerPort());
-		else
-			$stream = $factory->create($connection->getServerHostname(), $connection->getServerPort());
-
-		$this->setStream($stream);
-
-		// We do not need to store this object anywhere; it has no benefit to store it.
-		new DataProcessor($stream, $this->getEventEmitter());
+		$this->setModuleProxy($moduleProxy);
 	}
 
 	/**

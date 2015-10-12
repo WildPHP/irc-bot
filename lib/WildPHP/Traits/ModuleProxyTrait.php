@@ -20,28 +20,28 @@
 
 namespace WildPHP\Traits;
 
-use Phergie\Irc\ParserInterface;
+use WildPHP\Modules\ModuleProxy;
 
-trait ParserTrait
+trait ModuleProxyTrait
 {
-    /**
-     * @var ParserInterface $parserObject
-     */
-    protected $parserObject;
+	/**
+	 * @var ModuleProxy $moduleProxyObject
+	 */
+	protected $moduleProxyObject;
 
-    /**
-     * @param ParserInterface $parser
-     */
-    public function setParser(ParserInterface $parser)
-    {
-        $this->parserObject = $parser;
-    }
+	/**
+	 * @param ModuleProxy $moduleProxy
+	 */
+	public function setModuleProxy(ModuleProxy $moduleProxy)
+	{
+		$this->moduleProxyObject = $moduleProxy;
+	}
 
-    /**
-     * @return ParserInterface
-     */
-    public function getParser()
-    {
-        return $this->parserObject;
-    }
+	/**
+	 * @return ModuleProxy
+	 */
+	public function getModuleProxy()
+	{
+		return $this->moduleProxyObject;
+	}
 }

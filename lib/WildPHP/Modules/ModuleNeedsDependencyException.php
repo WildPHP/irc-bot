@@ -18,10 +18,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Modules\Processors;
+namespace WildPHP\Modules;
 
-
-class DependencyInjector extends GenericProcessor
+class ModuleNeedsDependencyException extends \RuntimeException
 {
-
 }
