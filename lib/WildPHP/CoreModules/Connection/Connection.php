@@ -45,7 +45,7 @@ class Connection extends BaseModule
 
 	public function setup()
 	{
-		$this->getEventEmitter()->on('wildphp.init.after', array($this, 'create'));
+		$this->getEventEmitter()->on('wildphp.init.after', [$this, 'create']);
 		$this->setParser(new Parser());
 	}
 
@@ -67,19 +67,18 @@ class Connection extends BaseModule
 		else
 			$connector = $factory->create($configuration->get('server'), $configuration->get('port'));
 
-		$connector->then(function(Stream $stream)
+		$connector->then(function (Stream $stream) use ($connector)
 		{
-			$stream->on('data', function ($data)
+			$stream->on('data', function ($data) use ($connector)
 			{
-				var_dump($data);
-				$this->getEventEmitter()->emit('irc.data.raw.in', [$data]);
+				$this->getEventEmitter()->emit('irc.data.raw.in', [$data, $connector]);
 			});
+
 			return $stream;
 		});
 
 
-
-		$this->getEventEmitter()->on('irc.data.raw.in', array($this, 'parseData'));
+		$this->getEventEmitter()->on('irc.data.raw.in', [$this, 'parseData']);
 	}
 
 	/**
@@ -95,19 +94,11 @@ class Connection extends BaseModule
 
 		foreach ($messages as $message)
 		{
-			$this->getEventEmitter()->emit('irc.data.in', array($message));
+			$this->getEventEmitter()->emit('irc.data.in', [$message]);
 
 			if (!empty($message['command']))
-				$this->getEventEmitter()->emit('irc.data.in.' . strtolower($message['command']), array($message));
+				$this->getEventEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$message]);
 		}
-	}
-
-	/**
-	 * @param ParserInterface $parser
-	 */
-	protected function setParser(ParserInterface $parser)
-	{
-		$this->parser = $parser;
 	}
 
 	/**
@@ -119,11 +110,11 @@ class Connection extends BaseModule
 	}
 
 	/**
-	 * @param ConnectorInterface $connector
+	 * @param ParserInterface $parser
 	 */
-	protected function setConnector(ConnectorInterface $connector)
+	protected function setParser(ParserInterface $parser)
 	{
-		$this->connector = $connector;
+		$this->parser = $parser;
 	}
 
 	/**
@@ -132,5 +123,13 @@ class Connection extends BaseModule
 	protected function getConnector()
 	{
 		return $this->connector;
+	}
+
+	/**
+	 * @param ConnectorInterface $connector
+	 */
+	protected function setConnector(ConnectorInterface $connector)
+	{
+		$this->connector = $connector;
 	}
 }
