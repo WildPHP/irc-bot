@@ -20,11 +20,14 @@
 
 namespace WildPHP\CoreModules\Connection;
 
+use Phergie\Irc\Generator;
+use Phergie\Irc\GeneratorInterface;
 use Phergie\Irc\Parser;
 use Phergie\Irc\ParserInterface;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use WildPHP\BaseModule;
+use WildPHP\CoreModules\Configuration\Configuration;
 
 class Connection extends BaseModule
 {
@@ -39,6 +42,11 @@ class Connection extends BaseModule
 	protected $parser = null;
 
 	/**
+	 * @var GeneratorInterface
+	 */
+	protected $generator = null;
+
+	/**
 	 * @var ConnectorInterface
 	 */
 	protected $connector;
@@ -47,6 +55,11 @@ class Connection extends BaseModule
 	{
 		$this->getEventEmitter()->on('wildphp.init.after', [$this, 'create']);
 		$this->setParser(new Parser());
+		$this->setGenerator(new Generator());
+
+		$this->getEventEmitter()->on('irc.data.raw.in', [$this, 'parseData']);
+
+		$this->getEventEmitter()->on('irc.connection.created', [$this, 'sendInitialData']);
 	}
 
 	public function create()
@@ -74,11 +87,12 @@ class Connection extends BaseModule
 				$this->getEventEmitter()->emit('irc.data.raw.in', [$data, $connector]);
 			});
 
+			$this->getEventEmitter()->emit('irc.connection.created');
+
 			return $stream;
 		});
 
-
-		$this->getEventEmitter()->on('irc.data.raw.in', [$this, 'parseData']);
+		$this->connector = $connector;
 	}
 
 	/**
@@ -104,7 +118,7 @@ class Connection extends BaseModule
 	/**
 	 * @return ParserInterface
 	 */
-	protected function getParser()
+	public function getParser()
 	{
 		return $this->parser;
 	}
@@ -115,6 +129,33 @@ class Connection extends BaseModule
 	protected function setParser(ParserInterface $parser)
 	{
 		$this->parser = $parser;
+	}
+
+	public function sendInitialData()
+	{
+		$configuration = $this->getModulePool()->get('Configuration');
+		$this->write($this->getGenerator()->ircUser($configuration->get('name'), gethostname(), $configuration->get('name'), 'A WildPHP Bot'));
+	}
+
+	/**
+	 * @param array $data
+	 */
+	public function write($data)
+	{
+		$parsed = $this->getParser()->parse($data);
+		if ($parsed == null)
+		{
+			$this->getModulePool()->get('Logger')->debug('Tried to write invalid IRC data: ' . $data);
+			return;
+		}
+
+		$this->getConnector()->then(function (Stream $stream) use ($data, $parsed)
+		{
+			$stream->write($data);
+
+			$this->getEventEmitter()->emit('irc.data.out', [$parsed]);
+			$this->getEventEmitter()->emit('irc.data.out.' . strtolower($parsed['command']), [$parsed]);
+		});
 	}
 
 	/**
@@ -131,5 +172,21 @@ class Connection extends BaseModule
 	protected function setConnector(ConnectorInterface $connector)
 	{
 		$this->connector = $connector;
+	}
+
+	/**
+	 * @return GeneratorInterface
+	 */
+	public function getGenerator()
+	{
+		return $this->generator;
+	}
+
+	/**
+	 * @param GeneratorInterface $generator
+	 */
+	protected function setGenerator(GeneratorInterface $generator)
+	{
+		$this->generator = $generator;
 	}
 }

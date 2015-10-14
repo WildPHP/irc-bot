@@ -20,10 +20,6 @@
 
 namespace WildPHP\CoreModules\Configuration;
 
-use WildPHP\Manager;
-use WildPHP\Bot;
-use Nette\Neon\Neon;
-
 class ConfigurationStorage
 {
 	private $config = [];

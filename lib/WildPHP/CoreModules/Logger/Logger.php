@@ -39,7 +39,12 @@ class Logger extends BaseModule
 
 		$this->getEventEmitter()->on('irc.data.in', function ($data)
 		{
-			$this->debug($data['message']);
+			$this->debug('<< ' . $data['message']);
+		});
+
+		$this->getEventEmitter()->on('irc.data.out', function ($data)
+		{
+			$this->debug('>> ' . $data['message']);
 		});
 	}
 
