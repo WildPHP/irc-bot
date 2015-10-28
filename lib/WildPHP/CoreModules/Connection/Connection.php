@@ -27,7 +27,6 @@ use Phergie\Irc\ParserInterface;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use WildPHP\BaseModule;
-use WildPHP\CoreModules\Configuration\Configuration;
 
 class Connection extends BaseModule
 {
@@ -53,13 +52,20 @@ class Connection extends BaseModule
 
 	public function setup()
 	{
-		$this->getEventEmitter()->on('wildphp.init.after', [$this, 'create']);
 		$this->setParser(new Parser());
 		$this->setGenerator(new Generator());
 
-		$this->getEventEmitter()->on('irc.data.raw.in', [$this, 'parseData']);
+		$events = [
+			'create'          => 'wildphp.init.after',
+			'parseData'       => 'irc.data.raw.in',
+			'sendInitialData' => 'irc.connection.created',
+			'pingPong'        => 'irc.data.in.ping'
+		];
 
-		$this->getEventEmitter()->on('irc.connection.created', [$this, 'sendInitialData']);
+		foreach ($events as $function => $event)
+		{
+			$this->getEventEmitter()->on($event, [$this, $function]);
+		}
 	}
 
 	public function create()
@@ -116,6 +122,16 @@ class Connection extends BaseModule
 	}
 
 	/**
+	 * @param string   $command
+	 * @param string[] $params
+	 * @param array    $data
+	 */
+	public function pingPong($command, $params, $data)
+	{
+		$this->write($this->getGenerator()->ircPong($data['params']['server1']));
+	}
+
+	/**
 	 * @return ParserInterface
 	 */
 	public function getParser()
@@ -146,6 +162,7 @@ class Connection extends BaseModule
 		if ($parsed == null)
 		{
 			$this->getModulePool()->get('Logger')->debug('Tried to write invalid IRC data: ' . $data);
+
 			return;
 		}
 

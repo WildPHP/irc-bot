@@ -21,21 +21,16 @@
 namespace WildPHP\CoreModules\Commands;
 
 use WildPHP\BaseModule;
-use WildPHP\CoreModules\Connection\Connection;
 
 class Commands extends BaseModule
 {
 	public function setup()
 	{
 		$this->getEventEmitter()->on('irc.data.in.privmsg', [$this, 'parseCommands']);
+
 		$this->getEventEmitter()->on('irc.command.ping', function ($command, $params, $data)
 		{
-			$connection = $this->getModulePool()->get('Connection');
-
-			if (!($connection instanceof Connection))
-				return;
-
-			var_dump($data, $command, $params);
+			$connection = $this->getModule('Connection');
 			$connection->write($connection->getGenerator()->ircPrivmsg($data['targets'][0], 'Pong!'));
 		});
 	}

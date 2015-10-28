@@ -71,4 +71,13 @@ abstract class BaseModule
 		$reflectionClass = new \ReflectionClass($this);
 		return $reflectionClass->getShortName();
 	}
+
+	/**
+	 * @param string $key
+	 * @return BaseModule
+	 */
+	public function getModule($key)
+	{
+		return $this->getModulePool()->get($key);
+	}
 }

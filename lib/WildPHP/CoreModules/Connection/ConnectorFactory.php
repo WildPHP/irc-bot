@@ -20,6 +20,7 @@
 
 namespace WildPHP\CoreModules\Connection;
 
+use React\Dns\Resolver\Factory as ResolverFactory;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\SocketClient\Connector;
@@ -39,7 +40,7 @@ class ConnectorFactory
 	{
 		$this->setLoop($loop);
 
-		$dnsResolverFactory = new \React\Dns\Resolver\Factory();
+		$dnsResolverFactory = new ResolverFactory();
 		$this->setResolver($dnsResolverFactory->createCached('8.8.8.8', $this->getLoop()));
 	}
 

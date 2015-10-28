@@ -22,7 +22,6 @@ namespace WildPHP;
 
 use Evenement\EventEmitter;
 use React\EventLoop\Factory;
-use WildPHP\Modules\ModuleProviders\DirectoryScanner;
 use WildPHP\Modules\ModuleProxy;
 use WildPHP\Traits\EventEmitterTrait;
 use WildPHP\Traits\LoopTrait;

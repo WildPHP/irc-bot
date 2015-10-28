@@ -18,34 +18,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Modules;
+namespace WildPHP\CoreModules\ChannelManager;
 
-use WildPHP\BaseModule;
-
-class ModuleFactory
+class ChannelPool
 {
-	/**
-	 * @param string $moduleClass
-	 *
-	 * @return BaseModule
-	 */
-	public static function create($moduleClass)
-	{
-		if (!class_exists($moduleClass))
-			throw new \RuntimeException('ModuleFactory: Unable to create a module from a class which does not exist.');
 
-		try
-		{
-			$object = new $moduleClass();
-		}
-		catch (\Exception $e)
-		{
-			throw new \RuntimeException('ModuleFactory: Unable to build module ' . $moduleClass . ': ' . $e->getMessage());
-		}
-
-		if (!$object instanceof BaseModule)
-			throw new \RuntimeException('ModuleFactory: Attempted to build a non-module.');
-
-		return $object;
-	}
 }
