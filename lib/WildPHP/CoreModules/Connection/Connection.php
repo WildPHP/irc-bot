@@ -122,8 +122,6 @@ class Connection extends BaseModule
 	}
 
 	/**
-	 * @param string   $command
-	 * @param string[] $params
 	 * @param array    $data
 	 */
 	public function pingPong($data)
