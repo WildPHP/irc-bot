@@ -126,7 +126,7 @@ class Connection extends BaseModule
 	 * @param string[] $params
 	 * @param array    $data
 	 */
-	public function pingPong($command, $params, $data)
+	public function pingPong($data)
 	{
 		$this->write($this->getGenerator()->ircPong($data['params']['server1']));
 	}
