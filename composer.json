@@ -18,7 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "": "lib/"
+            "": "lib/",
+            "WPHPTests\\": "tests/"
         }
     },
     "license": "GPL-3.0",
