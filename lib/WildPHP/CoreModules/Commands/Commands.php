@@ -42,7 +42,7 @@ class Commands extends BaseModule
 		$command = '([a-zA-Z0-9]+)';
 		$params = '(?: (.+))?';
 		$tests = [
-			$configuration->get('nick') . "[,: ] {$command}{$params}",
+			$configuration->get('nick') . "[^a-zA-Z0-9]+{$command}{$params}",
 			preg_quote($configuration->get('prefix')) . "{$command}{$params}"
 		];
 
@@ -50,7 +50,7 @@ class Commands extends BaseModule
 		$params = '';
 		foreach ($tests as $test)
 		{
-			if (preg_match('/' . $test . '/', $data['params']['text'], $out) === false || empty($out))
+			if (preg_match('/^' . $test . '/', $data['params']['text'], $out) === false || empty($out))
 				continue;
 
 			$command = strtolower($out[1]);
