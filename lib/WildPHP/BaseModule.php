@@ -24,18 +24,12 @@ use WildPHP\Traits\EventEmitterTrait;
 use WildPHP\Traits\LoopTrait;
 use WildPHP\Traits\ModulePoolTrait;
 
-abstract class BaseModule
+abstract class BaseModule implements BaseModuleInterface
 {
 	use EventEmitterTrait;
 	use LoopTrait;
 	use ModulePoolTrait;
-
-	/**
-	 * @param string $module
-	 * @param string $class The expected class of the module.
-	 *
-	 * @return boolean
-	 */
+	
 	public function checkModuleAvailability($module, $class = null)
 	{
 		if (!$this->getModulePool()->existsByKey($module))
@@ -46,36 +40,23 @@ abstract class BaseModule
 
 		return true;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getWorkingDir()
 	{
 		return dirname(__FILE__);
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getFullyQualifiedName()
 	{
 		return get_class();
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getShortName()
 	{
 		$reflectionClass = new \ReflectionClass($this);
 		return $reflectionClass->getShortName();
 	}
-
-	/**
-	 * @param string $key
-	 * @return BaseModule
-	 */
+	
 	public function getModule($key)
 	{
 		return $this->getModulePool()->get($key);
