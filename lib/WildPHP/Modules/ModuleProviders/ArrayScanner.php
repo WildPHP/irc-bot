@@ -22,10 +22,11 @@ namespace WildPHP\Modules\ModuleProviders;
 
 class ArrayScanner extends BaseScanner
 {
-	public function __construct(array $possibleModules)
+	public function __construct(array $possibleModules = [])
 	{
 		// That's all, folks.
-		$this->scanArray($possibleModules);
+		if (!empty($possibleModules))
+			$this->scanArray($possibleModules);
 	}
 
 	public function scanArray(array $array)
