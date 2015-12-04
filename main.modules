@@ -1,0 +1,13 @@
+# Format:
+#
+# Regular classes:
+# Namespace\Class\Stuff
+# or
+# class:Namespace\Class\Stuff
+#
+# Directories (always relative to where this file is):
+# dir:path/to/directory
+#
+# Please consult the documentation of the module you are trying to install on how to install it.
+
+dir:lib/WildPHP/CoreModules

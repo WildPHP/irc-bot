@@ -19,6 +19,8 @@
 */
 
 use WildPHP\Bot;
+use WildPHP\Modules\DotModules\Parser as DotModulesParser;
+use WildPHP\Modules\DotModules\Router as DotModulesRouter;
 
 // Set error reporting to report all errors
 error_reporting(E_ALL);
@@ -59,8 +61,13 @@ require_once('vendor/autoload.php');
 // Create a new bot and start it up
 $bot = new Bot();
 
-$dirScanner = new \WildPHP\Modules\ModuleProviders\DirectoryScanner(dirname(__FILE__) . '/lib/WildPHP/CoreModules');
-$bot->addModules($dirScanner->getValidModules());
+$parser = new DotModulesParser();
+$result = $parser->readFile(dirname(__FILE__) . '/main.modules');
+
+$router = new DotModulesRouter();
+$modules = $router->routeAll($result);
+
+$bot->addModules($modules);
 
 $bot->start();
 
