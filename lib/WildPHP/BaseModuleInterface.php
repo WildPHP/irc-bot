@@ -47,7 +47,7 @@ interface BaseModuleInterface
 
 	/**
 	 * @param string $key
-	 * @return BaseModule
+	 * @return BaseModuleInterface
 	 */
 	public function getModule($key);
 }
