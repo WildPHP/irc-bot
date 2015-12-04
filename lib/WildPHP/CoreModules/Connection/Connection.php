@@ -153,7 +153,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 	}
 
 	/**
-	 * @param array $data
+	 * @param string $data
 	 */
 	public function write($data)
 	{
