@@ -37,9 +37,7 @@ class Router
 		$dirScanner = new DirectoryScanner();
 		$arrayScanner = new ArrayScanner();
 
-		$leftovers = [];
 		$buffer = [];
-
 		foreach ($parsedModules as $module)
 		{
 			if (empty($module['type']) || empty($module['string']))
