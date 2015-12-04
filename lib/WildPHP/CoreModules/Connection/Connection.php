@@ -28,7 +28,7 @@ use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use WildPHP\BaseModule;
 
-class Connection extends BaseModule
+class Connection extends BaseModule implements ConnectionModuleInterface
 {
 	/**
 	 * @var string
@@ -70,7 +70,7 @@ class Connection extends BaseModule
 
 	public function create()
 	{
-		$configuration = $this->getModulePool()->get('Configuration');
+		$configuration = $this->getModule('Configuration');
 
 		$connection = new \Phergie\Irc\Connection();
 		$connection->setServerHostname($configuration->get('server'))
@@ -93,6 +93,7 @@ class Connection extends BaseModule
 				$this->getEventEmitter()->emit('irc.data.raw.in', [$data, $connector]);
 			});
 
+			$this->getEventEmitter()->emit('irc.connection.pre-created');
 			$this->getEventEmitter()->emit('irc.connection.created');
 
 			return $stream;
@@ -160,7 +161,6 @@ class Connection extends BaseModule
 		if ($parsed == null)
 		{
 			$this->getModulePool()->get('Logger')->debug('Tried to write invalid IRC data: ' . $data);
-
 			return;
 		}
 
