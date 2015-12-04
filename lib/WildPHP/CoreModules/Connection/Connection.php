@@ -149,7 +149,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 
 	public function sendInitialData()
 	{
-		$configuration = $this->getModulePool()->get('Configuration');
+		$configuration = $this->getModule('Configuration');
 		$this->write($this->getGenerator()->ircUser($configuration->get('name'), gethostname(), $configuration->get('name'), 'A WildPHP Bot'));
 	}
 
@@ -175,7 +175,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 	}
 
 	/**
-	 * @return ConnectorInterface
+	 * @return PromiseInterface
 	 */
 	protected function getConnector()
 	{
@@ -183,9 +183,9 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 	}
 
 	/**
-	 * @param ConnectorInterface $connector
+	 * @param PromiseInterface $connector
 	 */
-	protected function setConnector(ConnectorInterface $connector)
+	protected function setConnector(PromiseInterface $connector)
 	{
 		$this->connector = $connector;
 	}
