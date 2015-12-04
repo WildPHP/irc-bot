@@ -59,6 +59,5 @@ class SASL extends BaseModule
 
 	public function capListener($message)
 	{
-		var_dump($message);
 	}
 }
