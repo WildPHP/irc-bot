@@ -68,7 +68,9 @@ if (!empty($result))
 {
 	$router = new DotModulesRouter();
 	$modules = $router->routeAll($result);
-	$bot->addModules($modules);
+
+	if (!empty($modules))
+		$bot->addModules($modules);
 }
 
 $bot->start();
