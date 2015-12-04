@@ -22,8 +22,9 @@ namespace WildPHP\CoreModules\Connection;
 
 use Phergie\Irc\GeneratorInterface;
 use Phergie\Irc\ParserInterface;
+use WildPHP\BaseModuleInterface;
 
-interface ConnectionModuleInterface
+interface ConnectionModuleInterface extends BaseModuleInterface
 {
 	public function setup();
 
