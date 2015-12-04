@@ -83,7 +83,6 @@ class SASL extends BaseModule
 	public function authenticationListener($message)
 	{
 		$configuration = $this->getModule('Configuration');
-		var_dump($message);
 		if (trim($message['message']) == 'AUTHENTICATE +')
 		{
 			$saslHive = $configuration->get('sasl');
