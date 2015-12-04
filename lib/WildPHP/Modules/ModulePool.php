@@ -20,7 +20,7 @@
 
 namespace WildPHP\Modules;
 
-use WildPHP\BaseModule;
+use WildPHP\BaseModuleInterface;
 
 class ModulePool
 {
@@ -30,10 +30,10 @@ class ModulePool
     protected $pool = array();
 
     /**
-     * @param BaseModule $module
+     * @param BaseModuleInterface $module
      * @param string $key
      */
-    public function add(BaseModule $module, $key = '')
+    public function add(BaseModuleInterface $module, $key = '')
     {
         if (empty($key))
             $key = $module->getShortName();
@@ -45,10 +45,10 @@ class ModulePool
     }
 
     /**
-     * @param BaseModule $module
+     * @param BaseModuleInterface $module
      * @return bool
      */
-    public function exists(BaseModule $module)
+    public function exists(BaseModuleInterface $module)
     {
         return in_array($module, $this->pool);
     }
@@ -63,9 +63,9 @@ class ModulePool
     }
 
     /**
-     * @param BaseModule $module
+     * @param BaseModuleInterface $module
      */
-    public function remove(BaseModule $module)
+    public function remove(BaseModuleInterface $module)
     {
         if (!$this->exists($module))
             throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
@@ -86,7 +86,7 @@ class ModulePool
 
     /**
      * @param string $key
-     * @return BaseModule
+     * @return BaseModuleInterface
      */
     public function get($key)
     {
@@ -105,10 +105,10 @@ class ModulePool
     }
 
     /**
-     * @param BaseModule $module
+     * @param BaseModuleInterface $module
      * @return string
      */
-    public function getKey($module)
+    public function getKey(BaseModuleInterface $module)
     {
         if (!$this->exists($module))
             throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
