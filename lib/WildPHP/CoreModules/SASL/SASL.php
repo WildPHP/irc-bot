@@ -42,7 +42,6 @@ class SASL extends BaseModule
 			'onConnect' => 'irc.connection.pre-created',
 			'capListener' => 'irc.data.in.cap',
 			'authenticationListener' => 'irc.data.in.authenticate'
-
 		];
 
 		foreach ($events as $function => $event)
@@ -69,7 +68,7 @@ class SASL extends BaseModule
 	{
 		$matches = preg_match('/ACK :(?:.+)?\b(sasl)\b/i', $message['params']);
 
-		$this->serverSupportsSasl = $matches;
+		$this->serverSupportsSasl = !empty($matches);
 
 		if (!$matches)
 		{
@@ -90,7 +89,6 @@ class SASL extends BaseModule
 			$string = base64_encode($saslHive['user'] . "\0" . $saslHive['user'] . "\0" . $saslHive['password']);
 			$this->connection->write('AUTHENTICATE ' . $string . "\r\n");
 			$this->closeSasl();
-
 		}
 	}
 
