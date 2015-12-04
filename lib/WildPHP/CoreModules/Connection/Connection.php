@@ -27,6 +27,7 @@ use Phergie\Irc\ParserInterface;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use WildPHP\BaseModule;
+use React\Promise\PromiseInterface;
 
 class Connection extends BaseModule implements ConnectionModuleInterface
 {
@@ -46,7 +47,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 	protected $generator = null;
 
 	/**
-	 * @var ConnectorInterface
+	 * @var PromiseInterface
 	 */
 	protected $connector;
 
