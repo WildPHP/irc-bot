@@ -25,7 +25,7 @@ class DirectoryScanner extends BaseScanner
 	/**
 	 * @param string $dirName
 	 */
-	public function __construct($dirName)
+	public function __construct($dirName = '')
 	{
 		if (!empty($dirName))
 			$this->scanDirectory($dirName);
