@@ -53,7 +53,6 @@ class SASL extends BaseModule
 	{
 		$this->getConnectionModule();
 
-		$generator = $this->connection->getGenerator();
 		$this->connection->write('CAP REQ :sasl' . "\r\n");
 	}
 
