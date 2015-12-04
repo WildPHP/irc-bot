@@ -59,7 +59,7 @@ class Channel
 	}
 
 	/**
-	 * @return \string[]
+	 * @return string[]
 	 */
 	public function getUsers()
 	{
@@ -67,7 +67,7 @@ class Channel
 	}
 
 	/**
-	 * @param \string[] $users
+	 * @param string[] $users
 	 */
 	public function setUsers($users)
 	{
