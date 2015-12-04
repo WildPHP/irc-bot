@@ -23,6 +23,7 @@ namespace WildPHP\CoreModules;
 use WildPHP\BaseModule;
 use WildPHP\CoreModules\Connection\ConnectionModuleInterface;
 
+// TODO: This code is really messy and state-y. Sorry about that.
 class SASL extends BaseModule
 {
 	/**
@@ -30,11 +31,18 @@ class SASL extends BaseModule
 	 */
 	protected $connection;
 
+	/**
+	 * @var boolean
+	 */
+	protected $serverSupportsSasl = false;
+
 	public function setup()
 	{
 		$events = [
 			'onConnect' => 'irc.connection.pre-created',
 			'capListener' => 'irc.data.in.cap',
+			'authenticationListener' => 'irc.data.in.authenticate'
+
 		];
 
 		foreach ($events as $function => $event)
@@ -52,11 +60,43 @@ class SASL extends BaseModule
 	public function onConnect()
 	{
 		$this->getConnectionModule();
+		$this->serverSupportsSasl = false;
 
 		$this->connection->write('CAP REQ :sasl' . "\r\n");
 	}
 
 	public function capListener($message)
 	{
+		$matches = preg_match('/ACK :(?:.+)?\b(sasl)\b/i', $message['params']);
+
+		$this->serverSupportsSasl = $matches;
+
+		if (!$matches)
+		{
+			$this->closeSasl();
+			return;
+		}
+
+		$this->connection->write('AUTHENTICATE PLAIN' . "\r\n");
+	}
+
+	public function authenticationListener($message)
+	{
+		$configuration = $this->getModule('Configuration');
+		var_dump($message);
+		if (trim($message['message']) == 'AUTHENTICATE +')
+		{
+			$saslHive = $configuration->get('sasl');
+
+			$string = base64_encode($saslHive['user'] . "\0" . $saslHive['user'] . "\0" . $saslHive['password']);
+			$this->connection->write('AUTHENTICATE ' . $string . "\r\n");
+			$this->closeSasl();
+
+		}
+	}
+
+	public function closeSasl()
+	{
+		$this->connection->write('CAP END' . "\r\n");
 	}
 }
