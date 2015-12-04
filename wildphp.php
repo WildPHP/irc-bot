@@ -64,10 +64,12 @@ $bot = new Bot();
 $parser = new DotModulesParser();
 $result = $parser->readFile(dirname(__FILE__) . '/main.modules');
 
-$router = new DotModulesRouter();
-$modules = $router->routeAll($result);
-
-$bot->addModules($modules);
+if (!empty($result))
+{
+	$router = new DotModulesRouter();
+	$modules = $router->routeAll($result);
+	$bot->addModules($modules);
+}
 
 $bot->start();
 
