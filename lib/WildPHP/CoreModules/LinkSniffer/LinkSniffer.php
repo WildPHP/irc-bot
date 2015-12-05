@@ -57,14 +57,14 @@ class LinkSniffer extends BaseModule
 		if ($result == false)
 			return false;
 
-		return $matches[1];
+		return trim($matches[1]);
 	}
 
 	public function checkValidLink($link)
 	{
 		return filter_var($link, FILTER_VALIDATE_URL) == $link;
 	}
-	
+
 	public function createShortLink($link)
 	{
 		if (!$this->checkValidLink($link))
