@@ -38,8 +38,6 @@ class LinkSniffer extends BaseModule
 		if (empty($shorturl))
 			$shorturl = 'No short url';
 
-		var_dump($shorturl);
-
 		$connection = $this->getModule('Connection');
 		$connection->write($connection->getGenerator()->ircPrivmsg($target, '[' . $shorturl . '] ' . $title));
 	}
@@ -66,7 +64,7 @@ class LinkSniffer extends BaseModule
 	{
 		return filter_var($link, FILTER_VALIDATE_URL) == $link;
 	}
-
+	
 	public function createShortLink($link)
 	{
 		if (!$this->checkValidLink($link))
