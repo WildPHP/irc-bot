@@ -23,6 +23,7 @@ namespace WildPHP\CoreModules;
 use Monolog\Handler\ErrorLogHandler;
 use Psr\Log\LoggerInterface;
 use WildPHP\BaseModule;
+use WildPHP\CoreModules\Connection\IrcDataObject;
 
 class Logger extends BaseModule
 {
@@ -37,9 +38,9 @@ class Logger extends BaseModule
 		$logger->pushHandler(new ErrorLogHandler());
 		$this->logger = $logger;
 
-		$this->getEventEmitter()->on('irc.data.in', function ($data)
+		$this->getEventEmitter()->on('irc.data.in', function (IrcDataObject $object)
 		{
-			$this->debug('<< ' . $data['message']);
+			$this->debug('<< ' . $object->getIrcMessage());
 		});
 
 		$this->getEventEmitter()->on('irc.data.out', function ($data)

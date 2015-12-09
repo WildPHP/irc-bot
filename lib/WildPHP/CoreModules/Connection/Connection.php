@@ -116,19 +116,20 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 
 		foreach ($messages as $message)
 		{
-			$this->getEventEmitter()->emit('irc.data.in', [$message]);
+			$object = new IrcDataObject($this, $message);
+			$this->getEventEmitter()->emit('irc.data.in', [$object]);
 
 			if (!empty($message['command']))
-				$this->getEventEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$message]);
+				$this->getEventEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$object]);
 		}
 	}
 
 	/**
-	 * @param array    $data
+	 * @param IrcDataObject $data
 	 */
-	public function pingPong($data)
+	public function pingPong(IrcDataObject $data)
 	{
-		$this->write($this->getGenerator()->ircPong($data['params']['server1']));
+		$this->write($this->getGenerator()->ircPong($data->getParams()['server1']));
 	}
 
 	/**

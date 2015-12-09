@@ -21,6 +21,7 @@
 namespace WildPHP\CoreModules\NickWatcher;
 
 use WildPHP\BaseModule;
+use WildPHP\CoreModules\Connection\IrcDataObject;
 
 class NickWatcher extends BaseModule
 {
@@ -59,10 +60,10 @@ class NickWatcher extends BaseModule
 		$connection->write($connection->getGenerator()->ircNick($configuration->get('nick')));
 	}
 
-	public function listenError($data)
+	public function listenError(IrcDataObject $resource)
 	{
 		$logger = $this->getModulePool()->get('Logger');
-		switch ($data['command'])
+		switch ($resource->getCommand())
 		{
 			case 431:
 				$logger->warning('The server found the sent nickname to be empty. Trying alternatives...');

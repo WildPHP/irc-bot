@@ -18,42 +18,24 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\CoreModules\Connection;
+namespace WildPHP\Modules;
 
-use Phergie\Irc\GeneratorInterface;
-use Phergie\Irc\ParserInterface;
 use WildPHP\BaseModuleInterface;
 
-interface ConnectionModuleInterface extends BaseModuleInterface
+abstract class DataObject
 {
-	public function setup();
-
-	public function create();
-
 	/**
-	 * @param string $data
+	 * @var BaseModuleInterface
 	 */
-	public function parseData($data);
+	protected $origin;
 
-	/**
-	 * @param IrcDataObject $data
-	 */
-	public function pingPong(IrcDataObject $data);
+	public function __construct(BaseModuleInterface $self)
+	{
+		$this->origin = $self;
+	}
 
-	/**
-	 * @return ParserInterface
-	 */
-	public function getParser();
-
-	public function sendInitialData();
-
-	/**
-	 * @param array $data
-	 */
-	public function write($data);
-
-	/**
-	 * @return GeneratorInterface
-	 */
-	public function getGenerator();
+	public function getOrigin()
+	{
+		return $this->origin;
+	}
 }

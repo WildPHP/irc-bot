@@ -22,6 +22,7 @@ namespace WildPHP\CoreModules;
 
 use WildPHP\BaseModule;
 use WildPHP\CoreModules\Connection\ConnectionModuleInterface;
+use WildPHP\CoreModules\Connection\IrcDataObject;
 
 // TODO: This code is really messy and state-y. Sorry about that.
 class SASL extends BaseModule
@@ -64,9 +65,9 @@ class SASL extends BaseModule
 		$this->connection->write('CAP REQ :sasl' . "\r\n");
 	}
 
-	public function capListener($message)
+	public function capListener(IrcDataObject $resource)
 	{
-		$matches = preg_match('/ACK :(?:.+)?\b(sasl)\b/i', $message['params']);
+		$matches = preg_match('/ACK :(?:.+)?\b(sasl)\b/i', $resource->getParams());
 
 		$this->serverSupportsSasl = !empty($matches);
 
@@ -79,10 +80,10 @@ class SASL extends BaseModule
 		$this->connection->write('AUTHENTICATE PLAIN' . "\r\n");
 	}
 
-	public function authenticationListener($message)
+	public function authenticationListener(IrcDataObject $resource)
 	{
 		$configuration = $this->getModule('Configuration');
-		if (trim($message['message']) == 'AUTHENTICATE +')
+		if (trim($resource->getIrcMessage()) == 'AUTHENTICATE +')
 		{
 			$saslHive = $configuration->get('sasl');
 

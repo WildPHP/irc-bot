@@ -21,6 +21,7 @@
 namespace WildPHP\CoreModules\Commands;
 
 use WildPHP\BaseModule;
+use WildPHP\CoreModules\Connection\IrcDataObject;
 
 class Commands extends BaseModule
 {
@@ -28,14 +29,14 @@ class Commands extends BaseModule
 	{
 		$this->getEventEmitter()->on('irc.data.in.privmsg', [$this, 'parseCommands']);
 
-		$this->getEventEmitter()->on('irc.command.ping', function ($command, $params, $data)
+		$this->getEventEmitter()->on('irc.command.ping', function ($command, $params, IrcDataObject $data)
 		{
 			$connection = $this->getModule('Connection');
-			$connection->write($connection->getGenerator()->ircPrivmsg($data['targets'][0], 'Pong!'));
+			$connection->write($connection->getGenerator()->ircPrivmsg($data->getTargets()[0], 'Pong!'));
 		});
 	}
 
-	public function parseCommands($data)
+	public function parseCommands(IrcDataObject $data)
 	{
 		$configuration = $this->getModulePool()->get('Configuration');
 
@@ -50,7 +51,7 @@ class Commands extends BaseModule
 		$params = '';
 		foreach ($tests as $test)
 		{
-			if (preg_match('/^' . $test . '/', $data['params']['text'], $out) === false || empty($out))
+			if (preg_match('/^' . $test . '/', $data->getParams()['text'], $out) === false || empty($out))
 				continue;
 
 			$command = strtolower($out[1]);
