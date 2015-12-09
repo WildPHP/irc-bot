@@ -8,7 +8,10 @@
 
 namespace WildPHP\CoreModules\LinkSniffer;
 
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use WildPHP\BaseModule;
+use WildPHP\CoreModules\Connection\IrcDataObject;
 
 class LinkSniffer extends BaseModule
 {
@@ -17,10 +20,10 @@ class LinkSniffer extends BaseModule
 		$this->getEventEmitter()->on('irc.data.in.privmsg', array($this, 'sniffLinks'));
 	}
 
-	public function sniffLinks($message)
+	public function sniffLinks(IrcDataObject $message)
 	{
-		$string = $message['params']['text'];
-		$target = $message['targets'][0];
+		$string = $message->getParams()['text'];
+		$target = $message->getTargets()[0];
 
 		$result = preg_match('/(https?:\/\/\S+)/i', $string, $matches);
 
@@ -32,21 +35,72 @@ class LinkSniffer extends BaseModule
 		if (!$this->checkValidLink($link))
 			return;
 
-		$title = $this->getPageTitle($link);
-		$shorturl = $this->createShortLink($link);
+		try {
+			$shorturl = $this->createShortLink($link);
 
-		if (empty($shorturl))
-			$shorturl = 'No short url';
+			if (!$this->checkValidLink($link))
+				return false;
 
-		$connection = $this->getModule('Connection');
-		$connection->write($connection->getGenerator()->ircPrivmsg($target, '[' . $shorturl . '] ' . $title));
+			$httpClient = new \GuzzleHttp\Client();
+
+			$resource = $httpClient->head($link);
+
+			if (!$resource->hasHeader('Content-Type'))
+				return false;
+
+			$content_type = strtolower(explode(';', $resource->getHeaderLine('Content-Type'))[0]);
+
+			if (!in_array($content_type, ['text/html']))
+				$title = '(not a web page, content type: ' . $content_type . ')';
+
+			else
+			{
+				$resource = $httpClient->get($link);
+				$body = $resource->getBody();
+
+				$contents = '';
+				$title = '(no title)';
+
+				$maxBytes = 1024 * 1024 * 3; // 3 MB max per page
+				$readBytes = 0;
+				while (!$body->eof() && $readBytes < $maxBytes)
+				{
+					$buffer = $body->read(1024);
+					$readBytes += 1024;
+					$contents .= $buffer;
+
+					$result = preg_match('/\<title\>(.*)\<\/title\>/i', $contents, $matches);
+					if ($result == false)
+						continue;
+
+					if (!empty($matches[1]))
+						$title = htmlspecialchars_decode($matches[1]);
+				}
+				$body->close();
+			}
+
+			if (empty($shorturl))
+				$shorturl = 'No short url';
+
+			$connection = $this->getModule('Connection');
+			$connection->write($connection->getGenerator()->ircPrivmsg($target, '[' . $shorturl . '] ' . $title));
+		}
+		catch (\Exception $e)
+		{}
 	}
 
 	public function getPageTitle($link)
 	{
-		if (!$this->checkValidLink($link))
+
+
+		if (!$resource->hasHeader('Content-Type'))
 			return false;
 
+		$type = $resource->getHeader('Content-Type');
+
+		var_dump($type);
+
+		return;
 		$contents = file_get_contents($link);
 
 		if (strlen($contents) == 0)
