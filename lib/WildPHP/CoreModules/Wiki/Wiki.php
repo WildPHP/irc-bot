@@ -65,24 +65,30 @@ class Wiki extends BaseModule
                     $params = preg_replace('/ @ ([\S]+)$/', '', $params);
 		}
 		
-		// Basically, this makes it valid. ;)
-		$query = strtolower(urlencode(trim(preg_replace('/\s\s+/', ' ',  $params))));
+		// Merge multiple spaces into one, trim the result, urlencode it.
+		$query = urlencode(trim(preg_replace('/\s\s+/', ' ',  $params)));
+
+		$url = $this->wikiURL . '/api.php?'
+			// use the OpenSearch API
+			. 'action=opensearch'
+
+			// Limit it to 1 result without namespace
+			. '&limit=1&namespace=0'
+
+			// Return it in a JSON format and resolve redirects.
+			. '&format=json&redirects=resolve&search=';
 		
 		// Do the actual result.
-		$result = $this->fetch($this->wikiURL . '/api.php?action=opensearch&limit=1&namespace=0&format=json&redirects=resolve&search=' . $query, true);
+		$result = $this->fetch($url . $query, true);
 		
                 $connection = $this->getModule('Connection');
-		
-		// Check for valid JSON, otherwise something went wrong!
-		if ($result === false)
+
+		if ($result === false || empty($result[1]))
 		{
-                        $connection->write($connection->getGenerator()->ircPrivmsg($data->getTargets()[0], $user . ': Something went wrong while searching the wiki. Please try again.'));
-			return;
-		}
-		
-		if (empty($result[1]))
-		{
-                        $connection->write($connection->getGenerator()->ircPrivmsg($data->getTargets()[0], $user . ': Sorry, I could not find a page matching your query. Please try again.'));
+                        $connection->write($connection->getGenerator()->ircPrivmsg(
+	                        $data->getTargets()[0],
+	                        $user . ': Sorry, I could not find a page matching your query. Please try again.')
+                        );
                         return;
                 }
 		
@@ -92,27 +98,25 @@ class Wiki extends BaseModule
 		$summary = $result[2][0];
 		$link = $result[3][0];
 			
-		$connection->write($connection->getGenerator()->ircPrivmsg($data->getTargets()[0], $user . ': ' . $title . ' - ' . $link));
+		$connection->write($connection->getGenerator()->ircPrivmsg(
+			$data->getTargets()[0],
+			$user . ': ' . $title . ' - ' . $link)
+		);
 	}
 	
 	public function fetch($uri, $decode = false)
 	{
-		// create curl resource
-		$ch = curl_init();
-		// set url
-		curl_setopt($ch, CURLOPT_URL, $uri);
-		// user agent.
-		curl_setopt($ch, CURLOPT_USERAGENT, 'WildPHP/IRCBot');
-		//return the transfer as a string
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-		// $output contains the output string
-		$output = curl_exec($ch);
-		if (!empty($decode) && ($output = json_decode($output)) === null)
-			$output = false;
-		// close curl resource to free up system resources
-		curl_close($ch);
-		return $output;
+		$httpClient = new \GuzzleHttp\Client();
+
+		$resource = $httpClient->get($uri);
+		$body = $resource->getBody();
+
+		$contents = $body->getContents();
+
+		if ($decode)
+			$contents = json_decode($contents);
+
+		return $contents;
 	}
 }
 ?>
