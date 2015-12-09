@@ -89,31 +89,6 @@ class LinkSniffer extends BaseModule
 		{}
 	}
 
-	public function getPageTitle($link)
-	{
-
-
-		if (!$resource->hasHeader('Content-Type'))
-			return false;
-
-		$type = $resource->getHeader('Content-Type');
-
-		var_dump($type);
-
-		return;
-		$contents = file_get_contents($link);
-
-		if (strlen($contents) == 0)
-			return false;
-
-		$result = preg_match('/\<title\>(.*)\<\/title\>/i', $contents, $matches);
-
-		if ($result == false)
-			return false;
-
-		return trim($matches[1]);
-	}
-
 	public function checkValidLink($link)
 	{
 		return filter_var($link, FILTER_VALIDATE_URL) == $link;
