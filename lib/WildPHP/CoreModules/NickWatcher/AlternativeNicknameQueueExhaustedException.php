@@ -18,6 +18,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace WildPHP\CoreModules\NickWatcher;
+
 class AlternativeNicknameQueueExhaustedException extends \RuntimeException
 {
 }
