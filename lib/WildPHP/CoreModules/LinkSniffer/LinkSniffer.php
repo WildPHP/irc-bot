@@ -86,6 +86,8 @@ class LinkSniffer extends BaseModule
 			$connection->write($connection->getGenerator()
 				->ircPrivmsg($target, '[' . $shortUri . '] ' . $title));
 		}
+
+		// Catch every exception that may arise, because we don't want link sniffing to bring down the bot.
 		catch (\Exception $e)
 		{
 		}
