@@ -25,7 +25,7 @@ use WildPHP\BaseModuleInterface;
 class ModulePool
 {
 	/**
-	 * @var string[BaseModule]
+	 * @var array<string,BaseModuleInterface>
 	 */
 	protected $pool = [];
 
