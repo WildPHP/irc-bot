@@ -50,6 +50,16 @@ class Logger extends BaseModule
 	}
 
 	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public function debug($message, array $context = [])
+	{
+		$message = $this->interpolate($message, $context);
+		$this->logger->debug($message);
+	}
+
+	/**
 	 * @param string $original
 	 * @param string[] $replacements
 	 *
@@ -68,9 +78,9 @@ class Logger extends BaseModule
 
 	/**
 	 * @param string $message
-	 * @param array  $context
+	 * @param array $context
 	 */
-	public function info($message, array $context = array())
+	public function info($message, array $context = [])
 	{
 		$message = $this->interpolate($message, $context);
 		$this->logger->info($message);
@@ -78,9 +88,9 @@ class Logger extends BaseModule
 
 	/**
 	 * @param string $message
-	 * @param array  $context
+	 * @param array $context
 	 */
-	public function warning($message, array $context = array())
+	public function warning($message, array $context = [])
 	{
 		$message = $this->interpolate($message, $context);
 		$this->logger->warning($message);
@@ -88,21 +98,11 @@ class Logger extends BaseModule
 
 	/**
 	 * @param string $message
-	 * @param array  $context
+	 * @param array $context
 	 */
-	public function error($message, array $context = array())
+	public function error($message, array $context = [])
 	{
 		$message = $this->interpolate($message, $context);
 		$this->logger->error($message);
-	}
-
-	/**
-	 * @param string $message
-	 * @param array  $context
-	 */
-	public function debug($message, array $context = array())
-	{
-		$message = $this->interpolate($message, $context);
-		$this->logger->debug($message);
 	}
 }

@@ -23,6 +23,42 @@ namespace WildPHP\Modules\DotModules;
 class Parser
 {
 	/**
+	 * Safely merge two arrays which might originate from the Parser.
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
+	 */
+	public static function mergeSafe($array1, $array2)
+	{
+		return array_unique(array_merge($array1, $array2), SORT_REGULAR);
+	}
+
+	/**
+	 * @param string $file
+	 * @return array|bool
+	 */
+	public function readFile($file)
+	{
+		$lines = file($file);
+
+		if (empty($lines))
+			return false;
+
+		$buffer = [];
+		foreach ($lines as $line)
+		{
+			$result = $this->processLine($line);
+
+			if (empty($result) || in_array($result, $buffer))
+				continue;
+
+			$buffer[] = $result;
+		}
+
+		return $buffer;
+	}
+
+	/**
 	 * @param string $line
 	 * @return array|bool Note that false does not mean failure; it can also be a comment!
 	 */
@@ -40,40 +76,5 @@ class Parser
 		$string = empty($matches[2]) ? $matches[1] : $matches[2];
 
 		return ['type' => $type, 'string' => $string];
-	}
-
-	/**
-	 * @param string $file
-	 * @return array|bool
-	 */
-	public function readFile($file)
-	{
-		$lines = file($file);
-
-		if (empty($lines))
-			return false;
-
-		$buffer = [];
-		foreach ($lines as $line) {
-			$result = $this->processLine($line);
-
-			if (empty($result) || in_array($result, $buffer))
-				continue;
-
-			$buffer[] = $result;
-		}
-
-		return $buffer;
-	}
-
-	/**
-	 * Safely merge two arrays which might originate from the Parser.
-	 * @param array $array1
-	 * @param array $array2
-	 * @return array
-	 */
-	public static function mergeSafe($array1, $array2)
-	{
-		return array_unique(array_merge($array1, $array2), SORT_REGULAR);
 	}
 }

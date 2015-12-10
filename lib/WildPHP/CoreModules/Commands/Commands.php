@@ -42,10 +42,7 @@ class Commands extends BaseModule
 
 		$command = '([a-zA-Z0-9]+)';
 		$params = '(?: (.+))?';
-		$tests = [
-			$configuration->get('nick') . "[^a-zA-Z0-9]+{$command}{$params}",
-			preg_quote($configuration->get('prefix')) . "{$command}{$params}"
-		];
+		$tests = [$configuration->get('nick') . "[^a-zA-Z0-9]+{$command}{$params}", preg_quote($configuration->get('prefix')) . "{$command}{$params}"];
 
 		$command = '';
 		$params = '';

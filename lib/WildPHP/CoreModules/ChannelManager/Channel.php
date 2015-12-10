@@ -33,7 +33,7 @@ class Channel
 	protected $users;
 
 	/**
-	 * @param string   $name
+	 * @param string $name
 	 * @param string[] $users
 	 */
 	public function __construct($name, $users)

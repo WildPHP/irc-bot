@@ -53,6 +53,7 @@ class Router
 		$arrayScanner->scanArray($buffer);
 
 		$modules = array_unique(array_merge($dirScanner->getValidModules(), $arrayScanner->getValidModules()));
+
 		return $modules;
 	}
 }

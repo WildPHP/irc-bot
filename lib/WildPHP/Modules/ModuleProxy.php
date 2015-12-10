@@ -49,7 +49,7 @@ class ModuleProxy
 		if (!class_exists($module))
 			return;
 
-		$this->loadModules(array($module));
+		$this->loadModules([$module]);
 	}
 
 	/**

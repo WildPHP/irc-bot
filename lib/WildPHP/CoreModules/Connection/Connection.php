@@ -56,12 +56,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 		$this->setParser(new Parser());
 		$this->setGenerator(new Generator());
 
-		$events = [
-			'create'          => 'wildphp.init.after',
-			'parseData'       => 'irc.data.raw.in',
-			'sendInitialData' => 'irc.connection.created',
-			'pingPong'        => 'irc.data.in.ping'
-		];
+		$events = ['create' => 'wildphp.init.after', 'parseData' => 'irc.data.raw.in', 'sendInitialData' => 'irc.connection.created', 'pingPong' => 'irc.data.in.ping'];
 
 		foreach ($events as $function => $event)
 		{
@@ -75,10 +70,8 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 
 		$connection = new \Phergie\Irc\Connection();
 		$connection->setServerHostname($configuration->get('server'))
-			->setServerPort($configuration->get('port'))
-			->setNickname($configuration->get('nick'))
-			->setUsername($configuration->get('name'))
-			->setRealname('A WildPHP Bot');
+			->setServerPort($configuration->get('port'))->setNickname($configuration->get('nick'))
+			->setUsername($configuration->get('name'))->setRealname('A WildPHP Bot');
 
 		$factory = new ConnectorFactory($this->getLoop());
 
@@ -120,16 +113,9 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 			$this->getEventEmitter()->emit('irc.data.in', [$object]);
 
 			if (!empty($message['command']))
-				$this->getEventEmitter()->emit('irc.data.in.' . strtolower($message['command']), [$object]);
+				$this->getEventEmitter()
+					->emit('irc.data.in.' . strtolower($message['command']), [$object]);
 		}
-	}
-
-	/**
-	 * @param IrcDataObject $data
-	 */
-	public function pingPong(IrcDataObject $data)
-	{
-		$this->write($this->getGenerator()->ircPong($data->getParams()['server1']));
 	}
 
 	/**
@@ -148,10 +134,12 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 		$this->parser = $parser;
 	}
 
-	public function sendInitialData()
+	/**
+	 * @param IrcDataObject $data
+	 */
+	public function pingPong(IrcDataObject $data)
 	{
-		$configuration = $this->getModule('Configuration');
-		$this->write($this->getGenerator()->ircUser($configuration->get('name'), gethostname(), $configuration->get('name'), 'A WildPHP Bot'));
+		$this->write($this->getGenerator()->ircPong($data->getParams()['server1']));
 	}
 
 	/**
@@ -163,6 +151,7 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 		if ($parsed == null)
 		{
 			$this->getModulePool()->get('Logger')->debug('Tried to write invalid IRC data: ' . $data);
+
 			return;
 		}
 
@@ -205,5 +194,12 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 	protected function setGenerator(GeneratorInterface $generator)
 	{
 		$this->generator = $generator;
+	}
+
+	public function sendInitialData()
+	{
+		$configuration = $this->getModule('Configuration');
+		$this->write($this->getGenerator()
+			->ircUser($configuration->get('name'), gethostname(), $configuration->get('name'), 'A WildPHP Bot'));
 	}
 }

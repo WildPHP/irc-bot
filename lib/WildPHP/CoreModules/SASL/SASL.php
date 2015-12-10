@@ -39,22 +39,12 @@ class SASL extends BaseModule
 
 	public function setup()
 	{
-		$events = [
-			'onConnect' => 'irc.connection.pre-created',
-			'capListener' => 'irc.data.in.cap',
-			'authenticationListener' => 'irc.data.in.authenticate'
-		];
+		$events = ['onConnect' => 'irc.connection.pre-created', 'capListener' => 'irc.data.in.cap', 'authenticationListener' => 'irc.data.in.authenticate'];
 
 		foreach ($events as $function => $event)
 		{
 			$this->getEventEmitter()->on($event, [$this, $function]);
 		}
-	}
-
-	public function getConnectionModule()
-	{
-		if (empty($this->connection))
-			$this->connection = $this->getModule('Connection');
 	}
 
 	public function onConnect()
@@ -63,6 +53,12 @@ class SASL extends BaseModule
 		$this->serverSupportsSasl = false;
 
 		$this->connection->write('CAP REQ :sasl' . "\r\n");
+	}
+
+	public function getConnectionModule()
+	{
+		if (empty($this->connection))
+			$this->connection = $this->getModule('Connection');
 	}
 
 	public function capListener(IrcDataObject $resource)
@@ -74,10 +70,16 @@ class SASL extends BaseModule
 		if (!$matches)
 		{
 			$this->closeSasl();
+
 			return;
 		}
 
 		$this->connection->write('AUTHENTICATE PLAIN' . "\r\n");
+	}
+
+	public function closeSasl()
+	{
+		$this->connection->write('CAP END' . "\r\n");
 	}
 
 	public function authenticationListener(IrcDataObject $resource)
@@ -91,10 +93,5 @@ class SASL extends BaseModule
 			$this->connection->write('AUTHENTICATE ' . $string . "\r\n");
 			$this->closeSasl();
 		}
-	}
-
-	public function closeSasl()
-	{
-		$this->connection->write('CAP END' . "\r\n");
 	}
 }

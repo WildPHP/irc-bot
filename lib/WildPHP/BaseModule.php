@@ -40,23 +40,24 @@ abstract class BaseModule implements BaseModuleInterface
 
 		return true;
 	}
-	
+
 	public function getWorkingDir()
 	{
 		return dirname(__FILE__);
 	}
-	
+
 	public function getFullyQualifiedName()
 	{
 		return get_class();
 	}
-	
+
 	public function getShortName()
 	{
 		$reflectionClass = new \ReflectionClass($this);
+
 		return $reflectionClass->getShortName();
 	}
-	
+
 	public function getModule($key)
 	{
 		return $this->getModulePool()->get($key);

@@ -24,108 +24,108 @@ use WildPHP\BaseModuleInterface;
 
 class ModulePool
 {
-    /**
-     * @var string[BaseModule]
-     */
-    protected $pool = array();
+	/**
+	 * @var string[BaseModule]
+	 */
+	protected $pool = [];
 
-    /**
-     * @param BaseModuleInterface $module
-     * @param string $key
-     */
-    public function add(BaseModuleInterface $module, $key = '')
-    {
-        if (empty($key))
-            $key = $module->getShortName();
+	/**
+	 * @param BaseModuleInterface $module
+	 * @param string $key
+	 */
+	public function add(BaseModuleInterface $module, $key = '')
+	{
+		if (empty($key))
+			$key = $module->getShortName();
 
-        if ($this->exists($module) || $this->existsByKey($key))
-            throw new \RuntimeException('Module ' . $key . ' already exists in this module pool.');
+		if ($this->exists($module) || $this->existsByKey($key))
+			throw new \RuntimeException('Module ' . $key . ' already exists in this module pool.');
 
-        $this->pool[$key] = $module;
-    }
+		$this->pool[$key] = $module;
+	}
 
-    /**
-     * @param BaseModuleInterface $module
-     * @return bool
-     */
-    public function exists(BaseModuleInterface $module)
-    {
-        return in_array($module, $this->pool);
-    }
+	/**
+	 * @param BaseModuleInterface $module
+	 * @return bool
+	 */
+	public function exists(BaseModuleInterface $module)
+	{
+		return in_array($module, $this->pool);
+	}
 
-    /**
-     * @param string $key
-     * @return bool
-     */
-    public function existsByKey($key)
-    {
-        return array_key_exists($key, $this->pool);
-    }
+	/**
+	 * @param string $key
+	 * @return bool
+	 */
+	public function existsByKey($key)
+	{
+		return array_key_exists($key, $this->pool);
+	}
 
-    /**
-     * @param BaseModuleInterface $module
-     */
-    public function remove(BaseModuleInterface $module)
-    {
-        if (!$this->exists($module))
-            throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
+	/**
+	 * @param BaseModuleInterface $module
+	 */
+	public function remove(BaseModuleInterface $module)
+	{
+		if (!$this->exists($module))
+			throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
 
-        unset($this->pool[$this->getKey($module)]);
-    }
+		unset($this->pool[$this->getKey($module)]);
+	}
 
-    /**
-     * @param string $key
-     */
-    public function removeByKey($key)
-    {
-        if (!$this->existsByKey($key))
-            throw new \RuntimeException('There is no module with key ' . $key . ' registered.');
+	/**
+	 * @param BaseModuleInterface $module
+	 * @return string
+	 */
+	public function getKey(BaseModuleInterface $module)
+	{
+		if (!$this->exists($module))
+			throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
 
-        unset($this->pool[$key]);
-    }
+		return array_search($module, $this->pool);
+	}
 
-    /**
-     * @param string $key
-     * @return BaseModuleInterface
-     */
-    public function get($key)
-    {
-        if (!$this->existsByKey($key))
-            throw new \RuntimeException('There is no module with key ' . $key . ' registered.');
+	/**
+	 * @param string $key
+	 */
+	public function removeByKey($key)
+	{
+		if (!$this->existsByKey($key))
+			throw new \RuntimeException('There is no module with key ' . $key . ' registered.');
 
-        return $this->pool[$key];
-    }
+		unset($this->pool[$key]);
+	}
 
-    /**
-     * @return string[BaseModule]
-     */
-    public function getAll()
-    {
-        return $this->pool;
-    }
+	/**
+	 * @return string[BaseModule]
+	 */
+	public function getAll()
+	{
+		return $this->pool;
+	}
 
-    /**
-     * @param BaseModuleInterface $module
-     * @return string
-     */
-    public function getKey(BaseModuleInterface $module)
-    {
-        if (!$this->exists($module))
-            throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
+	/**
+	 * @param string $key
+	 * @param string $className
+	 * @return boolean
+	 */
+	public function isInstance($key, $className)
+	{
+		if (!$this->existsByKey($key))
+			return false;
 
-        return array_search($module, $this->pool);
-    }
+		return ($this->get($key) instanceof $className);
+	}
 
-    /**
-     * @param string $key
-     * @param string $className
-     * @return boolean
-     */
-    public function isInstance($key, $className)
-    {
-        if (!$this->existsByKey($key))
-            return false;
+	/**
+	 * @param string $key
+	 * @return BaseModuleInterface
+	 */
+	public function get($key)
+	{
+		if (!$this->existsByKey($key))
+			throw new \RuntimeException('There is no module with key ' . $key . ' registered.');
 
-        return ($this->get($key) instanceof $className);
-    }
+		return $this->pool[$key];
+	}
 }

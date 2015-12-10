@@ -46,7 +46,7 @@ class ConnectorFactory
 
 	/**
 	 * @param string $host
-	 * @param int    $port
+	 * @param int $port
 	 *
 	 * @return Promise
 	 */
@@ -54,37 +54,41 @@ class ConnectorFactory
 	{
 		$connector = new Connector($this->getLoop(), $this->getResolver());
 		$secure = new SecureConnector($connector, $this->getLoop());
+
 		return $this->attachErrorHandler($secure, $host, $port);
 	}
 
 	/**
+	 * @param ConnectorInterface $connector
 	 * @param string $host
-	 * @param int    $port
+	 * @param int $port
+	 *
+	 * @return Promise
+	 */
+	private function attachErrorHandler(ConnectorInterface $connector, $host, $port)
+	{
+		return $connector->create($host, $port)
+			->then(function (Stream $stream) use ($host, $port, &$capturedStream)
+			{
+				$stream->on('error', function ($error) use ($host, $port)
+				{
+					throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+				});
+
+				return $stream;
+			});
+	}
+
+	/**
+	 * @param string $host
+	 * @param int $port
 	 *
 	 * @return Promise
 	 */
 	public function create($host, $port)
 	{
 		$connector = new Connector($this->getLoop(), $this->getResolver());
-		return $this->attachErrorHandler($connector, $host, $port);
-	}
 
-	/**
-	 * @param ConnectorInterface $connector
-	 * @param string             $host
-	 * @param int                $port
-	 *
-	 * @return Promise
-	 */
-	private function attachErrorHandler(ConnectorInterface $connector, $host, $port)
-	{
-		return $connector->create($host, $port)->then(function (Stream $stream) use ($host, $port, &$capturedStream)
-		{
-			$stream->on('error', function ($error) use ($host, $port)
-			{
-				throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
-			});
-			return $stream;
-		});
+		return $this->attachErrorHandler($connector, $host, $port);
 	}
 }

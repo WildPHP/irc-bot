@@ -24,24 +24,24 @@ use Phergie\Irc\GeneratorInterface;
 
 trait GeneratorTrait
 {
-    /**
-     * @var GeneratorInterface $generatorObject
-     */
-    protected $generatorObject;
+	/**
+	 * @var GeneratorInterface $generatorObject
+	 */
+	protected $generatorObject;
 
-    /**
-     * @param GeneratorInterface $generator
-     */
-    public function setGenerator(GeneratorInterface $generator)
-    {
-        $this->generatorObject = $generator;
-    }
+	/**
+	 * @param GeneratorInterface $generator
+	 */
+	public function setGenerator(GeneratorInterface $generator)
+	{
+		$this->generatorObject = $generator;
+	}
 
-    /**
-     * @return GeneratorInterface
-     */
-    public function getGenerator()
-    {
-        return $this->generatorObject;
-    }
+	/**
+	 * @return GeneratorInterface
+	 */
+	public function getGenerator()
+	{
+		return $this->generatorObject;
+	}
 }

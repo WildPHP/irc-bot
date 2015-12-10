@@ -24,24 +24,24 @@ use React\EventLoop\LoopInterface;
 
 trait LoopTrait
 {
-    /**
-     * @var LoopInterface $loopObject
-     */
-    protected $loopObject;
+	/**
+	 * @var LoopInterface $loopObject
+	 */
+	protected $loopObject;
 
-    /**
-     * @param LoopInterface $loop
-     */
-    public function setLoop(LoopInterface $loop)
-    {
-        $this->loopObject = $loop;
-    }
+	/**
+	 * @param LoopInterface $loop
+	 */
+	public function setLoop(LoopInterface $loop)
+	{
+		$this->loopObject = $loop;
+	}
 
-    /**
-     * @return LoopInterface
-     */
-    public function getLoop()
-    {
-        return $this->loopObject;
-    }
+	/**
+	 * @return LoopInterface
+	 */
+	public function getLoop()
+	{
+		return $this->loopObject;
+	}
 }

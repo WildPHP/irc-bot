@@ -24,24 +24,24 @@ use React\Dns\Resolver\Resolver;
 
 trait ResolverTrait
 {
-    /**
-     * @var Resolver $resolverObject
-     */
-    protected $resolverObject;
+	/**
+	 * @var Resolver $resolverObject
+	 */
+	protected $resolverObject;
 
-    /**
-     * @param Resolver $resolver
-     */
-    public function setResolver(Resolver $resolver)
-    {
-        $this->resolverObject = $resolver;
-    }
+	/**
+	 * @param Resolver $resolver
+	 */
+	public function setResolver(Resolver $resolver)
+	{
+		$this->resolverObject = $resolver;
+	}
 
-    /**
-     * @return Resolver
-     */
-    public function getResolver()
-    {
-        return $this->resolverObject;
-    }
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver()
+	{
+		return $this->resolverObject;
+	}
 }

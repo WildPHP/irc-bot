@@ -41,12 +41,12 @@ class IrcDataObject extends DataObject
 		$this->setMessage($message);
 	}
 
-	protected function getItem($key, $fallback = '')
+	/**
+	 * @return array
+	 */
+	public function getMessage()
 	{
-		if (!array_key_exists($key, $this->message))
-			return $fallback;
-
-		return $this->message[$key];
+		return $this->message;
 	}
 
 	/**
@@ -58,19 +58,19 @@ class IrcDataObject extends DataObject
 	}
 
 	/**
-	 * @return array
-	 */
-	public function getMessage()
-	{
-		return $this->message;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getIrcMessage()
 	{
 		return $this->getItem('message');
+	}
+
+	protected function getItem($key, $fallback = '')
+	{
+		if (!array_key_exists($key, $this->message))
+			return $fallback;
+
+		return $this->message[$key];
 	}
 
 	/**

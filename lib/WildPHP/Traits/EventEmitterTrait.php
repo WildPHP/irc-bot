@@ -24,24 +24,24 @@ use Evenement\EventEmitterInterface;
 
 trait EventEmitterTrait
 {
-    /**
-     * @var EventEmitterInterface $eventEmitterObject
-     */
-    protected $eventEmitterObject;
+	/**
+	 * @var EventEmitterInterface $eventEmitterObject
+	 */
+	protected $eventEmitterObject;
 
-    /**
-     * @param EventEmitterInterface $eventEmitter
-     */
-    public function setEventEmitter(EventEmitterInterface $eventEmitter)
-    {
-        $this->eventEmitterObject = $eventEmitter;
-    }
+	/**
+	 * @param EventEmitterInterface $eventEmitter
+	 */
+	public function setEventEmitter(EventEmitterInterface $eventEmitter)
+	{
+		$this->eventEmitterObject = $eventEmitter;
+	}
 
-    /**
-     * @return EventEmitterInterface
-     */
-    public function getEventEmitter()
-    {
-        return $this->eventEmitterObject;
-    }
+	/**
+	 * @return EventEmitterInterface
+	 */
+	public function getEventEmitter()
+	{
+		return $this->eventEmitterObject;
+	}
 }

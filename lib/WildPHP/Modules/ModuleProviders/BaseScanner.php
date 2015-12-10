@@ -28,6 +28,14 @@ abstract class BaseScanner
 	protected $validModules = [];
 
 	/**
+	 * @return string[]
+	 */
+	public function getValidModules()
+	{
+		return $this->validModules;
+	}
+
+	/**
 	 * @param string $className
 	 */
 	protected function tryAddValidModule($className)
@@ -35,24 +43,6 @@ abstract class BaseScanner
 		if (self::isValidModule($className) && !$this->validModuleExists($className))
 			$this->validModules[] = $className;
 
-	}
-
-	/**
-	 * @param string $className
-	 *
-	 * @return bool
-	 */
-	protected function validModuleExists($className)
-	{
-		return in_array($className, $this->validModules);
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getValidModules()
-	{
-		return $this->validModules;
 	}
 
 	/**
@@ -66,6 +56,7 @@ abstract class BaseScanner
 			throw new \RuntimeException('Unable to locate class ' . $className);
 
 		$reflection = self::getReflection($className);
+
 		return $reflection->isSubclassOf('\WildPHP\BaseModule');
 	}
 
@@ -80,5 +71,15 @@ abstract class BaseScanner
 			throw new \RuntimeException('Unable to locate class ' . $className);
 
 		return new \ReflectionClass($className);
+	}
+
+	/**
+	 * @param string $className
+	 *
+	 * @return bool
+	 */
+	protected function validModuleExists($className)
+	{
+		return in_array($className, $this->validModules);
 	}
 }

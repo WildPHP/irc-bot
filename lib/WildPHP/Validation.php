@@ -34,6 +34,7 @@ class Validation
 	public static function isChannel($chan)
 	{
 		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
+
 		return $pmatch !== 0 && $pmatch !== false;
 	}
 
@@ -46,6 +47,7 @@ class Validation
 	public static function isNickname($nick)
 	{
 		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
+
 		return $pmatch !== 0 && $pmatch !== false;
 	}
 }
