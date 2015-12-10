@@ -55,7 +55,12 @@ class Connection extends BaseModule implements ConnectionModuleInterface
 		$this->setParser(new Parser());
 		$this->setGenerator(new Generator());
 
-		$events = ['create' => 'wildphp.init.after', 'parseData' => 'irc.data.raw.in', 'sendInitialData' => 'irc.connection.created', 'pingPong' => 'irc.data.in.ping'];
+		$events = [
+			'create' => 'wildphp.init.after',
+			'parseData' => 'irc.data.raw.in',
+			'sendInitialData' => 'irc.connection.created',
+			'pingPong' => 'irc.data.in.ping'
+		];
 
 		foreach ($events as $function => $event)
 		{
