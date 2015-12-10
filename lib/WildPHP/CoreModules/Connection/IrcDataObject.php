@@ -65,6 +65,11 @@ class IrcDataObject extends DataObject
 		return $this->getItem('message');
 	}
 
+	/**
+	 * @param string $key
+	 * @param mixed $fallback
+	 * @return mixed
+	 */
 	protected function getItem($key, $fallback = '')
 	{
 		if (!array_key_exists($key, $this->message))
