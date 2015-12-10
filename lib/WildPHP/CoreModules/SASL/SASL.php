@@ -39,7 +39,11 @@ class SASL extends BaseModule
 
 	public function setup()
 	{
-		$events = ['onConnect' => 'irc.connection.pre-created', 'capListener' => 'irc.data.in.cap', 'authenticationListener' => 'irc.data.in.authenticate'];
+		$events = [
+			'onConnect' => 'irc.connection.pre-created',
+			'capListener' => 'irc.data.in.cap',
+			'authenticationListener' => 'irc.data.in.authenticate'
+		];
 
 		foreach ($events as $function => $event)
 		{
