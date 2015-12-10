@@ -18,7 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Modules;
+namespace WildPHP\CoreModules\Wiki;
 
 use WildPHP\BaseModule;
 use WildPHP\CoreModules\Connection\IrcDataObject;
