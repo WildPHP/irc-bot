@@ -26,8 +26,14 @@ use WildPHP\BaseModuleInterface;
 
 interface ConnectionModuleInterface extends BaseModuleInterface
 {
+	/**
+	 * @return void
+	 */
 	public function setup();
 
+	/**
+	 * @return void
+	 */
 	public function create();
 
 	/**
