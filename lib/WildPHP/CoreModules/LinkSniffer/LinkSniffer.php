@@ -105,9 +105,9 @@ class LinkSniffer extends BaseModule
 		{
 			$contents .= $partial;
 
-			if (preg_match('/\<title\>(.*)\<\/title\>/i', $contents, $matches) && !empty($matches[1]))
+			if (preg_match('/\<title\>(.*)\<\/title\>/is', $contents, $matches) && !empty($matches[1]))
 			{
-				$title = htmlspecialchars_decode($matches[1], ENT_QUOTES);
+				$title = htmlspecialchars_decode(trim($matches[1]), ENT_QUOTES);
 
 				return false;
 			}
