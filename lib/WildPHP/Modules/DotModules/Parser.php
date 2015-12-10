@@ -35,7 +35,7 @@ class Parser
 
 	/**
 	 * @param string $file
-	 * @return array|bool
+	 * @return array|false
 	 */
 	public function readFile($file)
 	{
@@ -60,7 +60,7 @@ class Parser
 
 	/**
 	 * @param string $line
-	 * @return array|bool Note that false does not mean failure; it can also be a comment!
+	 * @return array|false Note that false does not mean failure; it can also be a comment!
 	 */
 	public function processLine($line)
 	{

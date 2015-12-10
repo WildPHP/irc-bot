@@ -27,7 +27,7 @@ class Router
 {
 	/**
 	 * @param array $parsedModules
-	 * @return bool|array false on failure, array with module classes on success
+	 * @return false|array false on failure, array with module classes on success
 	 */
 	public function routeAll($parsedModules)
 	{
