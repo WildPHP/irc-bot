@@ -24,7 +24,6 @@ use Phergie\Irc\Generator;
 use Phergie\Irc\GeneratorInterface;
 use Phergie\Irc\Parser;
 use Phergie\Irc\ParserInterface;
-use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use WildPHP\BaseModule;
 use React\Promise\PromiseInterface;
