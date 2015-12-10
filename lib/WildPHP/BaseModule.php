@@ -29,8 +29,8 @@ abstract class BaseModule implements BaseModuleInterface
 	use EventEmitterTrait;
 	use LoopTrait;
 	use ModulePoolTrait;
-	
-	public function checkModuleAvailability($module, $class = null)
+
+	public function checkModuleAvailability($module, $class = '')
 	{
 		if (!$this->getModulePool()->existsByKey($module))
 			return false;

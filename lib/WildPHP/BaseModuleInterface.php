@@ -28,7 +28,7 @@ interface BaseModuleInterface
 	 *
 	 * @return boolean
 	 */
-	public function checkModuleAvailability($module, $class = null);
+	public function checkModuleAvailability($module, $class = '');
 
 	/**
 	 * @return string
