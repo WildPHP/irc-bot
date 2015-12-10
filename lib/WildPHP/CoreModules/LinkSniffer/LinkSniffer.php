@@ -74,7 +74,7 @@ class LinkSniffer extends BaseModule
 						continue;
 
 					if (!empty($matches[1]))
-						$title = htmlspecialchars_decode($matches[1]);
+						$title = htmlspecialchars_decode($matches[1], ENT_QUOTES);
 				}
 				$body->close();
 			}
