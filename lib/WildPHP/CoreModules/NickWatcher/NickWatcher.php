@@ -37,7 +37,11 @@ class NickWatcher extends BaseModule
 
 	public function setup()
 	{
-		$events = ['listenError' => 'irc.data.in', 'nickChanged' => 'irc.data.out.nick', 'sendInitial' => 'irc.connection.created'];
+		$events = [
+			'listenError' => 'irc.data.in',
+			'nickChanged' => 'irc.data.out.nick',
+			'sendInitial' => 'irc.connection.created'
+		];
 
 		foreach ($events as $func => $event)
 		{
