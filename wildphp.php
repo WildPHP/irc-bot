@@ -33,10 +33,10 @@ if (function_exists('posix_getuid') && posix_getuid() === 0)
 }
 
 // Check if we are running high enough PHP version
-if (version_compare(PHP_VERSION, '5.4.0', '<'))
+if (version_compare(PHP_VERSION, '5.5.0', '<'))
 {
 	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
-	echo 'Please use PHP 5.4.0 or later.';
+	echo 'Please use PHP 5.5.0 or later.';
 	exit(129);
 }
 

@@ -2,16 +2,18 @@
 ----------
 [![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
 
-A modular IRC Bot built in PHP with the use of object-oriented programming.
+Initially designed to run as an IRC bot, it now serves as a general-purpose framework for interactive applications.
 
 It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP installation.
+No web server is required, only a working PHP installation.
 
 ## System requirements
 In order to run WildPHP, we ask a few things from your system. Notably:
 
-- A PHP version equal to or higher than **5.4.0**.
+- A PHP version equal to or higher than **5.5.0**.
 - **SSH** or other local access to the system you plan on running WildPHP on.
 	- WildPHP does **NOT** run on services where you can host your website.
+- WildPHP has been tested to work on Linux. Other platforms are supported but not guaranteed to work.
 - For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
 
 ## IRC Community & Support
@@ -19,42 +21,47 @@ If you need help or just want to idle in the IRC channel join us at
 [#wildphp@irc.freenode.net](http://webchat.freenode.net/?channels=wildphp)
 
 ## Features and Functions
-Apart from being awesome, this bot features the following functions:
+The framework itself has been designed to include the least features as possible. That means that only installing the core will only get you the runtime.
 
-- Pre-installed modules:
-	- Auth: Provides basic hostname-based authentication. Most modules depend on this
-	- ChannelAdmin: Provides commands like `op`, `voice`, `kick`
-	- ChannelManager: Provides commands like `join`, `part`, and keeps track of channel joins and parts
-	- CoreCommands: Provides `quit` and `say` commands.
-	- Help: Provides the `help` command
-	- Watchdog: Watches for PING PONG requests and automatically attempts to reconnect the bot if the connection is assumed lost
-- Easy to install modules, complete with dependency management
-- Full-featured event-driven API that's easy to hook into,
-- Timers that trigger after a set time,
+The framework relies completely on modules, or plugins if you will.
+
+Modules are installed using composer:
+
+    composer require [the package name of the module]
+     
+For example:
+
+    composer require wildphp/module-pingpong
+    
+After installation with composer, modules must be enabled and possibly configured. Please read the module's description on how to do this.
+
+We have developed a few official modules:
+
+### Core modules:
+- [module-ircconnection](https://github.com/WildPHP/module-ircconnection), which provides the connection to IRC networks.
+- [module-channelmanager](https://github.com/WildPHP/module-channelmanager), which provides the `join` and `part` commands, and provides auto-joining of channels.
+- [module-commandparser](https://github.com/WildPHP/module-commandparser), which allows other modules to listen to user commands on the bot.
+- [module-nickwatcher](https://github.com/WildPHP/module-nickwatcher), which updates internal references to the nickname when it is changed.
+
+All of these should be installed to get a usable IRC bot.
+
+### Optional modules:
+- [module-sasl](https://github.com/WildPHP/module-sasl), which allows the bot to authenticate itself using SASL.
+- [module-linksniffer](https://github.com/WildPHP/module-linksniffer), with which the bot can detect links pasted in a channel and show their titles.
+- [module-wiki](https://github.com/WildPHP/module-wiki), with which users can search MediaWikis (like Wikipedia) through the `wiki` command.
 
 ## Installation
-1. Download the latest release.
-2. Copy config.example.neon to config.neon
-3. Open config.neon with your favourite text editor and change the settings to your liking (check the wiki for more information)
-4. Launch the bot with the following command: `php wildphp.php`
-5. Profit!
+To install the latest build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
 
-### Installing the latest revision
-To install the latest development build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
-
-	composer create-project wildphp/wild-irc-bot directory-name
+	composer create-project wildphp/wild-irc-bot directory-name --stability=alpha
+	
+Where directory-name is the name of the directory where to install the bot. The stability flag is required since the bot is in alpha stage.
 
 ### Configuration
 
 Copy the example configuration file and edit it to suit you. It uses the [Neon](http://ne-on.org/) syntax (borrowed from [Nette Framework](http://nette.org/en/)). It is similar to yaml but less strict and much faster to parse.
 
     cp config.example.neon config.neon
-
-## Installing modules
-Installing modules is as simple as dropping the module folder in the `modules` directory. The bot will automatically load it when it is next started.
-
-### Official extra modules
-Modules which have been tested to work with the latest version of the bot by us can be found [here](https://github.com/WildPHP/Wild-IRC-Bot-Plugins).
 
 ## Running the bot
 
