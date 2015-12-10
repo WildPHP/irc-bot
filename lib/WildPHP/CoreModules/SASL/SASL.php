@@ -32,11 +32,6 @@ class SASL extends BaseModule
 	 */
 	protected $connection;
 
-	/**
-	 * @var boolean
-	 */
-	protected $serverSupportsSasl = false;
-
 	public function setup()
 	{
 		$events = [
@@ -54,7 +49,6 @@ class SASL extends BaseModule
 	public function onConnect()
 	{
 		$this->getConnectionModule();
-		$this->serverSupportsSasl = false;
 
 		$this->connection->write('CAP REQ :sasl' . "\r\n");
 	}
@@ -68,8 +62,6 @@ class SASL extends BaseModule
 	public function capListener(IrcDataObject $resource)
 	{
 		$matches = preg_match('/ACK :(?:.+)?\b(sasl)\b/i', $resource->getParams());
-
-		$this->serverSupportsSasl = !empty($matches);
 
 		if (!$matches)
 		{
