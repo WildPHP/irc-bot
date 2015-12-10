@@ -38,11 +38,13 @@ interface ConnectionModuleInterface extends BaseModuleInterface
 
 	/**
 	 * @param string $data
+	 * @return void
 	 */
 	public function parseData($data);
 
 	/**
 	 * @param IrcDataObject $data
+	 * @return void
 	 */
 	public function pingPong(IrcDataObject $data);
 
@@ -51,10 +53,14 @@ interface ConnectionModuleInterface extends BaseModuleInterface
 	 */
 	public function getParser();
 
+	/**
+	 * @return void
+	 */
 	public function sendInitialData();
 
 	/**
 	 * @param array $data
+	 * @return void
 	 */
 	public function write($data);
 
