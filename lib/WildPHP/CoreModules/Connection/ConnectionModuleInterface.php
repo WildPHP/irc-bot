@@ -59,7 +59,7 @@ interface ConnectionModuleInterface extends BaseModuleInterface
 	public function sendInitialData();
 
 	/**
-	 * @param array $data
+	 * @param string $data
 	 * @return void
 	 */
 	public function write($data);
