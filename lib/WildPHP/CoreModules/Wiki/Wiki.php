@@ -22,24 +22,24 @@ namespace WildPHP\CoreModules\Wiki;
 
 use WildPHP\BaseModule;
 use WildPHP\CoreModules\Connection\IrcDataObject;
-use WildPHP\Event\CommandEvent;
+use WildPHP\API\Remote;
 
 class Wiki extends BaseModule
 {
-    /**
-     * The wiki URL. No trailing slash please.
-     * @var string
-     */
-    protected $wikiURL = 'https://wiki.archlinux.org';
-    
-    /**
-     * The wiki directory. To set this, you need to locate your api.php file.
-     * If it is in the same directory as the entire wiki, leave this empty.
-     * Otherwise, put the directory the wiki resides in in this field.
-     * Include a trailing slash if set.
-     * @var string
-     */
-    protected $wikiDir = 'index.php/';
+	/**
+	 * The wiki URL. No trailing slash please.
+	 * @var string
+	 */
+	protected $wikiURL = 'https://wiki.archlinux.org';
+
+	/**
+	 * The wiki directory. To set this, you need to locate your api.php file.
+	 * If it is in the same directory as the entire wiki, leave this empty.
+	 * Otherwise, put the directory the wiki resides in in this field.
+	 * Include a trailing slash if set.
+	 * @var string
+	 */
+	protected $wikiDir = 'index.php/';
 
 	/**
 	 * Set up the module.
@@ -47,7 +47,7 @@ class Wiki extends BaseModule
 	public function setup()
 	{
 		// Register our command.
-		$this->getEventEmitter()->on('irc.command.wiki', array($this, 'wikiCommand'));
+		$this->getEventEmitter()->on('irc.command.wiki', [$this, 'wikiCommand']);
 	}
 
 	/**
@@ -58,15 +58,15 @@ class Wiki extends BaseModule
 	{
 		$params = trim($params);
 		$user = $data->getMessage()['nick'];
-		
+
 		if (preg_match('/ @ ([\S]+)$/', $params, $out) && !empty($out[1]))
 		{
-                    $user = $out[1];
-                    $params = preg_replace('/ @ ([\S]+)$/', '', $params);
+			$user = $out[1];
+			$params = preg_replace('/ @ ([\S]+)$/', '', $params);
 		}
-		
+
 		// Merge multiple spaces into one, trim the result, urlencode it.
-		$query = urlencode(trim(preg_replace('/\s\s+/', ' ',  $params)));
+		$query = urlencode(trim(preg_replace('/\s\s+/', ' ', $params)));
 
 		$url = $this->wikiURL . '/api.php?'
 			// use the OpenSearch API
@@ -77,46 +77,29 @@ class Wiki extends BaseModule
 
 			// Return it in a JSON format and resolve redirects.
 			. '&format=json&redirects=resolve&search=';
-		
-		// Do the actual result.
-		$result = $this->fetch($url . $query, true);
-		
-                $connection = $this->getModule('Connection');
+
+
+		$bodyResource = Remote::getUriBody($url . $query);
+		$contents = $bodyResource->getContents();
+		$result = json_decode($contents);
+
+		$connection = $this->getModule('Connection');
 
 		if ($result === false || empty($result[1]))
 		{
-                        $connection->write($connection->getGenerator()->ircPrivmsg(
-	                        $data->getTargets()[0],
-	                        $user . ': Sorry, I could not find a page matching your query. Please try again.')
-                        );
-                        return;
-                }
-		
+			$connection->write($connection->getGenerator()
+				->ircPrivmsg($data->getTargets()[0], $user . ': Sorry, I could not find a page matching your query. Please try again.'));
+
+			return;
+		}
+
 		// OpenSearch API
-		$query = $result[0];
 		$title = $result[1][0];
-		$summary = $result[2][0];
 		$link = $result[3][0];
-			
-		$connection->write($connection->getGenerator()->ircPrivmsg(
-			$data->getTargets()[0],
-			$user . ': ' . $title . ' - ' . $link)
-		);
-	}
-	
-	public function fetch($uri, $decode = false)
-	{
-		$httpClient = new \GuzzleHttp\Client();
 
-		$resource = $httpClient->get($uri);
-		$body = $resource->getBody();
-
-		$contents = $body->getContents();
-
-		if ($decode)
-			$contents = json_decode($contents);
-
-		return $contents;
+		$connection->write($connection->getGenerator()
+			->ircPrivmsg($data->getTargets()[0], $user . ': ' . $title . ' - ' . $link));
 	}
 }
+
 ?>
