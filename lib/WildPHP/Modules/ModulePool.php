@@ -68,7 +68,7 @@ class ModulePool
 	public function remove(BaseModuleInterface $module)
 	{
 		if (!$this->exists($module))
-			throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
+			throw new \RuntimeException($module->getFullyQualifiedName() . ' does not exist in this pool.');
 
 		unset($this->pool[$this->getKey($module)]);
 	}
@@ -80,7 +80,7 @@ class ModulePool
 	public function getKey(BaseModuleInterface $module)
 	{
 		if (!$this->exists($module))
-			throw new \RuntimeException('The module ' . $module->getFullyQualifiedName() . ' does not exist in this module pool.');
+			throw new \RuntimeException($module->getFullyQualifiedName() . ' does not exist in this pool.');
 
 		return array_search($module, $this->pool);
 	}
