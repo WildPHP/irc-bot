@@ -101,5 +101,3 @@ class Wiki extends BaseModule
 			->ircPrivmsg($data->getTargets()[0], $user . ': ' . $title . ' - ' . $link));
 	}
 }
-
-?>
