@@ -1,7 +1,10 @@
 # Wild IRC Bot ([wildphp.com](http://wildphp.com/))
 ----------
-[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
-
+[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/stable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
+[![Latest Unstable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/unstable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
+[![Total Downloads](https://poser.pugx.org/wildphp/Wild-IRC-Bot/downloads)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 Initially designed to run as an IRC bot, it now serves as a general-purpose framework for interactive applications.
 
 It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP installation.
@@ -53,9 +56,9 @@ All of these should be installed to get a usable IRC bot.
 ## Installation
 To install the latest build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:
 
-	composer create-project wildphp/wild-irc-bot directory-name --stability=alpha
+	composer create-project wildphp/wild-irc-bot directory-name
 	
-Where directory-name is the name of the directory where to install the bot. The stability flag is required since the bot is in alpha stage.
+Where directory-name is the name of the directory where to install the bot.
 
 ### Configuration
 
