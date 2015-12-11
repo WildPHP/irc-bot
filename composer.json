@@ -6,7 +6,6 @@
         "php": ">=5.5.0",
         "myclabs/php-enum": "^1.4",
         "react/react": "^0.4.2",
-        "monolog/monolog": "^1.17",
         "guzzlehttp/guzzle": "^6.1"
     },
     "require-dev":

@@ -22,7 +22,3 @@ name: WildPHP-Bot
 # The command prefix to use.
 # Default: '!'
 prefix: '!'
-
-# Channels to autojoin.
-channels:
-	- '#wildphp'
