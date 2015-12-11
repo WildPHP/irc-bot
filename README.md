@@ -7,6 +7,7 @@
 [![Total Downloads](https://poser.pugx.org/wildphp/Wild-IRC-Bot/downloads)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 Initially designed to run as an IRC bot, it now serves as a general-purpose framework for interactive applications.
 
+
 It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP installation.
 No web server is required, only a working PHP installation.
 
