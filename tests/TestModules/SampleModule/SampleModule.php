@@ -18,36 +18,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WPHPTests\TestModules\SampleModule;
 
-/**
- * Validation class, with shortcuts for validating items.
- */
-class Validation
+use WildPHP\BaseModule;
+
+class SampleModule extends BaseModule
 {
-	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
-	 */
-	public static function isChannel($chan)
-	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
-
-		return $pmatch !== 0 && $pmatch !== false;
-	}
-
-	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
-	 */
-	public static function isNickname($nick)
-	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
-
-		return $pmatch !== 0 && $pmatch !== false;
-	}
+    
 }

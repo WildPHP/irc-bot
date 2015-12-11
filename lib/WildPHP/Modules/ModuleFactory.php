@@ -18,36 +18,34 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Modules;
 
-/**
- * Validation class, with shortcuts for validating items.
- */
-class Validation
+use WildPHP\BaseModule;
+
+class ModuleFactory
 {
 	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
+	 * @param string $moduleClass
 	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
+	 * @return BaseModule
 	 */
-	public static function isChannel($chan)
+	public static function create($moduleClass)
 	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
+		if (!class_exists($moduleClass))
+			throw new \RuntimeException('ModuleFactory: Unable to create a module from a class which does not exist.');
 
-		return $pmatch !== 0 && $pmatch !== false;
-	}
+		try
+		{
+			$object = new $moduleClass();
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException('ModuleFactory: Unable to build module ' . $moduleClass . ': ' . $e->getMessage());
+		}
 
-	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
-	 */
-	public static function isNickname($nick)
-	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
+		if (!$object instanceof BaseModule)
+			throw new \RuntimeException('ModuleFactory: Attempted to build a non-module.');
 
-		return $pmatch !== 0 && $pmatch !== false;
+		return $object;
 	}
 }

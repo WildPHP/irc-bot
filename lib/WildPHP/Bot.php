@@ -19,204 +19,46 @@
 */
 
 namespace WildPHP;
+
 use Evenement\EventEmitter;
-use Phergie\Irc\Connection;
-use Phergie\Irc\ConnectionInterface;
-use Phergie\Irc\GeneratorInterface;
-use Phergie\Irc\ParserInterface;
-use Psr\Log\LoggerInterface;
-use React\Dns\Resolver\Resolver;
-use React\EventLoop\LoopInterface;
-use WildPHP\Configuration\ConfigurationStorage;
-use WildPHP\Connection\IrcConnection;
+use React\EventLoop\Factory;
+use WildPHP\Modules\ModuleProxy;
+use WildPHP\Traits\EventEmitterTrait;
+use WildPHP\Traits\LoopTrait;
+use WildPHP\Traits\ModuleProxyTrait;
 
 /**
  * The main bot class. Creates a single bot instance.
  */
 class Bot
 {
-	/**
-	 * The Api instance.
-	 *
-	 * @var Api
-	 */
-	protected $api;
+	use EventEmitterTrait;
+	use LoopTrait;
+	use ModuleProxyTrait;
 
 	/**
-	 * The IrcConnection.
-	 *
-	 * @var IrcConnection
+	 * This initialises the event emitter, loop, and module proxy objects.
 	 */
-	protected $ircConnection;
-
-	/**
-	 * Loads all modules.
-	 *
-	 * @param string $configFile The configuration file to use for this bot instance.
-	 */
-	public function __construct($configFile = WPHP_CONFIG)
+	public function __construct()
 	{
-		$configurationStorage = new ConfigurationStorage($configFile);
-		$this->getApi()->setConfigurationStorage($configurationStorage);
-		$this->getApi()->getModuleEmitter();
+		$this->setLoop(Factory::create());
 
-		// Connect using the given data.
-		$connection = new Connection();
-		$connection->setServerHostname($configurationStorage->get('server'))
-			->setServerPort($configurationStorage->get('port'))
-			->setNickname($configurationStorage->get('nick'))
-			->setUsername($configurationStorage->get('name'))
-			->setRealname('A WildPHP Bot');
-		$this->connect($connection);
+		$this->setEventEmitter(new EventEmitter());
+
+		// Module proxy needs a bit of code.
+		$moduleProxy = new ModuleProxy();
+		$moduleProxy->setEventEmitter($this->getEventEmitter());
+		$moduleProxy->setLoop($this->getLoop());
+
+		$this->setModuleProxy($moduleProxy);
 	}
 
 	/**
-	 * @return IrcConnection
+	 * @param string[] $modules
 	 */
-	public function getIrcConnection()
+	public function addModules(array $modules)
 	{
-		if (!$this->ircConnection)
-			$this->setIrcConnection(new IrcConnection($this->getApi()));
-
-		return $this->ircConnection;
-	}
-
-	/**
-	 * @param IrcConnection $ircConnection
-	 */
-	public function setIrcConnection(IrcConnection $ircConnection)
-	{
-		$this->ircConnection = $ircConnection;
-		$this->api->setIrcConnection($ircConnection);
-	}
-
-	/**
-	 * @return GeneratorInterface
-	 */
-	public function getGenerator()
-	{
-		return $this->getApi()->getGenerator();
-	}
-
-	/**
-	 * @param GeneratorInterface $generator
-	 */
-	public function setGenerator(GeneratorInterface $generator)
-	{
-		$this->getApi()->setGenerator($generator);
-	}
-
-	/**
-	 * @return ParserInterface
-	 */
-	public function getParser()
-	{
-		return $this->getApi()->getParser();
-	}
-
-	/**
-	 * @param ParserInterface $parser
-	 */
-	public function setParser(ParserInterface $parser)
-	{
-		$this->getApi()->setParser($parser);
-	}
-
-	/**
-	 * @return Resolver
-	 */
-	public function getResolver()
-	{
-		return $this->getApi()->getResolver();
-	}
-
-	/**
-	 * @param Resolver $resolver
-	 */
-	public function setResolver(Resolver $resolver)
-	{
-		$this->getApi()->setResolver($resolver);
-	}
-
-	/**
-	 * @return Api
-	 */
-	public function getApi()
-	{
-		if (!$this->api)
-			$this->setApi(new Api());
-
-		return $this->api;
-	}
-
-	/**
-	 * @param Api $api
-	 */
-	public function setApi(Api $api)
-	{
-		$this->api = $api;
-	}
-
-	/**
-	 * @return EventEmitter
-	 */
-	public function getEmitter()
-	{
-		return $this->getApi()->getEmitter();
-	}
-
-	/**
-	 * @param EventEmitter $emitter
-	 */
-	public function setEmitter(EventEmitter $emitter)
-	{
-		$this->getApi()->setEmitter($emitter);
-	}
-
-	/**
-	 * Returns the loop interface.
-	 *
-	 * @return \React\EventLoop\LoopInterface
-	 */
-	public function getLoop()
-	{
-		return $this->getApi()->getLoop();
-	}
-
-	/**
-	 * @return \Psr\Log\LoggerInterface
-	 */
-	public function getLogger()
-	{
-		return $this->getApi()->getLogger();
-	}
-
-	/**
-	 * @param \Psr\Log\LoggerInterface $logger
-	 */
-	public function setLogger(LoggerInterface $logger)
-	{
-		$this->getApi()->setLogger($logger);
-	}
-
-	/**
-	 * Sets the loop interface.
-	 *
-	 * @param \React\EventLoop\LoopInterface $loop
-	 */
-	public function setLoop(LoopInterface $loop)
-	{
-		$this->getApi()->setLoop($loop);
-	}
-
-	/**
-	 * Connects the bot to the given connection.
-	 *
-	 * @param ConnectionInterface $connection
-	 */
-	public function connect(ConnectionInterface $connection)
-	{
-		$this->getIrcConnection()->create($connection);
+		$this->getModuleProxy()->loadModules($modules);
 	}
 
 	/**
@@ -224,6 +66,7 @@ class Bot
 	 */
 	public function start()
 	{
+		$this->getModuleProxy()->initializeModules();
 		$this->getLoop()->run();
 	}
 }

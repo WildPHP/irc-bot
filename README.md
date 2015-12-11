@@ -2,9 +2,10 @@
 ----------
 [![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
 
-A modular IRC Bot built in PHP with the use of object-oriented programming.
+Initially designed to run as an IRC bot, it now serves as a general-purpose framework for interactive applications.
 
 It is designed to run off a local LAMP, WAMP, MAMP stack or just plain PHP installation.
+No web server is required, only a working PHP installation.
 
 ## System requirements
 In order to run WildPHP, we ask a few things from your system. Notably:
@@ -12,6 +13,7 @@ In order to run WildPHP, we ask a few things from your system. Notably:
 - A PHP version equal to or higher than **5.5.0**.
 - **SSH** or other local access to the system you plan on running WildPHP on.
 	- WildPHP does **NOT** run on services where you can host your website.
+- WildPHP has been tested to work on Linux. Other platforms are supported but not guaranteed to work.
 - For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
 
 ## IRC Community & Support
@@ -19,9 +21,9 @@ If you need help or just want to idle in the IRC channel join us at
 [#wildphp@irc.freenode.net](http://webchat.freenode.net/?channels=wildphp)
 
 ## Features and Functions
-The bot itself has been designed to include the least features as possible. That means that only installing the core does **not** get you a functional bot.
+The framework itself has been designed to include the least features as possible. That means that only installing the core will only get you the runtime.
 
-The bot relies completely on modules, or plugins if you will.
+The framework relies completely on modules, or plugins if you will.
 
 Modules are installed using composer:
 
@@ -31,16 +33,22 @@ For example:
 
     composer require wildphp/module-pingpong
     
-After installation with composer, modules must be enabled in the configuration file. Please read the module description on how to do this.
+After installation with composer, modules must be enabled and possibly configured. Please read the module's description on how to do this.
 
 We have developed a few official modules:
 
+### Core modules:
+- [module-ircconnection](https://github.com/WildPHP/module-ircconnection), which provides the connection to IRC networks.
 - [module-channelmanager](https://github.com/WildPHP/module-channelmanager), which provides the `join` and `part` commands, and provides auto-joining of channels.
-- [module-commandparser](https://github.com/WildPHP/module-commandparser), which allows other modules to listen to commands on the bot.
-- [module-nickwatcher](https://github.com/WildPHP/module-nickwatcher), which updates internal references to the nickname.
-- [module-pingpong](https://github.com/WildPHP/module-pingpong), which allows the bot to stay online for long periods.
+- [module-commandparser](https://github.com/WildPHP/module-commandparser), which allows other modules to listen to user commands on the bot.
+- [module-nickwatcher](https://github.com/WildPHP/module-nickwatcher), which updates internal references to the nickname when it is changed.
 
-It is recommended to install all of those modules to get a basic bot working which sits in channels. Functionality can be extended from there on with more modules.
+All of these should be installed to get a usable IRC bot.
+
+### Optional modules:
+- [module-sasl](https://github.com/WildPHP/module-sasl), which allows the bot to authenticate itself using SASL.
+- [module-linksniffer](https://github.com/WildPHP/module-linksniffer), with which the bot can detect links pasted in a channel and show their titles.
+- [module-wiki](https://github.com/WildPHP/module-wiki), with which users can search MediaWikis (like Wikipedia) through the `wiki` command.
 
 ## Installation
 To install the latest build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following command:

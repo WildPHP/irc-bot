@@ -18,36 +18,30 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Traits;
 
-/**
- * Validation class, with shortcuts for validating items.
- */
-class Validation
+use Phergie\Irc\GeneratorInterface;
+
+trait GeneratorTrait
 {
 	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
+	 * @var GeneratorInterface $generatorObject
 	 */
-	public static function isChannel($chan)
-	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
+	protected $generatorObject;
 
-		return $pmatch !== 0 && $pmatch !== false;
+	/**
+	 * @param GeneratorInterface $generator
+	 */
+	public function setGenerator(GeneratorInterface $generator)
+	{
+		$this->generatorObject = $generator;
 	}
 
 	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
+	 * @return GeneratorInterface
 	 */
-	public static function isNickname($nick)
+	public function getGenerator()
 	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		return $this->generatorObject;
 	}
 }

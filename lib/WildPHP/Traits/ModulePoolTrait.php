@@ -18,36 +18,30 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Traits;
 
-/**
- * Validation class, with shortcuts for validating items.
- */
-class Validation
+use WildPHP\Modules\ModulePool;
+
+trait ModulePoolTrait
 {
 	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
+	 * @var ModulePool $poolObject
 	 */
-	public static function isChannel($chan)
-	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
+	protected $poolObject;
 
-		return $pmatch !== 0 && $pmatch !== false;
+	/**
+	 * @param ModulePool $pool
+	 */
+	public function setModulePool(ModulePool $pool)
+	{
+		$this->poolObject = $pool;
 	}
 
 	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
+	 * @return ModulePool
 	 */
-	public static function isNickname($nick)
+	public function getModulePool()
 	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		return $this->poolObject;
 	}
 }

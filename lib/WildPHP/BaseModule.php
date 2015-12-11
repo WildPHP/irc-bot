@@ -20,122 +20,46 @@
 
 namespace WildPHP;
 
-abstract class BaseModule
+use WildPHP\Traits\EventEmitterTrait;
+use WildPHP\Traits\LoopTrait;
+use WildPHP\Traits\ModulePoolTrait;
+
+abstract class BaseModule implements BaseModuleInterface
 {
-	/**
-	 * The module directory.
-	 *
-	 * @var string
-	 */
-	private $dir;
+	use EventEmitterTrait;
+	use LoopTrait;
+	use ModulePoolTrait;
 
-	/**
-	 * The Api.
-	 *
-	 * @var Api
-	 */
-	protected $api;
-
-	/**
-	 * Set up the module.
-	 *
-	 * @param Api $api The current Api.
-	 */
-	public function __construct(Api $api)
+	public function checkModuleAvailability($module, $class = '')
 	{
-		$this->api = $api;
-		$dirname = explode('\\', get_class($this));
-		$this->dir = WPHP_MODULE_DIR . '/' . end($dirname) . '/';
+		if (!$this->getModulePool()->existsByKey($module))
+			return false;
+
+		elseif (!empty($class) && $this->getModulePool()->isInstance($module, $class))
+			return false;
+
+		return true;
 	}
 
-	/**
-	 * Init the module.
-	 */
-	public function init()
-	{
-		if (method_exists($this, 'setup'))
-		{
-			$result = $this->setup();
-
-			if ($result === false)
-			{
-				$this->api->getLogger()->debug('Module initialisation canceled. The module will remain loaded.');
-				return;
-			}
-		}
-
-		// Set up predefined events, then.
-		$this->handleListeners();
-	}
-
-	/**
-	 * Return registered listeners.
-	 *
-	 * @return array
-	 */
-	public function getListeners()
-	{
-		if (!method_exists($this, 'registerListeners'))
-			return [];
-
-		return $this->registerListeners();
-	}
-
-	/**
-	 * Handle event registering.
-	 */
-	private function handleListeners()
-	{
-		$events = [];
-		if (method_exists($this, 'registerListeners'))
-			$events = $this->registerListeners();
-
-		// Attempt to add command events into the same array.
-		if (method_exists($this, 'registerCommands'))
-		{
-			$commands = $this->registerCommands();
-
-			foreach ($commands as $command => $params)
-			{
-				$event = 'irc.command.' . $command;
-				$callback = $params['callback'];
-
-				$events[$callback] = $event;
-			}
-		}
-
-		if (!is_array($events))
-			return;
-
-		$this->registerEvents($events);
-	}
-
-	/**
-	 * Registers multiple events in an array.
-	 *
-	 * @param array $events The events to register, in the 'callback' => 'event' format.
-	 */
-	public function registerEvents(array $events)
-	{
-		if (empty($events))
-			return;
-
-		foreach ($events as $callback => $event)
-		{
-			if (!is_callable([$this, $callback]))
-				return;
-
-			$this->api->getEmitter()->on($event, [$this, $callback]);
-		}
-	}
-
-	/**
-	 * Return the working directory of this module.
-	 *
-	 * @return string
-	 */
 	public function getWorkingDir()
 	{
-		return $this->dir;
+		return dirname(__FILE__);
+	}
+
+	public function getFullyQualifiedName()
+	{
+		return get_class();
+	}
+
+	public function getShortName()
+	{
+		$reflectionClass = new \ReflectionClass($this);
+
+		return $reflectionClass->getShortName();
+	}
+
+	public function getModule($key)
+	{
+		return $this->getModulePool()->get($key);
 	}
 }

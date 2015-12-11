@@ -18,36 +18,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Modules\ModuleProviders;
 
-/**
- * Validation class, with shortcuts for validating items.
- */
-class Validation
+class ArrayScanner extends BaseScanner
 {
-	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
-	 */
-	public static function isChannel($chan)
+	public function __construct(array $possibleModules = [])
 	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		// That's all, folks.
+		if (!empty($possibleModules))
+			$this->scanArray($possibleModules);
 	}
 
-	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
-	 */
-	public static function isNickname($nick)
+	public function scanArray(array $array)
 	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		foreach ($array as $module)
+			$this->tryAddValidModule($module);
 	}
 }

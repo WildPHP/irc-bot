@@ -1,7 +1,0 @@
-phpunit:
-    test: 'Hello world!'
-
-specialchars: '!@#$%^special'
-
-# This so we can test the ModuleEmitter safely.
-modules:

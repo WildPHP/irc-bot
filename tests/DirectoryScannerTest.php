@@ -18,11 +18,25 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Configuration;
+namespace WPHPTests;
 
-use RuntimeException;
+use WildPHP\Modules\ModuleProviders\DirectoryScanner;
 
-class ConfigurationException extends RuntimeException
+class DirectoryScannerTest extends \PHPUnit_Framework_TestCase
 {
-
+    public function testDetectModules()
+    {
+        $directory = dirname(__FILE__) . '/TestModules';
+        
+        // MUST BE ALPHABETICAL - directories are scanned alphabetically
+        $expected = [
+            '\WPHPTests\TestModules\AnotherSampleModule\AnotherSampleModule',
+            '\WPHPTests\TestModules\SampleModule\SampleModule',
+        ];
+        
+        $scanner = new DirectoryScanner($directory);
+        
+        $validModules = $scanner->getValidModules();
+        $this->assertSame($validModules, $expected);
+    }
 }
