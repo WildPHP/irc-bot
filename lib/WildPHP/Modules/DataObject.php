@@ -31,11 +31,16 @@ abstract class DataObject
 
 	public function __construct(BaseModuleInterface $self)
 	{
-		$this->origin = $self;
+		$this->setOrigin($self);
 	}
 
 	public function getOrigin()
 	{
 		return $this->origin;
+	}
+
+	protected function setOrigin(BaseModuleInterface $self)
+	{
+		$this->origin = $self;
 	}
 }
