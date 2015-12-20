@@ -20,3 +20,12 @@ matrix:
   allow_failures:
     - php:
       - nightly
+
+notifications:
+    irc:
+        channels:
+            # This must be encrypted or forks & PRs start spamming
+            # travis encrypt "ircs://irc.freenode.net:6697/#wildphp" -r WildPHP/Wild-IRC-Bot
+            -  secure: "dUR/QLbyxL5e15IS9yX/x2trvEW/ct6TwZhiinEn/Z9Glfhy5U3Rj4OETFD4GWKdvxBW84OUWNFvObZbozziG0LktTHArrwL9w8Yvn9ywMyLGd4IVuIwhAgfT4EzK2V3fxHoM56iy8BULsW9mEfNdk9hUucY56R349woQHtfQjM="
+        use_notice: true
+        skip_join: true
