@@ -25,7 +25,7 @@ notifications:
     irc:
         channels:
             # This must be encrypted or forks & PRs start spamming
-            # travis encrypt "ircs://irc.freenode.net:6697/#wildphp" -r WildPHP/Wild-IRC-Bot
-            -  secure: "dUR/QLbyxL5e15IS9yX/x2trvEW/ct6TwZhiinEn/Z9Glfhy5U3Rj4OETFD4GWKdvxBW84OUWNFvObZbozziG0LktTHArrwL9w8Yvn9ywMyLGd4IVuIwhAgfT4EzK2V3fxHoM56iy8BULsW9mEfNdk9hUucY56R349woQHtfQjM="
+            # travis encrypt "ircs://irc.freenode.net:6697/#wildphp-dev" -r WildPHP/Wild-IRC-Bot
+            -  secure: "YfisfH8Pl6Zf3WsTOLnsWGJ6XDKWgQ2dwYkM0T0jBWXFpUM4A6UQGomx49cBQCa2s8lx59xVBqhRcrd6GwAn7yeGc64UdRVKHYm4LH4jUMVdewKsk4GKxj9FKUPQ6aHhbLyw0a6C8rAilxpmPmjT1LcJCGEH5IgB9mfgqGwJ+yI="
         use_notice: true
-        skip_join: true
+        skip_join: false
