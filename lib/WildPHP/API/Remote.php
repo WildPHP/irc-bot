@@ -99,7 +99,10 @@ class Remote
 			throw new InvalidUriException($uri . ' is not a valid link');
 
 		$httpClient = new Client();
-		$resource = $httpClient->get($uri);
+		$resource = $httpClient->get($uri, [
+			'connect_timeout' => 2,
+			'timeout' => 5
+		]);
 		unset($httpClient);
 
 		$contents = $resource->getBody();
