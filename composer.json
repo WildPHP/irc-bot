@@ -1,12 +1,15 @@
 {
     "name": "wildphp/wild-irc-bot",
+    "version": "2.0.1",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
     "require": {
         "php": ">=5.5.0",
         "myclabs/php-enum": "^1.4",
         "react/react": "^0.4.2",
-        "guzzlehttp/guzzle": "^6.1"
+        "guzzlehttp/guzzle": "^6.1",
+        "wildphp/module-channelmanager": "^2.1",
+        "wildphp/module-linksniffer": "^2.0"
     },
     "require-dev":
     {
