@@ -38,7 +38,11 @@ class Remote
 			throw new InvalidUriException($uri . ' is not a valid link');
 
 		$httpClient = new Client();
-		$resource = $httpClient->head($uri);
+		$resource = $httpClient->head($uri, [
+			'allow_redirects' => true,
+			'connect_timeout' => 2,
+			'timeout' => 5
+		]);
 		unset($httpClient);
 
 		return $resource;
@@ -100,6 +104,7 @@ class Remote
 
 		$httpClient = new Client();
 		$resource = $httpClient->get($uri, [
+			'allow_redirects' => true,
 			'connect_timeout' => 2,
 			'timeout' => 5
 		]);
