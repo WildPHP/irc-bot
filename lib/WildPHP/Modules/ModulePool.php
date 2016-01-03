@@ -97,7 +97,7 @@ class ModulePool
 	}
 
 	/**
-	 * @return string[BaseModule]
+	 * @return array<string,BaseModuleInterface>
 	 */
 	public function getAll()
 	{
