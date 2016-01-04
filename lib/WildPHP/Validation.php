@@ -19,35 +19,20 @@
 */
 
 namespace WildPHP;
+use WildPHP\API\Validation as NewValidationClass;
 
 /**
- * Validation class, with shortcuts for validating items.
+ * Wrapper for new validation class.
  */
 class Validation
 {
-	/**
-	 * Checks if a channel name conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $chan The channel name to check.
-	 * @return bool
-	 */
 	public static function isChannel($chan)
 	{
-		$pmatch = preg_match('/^(?:\&|\#|\+|\!)[^,\cG ]+$/', $chan);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		return NewValidationClass::isChannel($chan);
 	}
 
-	/**
-	 * Checks if a nickname conforms to RFC2812's grammar rules.
-	 *
-	 * @param string $nick The nickname to check.
-	 * @return bool
-	 */
 	public static function isNickname($nick)
 	{
-		$pmatch = preg_match("/^[^@\n\r ]+$/", $nick);
-
-		return $pmatch !== 0 && $pmatch !== false;
+		return NewValidationClass::isNickname($nick);
 	}
 }
