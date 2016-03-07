@@ -56,6 +56,5 @@ class NeonBackend implements ConfigurationBackendInterface
 	{
 		$entries = $storage->getAllEntries();
 		$encodedData = Neon::encode($entries);
-		var_dump($encodedData);
 	}
 }
