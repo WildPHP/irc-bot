@@ -2,7 +2,7 @@
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
-	Copyright (C) 2015 WildPHP
+	Copyright (C) 2016 WildPHP
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,36 +18,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP;
+namespace WildPHP\Core\ErrorHandler;
 
-interface BaseModuleInterface
+
+interface ErrorHandlerInterface
 {
-	/**
-	 * @param string $module
-	 * @param string $class The expected class of the module.
-	 *
-	 * @return boolean
-	 */
-	public function checkModuleAvailability($module, $class = '');
 
-	/**
-	 * @return string
-	 */
-	public function getWorkingDir();
-
-	/**
-	 * @return string
-	 */
-	public function getFullyQualifiedName();
-
-	/**
-	 * @return string
-	 */
-	public function getShortName();
-
-	/**
-	 * @param string $key
-	 * @return BaseModuleInterface
-	 */
-	public function getModule($key);
 }

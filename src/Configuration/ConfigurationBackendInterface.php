@@ -2,7 +2,7 @@
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
-	Copyright (C) 2015 WildPHP
+	Copyright (C) 2016 WildPHP
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,20 +18,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Modules\ModuleProviders;
+namespace WildPHP\Core\Configuration;
 
-class ArrayScanner extends BaseScanner
+interface ConfigurationBackendInterface
 {
-	public function __construct(array $possibleModules = [])
-	{
-		// That's all, folks.
-		if (!empty($possibleModules))
-			$this->scanArray($possibleModules);
-	}
+	public static function getAllEntries(): array;
 
-	public function scanArray(array $array)
-	{
-		foreach ($array as $module)
-			$this->tryAddValidModule($module);
-	}
+	public static function writeAllEntries(ConfigurationStorage $storage);
 }

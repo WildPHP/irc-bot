@@ -2,7 +2,7 @@
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
-	Copyright (C) 2015 WildPHP
+	Copyright (C) 2016 WildPHP
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,61 +18,33 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-use WildPHP\Bot;
-use WildPHP\Modules\DotModules\Parser as DotModulesParser;
-use WildPHP\Modules\DotModules\Router as DotModulesRouter;
+use WildPHP\Core\Configuration\Configuration;
 
-// Set error reporting to report all errors
 error_reporting(E_ALL);
 
-// Check if we are running as root and quit
+if (php_sapi_name() != 'cli')
+{
+	echo 'WildPHP must be run from the terminal!';
+	exit(127);
+}
+
 if (function_exists('posix_getuid') && posix_getuid() === 0)
 {
 	echo 'Running wildphp as root is not allowed.' . PHP_EOL;
 	exit(128);
 }
 
-// Check if we are running high enough PHP version
-if (version_compare(PHP_VERSION, '5.5.0', '<'))
+if (version_compare(PHP_VERSION, '7.0.0', '<'))
 {
 	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
-	echo 'Please use PHP 5.5.0 or later.';
+	echo 'Please use PHP 7.0.0 or later.';
 	exit(129);
 }
+require('vendor/autoload.php');
+define("WPHP_ROOT_DIR", __DIR__ . '/');
 
-// Define global constants
-define('WPHP_ROOT_DIR', __DIR__ . '/');
-define('WPHP_LIB_DIR', WPHP_ROOT_DIR . 'lib/');
-define('WPHP_MODULE_DIR', WPHP_ROOT_DIR . 'modules/');
-define('WPHP_LOG_DIR', WPHP_ROOT_DIR . 'logs/');
-define('WPHP_CONFIG', WPHP_ROOT_DIR . 'config.neon');
+Configuration::initialize();
 
-// Turn all PHP errors into exceptions
-set_error_handler(
-	function($errNo, $errStr, $errFile, $errLine)
-	{
-		throw new ErrorException($errStr . ' in ' . $errFile . ' on line ' . $errLine, $errNo);
-	}
-);
+var_dump(Configuration::get('connections'));
 
-// Register the autoloader
-require_once('vendor/autoload.php');
-
-// Create a new bot and start it up
-$bot = new Bot();
-
-$parser = new DotModulesParser();
-$result = $parser->readFile(dirname(__FILE__) . '/main.modules');
-
-if (!empty($result))
-{
-	$router = new DotModulesRouter();
-	$modules = $router->routeAll($result);
-
-	if (!empty($modules))
-		$bot->addModules($modules);
-}
-
-$bot->start();
-
-
+Configuration::writeAll();

@@ -2,7 +2,7 @@
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
-	Copyright (C) 2015 WildPHP
+	Copyright (C) 2016 WildPHP
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,30 +18,60 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Traits;
+namespace WildPHP\Core\Configuration;
 
-use React\EventLoop\LoopInterface;
 
-trait LoopTrait
+class ConfigurationItem
 {
 	/**
-	 * @var LoopInterface $loopObject
+	 * @var mixed
 	 */
-	protected $loopObject;
+	protected $value;
 
 	/**
-	 * @param LoopInterface $loop
+	 * @var string
 	 */
-	public function setLoop(LoopInterface $loop)
+	protected $key;
+
+	/**
+	 * @param string $key
+	 * @param mixed $val
+	 */
+	public function __construct(string $key, $val)
 	{
-		$this->loopObject = $loop;
+		$this->setKey($key);
+		$this->setValue($val);
 	}
 
 	/**
-	 * @return LoopInterface
+	 * @return mixed
 	 */
-	public function getLoop()
+	public function getValue()
 	{
-		return $this->loopObject;
+		return $this->value;
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	public function setValue($value)
+	{
+		$this->value = $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getKey()
+	{
+		return $this->key;
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public function setKey(string $key)
+	{
+		$this->key = $key;
 	}
 }
