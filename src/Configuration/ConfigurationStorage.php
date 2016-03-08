@@ -36,7 +36,8 @@ class ConfigurationStorage
 
 	/**
 	 * @param string $key
-	 * @return mixed False on failure; mixed on success.
+	 * @return ConfigurationItem
+	 * @throws ConfigurationItemNotFoundException
 	 */
 	public function getItem(string $key): ConfigurationItem
 	{

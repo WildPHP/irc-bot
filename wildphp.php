@@ -44,7 +44,3 @@ require('vendor/autoload.php');
 define("WPHP_ROOT_DIR", __DIR__ . '/');
 
 Configuration::initialize();
-
-var_dump(Configuration::get('connections'));
-
-Configuration::writeAll();
