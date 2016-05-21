@@ -47,8 +47,14 @@ class Queue implements QueueInterface
      */
     protected $messageDelayInSeconds = 2;
 
+    /**
+     * @var int
+     */
     protected $messagesPerSecond = 2;
-    
+
+    /**
+     * @param BaseCommand $command
+     */
     public function insertMessage(BaseCommand $command)
     {
         $time = $this->calculateNextMessageTime();
@@ -56,24 +62,36 @@ class Queue implements QueueInterface
         $item = new QueueItem($command, $time);
         $this->scheduleItem($item);
     }
-    
+
+    /**
+     * @param BaseCommand $command
+     */
     public function removeMessage(BaseCommand $command)
     {
         if (in_array($command, $this->messageQueue))
             $this->removeMessageByIndex(array_search($command, $this->messageQueue));
     }
 
+    /**
+     * @param int $index
+     */
     public function removeMessageByIndex(int $index)
     {
         if (array_key_exists($index, $this->messageQueue))
             unset($this->messageQueue[$index]);
     }
-    
+
+    /**
+     * @param QueueItem $item
+     */
     public function scheduleItem(QueueItem $item)
     {
         $this->messageQueue[] = $item;
     }
-    
+
+    /**
+     * @return int
+     */
     public function calculateNextMessageTime(): int
     {
         // If the queue is empty, this message can be sent immediately. Do not bother calculating.
@@ -89,11 +107,17 @@ class Queue implements QueueInterface
         return time() + $totalDelay;
     }
 
+    /**
+     * @return int
+     */
     public function getAmountOfItemsInQueue(): int
     {
         return count($this->messageQueue);
     }
 
+    /**
+     * @return void
+     */
     public function flush()
     {
         foreach ($this->messageQueue as $index => $queueItem)
@@ -106,6 +130,10 @@ class Queue implements QueueInterface
         }
     }
 
+    /**
+     * @param string $channel
+     * @param string $message
+     */
     public function privmsg(string $channel, string $message)
     {
         $privmsg = new Privmsg($channel, $message);
