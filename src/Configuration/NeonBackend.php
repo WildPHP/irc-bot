@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Configuration;
 
 use Nette\Neon\Neon;
+use WildPHP\Core\Logger\Logger;
 
 class NeonBackend implements ConfigurationBackendInterface
 {
@@ -36,11 +37,16 @@ class NeonBackend implements ConfigurationBackendInterface
 	protected static function parseNeonData(string $data): array
 	{
 		$decodedData = Neon::decode($data);
+
+		if (empty($decodedData))
+			return [];
+		
 		return $decodedData;
 	}
 
 	protected static function readNeonFile(string $file): string
 	{
+		Logger::info('Reading config file', ['file' => $file]);
 		if (!file_exists($file) || !is_readable($file))
 			throw new \RuntimeException('NeonBackend: Cannot read NEON file ' . $file);
 
