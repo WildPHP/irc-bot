@@ -51,10 +51,4 @@ class NeonBackend implements ConfigurationBackendInterface
 
 		return $data;
 	}
-
-	public static function writeAllEntries(ConfigurationStorage $storage)
-	{
-		$entries = $storage->getAllEntries();
-		$encodedData = Neon::encode($entries);
-	}
 }

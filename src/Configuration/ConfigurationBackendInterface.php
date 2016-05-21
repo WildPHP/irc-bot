@@ -23,6 +23,4 @@ namespace WildPHP\Core\Configuration;
 interface ConfigurationBackendInterface
 {
 	public static function getAllEntries(): array;
-
-	public static function writeAllEntries(ConfigurationStorage $storage);
 }
