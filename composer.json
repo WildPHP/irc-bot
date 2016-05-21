@@ -7,7 +7,8 @@
         "php": ">=7.0.0",
         "myclabs/php-enum": "^1.4",
         "react/react": "^0.4",
-        "nette/neon": "^2.3"
+        "nette/neon": "^2.3",
+        "katzgrau/klogger": "^1.2"
     },
     "autoload": {
         "psr-4": {
