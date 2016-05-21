@@ -69,7 +69,7 @@ class QueueTests extends PHPUnit_Framework_TestCase
         }
 
         sleep(2);
-        $queue->flushQueue();
+        $queue->flush();
 
         $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
     }

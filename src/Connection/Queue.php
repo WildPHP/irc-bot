@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\Commands\Privmsg;
 
 class Queue implements QueueInterface
 {
@@ -58,7 +59,14 @@ class Queue implements QueueInterface
     
     public function removeMessage(BaseCommand $command)
     {
-        // TODO: Implement removeMessage() method.
+        if (in_array($command, $this->messageQueue))
+            $this->removeMessageByIndex(array_search($command, $this->messageQueue));
+    }
+
+    public function removeMessageByIndex(int $index)
+    {
+        if (array_key_exists($index, $this->messageQueue))
+            unset($this->messageQueue[$index]);
     }
     
     public function scheduleItem(QueueItem $item)
@@ -86,7 +94,7 @@ class Queue implements QueueInterface
         return count($this->messageQueue);
     }
 
-    public function flushQueue()
+    public function flush()
     {
         foreach ($this->messageQueue as $index => $queueItem)
         {
@@ -94,13 +102,13 @@ class Queue implements QueueInterface
                 continue;
 
             // TODO
-            echo date('i:s') . ': ' . $queueItem->getCommandObject() . PHP_EOL;
-            unset($this->messageQueue[$index]);
+            $this->removeMessageByIndex($index);
         }
     }
 
     public function privmsg(string $channel, string $message)
     {
-        // TODO: Implement privmsg() method.
+        $privmsg = new Privmsg($channel, $message);
+        $this->insertMessage($privmsg);
     }
 }
