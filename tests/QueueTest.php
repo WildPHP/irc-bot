@@ -23,7 +23,7 @@ use WildPHP\Core\Connection\QueueItem;
 use WildPHP\Core\Connection\Commands\DummyCommand;
 use WildPHP\Core\Connection\Commands\Privmsg;
 
-class QueueTests extends PHPUnit_Framework_TestCase
+class QueueTest extends PHPUnit_Framework_TestCase
 {
     public function testQueueAddItem()
     {

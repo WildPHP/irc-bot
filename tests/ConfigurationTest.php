@@ -22,7 +22,7 @@ use WildPHP\Core\Configuration\ConfigurationBackends;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Configuration\ConfigurationStorage;
 
-class ConfigurationTests extends PHPUnit_Framework_TestCase
+class ConfigurationTest extends PHPUnit_Framework_TestCase
 {
 	public function testConfigurationStorage()
 	{
