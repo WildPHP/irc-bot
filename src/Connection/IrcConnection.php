@@ -75,34 +75,36 @@ class IrcConnection
 
     public function __construct()
     {
-        EventEmitter::on('stream.data.in', function ($data)
-        {
-            // Prepend the buffer, first.
-            $data = $this->getBuffer() . $data;
+        EventEmitter::on('stream.data.in', [$this, 'convertDataToLines']);
 
-            // Try to split by any combination of \r\n, \r, \n
-            $lines = preg_split("/\\r\\n|\\r|\\n/", $data);
-
-            // The last element of this array is always residue.
-            $residue = array_pop($lines);
-            $this->setBuffer($residue);
-
-            foreach ($lines as $line)
-            {
-                Logger::debug('<< ' . $line);
-                EventEmitter::emit('stream.line.in', [$line]);
-            }
-        });
-
-        EventEmitter::on('irc.line.in.error', function (IncomingIrcMessage $message, Queue $queue)
+        EventEmitter::on('irc.line.in.error', function ()
         {
             $this->close();
         });
 
-        EventEmitter::on('irc.line.in.ping', function ($incomingIrcMessage, Queue $queue)
+        EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
         {
-            //$queue->pong($incomingIrcMessage->getArgs()[0]);
+            $queue->pong($incomingIrcMessage->getArgs()[0]);
         });
+    }
+
+    public function convertDataToLines(string $data)
+    {
+        // Prepend the buffer, first.
+        $data = $this->getBuffer() . $data;
+
+        // Try to split by any combination of \r\n, \r, \n
+        $lines = preg_split("/\\r\\n|\\r|\\n/", $data);
+
+        // The last element of this array is always residue.
+        $residue = array_pop($lines);
+        $this->setBuffer($residue);
+
+        foreach ($lines as $line)
+        {
+            Logger::debug('<< ' . $line);
+            EventEmitter::emit('stream.line.in', [$line]);
+        }
     }
 
     public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
