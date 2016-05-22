@@ -24,17 +24,46 @@ use WildPHP\Core\Connection\Commands\BaseCommand;
 
 interface QueueInterface
 {
+    /**
+     * @param BaseCommand $command
+     * @return void
+     */
     public function insertMessage(BaseCommand $command);
+
+    /**
+     * @param BaseCommand $command
+     * @return void
+     */
     public function removeMessage(BaseCommand $command);
-    
+
+    /**
+     * @param int $index
+     * @return void
+     */
+    public function removeMessageByIndex(int $index);
+
+    /**
+     * @param QueueItem $item
+     * @return void
+     */
     public function scheduleItem(QueueItem $item);
+
+    /**
+     * @return QueueItem[]
+     */
+    public function flush(): array;
 
     //public function pass(string $password);
 
-    //public function nick(string $nickname);
+    public function nick(string $nickname);
 
-    //public function user(string $username, string $hostname, string $servername, string $realname);
+    public function user(string $username, string $hostname, string $servername, string $realname);
 
+    /**
+     * @param string $channel
+     * @param string $message
+     * @return void
+     */
     public function privmsg(string $channel, string $message);
 
     //public function pong(string $server = '');
