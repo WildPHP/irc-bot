@@ -78,6 +78,6 @@ class Privmsg extends BaseCommand
     
     public function formatMessage(): string
     {
-        return 'PRIVMSG ' . $this->getChannel() . ' :' . $this->getMessage();
+        return 'PRIVMSG ' . $this->getChannel() . ' :' . $this->getMessage() . "\r\n";
     }
 }
