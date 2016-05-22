@@ -49,6 +49,48 @@ class ConnectionDetailsHolder
     protected static $realname = '';
 
     /**
+     * @var bool
+     */
+    protected static $isSecure = false;
+
+    /**
+     * @var IrcConnection
+     */
+    protected static $ircConnection = null;
+
+    /**
+     * @return IrcConnection
+     */
+    public static function getIrcConnection(): IrcConnection
+    {
+        return self::$ircConnection;
+    }
+
+    /**
+     * @param IrcConnection $ircConnection
+     */
+    public static function setIrcConnection(IrcConnection $ircConnection)
+    {
+        self::$ircConnection = $ircConnection;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function getIsSecure(): bool
+    {
+        return self::$isSecure;
+    }
+
+    /**
+     * @param bool $isSecure
+     */
+    public static function setIsSecure(bool $isSecure)
+    {
+        self::$isSecure = $isSecure;
+    }
+
+    /**
      * @return string
      */
     public static function getServer(): string
