@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\Commands\User;
 
 interface QueueInterface
 {
@@ -55,8 +56,19 @@ interface QueueInterface
 
     //public function pass(string $password);
 
+    /**
+     * @param string $nickname
+     * @return void
+     */
     public function nick(string $nickname);
 
+    /**
+     * @param string $username
+     * @param string $hostname
+     * @param string $servername
+     * @param string $realname
+     * @return void
+     */
     public function user(string $username, string $hostname, string $servername, string $realname);
 
     /**
@@ -66,5 +78,9 @@ interface QueueInterface
      */
     public function privmsg(string $channel, string $message);
 
-    //public function pong(string $server = '');
+    /**
+     * @param string $server
+     * @return void
+     */
+    public function pong(string $server);
 }
