@@ -22,6 +22,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
 use WildPHP\Core\Connection\Commands\Nick;
+use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\User;
 
@@ -154,5 +155,11 @@ class Queue implements QueueInterface
     {
         $user = new User($username, $hostname, $servername, $realname);
         $this->insertMessage($user);
+    }
+
+    public function pong(string $server)
+    {
+        $pong = new Pong($server);
+        $this->insertMessage($pong);
     }
 }
