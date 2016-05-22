@@ -22,62 +22,73 @@
 
 namespace WildPHP\Core\Connection;
 
-class ParsedIrcMessageLine {
+class ParsedIrcMessageLine
+{
     public $tags = array();
     public $prefix = null;
     public $verb = null;
     public $args = array();
 
-    public static function split($line) {
+    public static function split($line)
+    {
         $line = rtrim($line, "\r\n");
         $line = explode(" ", $line);
-        $i = 0; $n = count($line);
+        $index = 0;
+        $arv_count = count($line);
         $parv = array();
 
-        while ($i < $n && $line[$i] === '')
-            $i++;
+        while ($index < $arv_count && $line[$index] === '')
+            $index++;
 
-        if ($i < $n && $line[$i][0] == '@') {
-            $parv[] = $line[$i];
-            $i++;
-            while ($i < $n && $line[$i] === '')
-                $i++;
+        if ($index < $arv_count && $line[$index][0] == '@')
+        {
+            $parv[] = $line[$index];
+            $index++;
+            while ($index < $arv_count && $line[$index] === '')
+                $index++;
         }
 
-        if ($i < $n && $line[$i][0] == ':') {
-            $parv[] = $line[$i];
-            $i++;
-            while ($i < $n && $line[$i] === '')
-                $i++;
+        if ($index < $arv_count && $line[$index][0] == ':')
+        {
+            $parv[] = $line[$index];
+            $index++;
+            while ($index < $arv_count && $line[$index] === '')
+                $index++;
         }
 
-        while ($i < $n) {
-            if ($line[$i] === '')
+        while ($index < $arv_count)
+        {
+            if ($line[$index] === '')
                 ;
-            elseif ($line[$i][0] === ':')
+            elseif ($line[$index][0] === ':')
                 break;
             else
-                $parv[] = $line[$i];
-            $i++;
+                $parv[] = $line[$index];
+            $index++;
         }
 
-        if ($i < $n) {
-            $trailing = implode(' ', array_slice($line, $i));
+        if ($index < $arv_count)
+        {
+            $trailing = implode(' ', array_slice($line, $index));
             $parv[] = _substr($trailing, 1);
         }
 
         return $parv;
     }
 
-    public static function parse($line) {
+    public static function parse($line)
+    {
         $parv = self::split($line);
-        $i = 0; $n = count($parv);
+        $index = 0;
+        $parv_count = count($parv);
         $self = new self();
 
-        if ($i < $n && $parv[$i][0] === '@') {
-            $tags = _substr($parv[$i], 1);
-            $i++;
-            foreach (explode(';', $tags) as $item) {
+        if ($index < $parv_count && $parv[$index][0] === '@')
+        {
+            $tags = _substr($parv[$index], 1);
+            $index++;
+            foreach (explode(';', $tags) as $item)
+            {
                 list($k, $v) = explode('=', $item, 2);
                 if ($v === null)
                     $self->tags[$k] = true;
@@ -86,21 +97,24 @@ class ParsedIrcMessageLine {
             }
         }
 
-        if ($i < $n && $parv[$i][0] === ':') {
-            $self->prefix = _substr($parv[$i], 1);
-            $i++;
+        if ($index < $parv_count && $parv[$index][0] === ':')
+        {
+            $self->prefix = _substr($parv[$index], 1);
+            $index++;
         }
 
-        if ($i < $n) {
-            $self->verb = strtoupper($parv[$i]);
-            $self->args = array_slice($parv, $i);
+        if ($index < $parv_count)
+        {
+            $self->verb = strtoupper($parv[$index]);
+            $self->args = array_slice($parv, $index);
         }
 
         return $self;
     }
 }
 
-function _substr($str, $start) {
+function _substr($str, $start)
+{
     $ret = substr($str, $start);
     return $ret === false ? '' : $ret;
 }
