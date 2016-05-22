@@ -124,6 +124,10 @@ class User extends BaseCommand
 
     public function formatMessage(): string
     {
-        return 'USER ' . $this->getUsername() . ' ' . $this->getHostname() . ' ' . $this->getServername() . ' ' . $this->getRealname() . "\r\n";
+        $username = $this->getUsername();
+        $hostname = $this->getHostname();
+        $servername = $this->getServername();
+        $realname = $this->getRealname();
+        return 'USER ' . $username . ' ' . $hostname . ' ' . $servername . ' ' . $realname . "\r\n";
     }
 }
