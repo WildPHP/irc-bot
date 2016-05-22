@@ -93,13 +93,20 @@ class IrcConnection
                 EventEmitter::emit('stream.line.in', [$line]);
             }
         });
+
+        EventEmitter::on('irc.line.in.error', function (IncomingIrcMessage $message, Queue $queue)
+        {
+            $this->close();
+        });
+
+        EventEmitter::on('irc.line.in.ping', function ($incomingIrcMessage, Queue $queue)
+        {
+            //$queue->pong($incomingIrcMessage->getArgs()[0]);
+        });
     }
 
-    public function createFromConnector(ConnectorInterface $connectorInterface)
+    public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
     {
-        $host = ConnectionDetailsHolder::getServer();
-        $port = ConnectionDetailsHolder::getPort();
-        
         $this->connectorPromise = $connectorInterface->create($host, $port)
             ->then(function (Stream $stream) use ($host, $port, &$buffer)
             {
@@ -131,7 +138,9 @@ class IrcConnection
     {
         $this->connectorPromise->then(function (Stream $stream)
         {
+            Logger::warning('Closing connection...');
             $stream->close();
+            EventEmitter::emit('stream.closed');
         });
     }
 }
