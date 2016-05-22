@@ -21,7 +21,9 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\Commands\Nick;
 use WildPHP\Core\Connection\Commands\Privmsg;
+use WildPHP\Core\Connection\Commands\User;
 
 class Queue implements QueueInterface
 {
@@ -116,18 +118,20 @@ class Queue implements QueueInterface
     }
 
     /**
-     * @return void
+     * @return QueueItem[]
      */
-    public function flush()
+    public function flush(): array
     {
+        $expired = [];
         foreach ($this->messageQueue as $index => $queueItem)
         {
             if (!$queueItem->itemShouldBeTriggered())
                 continue;
 
-            // TODO
+            $expired[] = $queueItem;
             $this->removeMessageByIndex($index);
         }
+        return $expired;
     }
 
     /**
@@ -138,5 +142,17 @@ class Queue implements QueueInterface
     {
         $privmsg = new Privmsg($channel, $message);
         $this->insertMessage($privmsg);
+    }
+
+    public function nick(string $nickname)
+    {
+        $nick = new Nick($nickname);
+        $this->insertMessage($nick);
+    }
+
+    public function user(string $username, string $hostname, string $servername, string $realname)
+    {
+        $user = new User($username, $hostname, $servername, $realname);
+        $this->insertMessage($user);
     }
 }
