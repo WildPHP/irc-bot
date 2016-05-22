@@ -25,7 +25,7 @@ class Configuration
 	/**
 	 * @var string
 	 */
-	const BACKEND = ConfigurationBackends::Neon;
+	const BACKEND = ConfigurationBackends::NEON;
 
 	/**
 	 * @var ConfigurationStorage
