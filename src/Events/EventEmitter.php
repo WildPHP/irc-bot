@@ -32,31 +32,54 @@ class EventEmitter
         self::$emitter = new \Evenement\EventEmitter();
     }
 
+    /**
+     * @param string $event
+     * @param callable $listener
+     */
     public static function on(string $event, callable $listener)
     {
         self::$emitter->on($event, $listener);
     }
 
+    /**
+     * @param string $event
+     * @param callable $listener
+     */
     public static function once(string $event, callable $listener)
     {
         self::$emitter->once($event, $listener);
     }
 
+    /**
+     * @param string $event
+     * @param callable $listener
+     */
     public static function removeListener(string $event, callable $listener)
     {
         self::$emitter->removeListener($event, $listener);
     }
 
+    /**
+     * @param null|string $event
+     */
     public static function removeAllListeners($event = null)
     {
         self::$emitter->removeAllListeners($event);
     }
 
-    public static function listeners(string $event)
+    /**
+     * @param string $event
+     * @return array
+     */
+    public static function listeners(string $event): array
     {
         return self::$emitter->listeners($event);
     }
 
+    /**
+     * @param string $event
+     * @param array $arguments
+     */
     public static function emit(string $event, array $arguments = [])
     {
         self::$emitter->emit($event, $arguments);
