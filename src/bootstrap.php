@@ -4,9 +4,9 @@ use React\EventLoop\Factory as LoopFactory;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Connection\ConnectionDetailsHolder;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Connection\Parser;
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
@@ -33,14 +33,7 @@ EventEmitter::initialize();
 $loop = LoopFactory::create();
 $connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
-ConnectionDetailsHolder::setServer(Configuration::get('server')->getValue());
-ConnectionDetailsHolder::setPort(Configuration::get('port')->getValue());
-ConnectionDetailsHolder::setInitialNickname(Configuration::get('nick')->getValue());
-ConnectionDetailsHolder::setUsername(Configuration::get('user')->getValue());
-ConnectionDetailsHolder::setRealname(Configuration::get('realname')->getValue());
-ConnectionDetailsHolder::setIsSecure(Configuration::get('secure')->getValue());
-
-if (ConnectionDetailsHolder::getIsSecure())
+if (Configuration::get('secure')->getValue())
     $connector = $connectorFactory->createSecure();
 else
     $connector = $connectorFactory->create();
@@ -48,9 +41,23 @@ else
 $ircConnection = new IrcConnection();
 $queue = new Queue();
 $ircConnection->registerQueueFlusher($loop, $queue);
-$ircConnection->createFromConnector($connector);
+Parser::initialize($queue);
 
-$queue->user(ConnectionDetailsHolder::getUsername(), gethostname(), ConnectionDetailsHolder::getServer(), ConnectionDetailsHolder::getRealname());
-$queue->nick(ConnectionDetailsHolder::getInitialNickname());
+$username = Configuration::get('user')->getValue();
+$hostname = gethostname();
+$server = Configuration::get('server')->getValue();
+$port = Configuration::get('port')->getValue();
+$realname = Configuration::get('realname')->getValue();
+$nickname = Configuration::get('nick')->getValue();
+
+$ircConnection->createFromConnector($connector, $server, $port);
+
+$queue->user($username, $hostname, $server, $realname);
+$queue->nick($nickname);
+
+EventEmitter::on('stream.closed', function () use ($loop)
+{
+    $loop->stop();
+});
 
 $loop->run();
