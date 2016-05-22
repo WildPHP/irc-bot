@@ -21,7 +21,6 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
-use WildPHP\Core\Connection\Commands\User;
 
 interface QueueInterface
 {
@@ -53,8 +52,6 @@ interface QueueInterface
      * @return QueueItem[]
      */
     public function flush(): array;
-
-    //public function pass(string $password);
 
     /**
      * @param string $nickname
