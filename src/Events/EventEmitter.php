@@ -57,7 +57,7 @@ class EventEmitter
         return self::$emitter->listeners($event);
     }
 
-    public function emit(string $event, array $arguments = [])
+    public static function emit(string $event, array $arguments = [])
     {
         self::$emitter->emit($event, $arguments);
     }
