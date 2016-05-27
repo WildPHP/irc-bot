@@ -80,4 +80,17 @@ interface QueueInterface
 	 * @return void
 	 */
 	public function pong(string $server);
+
+	/**
+	 * @param string $channel
+	 * @param string $key
+	 * @return void
+	 */
+	public function join(string $channel, string $key = '');
+
+	/**
+	 * @param string $channel
+	 * @return void
+	 */
+	public function part(string $channel);
 }
