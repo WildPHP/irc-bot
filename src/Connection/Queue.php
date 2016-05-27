@@ -21,145 +21,160 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\Commands\Join;
 use WildPHP\Core\Connection\Commands\Nick;
+use WildPHP\Core\Connection\Commands\Part;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\User;
 
 class Queue implements QueueInterface
 {
-    /**
-     * An explanation of how this works.
-     *
-     * Messages are to be 'scheduled'. That means, they will be assigned a time. This time will indicate
-     * when the message is allowed to be sent.
-     * This means, that when the message is set to be sent in time() + 10 seconds, the following statement is applied:
-     * if (current_time() >= time() + 10) send_the_message();
-     *
-     * Note greater than, because the bot may have been lagging for a second which would otherwise cause the message to
-     * get lost in the queue.
-     */
+	/**
+	 * An explanation of how this works.
+	 *
+	 * Messages are to be 'scheduled'. That means, they will be assigned a time. This time will indicate
+	 * when the message is allowed to be sent.
+	 * This means, that when the message is set to be sent in time() + 10 seconds, the following statement is applied:
+	 * if (current_time() >= time() + 10) send_the_message();
+	 *
+	 * Note greater than, because the bot may have been lagging for a second which would otherwise cause the message to
+	 * get lost in the queue.
+	 */
 
-    /**
-     * @var QueueItem[]
-     */
-    protected $messageQueue = [];
+	/**
+	 * @var QueueItem[]
+	 */
+	protected $messageQueue = [];
 
-    /**
-     * @var int
-     */
-    protected $messageDelayInSeconds = 2;
+	/**
+	 * @var int
+	 */
+	protected $messageDelayInSeconds = 2;
 
-    /**
-     * @var int
-     */
-    protected $messagesPerSecond = 2;
+	/**
+	 * @var int
+	 */
+	protected $messagesPerSecond = 2;
 
-    /**
-     * @param BaseCommand $command
-     */
-    public function insertMessage(BaseCommand $command)
-    {
-        $time = $this->calculateNextMessageTime();
-        
-        $item = new QueueItem($command, $time);
-        $this->scheduleItem($item);
-    }
+	/**
+	 * @param BaseCommand $command
+	 */
+	public function insertMessage(BaseCommand $command)
+	{
+		$time = $this->calculateNextMessageTime();
 
-    /**
-     * @param BaseCommand $command
-     */
-    public function removeMessage(BaseCommand $command)
-    {
-        if (in_array($command, $this->messageQueue))
-            $this->removeMessageByIndex(array_search($command, $this->messageQueue));
-    }
+		$item = new QueueItem($command, $time);
+		$this->scheduleItem($item);
+	}
 
-    /**
-     * @param int $index
-     */
-    public function removeMessageByIndex(int $index)
-    {
-        if (array_key_exists($index, $this->messageQueue))
-            unset($this->messageQueue[$index]);
-    }
+	/**
+	 * @param BaseCommand $command
+	 */
+	public function removeMessage(BaseCommand $command)
+	{
+		if (in_array($command, $this->messageQueue))
+			$this->removeMessageByIndex(array_search($command, $this->messageQueue));
+	}
 
-    /**
-     * @param QueueItem $item
-     */
-    public function scheduleItem(QueueItem $item)
-    {
-        $this->messageQueue[] = $item;
-    }
+	/**
+	 * @param int $index
+	 */
+	public function removeMessageByIndex(int $index)
+	{
+		if (array_key_exists($index, $this->messageQueue))
+			unset($this->messageQueue[$index]);
+	}
 
-    /**
-     * @return int
-     */
-    public function calculateNextMessageTime(): int
-    {
-        // If the queue is empty, this message can be sent immediately. Do not bother calculating.
-        if ($this->getAmountOfItemsInQueue() == 0)
-            return time();
+	/**
+	 * @param QueueItem $item
+	 */
+	public function scheduleItem(QueueItem $item)
+	{
+		$this->messageQueue[] = $item;
+	}
 
-        $numItems = $this->getAmountOfItemsInQueue();
-        $messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
+	/**
+	 * @return int
+	 */
+	public function calculateNextMessageTime(): int
+	{
+		// If the queue is empty, this message can be sent immediately. Do not bother calculating.
+		if ($this->getAmountOfItemsInQueue() == 0)
+			return time();
 
-        // For every message pair, we add the specified delay.
-        $totalDelay = $messagePairs * $this->messageDelayInSeconds;
+		$numItems = $this->getAmountOfItemsInQueue();
+		$messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
 
-        return time() + $totalDelay;
-    }
+		// For every message pair, we add the specified delay.
+		$totalDelay = $messagePairs * $this->messageDelayInSeconds;
 
-    /**
-     * @return int
-     */
-    public function getAmountOfItemsInQueue(): int
-    {
-        return count($this->messageQueue);
-    }
+		return time() + $totalDelay;
+	}
 
-    /**
-     * @return QueueItem[]
-     */
-    public function flush(): array
-    {
-        $expired = [];
-        foreach ($this->messageQueue as $index => $queueItem)
-        {
-            if (!$queueItem->itemShouldBeTriggered())
-                continue;
+	/**
+	 * @return int
+	 */
+	public function getAmountOfItemsInQueue(): int
+	{
+		return count($this->messageQueue);
+	}
 
-            $expired[] = $queueItem;
-            $this->removeMessageByIndex($index);
-        }
-        return $expired;
-    }
+	/**
+	 * @return QueueItem[]
+	 */
+	public function flush(): array
+	{
+		$expired = [];
+		foreach ($this->messageQueue as $index => $queueItem)
+		{
+			if (!$queueItem->itemShouldBeTriggered())
+				continue;
 
-    /**
-     * @param string $channel
-     * @param string $message
-     */
-    public function privmsg(string $channel, string $message)
-    {
-        $privmsg = new Privmsg($channel, $message);
-        $this->insertMessage($privmsg);
-    }
+			$expired[] = $queueItem;
+			$this->removeMessageByIndex($index);
+		}
 
-    public function nick(string $nickname)
-    {
-        $nick = new Nick($nickname);
-        $this->insertMessage($nick);
-    }
+		return $expired;
+	}
 
-    public function user(string $username, string $hostname, string $servername, string $realname)
-    {
-        $user = new User($username, $hostname, $servername, $realname);
-        $this->insertMessage($user);
-    }
+	/**
+	 * @param string $channel
+	 * @param string $message
+	 */
+	public function privmsg(string $channel, string $message)
+	{
+		$privmsg = new Privmsg($channel, $message);
+		$this->insertMessage($privmsg);
+	}
 
-    public function pong(string $server)
-    {
-        $pong = new Pong($server);
-        $this->insertMessage($pong);
-    }
+	public function nick(string $nickname)
+	{
+		$nick = new Nick($nickname);
+		$this->insertMessage($nick);
+	}
+
+	public function user(string $username, string $hostname, string $servername, string $realname)
+	{
+		$user = new User($username, $hostname, $servername, $realname);
+		$this->insertMessage($user);
+	}
+
+	public function pong(string $server)
+	{
+		$pong = new Pong($server);
+		$this->insertMessage($pong);
+	}
+
+	public function join(string $channel, string $key = '')
+	{
+		$join = new Join($channel, $key);
+		$this->insertMessage($join);
+	}
+
+	public function part(string $channel)
+	{
+		$part = new Part($channel);
+		$this->insertMessage($part);
+	}
 }
