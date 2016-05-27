@@ -1,12 +1,15 @@
 <?php
 
 use React\EventLoop\Factory as LoopFactory;
+use WildPHP\Core\Channels\ChannelDataCollector;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\Parser;
+use WildPHP\Core\Users\UserDataCollector;
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
@@ -40,6 +43,7 @@ else
 
 $ircConnection = new IrcConnection();
 $queue = new Queue();
+$ircConnection->setQueue($queue);
 $ircConnection->registerQueueFlusher($loop, $queue);
 Parser::initialize($queue);
 
@@ -51,9 +55,15 @@ $realname = Configuration::get('realname')->getValue();
 $nickname = Configuration::get('nick')->getValue();
 
 $ircConnection->createFromConnector($connector, $server, $port);
+CapabilityHandler::initialize($loop);
+ChannelDataCollector::initialize();
+UserDataCollector::initialize();
 
-$queue->user($username, $hostname, $server, $realname);
-$queue->nick($nickname);
+EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+{
+	$queue->user($username, $hostname, $server, $realname);
+	$queue->nick($nickname);
+});
 
 EventEmitter::on('stream.closed', function () use ($loop)
 {

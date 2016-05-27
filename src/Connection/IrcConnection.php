@@ -47,6 +47,22 @@ class IrcConnection
 	protected $queue;
 
 	/**
+	 * @return Queue
+	 */
+	public function getQueue(): Queue
+	{
+		return $this->queue;
+	}
+
+	/**
+	 * @param Queue $queue
+	 */
+	public function setQueue(Queue $queue)
+	{
+		$this->queue = $queue;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getBuffer()
@@ -153,6 +169,7 @@ class IrcConnection
 		$this->connectorPromise = $connectorInterface->create($host, $port)
 			->then(function (Stream $stream) use ($host, $port, &$buffer)
 			{
+				EventEmitter::emit('stream.created', [$this->getQueue()]);
 				$stream->on('error', function ($error) use ($host, $port)
 				{
 					throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);

@@ -23,7 +23,7 @@ namespace WildPHP\Core\Users;
 
 use WildPHP\Core\Logger\Logger;
 
-class UserGroup
+class UserCollection
 {
 	/**
 	 * @var User[]
@@ -34,7 +34,7 @@ class UserGroup
 	 * @param User $user
 	 * @return bool
 	 */
-	public function isUserInGroup(User $user): bool
+	public function isUserInCollection(User $user): bool
 	{
 		return in_array($user, $this->members);
 	}
@@ -43,7 +43,7 @@ class UserGroup
 	 * @param string $nickname
 	 * @return bool
 	 */
-	public function isUserInGroupByNickname(string $nickname): bool
+	public function isUserInCollectionByNickname(string $nickname): bool
 	{
 		return array_key_exists($nickname, $this->members);
 	}
@@ -53,9 +53,9 @@ class UserGroup
 	 */
 	public function addUser(User $user)
 	{
-		if ($this->isUserInGroup($user))
+		if ($this->isUserInCollection($user))
 		{
-			Logger::warning('Trying to add already existing user to group. Ignoring request.', [$user]);
+			Logger::warning('Trying to add already existing user to collection. Ignoring request.', [$user]);
 
 			return;
 		}
@@ -69,9 +69,9 @@ class UserGroup
 	 */
 	public function removeUser(User $user)
 	{
-		if (!$this->isUserInGroup($user))
+		if (!$this->isUserInCollection($user))
 		{
-			Logger::warning('Trying to remove non-existing user from group. Ignoring request.', [$user]);
+			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$user]);
 
 			return;
 		}
@@ -86,7 +86,7 @@ class UserGroup
 	 */
 	public function findUserByNickname(string $nickname)
 	{
-		if (!$this->isUserInGroupByNickname($nickname))
+		if (!$this->isUserInCollectionByNickname($nickname))
 			return false;
 
 		return $this->members[$nickname];

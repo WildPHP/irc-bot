@@ -21,12 +21,14 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
 use WildPHP\Core\Connection\Commands\Nick;
 use WildPHP\Core\Connection\Commands\Part;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\User;
+use WildPHP\Core\Connection\Commands\Who;
 
 class Queue implements QueueInterface
 {
@@ -50,12 +52,12 @@ class Queue implements QueueInterface
 	/**
 	 * @var int
 	 */
-	protected $messageDelayInSeconds = 2;
+	protected $messageDelayInSeconds = 1;
 
 	/**
 	 * @var int
 	 */
-	protected $messagesPerSecond = 2;
+	protected $messagesPerSecond = 1;
 
 	/**
 	 * @param BaseCommand $command
@@ -176,5 +178,17 @@ class Queue implements QueueInterface
 	{
 		$part = new Part($channel);
 		$this->insertMessage($part);
+	}
+
+	public function cap(string $command)
+	{
+		$cap = new Cap($command);
+		$this->insertMessage($cap);
+	}
+
+	public function who(string $channel, string $options = '')
+	{
+		$who = new Who($channel, $options);
+		$this->insertMessage($who);
 	}
 }
