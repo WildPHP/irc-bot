@@ -24,56 +24,56 @@ use WildPHP\Core\Connection\Commands\BaseCommand;
 
 class QueueItem
 {
-    /**
-     * @var BaseCommand
-     */
-    protected $commandObject;
+	/**
+	 * @var BaseCommand
+	 */
+	protected $commandObject;
 
-    /**
-     * @var int
-     */
-    protected $time;
+	/**
+	 * @var int
+	 */
+	protected $time;
 
-    public function __construct(BaseCommand $command, int $time)
-    {
-        $this->setCommandObject($command);
-        $this->setTime($time);
-    }
+	public function __construct(BaseCommand $command, int $time)
+	{
+		$this->setCommandObject($command);
+		$this->setTime($time);
+	}
 
-    /**
-     * @return BaseCommand
-     */
-    public function getCommandObject(): BaseCommand
-    {
-        return $this->commandObject;
-    }
+	/**
+	 * @return BaseCommand
+	 */
+	public function getCommandObject(): BaseCommand
+	{
+		return $this->commandObject;
+	}
 
-    /**
-     * @param BaseCommand $commandObject
-     */
-    public function setCommandObject(BaseCommand $commandObject)
-    {
-        $this->commandObject = $commandObject;
-    }
+	/**
+	 * @param BaseCommand $commandObject
+	 */
+	public function setCommandObject(BaseCommand $commandObject)
+	{
+		$this->commandObject = $commandObject;
+	}
 
-    /**
-     * @return int
-     */
-    public function getTime(): int
-    {
-        return $this->time;
-    }
+	/**
+	 * @return int
+	 */
+	public function getTime(): int
+	{
+		return $this->time;
+	}
 
-    /**
-     * @param int $time
-     */
-    public function setTime(int $time)
-    {
-        $this->time = $time;
-    }
+	/**
+	 * @param int $time
+	 */
+	public function setTime(int $time)
+	{
+		$this->time = $time;
+	}
 
-    public function itemShouldBeTriggered(): bool
-    {
-        return time() >= $this->getTime();
-    }
+	public function itemShouldBeTriggered(): bool
+	{
+		return time() >= $this->getTime();
+	}
 }

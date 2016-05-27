@@ -23,8 +23,8 @@ namespace WildPHP\Core\Connection\Commands;
 
 abstract class BaseCommand implements CommandInterface
 {
-    public function __toString(): string
-    {
-        return $this->formatMessage();
-    }
+	public function __toString(): string
+	{
+		return $this->formatMessage();
+	}
 }

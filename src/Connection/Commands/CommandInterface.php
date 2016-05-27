@@ -23,5 +23,5 @@ namespace WildPHP\Core\Connection\Commands;
 
 interface CommandInterface
 {
-    public function formatMessage(): string;
+	public function formatMessage(): string;
 }

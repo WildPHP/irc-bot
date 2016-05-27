@@ -24,60 +24,60 @@ use WildPHP\Core\Connection\Commands\BaseCommand;
 
 interface QueueInterface
 {
-    /**
-     * @param BaseCommand $command
-     * @return void
-     */
-    public function insertMessage(BaseCommand $command);
+	/**
+	 * @param BaseCommand $command
+	 * @return void
+	 */
+	public function insertMessage(BaseCommand $command);
 
-    /**
-     * @param BaseCommand $command
-     * @return void
-     */
-    public function removeMessage(BaseCommand $command);
+	/**
+	 * @param BaseCommand $command
+	 * @return void
+	 */
+	public function removeMessage(BaseCommand $command);
 
-    /**
-     * @param int $index
-     * @return void
-     */
-    public function removeMessageByIndex(int $index);
+	/**
+	 * @param int $index
+	 * @return void
+	 */
+	public function removeMessageByIndex(int $index);
 
-    /**
-     * @param QueueItem $item
-     * @return void
-     */
-    public function scheduleItem(QueueItem $item);
+	/**
+	 * @param QueueItem $item
+	 * @return void
+	 */
+	public function scheduleItem(QueueItem $item);
 
-    /**
-     * @return QueueItem[]
-     */
-    public function flush(): array;
+	/**
+	 * @return QueueItem[]
+	 */
+	public function flush(): array;
 
-    /**
-     * @param string $nickname
-     * @return void
-     */
-    public function nick(string $nickname);
+	/**
+	 * @param string $nickname
+	 * @return void
+	 */
+	public function nick(string $nickname);
 
-    /**
-     * @param string $username
-     * @param string $hostname
-     * @param string $servername
-     * @param string $realname
-     * @return void
-     */
-    public function user(string $username, string $hostname, string $servername, string $realname);
+	/**
+	 * @param string $username
+	 * @param string $hostname
+	 * @param string $servername
+	 * @param string $realname
+	 * @return void
+	 */
+	public function user(string $username, string $hostname, string $servername, string $realname);
 
-    /**
-     * @param string $channel
-     * @param string $message
-     * @return void
-     */
-    public function privmsg(string $channel, string $message);
+	/**
+	 * @param string $channel
+	 * @param string $message
+	 * @return void
+	 */
+	public function privmsg(string $channel, string $message);
 
-    /**
-     * @param string $server
-     * @return void
-     */
-    public function pong(string $server);
+	/**
+	 * @param string $server
+	 * @return void
+	 */
+	public function pong(string $server);
 }

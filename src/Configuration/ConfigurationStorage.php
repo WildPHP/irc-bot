@@ -56,6 +56,7 @@ class ConfigurationStorage
 		}
 
 		$configurationItem = new ConfigurationItem($key, $lastPiece);
+
 		return $configurationItem;
 	}
 

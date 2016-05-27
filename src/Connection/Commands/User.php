@@ -23,111 +23,112 @@ namespace WildPHP\Core\Connection\Commands;
 
 class User extends BaseCommand
 {
-    /**
-     * @var string
-     */
-    protected $username = '';
+	/**
+	 * @var string
+	 */
+	protected $username = '';
 
-    /**
-     * @var string
-     */
-    protected $hostname = '';
+	/**
+	 * @var string
+	 */
+	protected $hostname = '';
 
-    /**
-     * @var string
-     */
-    protected $servername = '';
+	/**
+	 * @var string
+	 */
+	protected $servername = '';
 
-    /**
-     * @var string
-     */
-    protected $realname = '';
+	/**
+	 * @var string
+	 */
+	protected $realname = '';
 
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
+	/**
+	 * @return string
+	 */
+	public function getUsername()
+	{
+		return $this->username;
+	}
 
-    /**
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
+	/**
+	 * @param string $username
+	 */
+	public function setUsername($username)
+	{
+		$this->username = $username;
+	}
 
-    /**
-     * @return string
-     */
-    public function getHostname()
-    {
-        return $this->hostname;
-    }
+	/**
+	 * @return string
+	 */
+	public function getHostname()
+	{
+		return $this->hostname;
+	}
 
-    /**
-     * @param string $hostname
-     */
-    public function setHostname($hostname)
-    {
-        $this->hostname = $hostname;
-    }
+	/**
+	 * @param string $hostname
+	 */
+	public function setHostname($hostname)
+	{
+		$this->hostname = $hostname;
+	}
 
-    /**
-     * @return string
-     */
-    public function getServername()
-    {
-        return $this->servername;
-    }
+	/**
+	 * @return string
+	 */
+	public function getServername()
+	{
+		return $this->servername;
+	}
 
-    /**
-     * @param string $servername
-     */
-    public function setServername($servername)
-    {
-        $this->servername = $servername;
-    }
+	/**
+	 * @param string $servername
+	 */
+	public function setServername($servername)
+	{
+		$this->servername = $servername;
+	}
 
-    /**
-     * @return string
-     */
-    public function getRealname()
-    {
-        return $this->realname;
-    }
+	/**
+	 * @return string
+	 */
+	public function getRealname()
+	{
+		return $this->realname;
+	}
 
-    /**
-     * @param string $realname
-     */
-    public function setRealname($realname)
-    {
-        $this->realname = $realname;
-    }
+	/**
+	 * @param string $realname
+	 */
+	public function setRealname($realname)
+	{
+		$this->realname = $realname;
+	}
 
-    /**
-     * Privmsg constructor.
-     * @param string $username
-     * @param string $hostname
-     * @param string $servername
-     * @param string $realname
-     */
-    public function __construct(string $username, string $hostname, string $servername, string $realname)
-    {
-        $this->setUsername($username);
-        $this->setHostname($hostname);
-        $this->setServername($servername);
-        $this->setRealname($realname);
-    }
+	/**
+	 * Privmsg constructor.
+	 * @param string $username
+	 * @param string $hostname
+	 * @param string $servername
+	 * @param string $realname
+	 */
+	public function __construct(string $username, string $hostname, string $servername, string $realname)
+	{
+		$this->setUsername($username);
+		$this->setHostname($hostname);
+		$this->setServername($servername);
+		$this->setRealname($realname);
+	}
 
-    public function formatMessage(): string
-    {
-        $username = $this->getUsername();
-        $hostname = $this->getHostname();
-        $servername = $this->getServername();
-        $realname = $this->getRealname();
-        return 'USER ' . $username . ' ' . $hostname . ' ' . $servername . ' ' . $realname . "\r\n";
-    }
+	public function formatMessage(): string
+	{
+		$username = $this->getUsername();
+		$hostname = $this->getHostname();
+		$servername = $this->getServername();
+		$realname = $this->getRealname();
+
+		return 'USER ' . $username . ' ' . $hostname . ' ' . $servername . ' ' . $realname . "\r\n";
+	}
 }

@@ -24,22 +24,23 @@ use WildPHP\Core\Events\EventEmitter;
 
 class Parser
 {
-    public static function initialize(Queue $queue)
-    {
-        EventEmitter::on('stream.line.in', function ($line) use ($queue)
-        {
-            $parsedLine = self::parseLine($line);
-            $ircMessage = new IncomingIrcMessage($parsedLine);
+	public static function initialize(Queue $queue)
+	{
+		EventEmitter::on('stream.line.in', function ($line) use ($queue)
+		{
+			$parsedLine = self::parseLine($line);
+			$ircMessage = new IncomingIrcMessage($parsedLine);
 
-            $verb = strtolower($ircMessage->getVerb());
-            EventEmitter::emit('irc.line.in', [$ircMessage, $queue]);
-            EventEmitter::emit('irc.line.in.' . $verb, [$ircMessage, $queue]);
-        });
-    }
-    
-    public static function parseLine(string $line): ParsedIrcMessageLine
-    {
-        $parsed = ParsedIrcMessageLine::parse($line);
-        return $parsed;
-    }
+			$verb = strtolower($ircMessage->getVerb());
+			EventEmitter::emit('irc.line.in', [$ircMessage, $queue]);
+			EventEmitter::emit('irc.line.in.' . $verb, [$ircMessage, $queue]);
+		});
+	}
+
+	public static function parseLine(string $line): ParsedIrcMessageLine
+	{
+		$parsed = ParsedIrcMessageLine::parse($line);
+
+		return $parsed;
+	}
 }

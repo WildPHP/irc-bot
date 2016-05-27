@@ -23,61 +23,61 @@ namespace WildPHP\Core\Connection\Commands;
 
 class Privmsg extends BaseCommand
 {
-    /**
-     * @var string
-     */
-    protected $channel;
+	/**
+	 * @var string
+	 */
+	protected $channel;
 
-    /**
-     * @var string
-     */
-    protected $message;
+	/**
+	 * @var string
+	 */
+	protected $message;
 
-    /**
-     * Privmsg constructor.
-     * @param string $channel
-     * @param string $message
-     */
-    public function __construct(string $channel, string $message)
-    {
-        $this->setChannel($channel);
-        $this->setMessage($message);
-    }
+	/**
+	 * Privmsg constructor.
+	 * @param string $channel
+	 * @param string $message
+	 */
+	public function __construct(string $channel, string $message)
+	{
+		$this->setChannel($channel);
+		$this->setMessage($message);
+	}
 
-    /**
-     * @return string
-     */
-    public function getChannel(): string
-    {
-        return $this->channel;
-    }
+	/**
+	 * @return string
+	 */
+	public function getChannel(): string
+	{
+		return $this->channel;
+	}
 
-    /**
-     * @param string $channel
-     */
-    public function setChannel(string $channel)
-    {
-        $this->channel = $channel;
-    }
+	/**
+	 * @param string $channel
+	 */
+	public function setChannel(string $channel)
+	{
+		$this->channel = $channel;
+	}
 
-    /**
-     * @return string
-     */
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
+	/**
+	 * @return string
+	 */
+	public function getMessage(): string
+	{
+		return $this->message;
+	}
 
-    /**
-     * @param string $message
-     */
-    public function setMessage(string $message)
-    {
-        $this->message = $message;
-    }
-    
-    public function formatMessage(): string
-    {
-        return 'PRIVMSG ' . $this->getChannel() . ' :' . $this->getMessage() . "\r\n";
-    }
+	/**
+	 * @param string $message
+	 */
+	public function setMessage(string $message)
+	{
+		$this->message = $message;
+	}
+
+	public function formatMessage(): string
+	{
+		return 'PRIVMSG ' . $this->getChannel() . ' :' . $this->getMessage() . "\r\n";
+	}
 }

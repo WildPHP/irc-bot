@@ -27,23 +27,35 @@ class NeonBackend implements ConfigurationBackendInterface
 {
 	const CONFIG_FILE = WPHP_ROOT_DIR . 'config.neon';
 
+	/**
+	 * @return array
+	 */
 	public static function getAllEntries(): array
 	{
 		$data = self::readNeonFile(self::CONFIG_FILE);
 		$decodedData = self::parseNeonData($data);
+
 		return $decodedData;
 	}
 
+	/**
+	 * @param string $data
+	 * @return array
+	 */
 	protected static function parseNeonData(string $data): array
 	{
 		$decodedData = Neon::decode($data);
 
 		if (empty($decodedData))
 			return [];
-		
+
 		return $decodedData;
 	}
 
+	/**
+	 * @param string $file
+	 * @return string
+	 */
 	protected static function readNeonFile(string $file): string
 	{
 		Logger::info('Reading config file', ['file' => $file]);

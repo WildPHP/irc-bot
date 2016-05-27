@@ -24,10 +24,10 @@ namespace WildPHP\Core\Connection;
 
 class ParsedIrcMessageLine
 {
-    public $tags = array();
+    public $tags = [];
     public $prefix = null;
     public $verb = null;
-    public $args = array();
+    public $args = [];
 
     public static function split($line)
     {
@@ -35,7 +35,7 @@ class ParsedIrcMessageLine
         $line = explode(" ", $line);
         $index = 0;
         $arv_count = count($line);
-        $parv = array();
+        $parv = [];
 
         while ($index < $arv_count && $line[$index] === '')
             $index++;
@@ -116,5 +116,6 @@ class ParsedIrcMessageLine
 function _substr($str, $start)
 {
     $ret = substr($str, $start);
+
     return $ret === false ? '' : $ret;
 }

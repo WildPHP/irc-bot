@@ -23,38 +23,37 @@ namespace WildPHP\Core\Connection\Commands;
 
 class Pong extends BaseCommand
 {
-    /**
-     * @var string
-     */
-    protected $server;
+	/**
+	 * @var string
+	 */
+	protected $server;
 
-    /**
-     * Privmsg constructor.
-     * @param string $server
-     */
-    public function __construct(string $server)
-    {
-        $this->setServer($server);
-    }
+	/**
+	 * @param string $server
+	 */
+	public function __construct(string $server)
+	{
+		$this->setServer($server);
+	}
 
-    /**
-     * @return string
-     */
-    public function getServer(): string
-    {
-        return $this->server;
-    }
+	/**
+	 * @return string
+	 */
+	public function getServer(): string
+	{
+		return $this->server;
+	}
 
-    /**
-     * @param string $server
-     */
-    public function setServer(string $server)
-    {
-        $this->server = $server;
-    }
+	/**
+	 * @param string $server
+	 */
+	public function setServer(string $server)
+	{
+		$this->server = $server;
+	}
 
-    public function formatMessage(): string
-    {
-        return 'PONG :' . $this->getServer() . "\r\n";
-    }
+	public function formatMessage(): string
+	{
+		return 'PONG :' . $this->getServer() . "\r\n";
+	}
 }

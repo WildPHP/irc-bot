@@ -22,69 +22,103 @@ namespace WildPHP\Core\Logger;
 
 class Logger
 {
-    /**
-     * @var \Katzgrau\KLogger\Logger
-     */
-    protected static $logger = null;
-    
-    public static function initialize()
-    {
-        self::$logger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
-        self::info('WildPHP starting up!');
-    }
+	/**
+	 * @var \Katzgrau\KLogger\Logger
+	 */
+	protected static $logger = null;
 
-    // KLogger does not natively support writing to stdout. This function works around that.
-    public static function echoLastLine()
-    {
-        $lastline = self::$logger->getLastLogLine();
-        echo $lastline . PHP_EOL;
-    }
+	public static function initialize()
+	{
+		self::$logger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
+		self::info('WildPHP starting up!');
+	}
 
-    public static function emergency(string $message, array $context = [])
-    {
-        self::$logger->emergency($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * KLogger does not natively support writing to stdout. This function works around that.
+	 */
+	public static function echoLastLine()
+	{
+		$lastline = self::$logger->getLastLogLine();
+		echo $lastline . PHP_EOL;
+	}
 
-    public static function alert(string $message, array $context = [])
-    {
-        self::$logger->alert($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function emergency(string $message, array $context = [])
+	{
+		self::$logger->emergency($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function critical(string $message, array $context = [])
-    {
-        self::$logger->critical($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function alert(string $message, array $context = [])
+	{
+		self::$logger->alert($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function error(string $message, array $context = [])
-    {
-        self::$logger->error($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function critical(string $message, array $context = [])
+	{
+		self::$logger->critical($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function warning(string $message, array $context = [])
-    {
-        self::$logger->warning($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function error(string $message, array $context = [])
+	{
+		self::$logger->error($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function notice(string $message, array $context = [])
-    {
-        self::$logger->notice($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function warning(string $message, array $context = [])
+	{
+		self::$logger->warning($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function info(string $message, array $context = [])
-    {
-        self::$logger->info($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function notice(string $message, array $context = [])
+	{
+		self::$logger->notice($message, $context);
+		self::echoLastLine();
+	}
 
-    public static function debug(string $message, array $context = [])
-    {
-        self::$logger->debug($message, $context);
-        self::echoLastLine();
-    }
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function info(string $message, array $context = [])
+	{
+		self::$logger->info($message, $context);
+		self::echoLastLine();
+	}
+
+	/**
+	 * @param string $message
+	 * @param array $context
+	 */
+	public static function debug(string $message, array $context = [])
+	{
+		self::$logger->debug($message, $context);
+		self::echoLastLine();
+	}
 }

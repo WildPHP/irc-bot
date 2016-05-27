@@ -34,9 +34,9 @@ $loop = LoopFactory::create();
 $connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
 if (Configuration::get('secure')->getValue())
-    $connector = $connectorFactory->createSecure();
+	$connector = $connectorFactory->createSecure();
 else
-    $connector = $connectorFactory->create();
+	$connector = $connectorFactory->create();
 
 $ircConnection = new IrcConnection();
 $queue = new Queue();
@@ -57,7 +57,7 @@ $queue->nick($nickname);
 
 EventEmitter::on('stream.closed', function () use ($loop)
 {
-    $loop->stop();
+	$loop->stop();
 });
 
 $loop->run();

@@ -22,8 +22,8 @@ namespace WildPHP\Core\Connection\Commands;
 
 class DummyCommand extends BaseCommand
 {
-    public function formatMessage(): string
-    {
-        return 'Dummy message';
-    }
+	public function formatMessage(): string
+	{
+		return 'Dummy message';
+	}
 }
