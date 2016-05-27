@@ -31,7 +31,7 @@ class Configuration
 	 * @var ConfigurationStorage
 	 */
 	protected static $storage = null;
-
+	
 	public static function initialize()
 	{
 		$backendClass = self::BACKEND;
@@ -42,20 +42,21 @@ class Configuration
 		self::$storage = new ConfigurationStorage($backendClass::getAllEntries());
 	}
 
+	/**
+	 * @param string $key
+	 * @return ConfigurationItem
+	 * @throws ConfigurationItemNotFoundException
+	 */
 	public static function get(string $key)
 	{
 		return self::$storage->getItem($key);
 	}
 
+	/**
+	 * @param ConfigurationItem $configurationItem
+	 */
 	public static function set(ConfigurationItem $configurationItem)
 	{
 		self::$storage->setItem($configurationItem);
-	}
-
-	public static function writeAll()
-	{
-		$backendClass = self::BACKEND;
-
-		$backendClass::writeAllEntries(self::$storage);
 	}
 }
