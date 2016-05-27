@@ -24,125 +24,172 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class IrcConnection
 {
-    /**
-     * @var Promise
-     */
-    protected $connectorPromise = null;
+	/**
+	 * @var Promise
+	 */
+	protected $connectorPromise = null;
 
-    /**
-     * @var string
-     */
-    protected $buffer = '';
+	/**
+	 * @var string
+	 */
+	protected $buffer = '';
 
-    /**
-     * @var Queue
-     */
-    protected $queue;
+	/**
+	 * @var Queue
+	 */
+	protected $queue;
 
-    /**
-     * @return string
-     */
-    public function getBuffer()
-    {
-        return $this->buffer;
-    }
+	/**
+	 * @return string
+	 */
+	public function getBuffer()
+	{
+		return $this->buffer;
+	}
 
-    /**
-     * @param string $buffer
-     */
-    public function setBuffer($buffer)
-    {
-        $this->buffer = $buffer;
-    }
-    
-    public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
-    {
-        $loop->addPeriodicTimer(1, function () use ($queue)
-        {
-            $queueItems = $queue->flush();
-            
-            foreach ($queueItems as $item)
-            {
-                $this->write($item->getCommandObject()->formatMessage());
-            }
-        });
-    }
+	/**
+	 * @param string $buffer
+	 */
+	public function setBuffer($buffer)
+	{
+		$this->buffer = $buffer;
+	}
 
-    public function __construct()
-    {
-        EventEmitter::on('stream.data.in', [$this, 'convertDataToLines']);
+	/**
+	 * @param LoopInterface $loop
+	 * @param QueueInterface $queue
+	 */
+	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
+	{
+		$loop->addPeriodicTimer(1, function () use ($queue)
+		{
+			$queueItems = $queue->flush();
 
-        EventEmitter::on('irc.line.in.error', function ()
-        {
-            $this->close();
-        });
+			foreach ($queueItems as $item)
+			{
+				$this->write($item->getCommandObject()->formatMessage());
+			}
+		});
+	}
 
-        EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
-        {
-            $queue->pong($incomingIrcMessage->getArgs()[0]);
-        });
-    }
+	public function __construct()
+	{
+		EventEmitter::on('stream.data.in', [$this, 'convertDataToLines']);
 
-    public function convertDataToLines(string $data)
-    {
-        // Prepend the buffer, first.
-        $data = $this->getBuffer() . $data;
+		EventEmitter::on('irc.line.in.005', [$this, 'handleServerConfig']);
 
-        // Try to split by any combination of \r\n, \r, \n
-        $lines = preg_split("/\\r\\n|\\r|\\n/", $data);
+		EventEmitter::on('irc.line.in.error', function ()
+		{
+			$this->close();
+		});
 
-        // The last element of this array is always residue.
-        $residue = array_pop($lines);
-        $this->setBuffer($residue);
+		EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+		{
+			$queue->pong($incomingIrcMessage->getArgs()[0]);
+		});
+	}
 
-        foreach ($lines as $line)
-        {
-            Logger::debug('<< ' . $line);
-            EventEmitter::emit('stream.line.in', [$line]);
-        }
-    }
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 */
+	public function handleServerConfig(IncomingIrcMessage $incomingIrcMessage)
+	{
+		$args = $incomingIrcMessage->getArgs();
 
-    public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
-    {
-        $this->connectorPromise = $connectorInterface->create($host, $port)
-            ->then(function (Stream $stream) use ($host, $port, &$buffer)
-            {
-                $stream->on('error', function ($error) use ($host, $port)
-                {
-                    throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
-                });
+		// The first argument is the nickname set. Don't need that.
+		unset($args[0]);
 
-                $stream->on('data', function ($data)
-                {
-                    EventEmitter::emit('stream.data.in', [$data]);
-                });
+		// The last argument is a message usually corresponding to something like "are supported by this server"
+		// Don't need that either.
+		array_pop($args);
 
-                return $stream;
-            });
-    }
+		foreach ($args as $value)
+		{
+			$parts = explode('=', $value);
+			$key = 'serverConfig.' . strtolower($parts[0]);
+			$value = !empty($parts[1]) ? $parts[1] : true;
 
-    public function write(string $data)
-    {
-        $this->connectorPromise->then(function (Stream $stream) use ($data)
-        {
-            EventEmitter::emit('stream.data.out', [$data]);
-            Logger::debug('>> ' . $data);
-            $stream->write($data);
-        });
-    }
+			$configItem = new ConfigurationItem($key, $value);
+			Configuration::set($configItem);
+		}
+	}
 
-    public function close()
-    {
-        $this->connectorPromise->then(function (Stream $stream)
-        {
-            Logger::warning('Closing connection...');
-            $stream->close();
-            EventEmitter::emit('stream.closed');
-        });
-    }
+	/**
+	 * @param string $data
+	 */
+	public function convertDataToLines(string $data)
+	{
+		// Prepend the buffer, first.
+		$data = $this->getBuffer() . $data;
+
+		// Try to split by any combination of \r\n, \r, \n
+		$lines = preg_split("/\\r\\n|\\r|\\n/", $data);
+
+		// The last element of this array is always residue.
+		$residue = array_pop($lines);
+		$this->setBuffer($residue);
+
+		foreach ($lines as $line)
+		{
+			Logger::debug('<< ' . $line);
+			EventEmitter::emit('stream.line.in', [$line]);
+		}
+	}
+
+	/**
+	 * @param ConnectorInterface $connectorInterface
+	 * @param string $host
+	 * @param int $port
+	 */
+	public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
+	{
+		$this->connectorPromise = $connectorInterface->create($host, $port)
+			->then(function (Stream $stream) use ($host, $port, &$buffer)
+			{
+				$stream->on('error', function ($error) use ($host, $port)
+				{
+					throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+				});
+
+				$stream->on('data', function ($data)
+				{
+					EventEmitter::emit('stream.data.in', [$data]);
+				});
+
+				return $stream;
+			});
+	}
+
+	/**
+	 * @param string $data
+	 */
+	public function write(string $data)
+	{
+		$this->connectorPromise->then(function (Stream $stream) use ($data)
+		{
+			EventEmitter::emit('stream.data.out', [$data]);
+			Logger::debug('>> ' . $data);
+			$stream->write($data);
+		});
+	}
+
+	/**
+	 *
+	 */
+	public function close()
+	{
+		$this->connectorPromise->then(function (Stream $stream)
+		{
+			Logger::warning('Closing connection...');
+			$stream->close();
+			EventEmitter::emit('stream.closed');
+		});
+	}
 }
