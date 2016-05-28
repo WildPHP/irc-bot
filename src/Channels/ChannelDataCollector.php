@@ -37,39 +37,12 @@ class ChannelDataCollector
 	 * Stored as 'prefix' => 'mode'
 	 * @var array
 	 */
-	protected static $modeMap = [];
+	public static $modeMap = [];
 
 	public static function initialize()
 	{
 		self::$channelCollection = new ChannelCollection();
 		EventEmitter::on('irc.line.in.332', __NAMESPACE__ . '\ChannelDataCollector::updateChannelTopic');
-		EventEmitter::on('irc.line.in.353', __NAMESPACE__ . '\ChannelDataCollector::createUserStructure');
-	}
-
-	public static function createUserStructure(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
-	{
-		Logger::debug('Got NAMES list reply', [$incomingIrcMessage]);
-		$args = $incomingIrcMessage->getArgs();
-		$channel = $args[2];
-		$users = explode(' ', $args[3]);
-
-		if (!self::$channelCollection->channelExistsByName($channel))
-			$channelData = self::addNewChannelByName($channel);
-		else
-			$channelData = self::$channelCollection->getChannelByName($channel);
-
-		if (empty(self::$modeMap))
-			self::createModeMap();
-
-		foreach ($users as $user)
-		{
-			
-			$firstChar = substr($user, 0, 1);
-			if (array_key_exists($firstChar, self::$modeMap))
-			{
-				
-			}
-		}
 	}
 
 	public static function createModeMap()
