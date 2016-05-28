@@ -20,10 +20,12 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Users\GlobalUserCollection;
+use WildPHP\Core\Users\User;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\UserCollection;
 
 class Channel
@@ -58,19 +60,65 @@ class Channel
 	{
 		$this->userCollection = new UserCollection();
 
-		EventEmitter::on('irc.line.in.join', [$this, 'updateParticipatingUsers']);
+		EventEmitter::on('user.join', [$this, 'updateParticipatingUsers']);
+		EventEmitter::on('user.nick', [$this, 'updateUserNickname']);
 		EventEmitter::on('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
 	}
 
-	public function updateParticipatingUsers(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function removeQuitUser(string $nickname)
 	{
-		$args = $incomingIrcMessage->getArgs();
-		$channel = $args[0];
+		if ($this->userCollection->isUserInCollectionByNickname($nickname))
+			$this->userCollection->removeUserByNickname($nickname);
+	}
+
+	public function updateUserNickname($oldNickname, $newNickname, Queue $queue)
+	{
+		if (!$this->userCollection->isUserInCollectionByNickname($oldNickname))
+			return;
+
+		$userObject = $this->userCollection->findUserByNickname($oldNickname);
+		$this->userCollection->removeUserByNickname($oldNickname);
+		$this->userCollection->addUser($userObject);
+	}
+
+	public function updateParticipatingUsers(User $user, string $channel)
+	{
+		if ($channel != $this->getName())
+			return;
+
+		$this->userCollection->addUser($user);
+	}
+
+	// TODO refactor this
+	public function updateInitialParticipatingUsers(IncomingIrcMessage $message, Queue $queue)
+	{
+		$args = $message->getArgs();
+		$channel = $args[2];
+		$users = explode(' ', $args[3]);
 
 		if ($channel != $this->getName())
 			return;
 
-		$prefix = 
+		if (empty(ChannelDataCollector::$modeMap))
+			ChannelDataCollector::createModeMap();
+
+		foreach ($users as $user)
+		{
+			$firstChar = substr($user, 0, 1);
+			$nickname = $user;
+			if (array_key_exists($firstChar, ChannelDataCollector::$modeMap))
+			{
+				$key = ChannelDataCollector::$modeMap[$firstChar];
+				$nickname = substr($user, 1);
+				$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+				$this->modeMap[$key][] = $userObject;
+			}
+
+			$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+			$this->getUserCollection()->addUser($userObject);
+		}
+
+		Logger::debug('New channel structure', [$this]);
 	}
 
 	/**
