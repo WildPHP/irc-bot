@@ -43,6 +43,7 @@ class UserDataCollector
 		EventEmitter::on('irc.line.in.354', __NAMESPACE__ . '\UserDataCollector::processWhox');
 		EventEmitter::on('irc.line.in.quit', __NAMESPACE__ . '\UserDataCollector::processQuit');
 		EventEmitter::on('irc.line.in.join', __NAMESPACE__ . '\UserDataCollector::processJoin');
+		EventEmitter::on('irc.line.in.nick', __NAMESPACE__ . '\UserDataCollector::processNick');
 	}
 
 	public static function sendWhox(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
@@ -56,7 +57,7 @@ class UserDataCollector
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = $args[1];
 		$accountname = $args[2];
-		$userObject = self::findOrCreateUserObject($nickname);
+		$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
 
 		self::updateAccountnameForUser($userObject, $accountname, $queue);
 	}
@@ -70,20 +71,6 @@ class UserDataCollector
 		self::$userCollection->addUser($userObject);
 		$nickname = $userObject->getNickname();
 		EventEmitter::emit('user.account.changed', [$nickname, $accountname, $queue]);
-	}
-
-	protected static function findOrCreateUserObject(string $nickname): User
-	{
-		if (self::$userCollection->isUserInCollectionByNickname($nickname))
-			$userObject = self::$userCollection->findUserByNickname($nickname);
-		else
-		{
-			$userObject = new User();
-			$userObject->setNickname($nickname);
-			self::$userCollection->addUser($userObject);
-		}
-
-		return $userObject;
 	}
 
 	public static function processQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
@@ -104,10 +91,9 @@ class UserDataCollector
 		$nickname = explode('!', $prefix)[0];
 		$args = $incomingIrcMessage->getArgs();
 		$channel = $args[0];
-
-		EventEmitter::emit('user.join', [$nickname, $channel, $queue]);
-
-		$userObject = self::findOrCreateUserObject($nickname);
+		
+		$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+		EventEmitter::emit('user.join', [$userObject, $channel, $queue]);
 
 		if (!CapabilityHandler::isCapabilityActive('extended-join'))
 		{
@@ -118,5 +104,20 @@ class UserDataCollector
 		$accountname = $args[1];
 
 		self::updateAccountnameForUser($userObject, $accountname, $queue);
+	}
+
+	public static function processNick(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	{
+		$prefix = $incomingIrcMessage->getPrefix();
+		$args = $incomingIrcMessage->getArgs();
+		$oldNickname = explode('!', $prefix)[0];
+		$newNickname = $args[0];
+
+		$userObject = self::$userCollection->findUserByNickname($oldNickname);
+		$userObject->setNickname($newNickname);
+		self::$userCollection->removeUserByNickname($oldNickname);
+		self::$userCollection->addUser($userObject);
+		
+		EventEmitter::emit('user.nick', [$oldNickname, $newNickname, $queue]);
 	}
 }
