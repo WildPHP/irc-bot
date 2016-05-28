@@ -24,4 +24,18 @@ class GlobalUserCollection
 	{
 		self::$userCollection = $userCollection;
 	}
+	
+	public static function findOrCreateUserObject(string $nickname)
+	{
+		if (self::$userCollection->isUserInCollectionByNickname($nickname))
+			$userObject = self::$userCollection->findUserByNickname($nickname);
+		else
+		{
+			$userObject = new User();
+			$userObject->setNickname($nickname);
+			self::$userCollection->addUser($userObject);
+		}
+
+		return $userObject;
+	}
 }
