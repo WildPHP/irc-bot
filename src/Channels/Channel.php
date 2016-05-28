@@ -21,7 +21,10 @@
 namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Users\UserCollection;
 
 class Channel
 {
@@ -31,40 +34,59 @@ class Channel
 	protected $name = '';
 
 	/**
-	 * Stored as 'nickname' => 'mode'
+	 * @var string
+	 */
+	protected $description = '';
+
+	/**
+	 * @var string
+	 */
+	protected $topic = '';
+
+	/**
+	 * @var UserCollection
+	 */
+	protected $userCollection;
+
+	/**
+	 * Stored as 'mode' => [User, User, User, ...]
 	 * @var array
 	 */
 	protected $modeMap = [];
 
 	public function __construct()
 	{
-		EventEmitter::on('irc.line.in.nick', array($this, 'updateNicknames'));
+		$this->userCollection = new UserCollection();
+
+		EventEmitter::on('irc.line.in.join', [$this, 'updateParticipatingUsers']);
+		EventEmitter::on('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
 	}
 
-	public function setUserMode(string $user, string $mode)
+	public function updateParticipatingUsers(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		$this->modeMap[$user] = $mode;
+		$args = $incomingIrcMessage->getArgs();
+		$channel = $args[0];
+
+		if ($channel != $this->getName())
+			return;
+
+		$prefix = 
 	}
 
-	public function getUserMode(string $user)
+	/**
+	 * @return UserCollection
+	 */
+	public function getUserCollection()
 	{
-		if (!array_key_exists($user, $this->modeMap))
-			return null;
-
-		return $this->modeMap[$user];
+		return $this->userCollection;
 	}
 
-	public function updateNicknames(IncomingIrcMessage $incomingIrcMessage)
+	/**
+	 * @param UserCollection $userCollection
+	 */
+	public function setUserCollection($userCollection)
 	{
-		$prefix = $incomingIrcMessage->getPrefix();
-		$oldNickname = explode('!', $prefix)[0];
-		$newNickname = $incomingIrcMessage->getArgs()[0];
-
-		if (array_key_exists($oldNickname, $this->modeMap))
-		{
-			$this->modeMap[$newNickname] = $this->modeMap[$oldNickname];
-			unset($this->modeMap[$oldNickname]);
-		}
+		$this->userCollection = $userCollection;
 	}
 
 	/**
@@ -82,16 +104,6 @@ class Channel
 	{
 		$this->name = $name;
 	}
-
-	/**
-	 * @var string
-	 */
-	protected $description = '';
-
-	/**
-	 * @var string
-	 */
-	protected $topic = '';
 
 	/**
 	 * @return string

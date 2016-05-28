@@ -34,36 +34,6 @@ class User
 	protected $ircAccount = '';
 
 	/**
-	 * @var string[]
-	 */
-	protected $modes = [];
-
-	/**
-	 * @return string[]
-	 */
-	public function getModes(): array
-	{
-		return $this->modes;
-	}
-
-	/**
-	 * @param string[] $modes
-	 */
-	public function setModes(array $modes)
-	{
-		$this->modes = $modes;
-	}
-
-	/**
-	 * @param string $mode
-	 * @return bool
-	 */
-	public function hasMode(string $mode): bool
-	{
-		return in_array($mode, $this->modes);
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getNickname(): string

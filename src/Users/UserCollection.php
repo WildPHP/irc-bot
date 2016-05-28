@@ -53,13 +53,6 @@ class UserCollection
 	 */
 	public function addUser(User $user)
 	{
-		if ($this->isUserInCollection($user))
-		{
-			Logger::warning('Trying to add already existing user to collection. Ignoring request.', [$user]);
-
-			return;
-		}
-
 		$nickname = $user->getNickname();
 		$this->members[$nickname] = $user;
 	}
@@ -77,6 +70,21 @@ class UserCollection
 		}
 
 		$nickname = $user->getNickname();
+		unset($this->members[$nickname]);
+	}
+
+	/**
+	 * @param string $nickname
+	 */
+	public function removeUserByNickname(string $nickname)
+	{
+		if (!$this->isUserInCollectionByNickname($nickname))
+		{
+			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$nickname]);
+
+			return;
+		}
+
 		unset($this->members[$nickname]);
 	}
 

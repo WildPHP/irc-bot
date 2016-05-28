@@ -28,43 +28,43 @@ class ChannelCollection
 	/**
 	 * @var Channel[]
 	 */
-	protected $collection = [];
+	protected static $collection = [];
 	
-	public function addChannel(Channel $channel)
+	public static function addChannel(Channel $channel)
 	{
-		if ($this->channelExists($channel) || $this->channelExistsByName($channel->getName()))
+		if (self::channelExists($channel) || self::channelExistsByName($channel->getName()))
 		{
 			Logger::warning('Trying to add existing channel to collection', [$channel]);
 			return;
 		}
 
-		$this->collection[$channel->getName()] = $channel;
+		self::$collection[$channel->getName()] = $channel;
 	}
 
-	public function removeChannel(Channel $channel)
+	public static function removeChannel(Channel $channel)
 	{
-		if (!$this->channelExists($channel))
+		if (!self::channelExists($channel))
 		{
 			Logger::warning('Trying to remove non-existing channel from collection', [$channel]);
 			return;
 		}
 
-		unset($this->collection[array_search($channel->getName(), $this->collection)]);
+		unset(self::$collection[array_search($channel->getName(), self::$collection)]);
 	}
 
-	public function channelExists(Channel $channel)
+	public static function channelExists(Channel $channel)
 	{
-		return in_array($channel, $this->collection);
+		return in_array($channel, self::$collection);
 	}
 
-	public function channelExistsByName(string $name)
+	public static function channelExistsByName(string $name)
 	{
-		return array_key_exists($name, $this->collection);
+		return array_key_exists($name, self::$collection);
 	}
 
-	public function getChannelByName(string $name): Channel
+	public static function getChannelByName(string $name): Channel
 	{
 		// TODO
-		return $this->collection[$name];
+		return self::$collection[$name];
 	}
 }
