@@ -133,7 +133,6 @@ class UserDataCollector
 
 	public static function processNick(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		Logger::debug('Nickname change detected', [$incomingIrcMessage]);
 		$prefix = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$oldNickname = explode('!', $prefix)[0];
