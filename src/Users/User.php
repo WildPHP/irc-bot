@@ -20,6 +20,7 @@
 
 namespace WildPHP\Core\Users;
 
+use WildPHP\Core\Channels\ChannelCollection;
 
 class User
 {
@@ -32,6 +33,16 @@ class User
 	 * @var string
 	 */
 	protected $ircAccount = '';
+
+	/**
+	 * @var ChannelCollection
+	 */
+	protected $channelCollection;
+	
+	public function __construct()
+	{
+		$this->channelCollection = new ChannelCollection();
+	}
 
 	/**
 	 * @return string
@@ -63,5 +74,21 @@ class User
 	public function setIrcAccount(string $ircAccount)
 	{
 		$this->ircAccount = $ircAccount;
+	}
+
+	/**
+	 * @return ChannelCollection
+	 */
+	public function getChannelCollection(): ChannelCollection
+	{
+		return $this->channelCollection;
+	}
+
+	/**
+	 * @param ChannelCollection $channelCollection
+	 */
+	public function setChannelCollection(ChannelCollection $channelCollection)
+	{
+		$this->channelCollection = $channelCollection;
 	}
 }
