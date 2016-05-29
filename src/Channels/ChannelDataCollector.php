@@ -44,6 +44,14 @@ class ChannelDataCollector
 		self::$channelCollection = new ChannelCollection();
 		GlobalChannelCollection::setChannelCollection(self::$channelCollection);
 		EventEmitter::on('irc.line.in.332', __NAMESPACE__ . '\ChannelDataCollector::updateChannelTopic');
+		EventEmitter::on('irc.cap.after', __NAMESPACE__ . '\ChannelDataCollector::joinInitialChannels');
+	}
+
+	public static function joinInitialChannels(Queue $queue)
+	{
+		// TODO
+		$queue->join('#NanoPlayground');
+		$queue->join('#manjaro');
 	}
 
 	public static function createModeMap()
