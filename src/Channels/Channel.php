@@ -61,35 +61,59 @@ class Channel
 		$this->userCollection = new UserCollection();
 
 		EventEmitter::on('user.join', [$this, 'updateParticipatingUsers']);
+		EventEmitter::on('user.part', [$this, 'removeUser']);
+		EventEmitter::on('user.quit', [$this, 'removeUser']);
 		EventEmitter::on('user.nick', [$this, 'updateUserNickname']);
 		EventEmitter::on('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
 	}
 
-	public function removeQuitUser(string $nickname)
+	/**
+	 * @param User $user
+	 */
+	public function removeUser(User $user)
 	{
-		if ($this->userCollection->isUserInCollectionByNickname($nickname))
-			$this->userCollection->removeUserByNickname($nickname);
-	}
-
-	public function updateUserNickname($oldNickname, $newNickname, Queue $queue)
-	{
-		if (!$this->userCollection->isUserInCollectionByNickname($oldNickname))
+		if (!$this->getUserCollection()->isUserInCollection($user))
 			return;
 
-		$userObject = $this->userCollection->findUserByNickname($oldNickname);
-		$this->userCollection->removeUserByNickname($oldNickname);
-		$this->userCollection->addUser($userObject);
+		$this->getUserCollection()->removeUser($user);
+		$user->getChannelCollection()->removeChannel($this);
+
 	}
 
+	/**
+	 * @param $oldNickname
+	 * @param $newNickname
+	 * @param Queue $queue
+	 */
+	public function updateUserNickname($oldNickname, $newNickname, Queue $queue)
+	{
+		$userObject = $this->getUserCollection()->findUserByNickname($oldNickname);
+
+		if ($userObject == false)
+			return;
+
+		$this->getUserCollection()->removeUserByNickname($oldNickname);
+		$this->getUserCollection()->addUser($userObject);
+	}
+
+	/**
+	 * @param User $user
+	 * @param string $channel
+	 */
 	public function updateParticipatingUsers(User $user, string $channel)
 	{
 		if ($channel != $this->getName())
 			return;
 
-		$this->userCollection->addUser($user);
+		$this->getUserCollection()->addUser($user);
+		$user->getChannelCollection()->addChannel($this);
 	}
 
 	// TODO refactor this
+	/**
+	 * @param IncomingIrcMessage $message
+	 * @param Queue $queue
+	 */
 	public function updateInitialParticipatingUsers(IncomingIrcMessage $message, Queue $queue)
 	{
 		$args = $message->getArgs();
