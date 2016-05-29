@@ -62,7 +62,7 @@ class CapabilityHandler
 				{
 					$timer->cancel();
 					$queue->cap('END');
-					$queue->join('#NanoPlayground');
+					EventEmitter::emit('irc.cap.after', [$queue]);
 				}
 			});
 		});
