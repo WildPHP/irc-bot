@@ -115,16 +115,14 @@ class Channel
 			}
 
 			$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
-			$this->getUserCollection()->addUser($userObject);
+			$this->updateParticipatingUsers($userObject, $this->getName());
 		}
-
-		Logger::debug('New channel structure', [$this]);
 	}
 
 	/**
 	 * @return UserCollection
 	 */
-	public function getUserCollection()
+	public function getUserCollection(): UserCollection
 	{
 		return $this->userCollection;
 	}
