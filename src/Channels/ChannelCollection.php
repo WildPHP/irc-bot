@@ -28,9 +28,12 @@ class ChannelCollection
 	/**
 	 * @var Channel[]
 	 */
-	protected static $collection = [];
-	
-	public static function addChannel(Channel $channel)
+	protected $collection = [];
+
+	/**
+	 * @param Channel $channel
+	 */
+	public function addChannel(Channel $channel)
 	{
 		if (self::channelExists($channel) || self::channelExistsByName($channel->getName()))
 		{
@@ -38,10 +41,13 @@ class ChannelCollection
 			return;
 		}
 
-		self::$collection[$channel->getName()] = $channel;
+		$this->collection[$channel->getName()] = $channel;
 	}
 
-	public static function removeChannel(Channel $channel)
+	/**
+	 * @param Channel $channel
+	 */
+	public function removeChannel(Channel $channel)
 	{
 		if (!self::channelExists($channel))
 		{
@@ -49,22 +55,50 @@ class ChannelCollection
 			return;
 		}
 
-		unset(self::$collection[array_search($channel->getName(), self::$collection)]);
+		unset($this->collection[array_search($channel->getName(), $this->collection)]);
 	}
 
-	public static function channelExists(Channel $channel)
+	/**
+	 * @param Channel $channel
+	 * @return bool
+	 */
+	public function channelExists(Channel $channel): bool
 	{
-		return in_array($channel, self::$collection);
+		return in_array($channel, $this->collection);
 	}
 
-	public static function channelExistsByName(string $name)
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function channelExistsByName(string $name): bool
 	{
-		return array_key_exists($name, self::$collection);
+		return array_key_exists($name, $this->collection);
 	}
 
-	public static function getChannelByName(string $name): Channel
+	/**
+	 * @param string $name
+	 * @return Channel
+	 */
+	public function getChannelByName(string $name): Channel
 	{
 		// TODO
-		return self::$collection[$name];
+		return $this->collection[$name];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAllChannels(): array
+	{
+		return $this->collection;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function count(): int
+	{
+		return count($this->collection);
 	}
 }
