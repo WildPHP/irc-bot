@@ -43,6 +43,7 @@ class UserDataCollector
 		EventEmitter::on('irc.line.in.354', __NAMESPACE__ . '\UserDataCollector::processWhox');
 		EventEmitter::on('irc.line.in.quit', __NAMESPACE__ . '\UserDataCollector::processQuit');
 		EventEmitter::on('irc.line.in.join', __NAMESPACE__ . '\UserDataCollector::processJoin');
+		EventEmitter::on('irc.line.in.part', __NAMESPACE__ . '\UserDataCollector::processPart');
 		EventEmitter::on('irc.line.in.nick', __NAMESPACE__ . '\UserDataCollector::processNick');
 	}
 
@@ -73,20 +74,34 @@ class UserDataCollector
 		EventEmitter::emit('user.account.changed', [$nickname, $accountname, $queue]);
 	}
 
+	public static function processPart(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	{
+		$prefix = $incomingIrcMessage->getPrefix();
+		$nickname = explode('!', $prefix)[0];
+		$args = $incomingIrcMessage->getArgs();
+		$channel = $args[0];
+
+		$userObject = self::$userCollection->findUserByNickname($nickname);
+
+		EventEmitter::emit('user.part', [$userObject, $channel, $queue]);
+
+		if ($userObject->getChannelCollection()->count() == 0)
+			self::$userCollection->removeUser($userObject);
+	}
+
 	public static function processQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
 		$nickname = explode('!', $prefix)[0];
 		
-		if (self::$userCollection->isUserInCollectionByNickname($nickname))
-			self::$userCollection->removeUserByNickname($nickname);
+		$userObject = self::$userCollection->findUserByNickname($nickname);
 
-		EventEmitter::emit('user.quit', [$nickname, $queue]);
+		EventEmitter::emit('user.quit', [$userObject, $queue]);
+		self::$userCollection->removeUser($userObject);
 	}
 
 	public static function processJoin(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		Logger::debug('User joined', [$incomingIrcMessage]);
 		$prefix = $incomingIrcMessage->getPrefix();
 		$nickname = explode('!', $prefix)[0];
 		$args = $incomingIrcMessage->getArgs();
@@ -108,6 +123,7 @@ class UserDataCollector
 
 	public static function processNick(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
+		Logger::debug('Nickname change detected', [$incomingIrcMessage]);
 		$prefix = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$oldNickname = explode('!', $prefix)[0];
