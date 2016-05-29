@@ -82,6 +82,9 @@ class UserDataCollector
 		$channel = $args[0];
 
 		$userObject = self::$userCollection->findUserByNickname($nickname);
+		
+		if ($userObject == false)
+			return;
 
 		EventEmitter::emit('user.part', [$userObject, $channel, $queue]);
 
@@ -95,6 +98,9 @@ class UserDataCollector
 		$nickname = explode('!', $prefix)[0];
 		
 		$userObject = self::$userCollection->findUserByNickname($nickname);
+		
+		if ($userObject == false)
+			return;
 
 		EventEmitter::emit('user.quit', [$userObject, $queue]);
 		self::$userCollection->removeUser($userObject);
@@ -108,6 +114,10 @@ class UserDataCollector
 		$channel = $args[0];
 		
 		$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+		
+		if ($userObject == false)
+			return;
+		
 		EventEmitter::emit('user.join', [$userObject, $channel, $queue]);
 
 		if (!CapabilityHandler::isCapabilityActive('extended-join'))
@@ -130,6 +140,10 @@ class UserDataCollector
 		$newNickname = $args[0];
 
 		$userObject = self::$userCollection->findUserByNickname($oldNickname);
+		
+		if ($userObject == false)
+			return;
+		
 		$userObject->setNickname($newNickname);
 		self::$userCollection->removeUserByNickname($oldNickname);
 		self::$userCollection->addUser($userObject);
