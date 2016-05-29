@@ -42,6 +42,7 @@ class ChannelDataCollector
 	public static function initialize()
 	{
 		self::$channelCollection = new ChannelCollection();
+		GlobalChannelCollection::setChannelCollection(self::$channelCollection);
 		EventEmitter::on('irc.line.in.332', __NAMESPACE__ . '\ChannelDataCollector::updateChannelTopic');
 	}
 
