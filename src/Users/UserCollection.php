@@ -107,4 +107,9 @@ class UserCollection
 	{
 		return $this->members;
 	}
+
+	public function getAllUsersAsString()
+	{
+		return array_keys($this->members);
+	}
 }
