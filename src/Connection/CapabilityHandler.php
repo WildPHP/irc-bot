@@ -29,12 +29,12 @@ use WildPHP\Core\Logger\Logger;
 class CapabilityHandler
 {
 	/**
-	 * @var string[]
+	 * @var array
 	 */
 	protected static $availableCapabilities = [];
 
 	/**
-	 * @var string[]
+	 * @var array
 	 */
 	protected static $acquiredCapabilities = [];
 
