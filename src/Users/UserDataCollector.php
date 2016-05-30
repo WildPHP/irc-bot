@@ -182,7 +182,6 @@ class UserDataCollector
 
 	public static function processMode(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		Logger::debug('Mode change received', [$incomingIrcMessage]);
 		$args = $incomingIrcMessage->getArgs();
 		$mode = $args[1];
 		$target = !empty($args[2]) ? $args[2] : $args[0];
