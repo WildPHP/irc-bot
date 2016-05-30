@@ -45,14 +45,23 @@ class UserDataCollector
 		EventEmitter::on('irc.line.in.join', __NAMESPACE__ . '\UserDataCollector::processJoin');
 		EventEmitter::on('irc.line.in.part', __NAMESPACE__ . '\UserDataCollector::processPart');
 		EventEmitter::on('irc.line.in.nick', __NAMESPACE__ . '\UserDataCollector::processNick');
+		EventEmitter::on('irc.line.in.mode', __NAMESPACE__ . '\UserDataCollector::processMode');
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function sendWhox(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channel = $incomingIrcMessage->getArgs()[1];
 		$queue->who($channel, '%na');
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processWhox(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();
@@ -63,6 +72,11 @@ class UserDataCollector
 		self::updateAccountnameForUser($userObject, $accountname, $queue);
 	}
 
+	/**
+	 * @param User $userObject
+	 * @param string $accountname
+	 * @param Queue $queue
+	 */
 	protected static function updateAccountnameForUser(User $userObject, string $accountname, Queue $queue)
 	{
 		if ($userObject->getIrcAccount() == $accountname)
@@ -74,6 +88,10 @@ class UserDataCollector
 		EventEmitter::emit('user.account.changed', [$nickname, $accountname, $queue]);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processPart(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
@@ -92,6 +110,10 @@ class UserDataCollector
 			self::$userCollection->removeUser($userObject);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
@@ -106,6 +128,10 @@ class UserDataCollector
 		self::$userCollection->removeUser($userObject);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processJoin(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
@@ -131,6 +157,10 @@ class UserDataCollector
 		self::updateAccountnameForUser($userObject, $accountname, $queue);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processNick(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
@@ -148,5 +178,21 @@ class UserDataCollector
 		self::$userCollection->addUser($userObject);
 		
 		EventEmitter::emit('user.nick', [$oldNickname, $newNickname, $queue]);
+	}
+
+	public static function processMode(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	{
+		Logger::debug('Mode change received', [$incomingIrcMessage]);
+		$args = $incomingIrcMessage->getArgs();
+		$channel = $args[0];
+		$mode = $args[1];
+		$target = $args[2];
+
+		$userObject = self::$userCollection->findUserByNickname($target);
+
+		if ($userObject == false)
+			return;
+
+		EventEmitter::emit('user.mode', [$channel, $mode, $userObject, $queue]);
 	}
 }

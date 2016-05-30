@@ -20,11 +20,9 @@
 
 namespace WildPHP\Core\Channels;
 
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Connection\IncomingIrcMessage;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Users\UserCollection;
 
@@ -64,7 +62,82 @@ class Channel
 		EventEmitter::on('user.part', [$this, 'removeUser']);
 		EventEmitter::on('user.quit', [$this, 'removeUser']);
 		EventEmitter::on('user.nick', [$this, 'updateUserNickname']);
+		EventEmitter::on('user.mode', [$this, 'updateUserMode']);
 		EventEmitter::on('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
+	}
+
+	public function __destruct()
+	{
+		EventEmitter::removeListener('user.join', [$this, 'updateParticipatingUsers']);
+		EventEmitter::removeListener('user.part', [$this, 'removeUser']);
+		EventEmitter::removeListener('user.quit', [$this, 'removeUser']);
+		EventEmitter::removeListener('user.mode', [$this, 'updateUserMode']);
+		EventEmitter::removeListener('user.nick', [$this, 'updateUserNickname']);
+		EventEmitter::removeListener('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
+	}
+
+	/**
+	 * @param string $channel
+	 * @param string $mode
+	 * @param User $target
+	 */
+	public function updateUserMode(string $channel, string $mode, User $target)
+	{
+		if ($channel != $this->getName())
+			return;
+
+		$shouldBeRemoved = substr($mode, 0, 1) == '-';
+		$modes = substr($mode, 1);
+		$modes = str_split($modes);
+
+		foreach ($modes as $mode)
+		{
+			if ($shouldBeRemoved)
+				$this->removeUserFromMode($mode, $target);
+			else
+				$this->addUserToMode($mode, $target);
+		}
+	}
+
+	/**
+	 * @param string $mode
+	 * @param User $user
+	 * @return bool
+	 */
+	public function isUserInMode(string $mode, User $user): bool
+	{
+		if (!array_key_exists($mode, $this->modeMap))
+			return false;
+
+		return in_array($user, $this->modeMap[$mode]);
+	}
+
+	/**
+	 * @param string $mode
+	 * @param User $user
+	 * @return bool
+	 */
+	public function addUserToMode(string $mode, User $user): bool
+	{
+		if ($this->isUserInMode($mode, $user))
+			return true;
+
+		$this->modeMap[$mode][] = $user;
+		return true;
+	}
+
+	/**
+	 * @param string $mode
+	 * @param User $user
+	 * @return bool
+	 */
+	public function removeUserFromMode(string $mode, User $user): bool
+	{
+		if (!$this->isUserInMode($mode, $user))
+			return false;
+
+		unset($this->modeMap[$mode][array_search($user, $this->modeMap[$mode])]);
+		return true;
 	}
 
 	/**
@@ -77,15 +150,12 @@ class Channel
 
 		$this->getUserCollection()->removeUser($user);
 		$user->getChannelCollection()->removeChannel($this);
-
 	}
 
 	/**
-	 * @param $oldNickname
-	 * @param $newNickname
-	 * @param Queue $queue
+	 * @param string $oldNickname
 	 */
-	public function updateUserNickname($oldNickname, $newNickname, Queue $queue)
+	public function updateUserNickname(string $oldNickname)
 	{
 		$userObject = $this->getUserCollection()->findUserByNickname($oldNickname);
 
@@ -107,14 +177,15 @@ class Channel
 
 		$this->getUserCollection()->addUser($user);
 		$user->getChannelCollection()->addChannel($this);
+		//Logger::debug('New user structure, users now in channel', [$this->getUserCollection()->getAllUsersAsString()]);
+		//Logger::debug('Added user', [$user]);
 	}
 
 	// TODO refactor this
 	/**
 	 * @param IncomingIrcMessage $message
-	 * @param Queue $queue
 	 */
-	public function updateInitialParticipatingUsers(IncomingIrcMessage $message, Queue $queue)
+	public function updateInitialParticipatingUsers(IncomingIrcMessage $message)
 	{
 		$args = $message->getArgs();
 		$channel = $args[2];
@@ -128,19 +199,43 @@ class Channel
 
 		foreach ($users as $user)
 		{
-			$firstChar = substr($user, 0, 1);
 			$nickname = $user;
-			if (array_key_exists($firstChar, ChannelDataCollector::$modeMap))
-			{
-				$key = ChannelDataCollector::$modeMap[$firstChar];
-				$nickname = substr($user, 1);
-				$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
-				$this->modeMap[$key][] = $userObject;
-			}
-
+			$modes = $this->extractUserModesFromNickname($user, $nickname);
 			$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+
+			if (!empty($modes))
+			{
+				foreach ($modes as $mode)
+					$this->modeMap[$mode][] = $userObject;
+			}
 			$this->updateParticipatingUsers($userObject, $this->getName());
 		}
+	}
+
+	/**
+	 * @param string $nickname
+	 * @param string $remainders
+	 * @return array
+	 */
+	public function extractUserModesFromNickname(string $nickname, string &$remainders): array
+	{
+		$modeMap = ChannelDataCollector::$modeMap;
+		$parts = str_split($nickname);
+		$modes = [];
+
+		foreach ($parts as $key => $part)
+		{
+			if (!array_key_exists($part, $modeMap))
+			{
+				$remainders = join('', $parts);
+				break;
+			}
+
+			unset($parts[$key]);
+			$modes[] = $modeMap[$part];
+		}
+
+		return $modes;
 	}
 
 	/**
