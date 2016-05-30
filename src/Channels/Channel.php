@@ -136,7 +136,8 @@ class Channel
 		if (!$this->isUserInMode($mode, $user))
 			return false;
 
-		unset($this->modeMap[$mode][array_search($user, $this->modeMap[$mode])]);
+		$key = array_search($user, $this->modeMap[$mode]);
+		unset($this->modeMap[$mode][$key]);
 		return true;
 	}
 
