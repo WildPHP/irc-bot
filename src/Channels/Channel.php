@@ -62,7 +62,7 @@ class Channel
 		EventEmitter::on('user.part', [$this, 'removeUser']);
 		EventEmitter::on('user.quit', [$this, 'removeUser']);
 		EventEmitter::on('user.nick', [$this, 'updateUserNickname']);
-		EventEmitter::on('user.mode', [$this, 'updateUserMode']);
+		EventEmitter::on('user.mode.channel', [$this, 'updateUserMode']);
 		EventEmitter::on('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
 	}
 
@@ -71,7 +71,7 @@ class Channel
 		EventEmitter::removeListener('user.join', [$this, 'updateParticipatingUsers']);
 		EventEmitter::removeListener('user.part', [$this, 'removeUser']);
 		EventEmitter::removeListener('user.quit', [$this, 'removeUser']);
-		EventEmitter::removeListener('user.mode', [$this, 'updateUserMode']);
+		EventEmitter::removeListener('user.mode.channel', [$this, 'updateUserMode']);
 		EventEmitter::removeListener('user.nick', [$this, 'updateUserNickname']);
 		EventEmitter::removeListener('irc.line.in.353', [$this, 'updateInitialParticipatingUsers']);
 	}
@@ -178,8 +178,6 @@ class Channel
 
 		$this->getUserCollection()->addUser($user);
 		$user->getChannelCollection()->addChannel($this);
-		//Logger::debug('New user structure, users now in channel', [$this->getUserCollection()->getAllUsersAsString()]);
-		//Logger::debug('Added user', [$user]);
 	}
 
 	// TODO refactor this

@@ -184,15 +184,18 @@ class UserDataCollector
 	{
 		Logger::debug('Mode change received', [$incomingIrcMessage]);
 		$args = $incomingIrcMessage->getArgs();
-		$channel = $args[0];
 		$mode = $args[1];
-		$target = $args[2];
+		$target = !empty($args[2]) ? $args[2] : $args[0];
+		$channel = !empty($args[2]) ? $args[0] : '';
 
 		$userObject = self::$userCollection->findUserByNickname($target);
 
 		if ($userObject == false)
 			return;
 
-		EventEmitter::emit('user.mode', [$channel, $mode, $userObject, $queue]);
+		if (!empty($channel))
+			EventEmitter::emit('user.mode.channel', [$channel, $mode, $userObject, $queue]);
+		else
+			EventEmitter::emit('user.mode', [$mode, $userObject, $queue]);
 	}
 }
