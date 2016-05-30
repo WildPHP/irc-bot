@@ -49,9 +49,12 @@ class ChannelDataCollector
 
 	public static function joinInitialChannels(Queue $queue)
 	{
-		// TODO
-		$queue->join('#NanoPlayground');
-		$queue->join('#manjaro');
+		$channels = Configuration::get('channels')->getValue();
+
+		foreach ($channels as $channel)
+		{
+			$queue->join($channel);
+		}
 	}
 
 	public static function createModeMap()

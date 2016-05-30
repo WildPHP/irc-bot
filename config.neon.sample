@@ -1,0 +1,9 @@
+server: irc.freenode.net
+port: 6697
+secure: true
+nick: MyBot
+user: MyBot
+realname: A WildPHP Bot
+
+channels:
+	- '#somechannel'
