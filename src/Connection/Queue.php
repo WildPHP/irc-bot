@@ -60,6 +60,11 @@ class Queue implements QueueInterface
 	protected $messagesPerSecond = 1;
 
 	/**
+	 * @var bool
+	 */
+	protected $floodControlEnabled = false;
+
+	/**
 	 * @param BaseCommand $command
 	 */
 	public function insertMessage(BaseCommand $command)
@@ -100,9 +105,9 @@ class Queue implements QueueInterface
 	 * @return int
 	 */
 	public function calculateNextMessageTime(): int
-	{
+	{		
 		// If the queue is empty, this message can be sent immediately. Do not bother calculating.
-		if ($this->getAmountOfItemsInQueue() == 0)
+		if ($this->getAmountOfItemsInQueue() == 0 || !$this->isFloodControlEnabled())
 			return time();
 
 		$numItems = $this->getAmountOfItemsInQueue();
@@ -141,6 +146,22 @@ class Queue implements QueueInterface
 	}
 
 	/**
+	 * @param bool $enabled
+	 */
+	public function setFloodControl(bool $enabled = true)
+	{
+		$this->floodControlEnabled = $enabled;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isFloodControlEnabled(): bool
+	{
+		return $this->floodControlEnabled;
+	}
+
+	/**
 	 * @param string $channel
 	 * @param string $message
 	 */
@@ -168,7 +189,7 @@ class Queue implements QueueInterface
 		$this->insertMessage($pong);
 	}
 
-	public function join(string $channel, string $key = '')
+	public function join($channel, $key = '')
 	{
 		$join = new Join($channel, $key);
 		$this->insertMessage($join);

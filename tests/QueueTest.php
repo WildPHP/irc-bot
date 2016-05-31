@@ -39,6 +39,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
     public function testCalculateTime()
     {
         $queue = new Queue();
+        $queue->setFloodControl(true);
         $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         // If we insert 10 messages, the time the next message will be scheduled

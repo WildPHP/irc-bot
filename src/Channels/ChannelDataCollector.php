@@ -44,17 +44,24 @@ class ChannelDataCollector
 		self::$channelCollection = new ChannelCollection();
 		GlobalChannelCollection::setChannelCollection(self::$channelCollection);
 		EventEmitter::on('irc.line.in.332', __NAMESPACE__ . '\ChannelDataCollector::updateChannelTopic');
-		EventEmitter::on('irc.cap.after', __NAMESPACE__ . '\ChannelDataCollector::joinInitialChannels');
+		EventEmitter::on('irc.line.in.001', __NAMESPACE__ . '\ChannelDataCollector::joinInitialChannels');
 	}
 
-	public static function joinInitialChannels(Queue $queue)
+	public static function joinInitialChannels(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channels = Configuration::get('channels')->getValue();
 
-		foreach ($channels as $channel)
+		if (empty($channels))
+			return;
+
+		$chunks = array_chunk($channels, 3);
+		$queue->setFloodControl(true);
+		
+		foreach ($chunks as $chunk)
 		{
-			$queue->join($channel);
+			$queue->join($chunk);
 		}
+		
 	}
 
 	public static function createModeMap()

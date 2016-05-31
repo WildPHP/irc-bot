@@ -50,35 +50,42 @@ class Join extends BaseCommand
 	protected $key;
 
 	/**
-	 * @param string $channel
-	 * @param string $key
+	 * @param string|array $channel
+	 * @param string|array $key
 	 */
-	public function __construct(string $channel, string $key = '')
+	public function __construct($channel, $key = '')
 	{
 		$this->setChannel($channel);
 		$this->setKey($key);
 	}
 
 	/**
-	 * @return string
+	 * @return string|array
 	 */
-	public function getChannel(): string
+	public function getChannel()
 	{
 		return $this->channel;
 	}
 
 	/**
-	 * @param string $channel
+	 * @param string|array $channel
 	 */
-	public function setChannel(string $channel)
+	public function setChannel($channel)
 	{
 		$this->channel = $channel;
 	}
 
 	public function formatMessage(): string
 	{
-		$key = $this->getKey();
+		$channels = $this->getChannel();
+		$chans = '';
+		if (is_array($channels))
+			$chans = implode(',', $channels);
 
-		return 'JOIN ' . $this->getChannel() . (!empty($key) ? ' :' . $key : '') . "\r\n";
+		$key = $this->getKey();
+		if (is_array($key))
+			$key = implode(',', $key);
+
+		return 'JOIN ' . $chans . (!empty($key) ? ' :' . $key : '') . "\r\n";
 	}
 }

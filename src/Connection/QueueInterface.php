@@ -82,11 +82,11 @@ interface QueueInterface
 	public function pong(string $server);
 
 	/**
-	 * @param string $channel
-	 * @param string $key
+	 * @param string|array $channel
+	 * @param string|array $key
 	 * @return void
 	 */
-	public function join(string $channel, string $key = '');
+	public function join($channel, $key = '');
 
 	/**
 	 * @param string $channel
