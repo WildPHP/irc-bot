@@ -2,6 +2,8 @@
 
 namespace WildPHP\Core\Users;
 
+use WildPHP\Core\Connection\IncomingIrcMessage;
+
 class GlobalUserCollection
 {
 	/**
@@ -39,6 +41,22 @@ class GlobalUserCollection
 			$userObject->setNickname($nickname);
 			self::$userCollection->addUser($userObject);
 		}
+
+		return $userObject;
+	}
+
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @return false|User
+	 */
+	public static function getUserFromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
+	{
+		$prefix = $incomingIrcMessage->getPrefix();
+		$nickname = explode('!', $prefix)[0];
+		$userObject = self::getUserCollection()->findUserByNickname($nickname);
+
+		if (!$userObject)
+			return false;
 
 		return $userObject;
 	}
