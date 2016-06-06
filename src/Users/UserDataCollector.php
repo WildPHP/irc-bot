@@ -39,13 +39,13 @@ class UserDataCollector
 		self::$userCollection = new UserCollection();
 		GlobalUserCollection::setUserCollection(self::$userCollection);
 		
-		EventEmitter::on('irc.line.in.366', __NAMESPACE__ . '\UserDataCollector::sendWhox');
-		EventEmitter::on('irc.line.in.354', __NAMESPACE__ . '\UserDataCollector::processWhox');
-		EventEmitter::on('irc.line.in.quit', __NAMESPACE__ . '\UserDataCollector::processQuit');
-		EventEmitter::on('irc.line.in.join', __NAMESPACE__ . '\UserDataCollector::processJoin');
-		EventEmitter::on('irc.line.in.part', __NAMESPACE__ . '\UserDataCollector::processPart');
-		EventEmitter::on('irc.line.in.nick', __NAMESPACE__ . '\UserDataCollector::processNick');
-		EventEmitter::on('irc.line.in.mode', __NAMESPACE__ . '\UserDataCollector::processMode');
+		EventEmitter::on('irc.line.in.366', __CLASS__ . '::sendWhox');
+		EventEmitter::on('irc.line.in.354', __CLASS__ . '::processWhox');
+		EventEmitter::on('irc.line.in.quit', __CLASS__ . '::processQuit');
+		EventEmitter::on('irc.line.in.join', __CLASS__ . '::processJoin');
+		EventEmitter::on('irc.line.in.part', __CLASS__ . '::processPart');
+		EventEmitter::on('irc.line.in.nick', __CLASS__ . '::processNick');
+		EventEmitter::on('irc.line.in.mode', __CLASS__ . '::processMode');
 	}
 
 	/**
