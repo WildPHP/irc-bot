@@ -22,11 +22,14 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
+use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Users\GlobalUserCollection;
+use WildPHP\Core\Users\User;
 
 class CommandHandler
 {
@@ -47,27 +50,42 @@ class CommandHandler
 
 	public static function tryParseCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		Logger::debug('Incoming message', [$incomingIrcMessage]);
 		$args = $incomingIrcMessage->getArgs();
-		$source = $args[0];
+		$source = GlobalChannelCollection::getChannelCollection()->getChannelByName($args[0]);
 		$message = $args[1];
+		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
 
-		$messageParts = explode(' ', $message);
-		$firstPart = $messageParts[0];
+		$command = self::parseCommandFromMessage($message, $args);
 		
-		if (substr($firstPart, 0, strlen(self::getPrefix())) != self::getPrefix())
+		if (!$command)
 			return;
-		
-		$command = substr($firstPart, strlen(self::getPrefix()));
-		array_shift($messageParts);
-		$args = $messageParts;
 
 		$dictionary = GlobalCommandDictionary::getDictionary();
 
 		if (!$dictionary->keyExists($command))
 			return;
 
-		call_user_func($dictionary[$command], $source, $args, $queue);
+		call_user_func($dictionary[$command], $source, $user, $args, $queue);
+	}
+
+	/**
+	 * @param string $message
+	 * @param array $args
+	 * 
+	 * @return false|string
+	 */
+	protected static function parseCommandFromMessage(string $message, array &$args)
+	{
+		$messageParts = explode(' ', $message);
+		$firstPart = $messageParts[0];
+
+		if (substr($firstPart, 0, strlen(self::getPrefix())) != self::getPrefix())
+			return false;
+
+		$command = substr($firstPart, strlen(self::getPrefix()));
+		array_shift($messageParts);
+		$args = $messageParts;
+		return $command;
 	}
 
 	/**
@@ -86,8 +104,8 @@ class CommandHandler
 		self::$prefix = $prefix;
 	}
 
-	public static function pingPong(string $source, array $args, Queue $queue)
+	public static function pingPong(Channel $source, User $user, array $args, Queue $queue)
 	{
-		$queue->privmsg($source, 'Pong!');
+		$queue->privmsg($source->getName(), 'Pong!');
 	}
 }
