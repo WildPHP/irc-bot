@@ -4,6 +4,7 @@ secure: true
 nick: MyBot
 user: MyBot
 realname: A WildPHP Bot
+prefix: '!'
 
 channels:
 	- '#somechannel'
