@@ -1,6 +1,7 @@
 <?php
 
 use React\EventLoop\Factory as LoopFactory;
+use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Channels\ChannelDataCollector;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\CapabilityHandler;
@@ -58,6 +59,7 @@ $ircConnection->createFromConnector($connector, $server, $port);
 CapabilityHandler::initialize($loop);
 ChannelDataCollector::initialize();
 UserDataCollector::initialize();
+CommandHandler::initialize();
 
 EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 {
