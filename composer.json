@@ -5,10 +5,10 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
-        "myclabs/php-enum": "^1.4",
         "react/react": "^0.4",
         "nette/neon": "^2.3",
-        "katzgrau/klogger": "^1.2"
+        "katzgrau/klogger": "^1.2",
+        "danielgsims/php-collections": "^1.4"
     },
     "autoload": {
         "psr-4": {
