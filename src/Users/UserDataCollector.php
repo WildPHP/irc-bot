@@ -180,6 +180,10 @@ class UserDataCollector
 		EventEmitter::emit('user.nick', [$oldNickname, $newNickname, $queue]);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function processMode(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();

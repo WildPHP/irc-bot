@@ -171,42 +171,68 @@ class Queue implements QueueInterface
 		$this->insertMessage($privmsg);
 	}
 
+	/**
+	 * @param string $nickname
+	 */
 	public function nick(string $nickname)
 	{
 		$nick = new Nick($nickname);
 		$this->insertMessage($nick);
 	}
 
+	/**
+	 * @param string $username
+	 * @param string $hostname
+	 * @param string $servername
+	 * @param string $realname
+	 */
 	public function user(string $username, string $hostname, string $servername, string $realname)
 	{
 		$user = new User($username, $hostname, $servername, $realname);
 		$this->insertMessage($user);
 	}
 
+	/**
+	 * @param string $server
+	 */
 	public function pong(string $server)
 	{
 		$pong = new Pong($server);
 		$this->insertMessage($pong);
 	}
 
+	/**
+	 * @param array|string $channel
+	 * @param string $key
+	 */
 	public function join($channel, $key = '')
 	{
 		$join = new Join($channel, $key);
 		$this->insertMessage($join);
 	}
 
+	/**
+	 * @param string $channel
+	 */
 	public function part(string $channel)
 	{
 		$part = new Part($channel);
 		$this->insertMessage($part);
 	}
 
+	/**
+	 * @param string $command
+	 */
 	public function cap(string $command)
 	{
 		$cap = new Cap($command);
 		$this->insertMessage($cap);
 	}
 
+	/**
+	 * @param string $channel
+	 * @param string $options
+	 */
 	public function who(string $channel, string $options = '')
 	{
 		$who = new Who($channel, $options);

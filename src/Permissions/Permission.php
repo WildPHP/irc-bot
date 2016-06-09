@@ -41,7 +41,14 @@ class Permission
 		$this->setName($name);
 	}
 
-	public function allows(string $accountName, string $channel = null, array $modes)
+	/**
+	 * @param string $accountName
+	 * @param string $channel
+	 * @param array $modes
+	 *
+	 * @return bool
+	 */
+	public function allows(string $accountName, string $channel = '', array $modes)
 	{
 		$result = $this->getCriteriaCollection()->every(
 			function (PermissionCriteria $criteria) use ($accountName, $channel, $modes)

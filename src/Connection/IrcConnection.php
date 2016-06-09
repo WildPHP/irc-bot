@@ -65,7 +65,7 @@ class IrcConnection
 	/**
 	 * @return string
 	 */
-	public function getBuffer()
+	public function getBuffer(): string
 	{
 		return $this->buffer;
 	}
@@ -73,7 +73,7 @@ class IrcConnection
 	/**
 	 * @param string $buffer
 	 */
-	public function setBuffer($buffer)
+	public function setBuffer(string $buffer)
 	{
 		$this->buffer = $buffer;
 	}
@@ -196,10 +196,7 @@ class IrcConnection
 			$stream->write($data);
 		});
 	}
-
-	/**
-	 *
-	 */
+	
 	public function close()
 	{
 		$this->connectorPromise->then(function (Stream $stream)

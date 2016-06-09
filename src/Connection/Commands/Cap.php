@@ -39,7 +39,10 @@ class Cap extends BaseCommand
 	{
 		$this->command = $command;
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		return 'CAP ' . $this->getCommand() . "\r\n";

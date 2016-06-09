@@ -67,23 +67,40 @@ class CapabilityHandler
 			});
 		});
 	}
-	
+
+	/**
+	 * @param Queue $queue
+	 */
 	public static function initNegotiation(Queue $queue)
 	{
 		Logger::debug('Capability negotiation, stage 1...');
 		$queue->cap('LS');
 	}
 
+	/**
+	 * @param string $capability
+	 *
+	 * @return bool
+	 */
 	public static function capabilityExists(string $capability): bool
 	{
 		return in_array($capability, self::$availableCapabilities);
 	}
 
+	/**
+	 * @param string $capability
+	 *
+	 * @return bool
+	 */
 	public static function isCapabilityActive(string $capability): bool
 	{
 		return in_array($capability, self::$acquiredCapabilities);
 	}
-	
+
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function responseRouter(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();
@@ -101,13 +118,21 @@ class CapabilityHandler
 		}
 	}
 
+	/**
+	 * @param string $capabilities
+	 * @param Queue $queue
+	 */
 	protected static function updateAvailableCapabilities(string $capabilities, Queue $queue)
 	{
 		$capabilities = explode(' ', trim($capabilities));
 		self::$availableCapabilities = $capabilities;
 		EventEmitter::emit('irc.cap.ls', [self::$availableCapabilities, $queue]);
 	}
-	
+
+	/**
+	 * @param string $capabilities
+	 * @param Queue $queue
+	 */
 	public static function updateAcquiredCapabilities(string $capabilities, Queue $queue)
 	{
 		$capabilities = explode(' ', trim($capabilities));

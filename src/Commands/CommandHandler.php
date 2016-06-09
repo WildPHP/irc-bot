@@ -48,6 +48,10 @@ class CommandHandler
 		self::setPrefix(Configuration::get('prefix')->getValue());
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function tryParseCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();
@@ -104,6 +108,12 @@ class CommandHandler
 		self::$prefix = $prefix;
 	}
 
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param array $args
+	 * @param Queue $queue
+	 */
 	public static function pingPong(Channel $source, User $user, array $args, Queue $queue)
 	{
 		$queue->privmsg($source->getName(), 'Pong!');

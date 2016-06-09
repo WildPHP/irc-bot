@@ -37,6 +37,11 @@ class Parser
 		});
 	}
 
+	/**
+	 * @param string $line
+	 *
+	 * @return ParsedIrcMessageLine
+	 */
 	public static function parseLine(string $line): ParsedIrcMessageLine
 	{
 		$parsed = ParsedIrcMessageLine::parse($line);

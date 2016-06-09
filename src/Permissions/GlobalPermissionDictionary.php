@@ -30,6 +30,9 @@ class GlobalPermissionDictionary
 	 */
 	protected static $dictionary = null;
 
+	/**
+	 * @return Dictionary
+	 */
 	public static function getDictionary()
 	{
 		if (!self::$dictionary)
@@ -37,11 +40,19 @@ class GlobalPermissionDictionary
 		return self::$dictionary;
 	}
 
+	/**
+	 * @param Dictionary $dictionary
+	 */
 	public static function setDictionary(Dictionary $dictionary)
 	{
 		self::$dictionary = $dictionary;
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return Permission
+	 */
 	public static function getPermission(string $name): Permission
 	{
 		return self::$dictionary[$name];

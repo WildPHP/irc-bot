@@ -72,6 +72,9 @@ class QueueItem
 		$this->time = $time;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function itemShouldBeTriggered(): bool
 	{
 		return time() >= $this->getTime();
