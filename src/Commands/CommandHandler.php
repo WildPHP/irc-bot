@@ -22,14 +22,12 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Users\GlobalUserCollection;
-use WildPHP\Core\Users\User;
 
 class CommandHandler
 {
@@ -42,7 +40,6 @@ class CommandHandler
 	{
 		GlobalCommandDictionary::setDictionary(new Dictionary());
 
-		CommandRegistrar::registerCommand('ping', __CLASS__ . '::pingPong');
 		EventEmitter::on('irc.line.in.privmsg', __CLASS__ . '::tryParseCommand');
 		
 		self::setPrefix(Configuration::get('prefix')->getValue());
@@ -106,16 +103,5 @@ class CommandHandler
 	public static function setPrefix($prefix)
 	{
 		self::$prefix = $prefix;
-	}
-
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param array $args
-	 * @param Queue $queue
-	 */
-	public static function pingPong(Channel $source, User $user, array $args, Queue $queue)
-	{
-		$queue->privmsg($source->getName(), 'Pong!');
 	}
 }
