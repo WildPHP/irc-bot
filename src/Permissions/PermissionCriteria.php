@@ -37,7 +37,7 @@ class PermissionCriteria
 	 */
 	protected $mode = '';
 
-	public function __construct(string $accountName = null, string $channel = null, string $mode = '')
+	public function __construct(string $accountName = '', string $channel = '', string $mode = '')
 	{
 		$this->setAccountName($accountName);
 		$this->setChannel($channel);
@@ -167,5 +167,4 @@ class PermissionCriteria
 	{
 		$this->accountName = $accountName;
 	}
-
 }
