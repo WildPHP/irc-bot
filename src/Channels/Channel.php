@@ -112,6 +112,7 @@ class Channel
 		return in_array($user, $this->modeMap[$mode]);
 	}
 
+
 	/**
 	 * @param string $mode
 	 * @param User $user
@@ -142,6 +143,22 @@ class Channel
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getModeMap(): array
+	{
+		return $this->modeMap;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getPopulatedModeNames(): array
+	{
+		return array_keys($this->modeMap);
+	}
+
+	/**
 	 * @param User $user
 	 */
 	public function removeUser(User $user)
@@ -151,6 +168,39 @@ class Channel
 
 		$this->getUserCollection()->removeUser($user);
 		$user->getChannelCollection()->removeChannel($this);
+		foreach ($this->getPopulatedModeNames() as $mode)
+			$this->removeUserFromMode($mode, $user);
+	}
+
+	/**
+	 * @param User $user
+	 *
+	 * @return array
+	 */
+	public function getModesForUser(User $user): array
+	{
+		$modeMap = $this->getModeMap();
+		$modes = [];
+		foreach ($modeMap as $mode => $associatedUsers)
+		{
+			if (in_array($user, $associatedUsers))
+				$modes[] = $mode;
+		}
+
+		return $modes;
+	}
+
+	/**
+	 * @param string $mode
+	 *
+	 * @return array
+	 */
+	public function getUsersForMode(string $mode): array
+	{
+		if (!in_array($mode, $this->getPopulatedModeNames()))
+			return [];
+
+		return $this->getModeMap()[$mode];
 	}
 
 	/**
