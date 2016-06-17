@@ -37,7 +37,6 @@ class CommandRegistrar
 			throw new CommandAlreadyExistsException();
 
 		GlobalCommandDictionary::getDictionary()[$command] = $callback;
-		Logger::debug('New command registered', ['command' => $command, 'callback' => $callback]);
 	}
 
 	/**
