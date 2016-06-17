@@ -20,13 +20,13 @@
 
 namespace WildPHP\Core\Permissions;
 
-
-use Collections\Collection;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Logger\Logger;
 
 class Permission
 {
 	/**
-	 * @var Collection
+	 * @var CriteriaCollection
 	 */
 	protected $criteriaCollection = null;
 
@@ -37,7 +37,7 @@ class Permission
 
 	public function __construct(string $name)
 	{
-		$this->setCriteriaCollection(new Collection(__NAMESPACE__ . '\PermissionCriteria'));
+		$this->setCriteriaCollection(new CriteriaCollection($name));
 		$this->setName($name);
 	}
 
@@ -50,7 +50,18 @@ class Permission
 	 */
 	public function allows(string $accountName, string $channel = '', array $modes)
 	{
-		$result = $this->getCriteriaCollection()->every(
+		Logger::debug('Evaluating permission...',
+			[
+				$accountName, $channel, $modes
+			]);
+
+		if ($accountName == Configuration::get('owner')->getValue())
+			return true;
+
+		if ($this->getCriteriaCollection()->getCollection()->count() == 0)
+			return false;
+
+		$result = $this->getCriteriaCollection()->getCollection()->every(
 			function (PermissionCriteria $criteria) use ($accountName, $channel, $modes)
 			{
 				return $criteria->match($accountName, $channel, $modes);
@@ -61,7 +72,7 @@ class Permission
 	}
 
 	/**
-	 * @return Collection
+	 * @return CriteriaCollection
 	 */
 	public function getCriteriaCollection()
 	{
@@ -69,7 +80,7 @@ class Permission
 	}
 
 	/**
-	 * @param Collection $criteriaCollection
+	 * @param CriteriaCollection $criteriaCollection
 	 */
 	public function setCriteriaCollection($criteriaCollection)
 	{

@@ -5,6 +5,7 @@ nick: MyBot
 user: MyBot
 realname: A WildPHP Bot
 prefix: '!'
+owner: 'SomeIRCAccountName'
 
 channels:
 	- '#somechannel'
