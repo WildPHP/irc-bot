@@ -49,11 +49,19 @@ class GlobalPermissionDictionary
 	}
 
 	/**
+	 * @param Permission $permission
+	 */
+	public static function addPermission(Permission $permission)
+	{
+		self::getDictionary()[$permission->getName()] = $permission;
+	}
+
+	/**
 	 * @param string $name
 	 *
 	 * @return Permission
 	 */
-	public static function getPermission(string $name): Permission
+	public static function getPermission(string $name)
 	{
 		return self::$dictionary[$name];
 	}
