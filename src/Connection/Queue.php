@@ -27,6 +27,7 @@ use WildPHP\Core\Connection\Commands\Nick;
 use WildPHP\Core\Connection\Commands\Part;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
+use WildPHP\Core\Connection\Commands\Quit;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
 
@@ -237,5 +238,14 @@ class Queue implements QueueInterface
 	{
 		$who = new Who($channel, $options);
 		$this->insertMessage($who);
+	}
+
+	/**
+	 * @param string $message
+	 */
+	public function quit(string $message)
+	{
+		$quit = new Quit($message);
+		$this->insertMessage($quit);
 	}
 }
