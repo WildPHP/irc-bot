@@ -25,6 +25,7 @@ use Collections\Dictionary;
 use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Users\GlobalUserCollection;
@@ -51,11 +52,12 @@ class CommandHandler
 	 */
 	public static function parseAndRunCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
-		$args = $incomingIrcMessage->getArgs();
-		$source = GlobalChannelCollection::getChannelCollection()->getChannelByName($args[0]);
-		$message = $args[1];
-		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
+		$privmsg = PRIVMSG::fromIncomingIrcMessage($incomingIrcMessage);
+		$source = $privmsg->getChannel();
+		$message = $privmsg->getMessage();
+		$user = $privmsg->getUser();
 
+		$args = [];
 		$command = self::parseCommandFromMessage($message, $args);
 		
 		if (!$command)
