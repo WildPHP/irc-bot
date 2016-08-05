@@ -40,7 +40,7 @@ class CommandHandler
 	{
 		GlobalCommandDictionary::setDictionary(new Dictionary());
 
-		EventEmitter::on('irc.line.in.privmsg', __CLASS__ . '::tryParseCommand');
+		EventEmitter::on('irc.line.in.privmsg', __CLASS__ . '::parseAndRunCommand');
 		
 		self::setPrefix(Configuration::get('prefix')->getValue());
 	}
@@ -49,7 +49,7 @@ class CommandHandler
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public static function tryParseCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public static function parseAndRunCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();
 		$source = GlobalChannelCollection::getChannelCollection()->getChannelByName($args[0]);
