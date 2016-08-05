@@ -32,7 +32,7 @@ class GlobalUserCollection
 	 * @param string $nickname
 	 * @return User
 	 */
-	public static function findOrCreateUserObject(string $nickname): User
+	public static function getOrCreateUserByNickname(string $nickname): User
 	{
 		if (self::$userCollection->isUserInCollectionByNickname($nickname))
 			$userObject = self::$userCollection->findUserByNickname($nickname);
@@ -44,6 +44,19 @@ class GlobalUserCollection
 		}
 
 		return $userObject;
+	}
+
+	/**
+	 * @param string $nickname
+	 * @return User
+	 * @throws \RuntimeException
+	 */
+	public static function getUserByNickname(string $nickname): User
+	{
+		if (!self::$userCollection->isUserInCollectionByNickname($nickname))
+			throw new \RuntimeException('User does not exist in collection');
+
+		return self::$userCollection->findUserByNickname($nickname);
 	}
 
 	/**
