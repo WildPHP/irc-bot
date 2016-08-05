@@ -67,7 +67,7 @@ class UserDataCollector
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = $args[1];
 		$accountname = $args[2];
-		$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+		$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
 
 		self::updateAccountnameForUser($userObject, $accountname, $queue);
 	}
@@ -139,7 +139,7 @@ class UserDataCollector
 		$args = $incomingIrcMessage->getArgs();
 		$channel = $args[0];
 		
-		$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+		$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
 		
 		if ($userObject == false)
 			return;

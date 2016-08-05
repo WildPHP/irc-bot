@@ -250,7 +250,7 @@ class Channel
 		{
 			$nickname = $user;
 			$modes = $this->extractUserModesFromNickname($user, $nickname);
-			$userObject = GlobalUserCollection::findOrCreateUserObject($nickname);
+			$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
 
 			if (!empty($modes))
 			{
