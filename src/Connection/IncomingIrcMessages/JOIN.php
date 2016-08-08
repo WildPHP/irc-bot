@@ -71,7 +71,7 @@ class JOIN
 	/**
 	 * @param array $channelNames
 	 *
-	 * @return array
+	 * @return Channel[]
 	 */
 	protected static function getChannelsByList(array $channelNames): array
 	{
