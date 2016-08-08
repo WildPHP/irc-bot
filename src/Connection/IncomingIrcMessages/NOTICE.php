@@ -21,12 +21,10 @@
 namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\Users\GlobalUserCollection;
-use WildPHP\Core\Users\User;
 
 class NOTICE extends PRIVMSG
 {
