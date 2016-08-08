@@ -28,28 +28,8 @@ use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
 
-class NOTICE
+class NOTICE extends PRIVMSG
 {
-	/**
-	 * @var UserPrefix
-	 */
-	protected $prefix = null;
-
-	/**
-	 * @var Channel
-	 */
-	protected $channel = null;
-
-	/**
-	 * @var User
-	 */
-	protected $user = null;
-
-	/**
-	 * @var string
-	 */
-	protected $message = '';
-
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
@@ -73,69 +53,5 @@ class NOTICE
 		$object->setChannel($channel);
 		$object->setMessage($message);
 		return $object;
-	}
-
-	/**
-	 * @return UserPrefix
-	 */
-	public function getPrefix(): UserPrefix
-	{
-		return $this->prefix;
-	}
-
-	/**
-	 * @param UserPrefix $prefix
-	 */
-	public function setPrefix(UserPrefix $prefix)
-	{
-		$this->prefix = $prefix;
-	}
-
-	/**
-	 * @return Channel
-	 */
-	public function getChannel(): Channel
-	{
-		return $this->channel;
-	}
-
-	/**
-	 * @param Channel $channel
-	 */
-	public function setChannel(Channel $channel)
-	{
-		$this->channel = $channel;
-	}
-
-	/**
-	 * @return User
-	 */
-	public function getUser(): User
-	{
-		return $this->user;
-	}
-
-	/**
-	 * @param User $user
-	 */
-	public function setUser(User $user)
-	{
-		$this->user = $user;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMessage(): string
-	{
-		return $this->message;
-	}
-
-	/**
-	 * @param string $message
-	 */
-	public function setMessage(string $message)
-	{
-		$this->message = $message;
 	}
 }
