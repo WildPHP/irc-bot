@@ -146,7 +146,7 @@ class UserDataCollector
 		
 		EventEmitter::emit('user.join', [$userObject, $channel, $queue]);
 
-		if (!CapabilityHandler::isCapabilityActive('extended-join'))
+		if (!CapabilityHandler::isCapabilityAcknowledged('extended-join'))
 		{
 			$queue->who($nickname, '%na');
 			return;
