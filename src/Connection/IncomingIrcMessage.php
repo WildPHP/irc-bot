@@ -9,6 +9,8 @@
 namespace WildPHP\Core\Connection;
 
 
+use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
+
 class IncomingIrcMessage
 {
 	protected $prefix = '';
@@ -25,6 +27,17 @@ class IncomingIrcMessage
 		unset($args[0]);
 		$this->setArgs(array_values($args));
 	}
+
+	public function specialize(): BaseMessage
+    {
+        $verb = $this->getVerb();
+        $expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
+
+        if (!class_exists($expectedClass))
+            throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
+
+        return new $expectedClass($this);
+    }
 
 	/**
 	 * @return string
@@ -74,3 +87,6 @@ class IncomingIrcMessage
 		$this->args = $args;
 	}
 }
+
+class MessageNotImplementedException extends \ErrorException
+{}
