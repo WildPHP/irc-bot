@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
 
-class JOIN
+class JOIN implements BaseMessage
 {
 	/**
 	 * @var UserPrefix
