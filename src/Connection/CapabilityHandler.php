@@ -50,25 +50,27 @@ class CapabilityHandler
 	{
 		EventEmitter::on('stream.created', __NAMESPACE__ . '\CapabilityHandler::initNegotiation');
 		EventEmitter::on('irc.line.in.cap', __NAMESPACE__ . '\CapabilityHandler::responseRouter');
-		EventEmitter::on('irc.cap.ls', function (array $capabilities, Queue $queue) use ($loopInterface)
-		{
-			if (in_array('extended-join', $capabilities))
-				self::requestCapability('extended-join');
-
-			if (in_array('account-notify', $capabilities))
-				self::requestCapability('account-notify');
-
-			if (in_array('multi-prefix', $capabilities))
-				self::requestCapability('multi-prefix');
-
-            SASL::initialize($queue);
-		});
+		EventEmitter::on('irc.cap.ls', __NAMESPACE__ . '\CapabilityHandler::requestCoreCapabilities');
         EventEmitter::on('irc.cap.ls.after', __NAMESPACE__ . '\CapabilityHandler::flushRequestQueue');
         EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
         EventEmitter::on('irc.cap.notAcknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
         EventEmitter::on('irc.sasl.complete', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
         EventEmitter::on('irc.sasl.error', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
 	}
+
+	public static function requestCoreCapabilities(array $capabilities, Queue $queue)
+    {
+        if (in_array('extended-join', $capabilities))
+            self::requestCapability('extended-join');
+
+        if (in_array('account-notify', $capabilities))
+            self::requestCapability('account-notify');
+
+        if (in_array('multi-prefix', $capabilities))
+            self::requestCapability('multi-prefix');
+
+        SASL::initialize($queue);
+    }
 
 	/**
 	 * @param Queue $queue
