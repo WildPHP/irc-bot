@@ -21,7 +21,9 @@
 namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
+use WildPHP\Core\Connection\IncomingIrcMessage;
+
 interface BaseMessage
 {
-
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
 }
