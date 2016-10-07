@@ -36,7 +36,7 @@ class IncomingIrcMessage
         if (!class_exists($expectedClass))
             throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
 
-        return new $expectedClass($this);
+        return $expectedClass::fromIncomingIrcMessage($this);
     }
 
 	/**
