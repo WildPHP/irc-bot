@@ -20,9 +20,7 @@
 
 namespace WildPHP\Core\Connection;
 
-
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\Timer;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
@@ -62,10 +60,14 @@ class CapabilityHandler
 
 			if (in_array('multi-prefix', $capabilities))
 				self::requestCapability('multi-prefix');
+
+            SASL::initialize($queue);
 		});
         EventEmitter::on('irc.cap.ls.after', __NAMESPACE__ . '\CapabilityHandler::flushRequestQueue');
         EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
         EventEmitter::on('irc.cap.notAcknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
+        EventEmitter::on('irc.sasl.complete', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
+        EventEmitter::on('irc.sasl.error', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
 	}
 
 	/**
@@ -75,6 +77,8 @@ class CapabilityHandler
 	{
 		Logger::debug('Capability negotiation, stage 1...');
 		$queue->cap('LS');
+
+
 	}
 
     /**
@@ -208,12 +212,13 @@ class CapabilityHandler
      */
     public static function canEndNegotiation(): bool
     {
-        // TODO: Add SASL checks in here
-        $totalCapabilityCount = count(self::$capabilitiesToRequest);
+        $saslIsComplete = SASL::hasCompleted();
+
+        $reqCount = count(self::$capabilitiesToRequest);
         $ackCount = count(self::$acknowledgedCapabilities);
         $nakCount = count(self::$notAcknowledgedCapabilities);
         $handledCount = $ackCount + $nakCount;
 
-        return $handledCount === $totalCapabilityCount;
+        return $handledCount === $reqCount && $saslIsComplete;
     }
 }
