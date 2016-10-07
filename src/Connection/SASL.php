@@ -28,10 +28,22 @@ use WildPHP\Core\Logger\Logger;
 
 class SASL
 {
+    /**
+     * @var bool
+     */
     protected static $hasCompleted = false;
+    /**
+     * @var bool|string
+     */
     protected static $errorReason = false;
+    /**
+     * @var bool
+     */
     protected static $isSuccessful = false;
 
+    /**
+     * @var array
+     */
     protected static $successCodes = [
         '900' => 'RPL_LOGGEDIN',
         '901' => 'RPL_LOGGEDOUT',
@@ -39,6 +51,9 @@ class SASL
         '908' => 'RPL_SASLMECHS'
     ];
 
+    /**
+     * @var array
+     */
     protected static $errorCodes = [
         '902' => 'ERR_NICKLOCKED',
         '904' => 'ERR_SASLFAIL',
@@ -114,6 +129,10 @@ class SASL
         Logger::debug('[SASL] Sent authentication details, awaiting response from server.');
     }
 
+    /**
+     * @param IncomingIrcMessage $message
+     * @param Queue $queue
+     */
     public static function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
     {
         $code = $message->getVerb();
@@ -124,12 +143,16 @@ class SASL
 
         if ($code != '903')
             return;
-        
+
         // This event has to fit on the events used in CapabilityHandler.
         Logger::info('[SASL] Authentication successful!');
         EventEmitter::emit('irc.sasl.complete', [[], $queue]);
     }
 
+    /**
+     * @param IncomingIrcMessage $message
+     * @param Queue $queue
+     */
     public static function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
     {
         $code = $message->getVerb();
@@ -144,7 +167,10 @@ class SASL
         EventEmitter::emit('irc.sasl.error', [[], $queue]);
     }
 
-    public static function setErrorReason(string $reason)
+    /**
+     * @param string|false $reason
+     */
+    public static function setErrorReason($reason)
     {
         self::$errorReason = $reason;
     }
@@ -165,16 +191,25 @@ class SASL
         self::$isSuccessful = $isSuccessful;
     }
 
+    /**
+     * @return bool
+     */
     public static function hasCompleted(): bool
     {
         return self::$hasCompleted;
     }
 
+    /**
+     * @return bool
+     */
     public static function isSuccessful(): bool
     {
         return self::$isSuccessful;
     }
 
+    /**
+     * @return bool|string
+     */
     public static function hasEncounteredError()
     {
         return self::$errorReason;
