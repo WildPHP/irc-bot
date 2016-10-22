@@ -31,6 +31,7 @@ class PART extends JOIN
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
 	 * @return PART
+	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
@@ -41,6 +42,9 @@ class PART extends JOIN
 		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
 		$channels = self::getChannelsByList($channelNameList);
 		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
+
+		if (!$user)
+			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
 		$object = new self();
 

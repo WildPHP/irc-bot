@@ -32,6 +32,7 @@ class NOTICE extends PRIVMSG
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
 	 * @return NOTICE
+	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
@@ -43,6 +44,9 @@ class NOTICE extends PRIVMSG
 		$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
 		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
 		$message = $incomingIrcMessage->getArgs()[1];
+
+		if (!$user)
+			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
 		$object = new self();
 

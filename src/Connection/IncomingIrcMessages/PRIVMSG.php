@@ -54,6 +54,7 @@ class PRIVMSG implements BaseMessage
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
 	 * @return PRIVMSG
+	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
@@ -65,6 +66,9 @@ class PRIVMSG implements BaseMessage
 		$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
 		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
 		$message = $incomingIrcMessage->getArgs()[1];
+
+		if (!$user)
+			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
 		$object = new self();
 

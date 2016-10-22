@@ -49,6 +49,7 @@ class JOIN implements BaseMessage
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
 	 * @return JOIN
+	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
@@ -59,6 +60,9 @@ class JOIN implements BaseMessage
 		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
 		$channels = self::getChannelsByList($channelNameList);
 		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
+
+		if (!$user)
+			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
 		$object = new self();
 
