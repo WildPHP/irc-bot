@@ -24,12 +24,17 @@ namespace WildPHP\Core\Connection\Commands;
 class Join extends BaseCommand
 {
 	/**
-	 * @var string
+	 * @var string|array
 	 */
 	protected $channel;
 
 	/**
-	 * @return string
+	 * @var string|array
+	 */
+	protected $key;
+
+	/**
+	 * @return string|array
 	 */
 	public function getKey()
 	{
@@ -37,7 +42,7 @@ class Join extends BaseCommand
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|array $key
 	 */
 	public function setKey($key)
 	{
@@ -45,16 +50,14 @@ class Join extends BaseCommand
 	}
 
 	/**
-	 * @var string
-	 */
-	protected $key;
-
-	/**
 	 * @param string|array $channel
 	 * @param string|array $key
 	 */
 	public function __construct($channel, $key = '')
 	{
+		if (is_array($channel) && (!is_array($key) || count($channel) != count($key)))
+			throw new \InvalidArgumentException('Channel and key count mismatch');
+
 		$this->setChannel($channel);
 		$this->setKey($key);
 	}
