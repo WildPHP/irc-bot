@@ -60,7 +60,7 @@ class CommandHandler
 		$args = [];
 		$command = self::parseCommandFromMessage($message, $args);
 
-		if (!$command)
+		if ($command === false)
 			return;
 
 		$dictionary = GlobalCommandDictionary::getDictionary();
@@ -81,6 +81,9 @@ class CommandHandler
 	{
 		$messageParts = explode(' ', $message);
 		$firstPart = $messageParts[0];
+
+		if (strlen($firstPart) == strlen(self::getPrefix()))
+			return false;
 
 		if (substr($firstPart, 0, strlen(self::getPrefix())) != self::getPrefix())
 			return false;
