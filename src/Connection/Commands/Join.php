@@ -55,7 +55,7 @@ class Join extends BaseCommand
 	 */
 	public function __construct($channel, $key = '')
 	{
-		if (is_array($channel) && (!is_array($key) || count($channel) != count($key)))
+		if (is_array($channel) && !empty($key) && (!is_array($key) || count($channel) != count($key)))
 			throw new \InvalidArgumentException('Channel and key count mismatch');
 
 		$this->setChannel($channel);
