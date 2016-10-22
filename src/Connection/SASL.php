@@ -22,6 +22,7 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Configuration\ConfigurationItemNotFoundException;
 use WildPHP\Core\Connection\Commands\Authenticate;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
@@ -64,13 +65,21 @@ class SASL
 
 	public static function initialize(Queue $queue)
 	{
-		if (!Configuration::get('sasl') || !Configuration::get('sasl.username') || !Configuration::get('sasl.password'))
+		try
+		{
+			Configuration::get('sasl');
+			Configuration::get('sasl.username');
+			Configuration::get('sasl.password');
+		}
+		catch (ConfigurationItemNotFoundException $e)
 		{
 			Logger::info('SASL not initialized because no credentials were provided.');
 			EventEmitter::emit('irc.sasl.error', [[], $queue]);
+			self::setHasCompleted(true);
 
 			return;
 		}
+
 		EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\\SASL::sendAuthenticationMechanism');
 		EventEmitter::on('irc.line.in.authenticate', __NAMESPACE__ . '\\SASL::sendCredentials');
 		CapabilityHandler::requestCapability('sasl');
