@@ -20,9 +20,7 @@
 
 namespace WildPHP\Core\Connection;
 
-
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\Timer;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
@@ -33,40 +31,46 @@ class CapabilityHandler
 	 */
 	protected static $availableCapabilities = [];
 
+    /**
+     * @var array
+     */
+    protected static $capabilitiesToRequest = [];
+
 	/**
 	 * @var array
 	 */
-	protected static $acquiredCapabilities = [];
+	protected static $acknowledgedCapabilities = [];
+
+    /**
+     * @var array
+     */
+    protected static $notAcknowledgedCapabilities = [];
 
 	public static function initialize(LoopInterface $loopInterface)
 	{
 		EventEmitter::on('stream.created', __NAMESPACE__ . '\CapabilityHandler::initNegotiation');
 		EventEmitter::on('irc.line.in.cap', __NAMESPACE__ . '\CapabilityHandler::responseRouter');
-		EventEmitter::on('irc.cap.ls', function (array $capabilities, Queue $queue) use ($loopInterface)
-		{
-			if (in_array('extended-join', $capabilities))
-				$queue->cap('REQ :extended-join');
-
-			if (in_array('account-notify', $capabilities))
-				$queue->cap('REQ :account-notify');
-
-			if (in_array('multi-prefix', $capabilities))
-				$queue->cap('REQ :multi-prefix');
-
-			$loopInterface->addPeriodicTimer(1, function (Timer $timer) use ($queue)
-			{
-				$canContinue = true;
-				EventEmitter::emit('irc.cap.continue', [&$canContinue]);
-
-				if ($canContinue)
-				{
-					$timer->cancel();
-					$queue->cap('END');
-					EventEmitter::emit('irc.cap.after', [$queue]);
-				}
-			});
-		});
+		EventEmitter::on('irc.cap.ls', __NAMESPACE__ . '\CapabilityHandler::requestCoreCapabilities');
+        EventEmitter::on('irc.cap.ls.after', __NAMESPACE__ . '\CapabilityHandler::flushRequestQueue');
+        EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
+        EventEmitter::on('irc.cap.notAcknowledged', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
+        EventEmitter::on('irc.sasl.complete', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
+        EventEmitter::on('irc.sasl.error', __NAMESPACE__ . '\CapabilityHandler::tryEndNegotiation');
 	}
+
+	public static function requestCoreCapabilities(array $capabilities, Queue $queue)
+    {
+        if (in_array('extended-join', $capabilities))
+            self::requestCapability('extended-join');
+
+        if (in_array('account-notify', $capabilities))
+            self::requestCapability('account-notify');
+
+        if (in_array('multi-prefix', $capabilities))
+            self::requestCapability('multi-prefix');
+
+        SASL::initialize($queue);
+    }
 
 	/**
 	 * @param Queue $queue
@@ -75,14 +79,52 @@ class CapabilityHandler
 	{
 		Logger::debug('Capability negotiation, stage 1...');
 		$queue->cap('LS');
+
+
 	}
+
+    /**
+     * @param Queue $queue
+     */
+	public static function flushRequestQueue(Queue $queue)
+    {
+        $queue->cap('REQ :' . implode(' ', self::$capabilitiesToRequest));
+    }
+
+    /**
+     * @param array $capabilities
+     * @param Queue $queue
+     */
+	public static function tryEndNegotiation(array $capabilities, Queue $queue)
+    {
+        if (!self::canEndNegotiation())
+            return;
+
+        $queue->cap('END');
+        EventEmitter::emit('irc.cap.end', [$queue]);
+    }
+
+    public static function requestCapability(string $capability)
+    {
+        if (!self::isCapabilityAvailable($capability))
+            return false;
+
+        if (self::isCapabilityAcknowledged($capability))
+            return true;
+
+        if (in_array($capability, self::$capabilitiesToRequest))
+            return true;
+
+        self::$capabilitiesToRequest[] = $capability;
+        return true;
+    }
 
 	/**
 	 * @param string $capability
 	 *
 	 * @return bool
 	 */
-	public static function capabilityExists(string $capability): bool
+	public static function isCapabilityAvailable(string $capability): bool
 	{
 		return in_array($capability, self::$availableCapabilities);
 	}
@@ -92,9 +134,9 @@ class CapabilityHandler
 	 *
 	 * @return bool
 	 */
-	public static function isCapabilityActive(string $capability): bool
+	public static function isCapabilityAcknowledged(string $capability): bool
 	{
-		return in_array($capability, self::$acquiredCapabilities);
+		return in_array($capability, self::$acknowledgedCapabilities);
 	}
 
 	/**
@@ -105,16 +147,24 @@ class CapabilityHandler
 	{
 		$args = $incomingIrcMessage->getArgs();
 		$responseCommand = $args[1];
+        $capability = $args[2];
 
 		switch ($responseCommand)
 		{
 			case 'LS':
-				self::updateAvailableCapabilities($args[2], $queue);
+				self::updateAvailableCapabilities($capability, $queue);
+                EventEmitter::emit('irc.cap.ls.after', [$queue]);
 				break;
 
 			case 'ACK':
-				self::updateAcquiredCapabilities($args[2], $queue);
+			    $capabilities = explode(' ', $capability);
+				self::updateAcknowledgedCapabilities($capabilities, $queue);
 				break;
+
+            case 'NAK':
+                $capabilities = explode(' ', $capability);
+                self::updateNotAcknowledgedCapabilities($capabilities, $queue);
+                break;
 		}
 	}
 
@@ -130,14 +180,47 @@ class CapabilityHandler
 	}
 
 	/**
-	 * @param string $capabilities
+	 * @param string[]|string $capabilities
 	 * @param Queue $queue
 	 */
-	public static function updateAcquiredCapabilities(string $capabilities, Queue $queue)
+	public static function updateAcknowledgedCapabilities($capabilities, Queue $queue)
 	{
-		$capabilities = explode(' ', trim($capabilities));
-		$acqCapabilities = array_unique(array_merge(self::$acquiredCapabilities, $capabilities));
-		self::$acquiredCapabilities = $acqCapabilities;
-		EventEmitter::emit('irc.cap.acquired', [$acqCapabilities, $queue]);
+		if (is_string($capabilities))
+		    $capabilities = [$capabilities];
+
+		$ackCapabilities = array_filter(array_unique(array_merge(self::$acknowledgedCapabilities, $capabilities)));
+		self::$acknowledgedCapabilities = $ackCapabilities;
+
+		EventEmitter::emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
+
+    /**
+     * @param string[]|string $capabilities
+     * @param Queue $queue
+     */
+	public static function updateNotAcknowledgedCapabilities($capabilities, Queue $queue)
+    {
+        if (is_string($capabilities))
+            $capabilities = [$capabilities];
+
+        $nakCapabilities = array_filter(array_unique(array_merge(self::$notAcknowledgedCapabilities, $capabilities)));
+        self::$notAcknowledgedCapabilities = $nakCapabilities;
+
+        EventEmitter::emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function canEndNegotiation(): bool
+    {
+        $saslIsComplete = SASL::hasCompleted();
+
+        $reqCount = count(self::$capabilitiesToRequest);
+        $ackCount = count(self::$acknowledgedCapabilities);
+        $nakCount = count(self::$notAcknowledgedCapabilities);
+        $handledCount = $ackCount + $nakCount;
+
+        return $handledCount === $reqCount && $saslIsComplete;
+    }
 }
