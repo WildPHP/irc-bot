@@ -111,6 +111,7 @@ class UserPrefix
 		$nickname = $matches['nick'];
 		$username = $matches['user'] ?? '';
 		$hostname = $matches['host'] ?? '';
+
 		return new self($nickname, $username, $hostname);
 	}
 

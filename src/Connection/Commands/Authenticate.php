@@ -23,37 +23,37 @@ namespace WildPHP\Core\Connection\Commands;
 
 class Authenticate extends BaseCommand
 {
-    /**
-     * @var string
-     */
-    protected $command;
+	/**
+	 * @var string
+	 */
+	protected $command;
 
-    public function __construct(string $command)
-    {
-        $this->setCommand($command);
-    }
+	public function __construct(string $command)
+	{
+		$this->setCommand($command);
+	}
 
-    /**
-     * @return string
-     */
-    public function getCommand(): string
-    {
-        return $this->command;
-    }
+	/**
+	 * @return string
+	 */
+	public function getCommand(): string
+	{
+		return $this->command;
+	}
 
-    /**
-     * @param string $command
-     */
-    public function setCommand(string $command)
-    {
-        $this->command = $command;
-    }
+	/**
+	 * @param string $command
+	 */
+	public function setCommand(string $command)
+	{
+		$this->command = $command;
+	}
 
-    /**
-     * @return string
-     */
-    public function formatMessage(): string
-    {
-        return 'AUTHENTICATE ' . $this->getCommand() . "\r\n";
-    }
+	/**
+	 * @return string
+	 */
+	public function formatMessage(): string
+	{
+		return 'AUTHENTICATE ' . $this->getCommand() . "\r\n";
+	}
 }

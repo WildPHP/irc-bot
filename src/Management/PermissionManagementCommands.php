@@ -47,21 +47,24 @@ class PermissionManagementCommands
 		if (!$canDo)
 		{
 			$queue->privmsg($source->getName(), 'You do not have permission to do this.');
+
 			return;
 		}
 
 		if (count($args) != 4)
 		{
 			$queue->privmsg($source->getName(), 'Not enough parameters. Usage: addcriteria [permission] [account name] [channel] [mode]');
+
 			return;
 		}
-		
+
 		$permission = $args[0];
 		$permission = GlobalPermissionDictionary::getPermission($permission);
-		
+
 		if ($permission == false)
 		{
 			$queue->privmsg($source->getName(), 'A permission with that name does not exist or is not registered.');
+
 			return;
 		}
 
@@ -88,12 +91,14 @@ class PermissionManagementCommands
 		if (!$canDo)
 		{
 			$queue->privmsg($source->getName(), 'You do not have permission to do this.');
+
 			return;
 		}
 
 		if (count($args) != 4)
 		{
 			$queue->privmsg($source->getName(), 'Not enough parameters. Usage: delcriteria [permission] [account name] [channel] [mode]');
+
 			return;
 		}
 
@@ -103,6 +108,7 @@ class PermissionManagementCommands
 		if ($permission == false)
 		{
 			$queue->privmsg($source->getName(), 'A permission with that name does not exist or is not registered.');
+
 			return;
 		}
 

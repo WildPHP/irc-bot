@@ -28,190 +28,192 @@ use WildPHP\Core\Logger\Logger;
 
 class SASL
 {
-    /**
-     * @var bool
-     */
-    protected static $hasCompleted = false;
-    /**
-     * @var bool|string
-     */
-    protected static $errorReason = false;
-    /**
-     * @var bool
-     */
-    protected static $isSuccessful = false;
+	/**
+	 * @var bool
+	 */
+	protected static $hasCompleted = false;
+	/**
+	 * @var bool|string
+	 */
+	protected static $errorReason = false;
+	/**
+	 * @var bool
+	 */
+	protected static $isSuccessful = false;
 
-    /**
-     * @var array
-     */
-    protected static $successCodes = [
-        '900' => 'RPL_LOGGEDIN',
-        '901' => 'RPL_LOGGEDOUT',
-        '903' => 'RPL_SASLSUCCESS',
-        '908' => 'RPL_SASLMECHS'
-    ];
+	/**
+	 * @var array
+	 */
+	protected static $successCodes = [
+		'900' => 'RPL_LOGGEDIN',
+		'901' => 'RPL_LOGGEDOUT',
+		'903' => 'RPL_SASLSUCCESS',
+		'908' => 'RPL_SASLMECHS'
+	];
 
-    /**
-     * @var array
-     */
-    protected static $errorCodes = [
-        '902' => 'ERR_NICKLOCKED',
-        '904' => 'ERR_SASLFAIL',
-        '905' => 'ERR_SASLTOOLONG',
-        '906' => 'ERR_SASLABORTED',
-        '907' => 'ERR_SASLALREADY'
-    ];
+	/**
+	 * @var array
+	 */
+	protected static $errorCodes = [
+		'902' => 'ERR_NICKLOCKED',
+		'904' => 'ERR_SASLFAIL',
+		'905' => 'ERR_SASLTOOLONG',
+		'906' => 'ERR_SASLABORTED',
+		'907' => 'ERR_SASLALREADY'
+	];
 
-    public static function initialize(Queue $queue)
-    {
-        if (!Configuration::get('sasl') || !Configuration::get('sasl.username') || !Configuration::get('sasl.password'))
-        {
-            Logger::info('SASL not initialized because no credentials were provided.');
-            EventEmitter::emit('irc.sasl.error', [[], $queue]);
-            return;
-        }
-        EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\\SASL::sendAuthenticationMechanism');
-        EventEmitter::on('irc.line.in.authenticate', __NAMESPACE__ . '\\SASL::sendCredentials');
-        CapabilityHandler::requestCapability('sasl');
+	public static function initialize(Queue $queue)
+	{
+		if (!Configuration::get('sasl') || !Configuration::get('sasl.username') || !Configuration::get('sasl.password'))
+		{
+			Logger::info('SASL not initialized because no credentials were provided.');
+			EventEmitter::emit('irc.sasl.error', [[], $queue]);
 
-        // Map all numeric SASL responses to either the success or error handler:
-        foreach (self::$successCodes as $code => $reason)
-        {
-            EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handlePositiveResponse');
-        }
+			return;
+		}
+		EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\\SASL::sendAuthenticationMechanism');
+		EventEmitter::on('irc.line.in.authenticate', __NAMESPACE__ . '\\SASL::sendCredentials');
+		CapabilityHandler::requestCapability('sasl');
 
-        foreach (self::$errorCodes as $code => $reason)
-        {
-            EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handleNegativeResponse');
-        }
+		// Map all numeric SASL responses to either the success or error handler:
+		foreach (self::$successCodes as $code => $reason)
+		{
+			EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handlePositiveResponse');
+		}
 
-        Logger::debug('[SASL] Capability requested, awaiting server response.');
-    }
+		foreach (self::$errorCodes as $code => $reason)
+		{
+			EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handleNegativeResponse');
+		}
 
-    /**
-     * @param array $acknowledgedCapabilities
-     * @param Queue $queue
-     */
-    public static function sendAuthenticationMechanism(array $acknowledgedCapabilities, Queue $queue)
-    {
-        if (!in_array('sasl', $acknowledgedCapabilities))
-            return;
+		Logger::debug('[SASL] Capability requested, awaiting server response.');
+	}
 
-        $queue->insertMessage(new Authenticate('PLAIN'));
-        Logger::debug('[SASL] Authentication mechanism requested, awaiting server response.');
-    }
+	/**
+	 * @param array $acknowledgedCapabilities
+	 * @param Queue $queue
+	 */
+	public static function sendAuthenticationMechanism(array $acknowledgedCapabilities, Queue $queue)
+	{
+		if (!in_array('sasl', $acknowledgedCapabilities))
+			return;
 
-    /**
-     * @param string $username
-     * @param string $password
-     * @return string
-     */
-    protected static function generateCredentialString(string $username, string $password)
-    {
-        return base64_encode($username . "\0" . $username . "\0" . $password);
-    }
+		$queue->insertMessage(new Authenticate('PLAIN'));
+		Logger::debug('[SASL] Authentication mechanism requested, awaiting server response.');
+	}
 
-    /**
-     * @param IncomingIrcMessage $message
-     * @param Queue $queue
-     */
-    public static function sendCredentials(IncomingIrcMessage $message, Queue $queue)
-    {
-        $message = $message->specialize();
+	/**
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return string
+	 */
+	protected static function generateCredentialString(string $username, string $password)
+	{
+		return base64_encode($username . "\0" . $username . "\0" . $password);
+	}
 
-        if ($message->getResponse() != '+')
-            return;
+	/**
+	 * @param IncomingIrcMessage $message
+	 * @param Queue $queue
+	 */
+	public static function sendCredentials(IncomingIrcMessage $message, Queue $queue)
+	{
+		$message = $message->specialize();
 
-        $username = Configuration::get('sasl.username')->getValue();
-        $password = Configuration::get('sasl.password')->getValue();
-        $credentials = self::generateCredentialString($username, $password);
-        $queue->insertMessage(new Authenticate($credentials));
-        Logger::debug('[SASL] Sent authentication details, awaiting response from server.');
-    }
+		if ($message->getResponse() != '+')
+			return;
 
-    /**
-     * @param IncomingIrcMessage $message
-     * @param Queue $queue
-     */
-    public static function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
-    {
-        $code = $message->getVerb();
+		$username = Configuration::get('sasl.username')->getValue();
+		$password = Configuration::get('sasl.password')->getValue();
+		$credentials = self::generateCredentialString($username, $password);
+		$queue->insertMessage(new Authenticate($credentials));
+		Logger::debug('[SASL] Sent authentication details, awaiting response from server.');
+	}
 
-        self::setErrorReason(false);
-        self::setHasCompleted(true);
-        self::setIsSuccessful(true);
+	/**
+	 * @param IncomingIrcMessage $message
+	 * @param Queue $queue
+	 */
+	public static function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
+	{
+		$code = $message->getVerb();
 
-        if ($code != '903')
-            return;
+		self::setErrorReason(false);
+		self::setHasCompleted(true);
+		self::setIsSuccessful(true);
 
-        // This event has to fit on the events used in CapabilityHandler.
-        Logger::info('[SASL] Authentication successful!');
-        EventEmitter::emit('irc.sasl.complete', [[], $queue]);
-    }
+		if ($code != '903')
+			return;
 
-    /**
-     * @param IncomingIrcMessage $message
-     * @param Queue $queue
-     */
-    public static function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
-    {
-        $code = $message->getVerb();
-        $reason = self::$errorCodes[$code];
+		// This event has to fit on the events used in CapabilityHandler.
+		Logger::info('[SASL] Authentication successful!');
+		EventEmitter::emit('irc.sasl.complete', [[], $queue]);
+	}
 
-        self::setErrorReason($reason);
-        self::setHasCompleted(true);
-        self::setIsSuccessful(false);
+	/**
+	 * @param IncomingIrcMessage $message
+	 * @param Queue $queue
+	 */
+	public static function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
+	{
+		$code = $message->getVerb();
+		$reason = self::$errorCodes[$code];
 
-        // This event has to fit on the events used in CapabilityHandler.
-        Logger::warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
-        EventEmitter::emit('irc.sasl.error', [[], $queue]);
-    }
+		self::setErrorReason($reason);
+		self::setHasCompleted(true);
+		self::setIsSuccessful(false);
 
-    /**
-     * @param string|false $reason
-     */
-    public static function setErrorReason($reason)
-    {
-        self::$errorReason = $reason;
-    }
+		// This event has to fit on the events used in CapabilityHandler.
+		Logger::warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
+		EventEmitter::emit('irc.sasl.error', [[], $queue]);
+	}
 
-    /**
-     * @param boolean $hasCompleted
-     */
-    public static function setHasCompleted(bool $hasCompleted)
-    {
-        self::$hasCompleted = $hasCompleted;
-    }
+	/**
+	 * @param string|false $reason
+	 */
+	public static function setErrorReason($reason)
+	{
+		self::$errorReason = $reason;
+	}
 
-    /**
-     * @param boolean $isSuccessful
-     */
-    public static function setIsSuccessful(bool $isSuccessful)
-    {
-        self::$isSuccessful = $isSuccessful;
-    }
+	/**
+	 * @param boolean $hasCompleted
+	 */
+	public static function setHasCompleted(bool $hasCompleted)
+	{
+		self::$hasCompleted = $hasCompleted;
+	}
 
-    /**
-     * @return bool
-     */
-    public static function hasCompleted(): bool
-    {
-        return self::$hasCompleted;
-    }
+	/**
+	 * @param boolean $isSuccessful
+	 */
+	public static function setIsSuccessful(bool $isSuccessful)
+	{
+		self::$isSuccessful = $isSuccessful;
+	}
 
-    /**
-     * @return bool
-     */
-    public static function isSuccessful(): bool
-    {
-        return self::$isSuccessful;
-    }
+	/**
+	 * @return bool
+	 */
+	public static function hasCompleted(): bool
+	{
+		return self::$hasCompleted;
+	}
 
-    /**
-     * @return bool|string
-     */
-    public static function hasEncounteredError()
-    {
-        return self::$errorReason;
-    }
+	/**
+	 * @return bool
+	 */
+	public static function isSuccessful(): bool
+	{
+		return self::$isSuccessful;
+	}
+
+	/**
+	 * @return bool|string
+	 */
+	public static function hasEncounteredError()
+	{
+		return self::$errorReason;
+	}
 }

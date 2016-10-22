@@ -196,7 +196,7 @@ class IrcConnection
 			$stream->write($data);
 		});
 	}
-	
+
 	public function close()
 	{
 		$this->connectorPromise->then(function (Stream $stream)

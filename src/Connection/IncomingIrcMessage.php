@@ -29,15 +29,15 @@ class IncomingIrcMessage
 	}
 
 	public function specialize(): BaseMessage
-    {
-        $verb = $this->getVerb();
-        $expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
+	{
+		$verb = $this->getVerb();
+		$expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
 
-        if (!class_exists($expectedClass))
-            throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
+		if (!class_exists($expectedClass))
+			throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
 
-        return $expectedClass::fromIncomingIrcMessage($this);
-    }
+		return $expectedClass::fromIncomingIrcMessage($this);
+	}
 
 	/**
 	 * @return string
@@ -89,4 +89,5 @@ class IncomingIrcMessage
 }
 
 class MessageNotImplementedException extends \ErrorException
-{}
+{
+}

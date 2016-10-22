@@ -56,12 +56,12 @@ class ChannelDataCollector
 
 		$chunks = array_chunk($channels, 3);
 		$queue->setFloodControl(true);
-		
+
 		foreach ($chunks as $chunk)
 		{
 			$queue->join($chunk);
 		}
-		
+
 	}
 
 	public static function createModeMap()
@@ -76,13 +76,13 @@ class ChannelDataCollector
 
 		Logger::debug('Set new mode map', ['map' => self::$modeMap]);
 	}
-	
+
 	public static function updateChannelTopic(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channel = $incomingIrcMessage->getArgs()[1];
 		$topic = $incomingIrcMessage->getArgs()[2];
 		Logger::debug('New topic set', ['topic' => $topic, 'channel' => $channel]);
-		
+
 		if (!self::$channelCollection->channelExistsByName($channel))
 			self::addNewChannelByName($channel);
 
@@ -95,6 +95,7 @@ class ChannelDataCollector
 		$channel = new Channel();
 		$channel->setName($name);
 		self::$channelCollection->addChannel($channel);
+
 		return $channel;
 	}
 }

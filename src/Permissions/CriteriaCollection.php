@@ -92,6 +92,7 @@ class CriteriaCollection
 	 * @param string $accountName
 	 * @param string $channel
 	 * @param string $mode
+	 *
 	 * @return int
 	 */
 	public function removeEvery(string $accountName = '', string $channel = '', string $mode = ''): int
@@ -100,7 +101,8 @@ class CriteriaCollection
 			function (PermissionCriteria $criteria) use ($accountName, $channel, $mode)
 			{
 				if ($criteria->getAccountName() == $accountName &&
-					$criteria->getChannel() == $channel && $criteria->getMode() == $mode)
+					$criteria->getChannel() == $channel && $criteria->getMode() == $mode
+				)
 					return true;
 
 				return false;
@@ -129,15 +131,16 @@ class CriteriaCollection
 	public function loadExistingCollection()
 	{
 		$dataStorage = DataStorageFactory::getStorage('permissionCriteria');
-		
+
 		if (!in_array($this->getName(), $dataStorage->getKeys()))
 			return;
-		
+
 		$criteria = $dataStorage->get($this->getName());
 		foreach ($criteria as $item)
 		{
 			if (!is_array($item) || !array_key_exists('mode', $item) ||
-				!array_key_exists('accountName', $item) || !array_key_exists('channel', $item))
+				!array_key_exists('accountName', $item) || !array_key_exists('channel', $item)
+			)
 				continue;
 
 			$accountName = $item['accountName'];

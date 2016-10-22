@@ -25,9 +25,10 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 
 interface BaseMessage
 {
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     * @return mixed
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return mixed
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
 }

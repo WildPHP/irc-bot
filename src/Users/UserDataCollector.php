@@ -33,12 +33,12 @@ class UserDataCollector
 	 * @var UserCollection
 	 */
 	protected static $userCollection = null;
-	
+
 	public static function initialize()
 	{
 		self::$userCollection = new UserCollection();
 		GlobalUserCollection::setUserCollection(self::$userCollection);
-		
+
 		EventEmitter::on('irc.line.in.366', __CLASS__ . '::sendWhox');
 		EventEmitter::on('irc.line.in.354', __CLASS__ . '::processWhox');
 		EventEmitter::on('irc.line.in.quit', __CLASS__ . '::processQuit');
@@ -100,7 +100,7 @@ class UserDataCollector
 		$channel = $args[0];
 
 		$userObject = self::$userCollection->findUserByNickname($nickname);
-		
+
 		if ($userObject == false)
 			return;
 
@@ -118,9 +118,9 @@ class UserDataCollector
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
 		$nickname = explode('!', $prefix)[0];
-		
+
 		$userObject = self::$userCollection->findUserByNickname($nickname);
-		
+
 		if ($userObject == false)
 			return;
 
@@ -138,17 +138,18 @@ class UserDataCollector
 		$nickname = explode('!', $prefix)[0];
 		$args = $incomingIrcMessage->getArgs();
 		$channel = $args[0];
-		
+
 		$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
-		
+
 		if ($userObject == false)
 			return;
-		
+
 		EventEmitter::emit('user.join', [$userObject, $channel, $queue]);
 
 		if (!CapabilityHandler::isCapabilityAcknowledged('extended-join'))
 		{
 			$queue->who($nickname, '%na');
+
 			return;
 		}
 
@@ -169,14 +170,14 @@ class UserDataCollector
 		$newNickname = $args[0];
 
 		$userObject = self::$userCollection->findUserByNickname($oldNickname);
-		
+
 		if ($userObject == false)
 			return;
-		
+
 		$userObject->setNickname($newNickname);
 		self::$userCollection->removeUserByNickname($oldNickname);
 		self::$userCollection->addUser($userObject);
-		
+
 		EventEmitter::emit('user.nick', [$oldNickname, $newNickname, $queue]);
 	}
 

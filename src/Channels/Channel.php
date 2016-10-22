@@ -102,6 +102,7 @@ class Channel
 	/**
 	 * @param string $mode
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function isUserInMode(string $mode, User $user): bool
@@ -116,6 +117,7 @@ class Channel
 	/**
 	 * @param string $mode
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function addUserToMode(string $mode, User $user): bool
@@ -124,12 +126,14 @@ class Channel
 			return true;
 
 		$this->modeMap[$mode][] = $user;
+
 		return true;
 	}
 
 	/**
 	 * @param string $mode
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function removeUserFromMode(string $mode, User $user): bool
@@ -139,6 +143,7 @@ class Channel
 
 		$key = array_search($user, $this->modeMap[$mode]);
 		unset($this->modeMap[$mode][$key]);
+
 		return true;
 	}
 
@@ -264,6 +269,7 @@ class Channel
 	/**
 	 * @param string $nickname
 	 * @param string $remainders
+	 *
 	 * @return array
 	 */
 	public function extractUserModesFromNickname(string $nickname, string &$remainders): array

@@ -38,6 +38,7 @@ class DataStorage
 
 	/**
 	 * @param string $key
+	 *
 	 * @return mixed
 	 */
 	public function get(string $key)

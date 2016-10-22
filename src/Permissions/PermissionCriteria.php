@@ -46,6 +46,7 @@ class PermissionCriteria
 
 	/**
 	 * @param string $accountName
+	 *
 	 * @return bool
 	 */
 	public function matchAccountName(string $accountName): bool
@@ -58,6 +59,7 @@ class PermissionCriteria
 
 	/**
 	 * @param string $channel
+	 *
 	 * @return bool
 	 */
 	public function matchChannel(string $channel): bool
@@ -70,6 +72,7 @@ class PermissionCriteria
 
 	/**
 	 * @param string $mode
+	 *
 	 * @return bool
 	 */
 	public function matchSingleMode(string $mode): bool
@@ -82,6 +85,7 @@ class PermissionCriteria
 
 	/**
 	 * @param array $modes
+	 *
 	 * @return bool
 	 */
 	public function matchMultipleModes(array $modes): bool
@@ -96,6 +100,7 @@ class PermissionCriteria
 	 * @param string $accountName
 	 * @param string $channel
 	 * @param array|string $modes
+	 *
 	 * @return bool
 	 */
 	public function match(string $accountName = '', string $channel = '', $modes = []): bool
@@ -111,12 +116,12 @@ class PermissionCriteria
 		]);
 		$accountNameMatched = $this->matchAccountName($accountName);
 		$channelMatched = $this->matchChannel($channel);
-		
+
 		if (is_array($modes))
 			$modeMatched = $this->matchMultipleModes($modes);
 		else
 			$modeMatched = $this->matchSingleMode($modes);
-		
+
 		return $accountNameMatched && $modeMatched && $channelMatched;
 	}
 

@@ -38,6 +38,7 @@ class ChannelCollection
 		if (self::channelExists($channel) || self::channelExistsByName($channel->getName()))
 		{
 			Logger::warning('Trying to add existing channel to collection', [$channel]);
+
 			return;
 		}
 
@@ -52,6 +53,7 @@ class ChannelCollection
 		if (!self::channelExists($channel))
 		{
 			Logger::warning('Trying to remove non-existing channel from collection', [$channel]);
+
 			return;
 		}
 
@@ -60,6 +62,7 @@ class ChannelCollection
 
 	/**
 	 * @param Channel $channel
+	 *
 	 * @return bool
 	 */
 	public function channelExists(Channel $channel): bool
@@ -69,6 +72,7 @@ class ChannelCollection
 
 	/**
 	 * @param string $name
+	 *
 	 * @return bool
 	 */
 	public function channelExistsByName(string $name): bool
@@ -78,6 +82,7 @@ class ChannelCollection
 
 	/**
 	 * @param string $name
+	 *
 	 * @return Channel
 	 */
 	public function getChannelByName(string $name): Channel

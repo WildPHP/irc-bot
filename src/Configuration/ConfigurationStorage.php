@@ -36,6 +36,7 @@ class ConfigurationStorage
 
 	/**
 	 * @param string $key
+	 *
 	 * @return ConfigurationItem
 	 * @throws ConfigurationItemNotFoundException
 	 */

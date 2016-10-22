@@ -61,6 +61,7 @@ class Who extends BaseCommand
 	public function formatMessage(): string
 	{
 		$options = $this->getOptions();
+
 		return 'WHO ' . $this->getChannel() . (!empty($options) ? ' ' . $options : '') . "\r\n";
 	}
 }

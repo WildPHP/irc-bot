@@ -38,7 +38,7 @@ class User
 	 * @var ChannelCollection
 	 */
 	protected $channelCollection;
-	
+
 	public function __construct()
 	{
 		$this->channelCollection = new ChannelCollection();

@@ -69,6 +69,7 @@ class EventEmitter
 
 	/**
 	 * @param string $event
+	 *
 	 * @return array
 	 */
 	public static function listeners(string $event): array

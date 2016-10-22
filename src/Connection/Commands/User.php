@@ -109,6 +109,7 @@ class User extends BaseCommand
 
 	/**
 	 * Privmsg constructor.
+	 *
 	 * @param string $username
 	 * @param string $hostname
 	 * @param string $servername

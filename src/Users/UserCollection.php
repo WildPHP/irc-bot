@@ -32,6 +32,7 @@ class UserCollection
 
 	/**
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function isUserInCollection(User $user): bool
@@ -41,6 +42,7 @@ class UserCollection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return bool
 	 */
 	public function isUserInCollectionByNickname(string $nickname): bool
@@ -90,6 +92,7 @@ class UserCollection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return bool|User
 	 */
 	public function findUserByNickname(string $nickname)

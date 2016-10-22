@@ -50,6 +50,7 @@ class NOTICE extends PRIVMSG
 		$object->setUser($user);
 		$object->setChannel($channel);
 		$object->setMessage($message);
+
 		return $object;
 	}
 }

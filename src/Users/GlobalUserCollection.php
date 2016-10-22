@@ -30,6 +30,7 @@ class GlobalUserCollection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return User
 	 */
 	public static function getOrCreateUserByNickname(string $nickname): User
@@ -48,6 +49,7 @@ class GlobalUserCollection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return User
 	 * @throws \RuntimeException
 	 */
@@ -61,6 +63,7 @@ class GlobalUserCollection
 
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
 	 * @return false|User
 	 */
 	public static function getUserFromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)

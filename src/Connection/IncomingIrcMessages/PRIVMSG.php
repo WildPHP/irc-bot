@@ -72,6 +72,7 @@ class PRIVMSG implements BaseMessage
 		$object->setUser($user);
 		$object->setChannel($channel);
 		$object->setMessage($message);
+
 		return $object;
 	}
 

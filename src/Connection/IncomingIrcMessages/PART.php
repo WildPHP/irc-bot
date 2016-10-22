@@ -47,6 +47,7 @@ class PART extends JOIN
 		$object->setPrefix($prefix);
 		$object->setUser($user);
 		$object->setChannels($channels);
+
 		return $object;
 	}
 }

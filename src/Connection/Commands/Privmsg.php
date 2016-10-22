@@ -35,6 +35,7 @@ class Privmsg extends BaseCommand
 
 	/**
 	 * Privmsg constructor.
+	 *
 	 * @param string $channel
 	 * @param string $message
 	 */

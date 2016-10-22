@@ -35,13 +35,14 @@ class BotManagementCommands
 		GlobalPermissionDictionary::addPermission(new Permission('canQuit'));
 		CommandRegistrar::registerCommand('quit', [$this, 'quitCommand']);
 	}
-	
+
 	public static function quitCommand(Channel $source, User $user, array $args, Queue $queue)
 	{
 		$permission = GlobalPermissionDictionary::getPermission('canQuit');
 		if (!$permission->allows($user->getIrcAccount(), $source->getName(), $source->getModesForUser($user)))
 		{
 			$queue->privmsg($source->getName(), 'You do not have permission to do this.');
+
 			return;
 		}
 

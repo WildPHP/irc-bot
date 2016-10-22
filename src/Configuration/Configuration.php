@@ -31,7 +31,7 @@ class Configuration
 	 * @var ConfigurationStorage
 	 */
 	protected static $storage = null;
-	
+
 	public static function initialize()
 	{
 		$backendClass = self::BACKEND;
@@ -44,6 +44,7 @@ class Configuration
 
 	/**
 	 * @param string $key
+	 *
 	 * @return ConfigurationItem
 	 * @throws ConfigurationItemNotFoundException
 	 */

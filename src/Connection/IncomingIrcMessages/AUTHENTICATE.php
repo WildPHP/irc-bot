@@ -25,40 +25,41 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 class AUTHENTICATE implements BaseMessage
 {
 
-    /**
-     * @var string
-     */
-    protected $response = '';
+	/**
+	 * @var string
+	 */
+	protected $response = '';
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     *
-     * @return AUTHENTICATE
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
-    {
-        if ($incomingIrcMessage->getVerb() != 'AUTHENTICATE')
-            throw new \InvalidArgumentException('Expected incoming AUTHENTICATE; got ' . $incomingIrcMessage->getVerb());
-        $response = $incomingIrcMessage->getArgs()[0];
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return AUTHENTICATE
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
+	{
+		if ($incomingIrcMessage->getVerb() != 'AUTHENTICATE')
+			throw new \InvalidArgumentException('Expected incoming AUTHENTICATE; got ' . $incomingIrcMessage->getVerb());
+		$response = $incomingIrcMessage->getArgs()[0];
 
-        $object = new self();
-        $object->setResponse($response);
-        return $object;
-    }
+		$object = new self();
+		$object->setResponse($response);
 
-    /**
-     * @return string
-     */
-    public function getResponse(): string
-    {
-        return $this->response;
-    }
+		return $object;
+	}
 
-    /**
-     * @param string $response
-     */
-    public function setResponse(string $response)
-    {
-        $this->response = $response;
-    }
+	/**
+	 * @return string
+	 */
+	public function getResponse(): string
+	{
+		return $this->response;
+	}
+
+	/**
+	 * @param string $response
+	 */
+	public function setResponse(string $response)
+	{
+		$this->response = $response;
+	}
 }

@@ -36,13 +36,13 @@ class CommandHandler
 	 * @var string
 	 */
 	protected static $prefix = '!';
-	
+
 	public static function initialize()
 	{
 		GlobalCommandDictionary::setDictionary(new Dictionary());
 
 		EventEmitter::on('irc.line.in.privmsg', __CLASS__ . '::parseAndRunCommand');
-		
+
 		self::setPrefix(Configuration::get('prefix')->getValue());
 	}
 
@@ -59,7 +59,7 @@ class CommandHandler
 
 		$args = [];
 		$command = self::parseCommandFromMessage($message, $args);
-		
+
 		if (!$command)
 			return;
 
@@ -74,7 +74,7 @@ class CommandHandler
 	/**
 	 * @param string $message
 	 * @param array $args
-	 * 
+	 *
 	 * @return false|string
 	 */
 	protected static function parseCommandFromMessage(string $message, array &$args)
@@ -88,6 +88,7 @@ class CommandHandler
 		$command = substr($firstPart, strlen(self::getPrefix()));
 		array_shift($messageParts);
 		$args = $messageParts;
+
 		return $command;
 	}
 

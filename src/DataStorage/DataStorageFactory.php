@@ -38,6 +38,7 @@ class DataStorageFactory
 	/**
 	 * @param string $storage
 	 * @param array $options
+	 *
 	 * @return DataStorage
 	 */
 	public static function getStorage(string $storage, array $options = []): DataStorage
@@ -50,6 +51,7 @@ class DataStorageFactory
 		$flintstone = new Flintstone($storage, $options);
 		$dataStorage = new DataStorage($flintstone);
 		self::$openStorages[$storage] = $dataStorage;
+
 		return $dataStorage;
 	}
 }

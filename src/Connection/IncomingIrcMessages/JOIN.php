@@ -65,6 +65,7 @@ class JOIN implements BaseMessage
 		$object->setPrefix($prefix);
 		$object->setUser($user);
 		$object->setChannels($channels);
+
 		return $object;
 	}
 
@@ -81,6 +82,7 @@ class JOIN implements BaseMessage
 			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channelName);
 			$channelObjects[] = $channel;
 		}
+
 		return $channelObjects;
 	}
 

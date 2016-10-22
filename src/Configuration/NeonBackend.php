@@ -40,6 +40,7 @@ class NeonBackend implements ConfigurationBackendInterface
 
 	/**
 	 * @param string $data
+	 *
 	 * @return array
 	 */
 	protected static function parseNeonData(string $data): array
@@ -54,6 +55,7 @@ class NeonBackend implements ConfigurationBackendInterface
 
 	/**
 	 * @param string $file
+	 *
 	 * @return string
 	 */
 	protected static function readNeonFile(string $file): string

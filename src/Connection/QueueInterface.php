@@ -26,24 +26,28 @@ interface QueueInterface
 {
 	/**
 	 * @param BaseCommand $command
+	 *
 	 * @return void
 	 */
 	public function insertMessage(BaseCommand $command);
 
 	/**
 	 * @param BaseCommand $command
+	 *
 	 * @return void
 	 */
 	public function removeMessage(BaseCommand $command);
 
 	/**
 	 * @param int $index
+	 *
 	 * @return void
 	 */
 	public function removeMessageByIndex(int $index);
 
 	/**
 	 * @param QueueItem $item
+	 *
 	 * @return void
 	 */
 	public function scheduleItem(QueueItem $item);
@@ -55,6 +59,7 @@ interface QueueInterface
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return void
 	 */
 	public function nick(string $nickname);
@@ -64,6 +69,7 @@ interface QueueInterface
 	 * @param string $hostname
 	 * @param string $servername
 	 * @param string $realname
+	 *
 	 * @return void
 	 */
 	public function user(string $username, string $hostname, string $servername, string $realname);
@@ -71,12 +77,14 @@ interface QueueInterface
 	/**
 	 * @param string $channel
 	 * @param string $message
+	 *
 	 * @return void
 	 */
 	public function privmsg(string $channel, string $message);
 
 	/**
 	 * @param string $server
+	 *
 	 * @return void
 	 */
 	public function pong(string $server);
@@ -84,12 +92,14 @@ interface QueueInterface
 	/**
 	 * @param string|array $channel
 	 * @param string|array $key
+	 *
 	 * @return void
 	 */
 	public function join($channel, $key = '');
 
 	/**
 	 * @param string $channel
+	 *
 	 * @return void
 	 */
 	public function part(string $channel);

@@ -106,7 +106,7 @@ class Queue implements QueueInterface
 	 * @return int
 	 */
 	public function calculateNextMessageTime(): int
-	{		
+	{
 		// If the queue is empty, this message can be sent immediately. Do not bother calculating.
 		if ($this->getAmountOfItemsInQueue() == 0 || !$this->isFloodControlEnabled())
 			return time();

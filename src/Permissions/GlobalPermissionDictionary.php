@@ -37,6 +37,7 @@ class GlobalPermissionDictionary
 	{
 		if (!self::$dictionary)
 			self::setDictionary(new Dictionary());
+
 		return self::$dictionary;
 	}
 
