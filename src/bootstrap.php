@@ -56,7 +56,7 @@ $realname = Configuration::get('realname')->getValue();
 $nickname = Configuration::get('nick')->getValue();
 
 $ircConnection->createFromConnector($connector, $server, $port);
-CapabilityHandler::initialize($loop);
+CapabilityHandler::initialize();
 ChannelDataCollector::initialize();
 UserDataCollector::initialize();
 CommandHandler::initialize();

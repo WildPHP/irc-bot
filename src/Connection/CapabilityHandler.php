@@ -46,7 +46,7 @@ class CapabilityHandler
 	 */
 	protected static $notAcknowledgedCapabilities = [];
 
-	public static function initialize(LoopInterface $loopInterface)
+	public static function initialize()
 	{
 		EventEmitter::on('stream.created', __NAMESPACE__ . '\CapabilityHandler::initNegotiation');
 		EventEmitter::on('irc.line.in.cap', __NAMESPACE__ . '\CapabilityHandler::responseRouter');
