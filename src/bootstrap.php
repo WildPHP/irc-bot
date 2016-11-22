@@ -60,6 +60,7 @@ CapabilityHandler::initialize();
 ChannelDataCollector::initialize();
 UserDataCollector::initialize();
 CommandHandler::initialize();
+new \WildPHP\Core\Commands\HelpCommand();
 
 EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 {
