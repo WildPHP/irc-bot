@@ -31,12 +31,18 @@ class CommandRegistrar
 	 *
 	 * @throws CommandAlreadyExistsException
 	 */
-	public static function registerCommand(string $command, callable $callback)
+	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null)
 	{
 		if (GlobalCommandDictionary::getDictionary()->keyExists($command))
 			throw new CommandAlreadyExistsException();
 
-		GlobalCommandDictionary::getDictionary()[$command] = $callback;
+        $commandObject = new Command();
+        $commandObject->setCallback($callback);
+
+        if (!is_null($commandHelp))
+            $commandObject->setHelp($commandHelp);
+
+		GlobalCommandDictionary::getDictionary()[$command] = $commandObject;
 	}
 
 	/**
