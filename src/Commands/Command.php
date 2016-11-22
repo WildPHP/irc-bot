@@ -16,6 +16,11 @@ class Command
 	 */
 	protected $callback;
 
+    /**
+     * @var CommandHelp
+     */
+    protected $help = null;
+
 	/**
 	 * @return callable
 	 */
@@ -33,23 +38,18 @@ class Command
 	}
 
 	/**
-	 * @return string
+	 * @return CommandHelp
 	 */
-	public function getHelp(): string
+	public function getHelp(): CommandHelp
 	{
 		return $this->help;
 	}
 
 	/**
-	 * @param string $help
+	 * @param CommandHelp $help
 	 */
-	public function setHelp(string $help)
+	public function setHelp(CommandHelp $help)
 	{
 		$this->help = $help;
 	}
-
-	/**
-	 * @var string
-	 */
-	protected $help = '';
 }
