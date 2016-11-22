@@ -36,6 +36,28 @@ class QueueTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $queue->getAmountOfItemsInQueue());
     }
 
+    public function testCalculateTimeWithoutFoodControl()
+    {
+        $queue = new Queue();
+        $queue->setFloodControl(false);
+        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+
+        // No matter how many messages we insert, with flood control disabled we should have no delays between messages.
+        // Thus, total time should be equal to our current time.
+        $expectedTime = time();
+
+        for ($i = 1; $i <= 10; $i++)
+        {
+            $dummyCommand = new DummyCommand();
+            $queue->insertMessage($dummyCommand);
+        }
+
+        $this->assertEquals(10, $queue->getAmountOfItemsInQueue());
+
+        $newTime = $queue->calculateNextMessageTime();
+        $this->assertEquals($expectedTime, $newTime);
+    }
+
     public function testCalculateTime()
     {
         $queue = new Queue();

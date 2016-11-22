@@ -84,7 +84,7 @@ class IrcConnection
 	 */
 	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
 	{
-		$loop->addPeriodicTimer(1, function () use ($queue)
+		$loop->addPeriodicTimer(0.5, function () use ($queue)
 		{
 			$queueItems = $queue->flush();
 
