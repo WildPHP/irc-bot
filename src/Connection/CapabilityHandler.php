@@ -77,10 +77,8 @@ class CapabilityHandler
 	 */
 	public static function initNegotiation(Queue $queue)
 	{
-		Logger::debug('Capability negotiation, stage 1...');
+		Logger::debug('Capability negotiation started, requesting list of capabilities.');
 		$queue->cap('LS');
-
-
 	}
 
 	/**
@@ -88,6 +86,10 @@ class CapabilityHandler
 	 */
 	public static function flushRequestQueue(Queue $queue)
 	{
+        if (empty(self::$capabilitiesToRequest))
+            return;
+
+        Logger::debug('Sending capability request.', ['capabilitiesToRequest' => self::$capabilitiesToRequest]);
 		$queue->cap('REQ :' . implode(' ', self::$capabilitiesToRequest));
 	}
 
@@ -100,6 +102,7 @@ class CapabilityHandler
 		if (!self::canEndNegotiation())
 			return;
 
+        Logger::debug('Ending capability negotiation.');
 		$queue->cap('END');
 		EventEmitter::emit('irc.cap.end', [$queue]);
 	}
@@ -107,7 +110,13 @@ class CapabilityHandler
 	public static function requestCapability(string $capability)
 	{
 		if (!self::isCapabilityAvailable($capability))
-			return false;
+		{
+            Logger::warning('Capability was requested, but is not available on the server.', [
+                'capability' => $capability,
+                'availableCapabilities' => self::$availableCapabilities
+            ]);
+            return false;
+        }
 
 		if (self::isCapabilityAcknowledged($capability))
 			return true;
@@ -115,6 +124,7 @@ class CapabilityHandler
 		if (in_array($capability, self::$capabilitiesToRequest))
 			return true;
 
+        Logger::debug('Capability queued for request on next flush.', ['capability' => $capability]);
 		self::$capabilitiesToRequest[] = $capability;
 
 		return true;
@@ -177,6 +187,9 @@ class CapabilityHandler
 	{
 		$capabilities = explode(' ', trim($capabilities));
 		self::$availableCapabilities = $capabilities;
+        Logger::debug('Updated list of available capabilities.', [
+            'availableCapabilities' => $capabilities
+        ]);
 		EventEmitter::emit('irc.cap.ls', [self::$availableCapabilities, $queue]);
 	}
 
@@ -191,7 +204,9 @@ class CapabilityHandler
 
 		$ackCapabilities = array_filter(array_unique(array_merge(self::$acknowledgedCapabilities, $capabilities)));
 		self::$acknowledgedCapabilities = $ackCapabilities;
-
+        Logger::debug('Updated list of acknowledged capabilities.', [
+            'ackCapabilities' => $ackCapabilities
+        ]);
 		EventEmitter::emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
 
@@ -206,7 +221,9 @@ class CapabilityHandler
 
 		$nakCapabilities = array_filter(array_unique(array_merge(self::$notAcknowledgedCapabilities, $capabilities)));
 		self::$notAcknowledgedCapabilities = $nakCapabilities;
-
+        Logger::debug('Updated list of not acknowledged capabilities.', [
+            'notAcknowledgedCapabilities' => $nakCapabilities
+        ]);
 		EventEmitter::emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
 	}
 
