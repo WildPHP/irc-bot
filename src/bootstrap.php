@@ -61,9 +61,6 @@ ChannelDataCollector::initialize();
 UserDataCollector::initialize();
 CommandHandler::initialize();
 
-new \WildPHP\Core\Management\PermissionManagementCommands();
-new \WildPHP\Core\Management\BotManagementCommands();
-
 EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 {
 	$queue->user($username, $hostname, $server, $realname);
