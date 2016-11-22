@@ -68,7 +68,7 @@ class CommandHandler
 		if (!$dictionary->keyExists($command))
 			return;
 
-		call_user_func($dictionary[$command], $source, $user, $args, $queue);
+		call_user_func($dictionary[$command]->getCallback(), $source, $user, $args, $queue);
 	}
 
 	/**
