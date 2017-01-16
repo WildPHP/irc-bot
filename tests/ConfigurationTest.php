@@ -35,7 +35,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 		$configurationItem = $configurationStorage->getItem('test.ing');
 		$expectedConfigurationItem = new ConfigurationItem('test.ing', 'data');
 
-		$this->assertEquals($expectedConfigurationItem, $configurationItem);
+		static::assertEquals($expectedConfigurationItem, $configurationItem);
 	}
 
 	public function testPutConfigurationStorage()
@@ -47,6 +47,6 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
 		$configurationItem = $configurationStorage->getItem('test.ing');
 
-		$this->assertEquals($newConfigurationitem, $configurationItem);
+		static::assertEquals($newConfigurationitem, $configurationItem);
 	}
 }

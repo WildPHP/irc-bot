@@ -19,28 +19,26 @@
 */
 
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\QueueItem;
 use WildPHP\Core\Connection\Commands\DummyCommand;
-use WildPHP\Core\Connection\Commands\Privmsg;
 
 class QueueTest extends PHPUnit_Framework_TestCase
 {
     public function testQueueAddItem()
     {
         $queue = new \WildPHP\Core\Connection\Queue();
-        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
         
         $dummyCommand = new DummyCommand();
         $queue->insertMessage($dummyCommand);
         
-        $this->assertEquals(1, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(1, $queue->getAmountOfItemsInQueue());
     }
 
     public function testCalculateTimeWithoutFoodControl()
     {
         $queue = new Queue();
         $queue->setFloodControl(false);
-        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         // No matter how many messages we insert, with flood control disabled we should have no delays between messages.
         // Thus, total time should be equal to our current time.
@@ -52,17 +50,17 @@ class QueueTest extends PHPUnit_Framework_TestCase
             $queue->insertMessage($dummyCommand);
         }
 
-        $this->assertEquals(10, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(10, $queue->getAmountOfItemsInQueue());
 
         $newTime = $queue->calculateNextMessageTime();
-        $this->assertEquals($expectedTime, $newTime);
+        static::assertEquals($expectedTime, $newTime);
     }
 
     public function testCalculateTime()
     {
         $queue = new Queue();
         $queue->setFloodControl(true);
-        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         // If we insert 10 messages, the time the next message will be scheduled
         // should be 2*5 = 10 seconds (at a rate of 2 messages per 2 seconds)
@@ -74,16 +72,16 @@ class QueueTest extends PHPUnit_Framework_TestCase
             $queue->insertMessage($dummyCommand);
         }
 
-        $this->assertEquals(10, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(10, $queue->getAmountOfItemsInQueue());
 
         $newTime = $queue->calculateNextMessageTime();
-        $this->assertEquals($expectedTime, $newTime);
+        static::assertEquals($expectedTime, $newTime);
     }
 
     public function testQueueRun()
     {
         $queue = new Queue();
-        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         for ($i = 1; $i <= 3; $i++)
         {
@@ -94,6 +92,6 @@ class QueueTest extends PHPUnit_Framework_TestCase
         sleep(2);
         $queue->flush();
 
-        $this->assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
     }
 }
