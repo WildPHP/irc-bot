@@ -25,6 +25,7 @@ use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
 use WildPHP\Core\Connection\Commands\Nick;
 use WildPHP\Core\Connection\Commands\Part;
+use WildPHP\Core\Connection\Commands\Ping;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\Quit;
@@ -200,6 +201,15 @@ class Queue implements QueueInterface
 	{
 		$pong = new Pong($server);
 		$this->insertMessage($pong);
+	}
+
+	/**
+	 * @param string $server
+	 */
+	public function ping(string $server)
+	{
+		$ping = new Ping($server);
+		$this->insertMessage($ping);
 	}
 
 	/**

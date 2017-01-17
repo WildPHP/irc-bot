@@ -11,6 +11,7 @@ use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\Parser;
 use WildPHP\Core\Users\UserDataCollector;
+use WildPHP\Core\Connection\PingPongHandler;
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
@@ -47,6 +48,8 @@ $queue = new Queue();
 $ircConnection->setQueue($queue);
 $ircConnection->registerQueueFlusher($loop, $queue);
 Parser::initialize($queue);
+$pingPongHandler = new PingPongHandler();
+$pingPongHandler->registerPingLoop($loop, $queue);
 
 $username = Configuration::get('user')->getValue();
 $hostname = gethostname();

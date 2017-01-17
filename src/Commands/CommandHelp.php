@@ -33,7 +33,8 @@ class CommandHelp
         $this->pages[] = $contents;
         $this->pages = array_values($this->pages);
         $pages = $this->pages;
-        return end(array_keys($pages));
+        $keys = array_keys($pages);
+        return end($keys);
     }
 
     public function indexExists(int $index): int

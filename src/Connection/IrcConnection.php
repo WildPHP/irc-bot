@@ -119,11 +119,17 @@ class IrcConnection
 	{
 		$args = $incomingIrcMessage->getArgs();
 
-		// The first argument is the nickname set. Don't need that.
+		$hostname = $incomingIrcMessage->getPrefix();
+		Configuration::set(new ConfigurationItem('serverConfig.hostname', $hostname));
+
+		// The first argument is the nickname set.
+		$currentNickname = (string) $args[0];
+		Configuration::set(new ConfigurationItem('currentNickname', $currentNickname));
 		unset($args[0]);
+		Logger::debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
 
 		// The last argument is a message usually corresponding to something like "are supported by this server"
-		// Don't need that either.
+		// Don't need that anymore.
 		array_pop($args);
 
 		foreach ($args as $value)
@@ -135,6 +141,8 @@ class IrcConnection
 			$configItem = new ConfigurationItem($key, $value);
 			Configuration::set($configItem);
 		}
+
+		Logger::debug('Set new server configuration to configuration serverConfig.', [Configuration::get('serverConfig')]);
 	}
 
 	/**

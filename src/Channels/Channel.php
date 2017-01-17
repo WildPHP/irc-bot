@@ -20,6 +20,7 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\Security\ChannelGroup;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Connection\IncomingIrcMessage;
