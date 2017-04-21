@@ -20,7 +20,6 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\EventLoop\LoopInterface;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 

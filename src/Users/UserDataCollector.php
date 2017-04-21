@@ -25,7 +25,6 @@ use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
 
 class UserDataCollector
 {

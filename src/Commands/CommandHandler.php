@@ -22,13 +22,11 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
-use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Users\GlobalUserCollection;
 
 class CommandHandler
 {
