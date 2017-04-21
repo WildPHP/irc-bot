@@ -18,7 +18,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-use WildPHP\Core\Configuration\ConfigurationBackends;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Configuration\ConfigurationStorage;
 
