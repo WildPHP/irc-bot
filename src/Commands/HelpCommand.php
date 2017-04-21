@@ -57,7 +57,7 @@ class HelpCommand
 
         $commandObject = GlobalCommandDictionary::getDictionary()[$command];
         $helpObject = $commandObject->getHelp();
-        if ($helpObject == null)
+        if ($helpObject == null || !($helpObject instanceof CommandHelp))
         {
             $queue->privmsg($source->getName(), 'There is no help available for this command.');
             return;
