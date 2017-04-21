@@ -20,15 +20,13 @@
 
 namespace WildPHP\Core\Commands;
 
-
-use WildPHP\Core\Logger\Logger;
-
 class CommandRegistrar
 {
 	/**
 	 * @param string $command
 	 * @param callable $callback
 	 *
+	 * @param CommandHelp|null $commandHelp
 	 * @throws CommandAlreadyExistsException
 	 */
 	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null)
