@@ -46,6 +46,14 @@ class CommandRegistrar
 	}
 
 	/**
+	 * @return array
+	 */
+	public static function listCommands(): array
+	{
+		return array_keys(GlobalCommandDictionary::getDictionary()->toArray());
+	}
+
+	/**
 	 * @param string $command
 	 *
 	 * @throws CommandDoesNotExistException

@@ -34,6 +34,25 @@ class HelpCommand
         $commandHelp->addPage('Shows the help pages for a specific command.');
         $commandHelp->addPage('Usage: help [command] [page]');
         CommandRegistrar::registerCommand('help', array($this, 'helpCommand'), $commandHelp);
+
+        $commandHelp = new CommandHelp();
+        $commandHelp->addPage('Shows the list of available commands. No arguments.');
+        CommandRegistrar::registerCommand('lscommands', array($this, 'lscommandsCommand'), $commandHelp);
+
+        CommandRegistrar::registerCommand('dumpchanstructure', array($this, 'dumpChannelStructure'));
+    }
+
+    public function dumpChannelStructure(Channel $source, User $user, $args, Queue $queue)
+    {
+    	var_dump($source);
+    	$queue->privmsg($source->getName(), 'Dumped the structure of the current channel to the terminal.');
+    }
+
+    public function lscommandsCommand(Channel $source, User $user, $args, Queue $queue)
+    {
+    	$commands = CommandRegistrar::listCommands();
+    	$commands = implode(', ', $commands);
+    	$queue->privmsg($source->getName(), 'Available commands: ' . $commands);
     }
 
     public function helpCommand(Channel $source, User $user, $args, Queue $queue)
