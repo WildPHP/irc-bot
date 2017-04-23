@@ -171,6 +171,9 @@ class PermissionCommands
 		if (empty($group))
 			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
+		if (!$group->getCanHaveMembers())
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group cannot contain members.');
+
 		$members = $group->getUserCollection();
 		$queue->privmsg($source->getName(), $user->getNickname() . ': The following members are in this group: ' . implode(', ', $members));
 	}
