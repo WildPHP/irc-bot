@@ -45,7 +45,8 @@ if (Configuration::get('secure')->getValue())
 else
 	$connector = $connectorFactory->create();
 
-Configuration::set(new ConfigurationItem('rootdir', dirname(dirname(__FILE__))));
+$rootdir = dirname(dirname(__FILE__));
+Configuration::set(new ConfigurationItem('rootdir', $rootdir));
 \WildPHP\Core\Security\GlobalPermissionGroupCollection::setup();
 
 $ircConnection = new IrcConnection();
@@ -71,6 +72,8 @@ CommandHandler::initialize();
 
 new \WildPHP\Core\Commands\HelpCommand();
 new \WildPHP\Core\Security\PermissionCommands();
+
+include($rootdir . '/modules.php');
 
 EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 {
