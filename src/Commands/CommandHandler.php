@@ -61,6 +61,8 @@ class CommandHandler
 		if ($command === false)
 			return;
 
+		EventEmitter::emit('irc.command', [$command, $source, $user, $args, $queue]);
+
 		$dictionary = GlobalCommandDictionary::getDictionary();
 
 		if (!$dictionary->keyExists($command))
