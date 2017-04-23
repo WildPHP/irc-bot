@@ -18,27 +18,34 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-error_reporting(E_ALL);
+namespace WildPHP\Core\Connection;
 
-if (php_sapi_name() != 'cli')
+use WildPHP\Core\Events\EventEmitter;
+
+class Parser
 {
-	echo 'WildPHP must be run from the terminal!';
-	exit(127);
-}
+	public static function initialize(Queue $queue)
+	{
+		EventEmitter::on('stream.line.in', function ($line) use ($queue)
+		{
+			$parsedLine = self::parseLine($line);
+			$ircMessage = new IncomingIrcMessage($parsedLine);
 
-if (function_exists('posix_getuid') && posix_getuid() === 0)
-{
-	echo 'Running wildphp as root is not allowed.' . PHP_EOL;
-	exit(128);
-}
+			$verb = strtolower($ircMessage->getVerb());
+			EventEmitter::emit('irc.line.in', [$ircMessage, $queue]);
+			EventEmitter::emit('irc.line.in.' . $verb, [$ircMessage, $queue]);
+		});
+	}
 
-if (version_compare(PHP_VERSION, '7.0.0', '<'))
-{
-	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
-	echo 'Please use PHP 7.0.0 or later.';
-	exit(129);
-}
-require('vendor/autoload.php');
-define('WPHP_ROOT_DIR', __DIR__ . '/');
+	/**
+	 * @param string $line
+	 *
+	 * @return ParsedIrcMessageLine
+	 */
+	public static function parseLine(string $line): ParsedIrcMessageLine
+	{
+		$parsed = ParsedIrcMessageLine::parse($line);
 
-include(WPHP_ROOT_DIR . 'src/bootstrap.php');
+		return $parsed;
+	}
+}

@@ -1,27 +1,24 @@
-
 {
     "name": "wildphp/wild-irc-bot",
-    "version": "2.0.3",
+    "version": "3.0.0",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
     "require": {
-        "php": ">=5.5.0",
-        "myclabs/php-enum": "^1.4",
+        "php": ">=7.0.0",
         "react/react": "^0.4",
-        "wildphp/api": "*"
-    },
-    "require-dev":
-    {
-        "phpunit/phpunit": "*"
+        "nette/neon": "^2.3",
+        "katzgrau/klogger": "^1.2",
+        "danielgsims/php-collections": "^1.4",
+        "fire015/flintstone": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "": "lib/",
-            "WPHPTests\\": "tests/"
+            "WildPHP\\Core\\": "src/"
         }
     },
-    "license": "GPL-3.0",
+	"license": "GPL-3.0",
     "authors": [],
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "require-dev": {
+        "phpunit/phpunit": "^5.2"
+    }
 }

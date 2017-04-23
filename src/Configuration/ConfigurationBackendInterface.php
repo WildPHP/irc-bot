@@ -18,27 +18,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-error_reporting(E_ALL);
+namespace WildPHP\Core\Configuration;
 
-if (php_sapi_name() != 'cli')
+interface ConfigurationBackendInterface
 {
-	echo 'WildPHP must be run from the terminal!';
-	exit(127);
+	public static function getAllEntries(): array;
 }
-
-if (function_exists('posix_getuid') && posix_getuid() === 0)
-{
-	echo 'Running wildphp as root is not allowed.' . PHP_EOL;
-	exit(128);
-}
-
-if (version_compare(PHP_VERSION, '7.0.0', '<'))
-{
-	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
-	echo 'Please use PHP 7.0.0 or later.';
-	exit(129);
-}
-require('vendor/autoload.php');
-define('WPHP_ROOT_DIR', __DIR__ . '/');
-
-include(WPHP_ROOT_DIR . 'src/bootstrap.php');
