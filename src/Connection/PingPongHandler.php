@@ -43,7 +43,7 @@ class PingPongHandler
 	 * In seconds.
 	 * @var int
 	 */
-	protected $pingInterval = 120;
+	protected $pingInterval = 180;
 
 	/**
 	 * In seconds.
