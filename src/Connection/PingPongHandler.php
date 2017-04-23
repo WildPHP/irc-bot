@@ -54,6 +54,11 @@ class PingPongHandler
 	public function __construct()
 	{
 		EventEmitter::on('irc.line.in', [$this, 'updateLastMessageReceived']);
+
+		EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+		{
+			$queue->pong($incomingIrcMessage->getArgs()[0]);
+		});
 		$this->updateLastMessageReceived();
 	}
 

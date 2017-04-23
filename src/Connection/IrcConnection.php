@@ -105,11 +105,6 @@ class IrcConnection
 		{
 			$this->close();
 		});
-
-		EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
-		{
-			$queue->pong($incomingIrcMessage->getArgs()[0]);
-		});
 	}
 
 	/**
