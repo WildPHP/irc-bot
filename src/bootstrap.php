@@ -4,12 +4,14 @@ use React\EventLoop\Factory as LoopFactory;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Channels\ChannelDataCollector;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\Parser;
+use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\UserDataCollector;
 use WildPHP\Core\Connection\PingPongHandler;
 
@@ -43,6 +45,9 @@ if (Configuration::get('secure')->getValue())
 else
 	$connector = $connectorFactory->create();
 
+Configuration::set(new ConfigurationItem('rootdir', dirname(dirname(__FILE__))));
+\WildPHP\Core\Security\GlobalPermissionGroupCollection::setup();
+
 $ircConnection = new IrcConnection();
 $queue = new Queue();
 $ircConnection->setQueue($queue);
@@ -63,7 +68,9 @@ CapabilityHandler::initialize();
 ChannelDataCollector::initialize();
 UserDataCollector::initialize();
 CommandHandler::initialize();
+
 new \WildPHP\Core\Commands\HelpCommand();
+new \WildPHP\Core\Security\PermissionCommands();
 
 EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 {
