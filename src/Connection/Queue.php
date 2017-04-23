@@ -31,6 +31,7 @@ use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\Quit;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
+use WildPHP\Core\Logger\Logger;
 
 class Queue implements QueueInterface
 {
@@ -62,6 +63,9 @@ class Queue implements QueueInterface
 	protected $messagesPerSecond = 1;
 
 	/**
+	 * This is disabled by default to allow for fast registration. It will be automatically enabled
+	 * once the bot has been registered on the network.
+	 *
 	 * @var bool
 	 */
 	protected $floodControlEnabled = false;
@@ -72,6 +76,9 @@ class Queue implements QueueInterface
 	public function insertMessage(BaseCommand $command)
 	{
 		$time = $this->calculateNextMessageTime();
+
+		if ($time > time())
+			Logger::warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
 
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);
