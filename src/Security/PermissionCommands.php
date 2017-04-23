@@ -98,10 +98,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
@@ -135,10 +132,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
@@ -171,10 +165,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
@@ -205,10 +196,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
@@ -244,10 +232,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
@@ -330,10 +315,7 @@ class PermissionCommands
 		$groupName = $args[0];
 		$groups = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (!empty($groups))
@@ -370,10 +352,7 @@ class PermissionCommands
 
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->remove(function ($item) use ($groupName)
 		{
-			if ($item->getName() == $groupName)
-				return true;
-
-			return false;
+			return $item->getName() == $groupName;
 		});
 
 		if (empty($group))
