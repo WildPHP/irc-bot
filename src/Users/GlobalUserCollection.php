@@ -2,6 +2,7 @@
 
 namespace WildPHP\Core\Users;
 
+use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
 
@@ -76,5 +77,14 @@ class GlobalUserCollection
 			return false;
 
 		return $userObject;
+	}
+
+	/**
+	 * @return User
+	 */
+	public static function getSelf()
+	{
+		$ownNickname = Configuration::get('currentNickname')->getValue();
+		return self::getUserByNickname($ownNickname);
 	}
 }
