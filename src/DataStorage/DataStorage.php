@@ -22,6 +22,8 @@ namespace WildPHP\Core\DataStorage;
 
 
 use Flintstone\Flintstone;
+use Flintstone\Formatter\JsonFormatter;
+use WildPHP\Core\Configuration\Configuration;
 
 class DataStorage
 {
@@ -30,10 +32,14 @@ class DataStorage
 	 */
 	protected $flintstone;
 
-	public function __construct(Flintstone $flintstone)
+	public function __construct($name)
 	{
+		$config = [
+			'dir' => Configuration::get('rootdir')->getValue() . '/storage',
+			'formatter' => new JsonFormatter()
+		];
+		$flintstone = new Flintstone($name, $config);
 		$this->setFlintstone($flintstone);
-		register_shutdown_function([$this, 'flush']);
 	}
 
 	/**
