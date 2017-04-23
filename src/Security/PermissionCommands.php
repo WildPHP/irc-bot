@@ -267,7 +267,7 @@ class PermissionCommands
 	 */
 	public function haspermCommand(Channel $source, User $user, $args, Queue $queue)
 	{
-		if (count($args) != 1)
+		if (count($args) < 1)
 			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
 
 		$perm = $args[0];
