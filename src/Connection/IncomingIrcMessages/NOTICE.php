@@ -50,8 +50,12 @@ class NOTICE extends PRIVMSG
 			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
 
 		// It's most likely a private conversation.
-		else
+		elseif (!GlobalChannelCollection::getChannelCollection()->channelExistsByName($user->getNickname()))
 			$channel = GlobalChannelCollection::getChannelCollection()->createFakeConversationChannel($user);
+
+		else
+			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($user->getNickname());
+
 		$message = $incomingIrcMessage->getArgs()[1];
 
 		$object = new self();
