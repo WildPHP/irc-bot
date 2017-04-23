@@ -20,18 +20,22 @@
 
 namespace WildPHP\Core\Security;
 
-use WildPHP\Core\Channels\Channel;
 
-class ChannelGroup extends Group
+use Collections\Collection;
+
+class PermissionGroupCollection extends Collection
 {
-	protected $channel = null;
-	/**
-	 * @param Channel $channel
-	 */
-	public function __construct(Channel $channel)
+	public function findGroupByName(string $name)
 	{
-		parent::__construct();
+		$group = $this->find(function ($group) use ($name)
+		{
+			if ($group->getName() == $name)
+				return true;
 
+			return false;
+		});
 
+		return $group;
 	}
+
 }
