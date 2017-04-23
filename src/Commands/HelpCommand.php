@@ -24,6 +24,9 @@ namespace WildPHP\Core\Commands;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Security\GlobalPermissionGroupCollection;
+use WildPHP\Core\Security\PermissionGroup;
+use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 
 class HelpCommand
@@ -38,14 +41,15 @@ class HelpCommand
         $commandHelp = new CommandHelp();
         $commandHelp->addPage('Shows the list of available commands. No arguments.');
         CommandRegistrar::registerCommand('lscommands', array($this, 'lscommandsCommand'), $commandHelp);
-
-        CommandRegistrar::registerCommand('dumpchanstructure', array($this, 'dumpChannelStructure'));
+        CommandRegistrar::registerCommand('tquit', array($this, 'testQuit'));
     }
 
-    public function dumpChannelStructure(Channel $source, User $user, $args, Queue $queue)
+    public function testQuit(Channel $source, User $user, $args, Queue $queue)
     {
-    	var_dump($source);
-    	$queue->privmsg($source->getName(), 'Dumped the structure of the current channel to the terminal.');
+	    $result = Validator::isAllowedTo('quit', $user, $source);
+	    if (!$result)
+	    	return;
+	    $queue->quit('Quit command given by ' . $user->getNickname());
     }
 
     public function lscommandsCommand(Channel $source, User $user, $args, Queue $queue)
@@ -57,8 +61,6 @@ class HelpCommand
 
     public function helpCommand(Channel $source, User $user, $args, Queue $queue)
     {
-        Logger::debug('Help command called.');
-
         if (empty($args))
         {
             $args[0] = 'help';
