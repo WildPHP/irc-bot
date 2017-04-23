@@ -23,7 +23,7 @@ namespace WildPHP\Core\Security;
 use WildPHP\Core\DataStorage\DataStorage;
 use WildPHP\Core\Users\User;
 
-class PermissionGroup extends SpecialPermissionGroup
+class PermissionGroup
 {
 	/**
 	 * @var string[]
