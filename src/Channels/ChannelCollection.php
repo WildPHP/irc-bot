@@ -22,6 +22,8 @@ namespace WildPHP\Core\Channels;
 
 
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Users\GlobalUserCollection;
+use WildPHP\Core\Users\User;
 
 class ChannelCollection
 {
@@ -43,6 +45,22 @@ class ChannelCollection
 		}
 
 		$this->collection[$channel->getName()] = $channel;
+	}
+
+	/**
+	 * Creates a fake channel with the bot and another user in it, to allow private conversations to happen.
+	 *
+	 * @param User $user
+	 * @return Channel
+	 */
+	public function createFakeConversationChannel(User $user)
+	{
+		$channel = new Channel();
+		$channel->updateParticipatingUsers($user, $user->getNickname());
+		$channel->updateParticipatingUsers(GlobalUserCollection::getSelf(), $user->getNickname());
+		$channel->setName($user->getNickname());
+		$this->addChannel($channel);
+		return $channel;
 	}
 
 	/**

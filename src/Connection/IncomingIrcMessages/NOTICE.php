@@ -41,12 +41,18 @@ class NOTICE extends PRIVMSG
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channel = $incomingIrcMessage->getArgs()[0];
-		$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
 		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
-		$message = $incomingIrcMessage->getArgs()[1];
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
+
+		if (GlobalChannelCollection::getChannelCollection()->channelExistsByName($channel))
+			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
+
+		// It's most likely a private conversation.
+		else
+			$channel = GlobalChannelCollection::getChannelCollection()->createFakeConversationChannel($user);
+		$message = $incomingIrcMessage->getArgs()[1];
 
 		$object = new self();
 

@@ -20,7 +20,6 @@
 
 namespace WildPHP\Core\Users;
 
-
 use WildPHP\Core\Logger\Logger;
 
 class UserCollection
