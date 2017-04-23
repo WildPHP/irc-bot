@@ -50,6 +50,225 @@ class PermissionCommands
 		$commandHelp->addPage('Removes a permission group from the permissions system.');
 		$commandHelp->addPage('Usage: removegroup [group name] yes');
 		CommandRegistrar::registerCommand('removegroup', array($this, 'removegroupCommand'), $commandHelp);
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Add a member to a group in the permissions system.');
+		$commandHelp->addPage('Usage: addmember [group name] [nickname]');
+		CommandRegistrar::registerCommand('addmember', array($this, 'addmemberCommand'), $commandHelp);
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Remove a member from a group in the permissions system.');
+		$commandHelp->addPage('Usage: removemember [group name] [nickname]');
+		CommandRegistrar::registerCommand('removemember', array($this, 'removememberCommand'), $commandHelp);
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Add a permission to a permission group.');
+		$commandHelp->addPage('Usage: allow [group name] [permission]');
+		CommandRegistrar::registerCommand('allow', array($this, 'allowCommand'), $commandHelp);
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Remove a permission from a permission group.');
+		$commandHelp->addPage('Usage: deny [group name] [permission]');
+		CommandRegistrar::registerCommand('deny', array($this, 'denyCommand'), $commandHelp);
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('List all members in a permission group.');
+		$commandHelp->addPage('Usage: lsmembers [group name]');
+		CommandRegistrar::registerCommand('lsmembers', array($this, 'lsmembersCommand'), $commandHelp);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function allowCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$result = Validator::isAllowedTo('allowpermission', $user, $source);
+
+		if (!$result)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to change group permissions.');
+
+		if (count($args) != 2)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
+		$groupName = $args[0];
+		$permission = $args[1];
+
+		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
+		{
+			if ($item->getName() == $groupName)
+				return true;
+
+			return false;
+		});
+
+		if (empty($group))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+		if ($group->hasPermission($permission))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': The group is already allowed to do that.');
+
+		$group->addPermission($permission);
+		$queue->privmsg($source->getName(), $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function denyCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$result = Validator::isAllowedTo('denypermission', $user, $source);
+
+		if (!$result)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to change group permissions.');
+
+		if (count($args) != 2)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
+		$groupName = $args[0];
+		$permission = $args[1];
+
+		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
+		{
+			if ($item->getName() == $groupName)
+				return true;
+
+			return false;
+		});
+
+		if (empty($group))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+		if (!$group->hasPermission($permission))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': The group is not allowed to do that.');
+
+		$group->removePermission($permission);
+		$queue->privmsg($source->getName(), $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function lsmembersCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$result = Validator::isAllowedTo('listgroupmembers', $user, $source);
+
+		if (!$result)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to list group memberships.');
+
+		if (count($args) != 1)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
+		$groupName = $args[0];
+
+		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
+		{
+			if ($item->getName() == $groupName)
+				return true;
+
+			return false;
+		});
+
+		if (empty($group))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+		$members = $group->getUserCollection();
+		$queue->privmsg($source->getName(), $user->getNickname() . ': The following members are in this group: ' . implode(', ', $members));
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function addmemberCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$result = Validator::isAllowedTo('addmembertogroup', $user, $source);
+
+		if (!$result)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to add a member to a group.');
+
+		if (count($args) != 2)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
+		$groupName = $args[0];
+		$nickname = $args[1];
+
+		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
+		{
+			if ($item->getName() == $groupName)
+				return true;
+
+			return false;
+		});
+
+		if (empty($group))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+		$userToAdd = GlobalUserCollection::getUserByNickname($nickname);
+
+		if (empty($userToAdd))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This user is not in my current database.');
+
+		$group->addMember($userToAdd);
+		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $user->getIrcAccount() . ') has been added to the permission group "' . $groupName . '"');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function removememberCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$result = Validator::isAllowedTo('removememberfromgroup', $user, $source);
+
+		if (!$result)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to remove a member from a group.');
+
+		if (count($args) != 2)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
+		$groupName = $args[0];
+		$nickname = $args[1];
+
+		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
+		{
+			if ($item->getName() == $groupName)
+				return true;
+
+			return false;
+		});
+
+		if (empty($group))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+		$userToAdd = GlobalUserCollection::getUserByNickname($nickname);
+
+		if (empty($userToAdd) && !$group->isMemberByIrcAccount($nickname))
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This user is not in the group.');
+
+		elseif ($group->isMemberByIrcAccount($nickname))
+		{
+			$group->removeMemberByIrcAccount($nickname);
+			$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' has been removed from the permission group "' . $groupName . '"');
+
+			return;
+		}
+
+
+		$group->removeMember($userToAdd);
+		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $user->getIrcAccount() . ') has been removed from the permission group "' . $groupName . '"');
 	}
 
 	/**
@@ -60,6 +279,9 @@ class PermissionCommands
 	 */
 	public function haspermCommand(Channel $source, User $user, $args, Queue $queue)
 	{
+		if (count($args) != 1)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
 		$perm = $args[0];
 
 		if (empty($args[1]) || ($valUser = GlobalUserCollection::getUserByNickname($args[1])) == false)
@@ -68,7 +290,7 @@ class PermissionCommands
 		$result = Validator::isAllowedTo($perm, $valUser, $source);
 
 		if ($result)
-			$queue->privmsg($source->getName(), $valUser->getNickname() . ' passes validation for permission "' . $perm . '" in this context. (reason: ' . $result . ')');
+			$queue->privmsg($source->getName(), $valUser->getNickname() . ' passes validation for permission "' . $perm . '" in this context. (permitted by group: ' . $result . ')');
 		else
 			$queue->privmsg($source->getName(), $valUser->getNickname() . ' does not pass validation for permission "' . $perm . '" in this context.');
 	}
@@ -102,6 +324,9 @@ class PermissionCommands
 		if (!$result)
 			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to add a group.');
 
+		if (count($args) != 1)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
 		$groupName = $args[0];
 		$groups = GlobalPermissionGroupCollection::getPermissionGroupCollection()->find(function ($item) use ($groupName)
 		{
@@ -132,10 +357,17 @@ class PermissionCommands
 		if (!$result)
 			return $queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to remove a group.');
 
+		if (count($args) < 1)
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': Insufficient parameters.');
+
 		if ($args[1] != 'yes')
 			return $queue->privmsg($source->getName(), $user->getNickname() . ': Please make sure that you want to delete groups and try again.');
 
 		$groupName = $args[0];
+
+		if ($groupName == 'op' || $groupName == 'voice')
+			return $queue->privmsg($source->getName(), $user->getNickname() . ': This group may not be removed.');
+
 		$group = GlobalPermissionGroupCollection::getPermissionGroupCollection()->remove(function ($item) use ($groupName)
 		{
 			if ($item->getName() == $groupName)
