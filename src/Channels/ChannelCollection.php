@@ -56,9 +56,9 @@ class ChannelCollection
 	public function createFakeConversationChannel(User $user)
 	{
 		$channel = new Channel();
+		$channel->setName($user->getNickname());
 		$channel->updateParticipatingUsers($user, $user->getNickname());
 		$channel->updateParticipatingUsers(GlobalUserCollection::getSelf(), $user->getNickname());
-		$channel->setName($user->getNickname());
 		$this->addChannel($channel);
 		return $channel;
 	}
