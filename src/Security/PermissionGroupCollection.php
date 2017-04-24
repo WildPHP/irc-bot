@@ -27,15 +27,17 @@ class PermissionGroupCollection extends Collection
 {
 	public function findGroupByName(string $name)
 	{
-		$group = $this->find(function ($group) use ($name)
+		return $this->find(function ($group) use ($name)
 		{
-			if ($group->getName() == $name)
-				return true;
-
-			return false;
+			return $group->getName() == $name;
 		});
-
-		return $group;
 	}
 
+	public function findAllGroupsForIrcAccount(string $ircAccount)
+	{
+		return $this->findAll(function (PermissionGroup $group) use ($ircAccount)
+		{
+			return $group->isMemberByIrcAccount($ircAccount);
+		});
+	}
 }

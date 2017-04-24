@@ -21,11 +21,12 @@
 namespace WildPHP\Core\DataStorage;
 
 
+use Flintstone\Exception;
 use Flintstone\Flintstone;
 use Flintstone\Formatter\JsonFormatter;
 use WildPHP\Core\Configuration\Configuration;
 
-class DataStorage
+class DataStorage extends Flintstone
 {
 	/**
 	 * @var Flintstone
@@ -38,64 +39,14 @@ class DataStorage
 			'dir' => Configuration::get('rootdir')->getValue() . '/storage',
 			'formatter' => new JsonFormatter()
 		];
-		$flintstone = new Flintstone($name, $config);
-		$this->setFlintstone($flintstone);
+		parent::__construct($name, $config);
 	}
 
-	/**
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	public function get(string $key)
+	public function validateKey($key)
 	{
-		return $this->getFlintstone()->get($key);
-	}
-
-	/**
-	 * @param string $key
-	 * @param $value
-	 */
-	public function set(string $key, $value)
-	{
-		$this->getFlintstone()->set($key, $value);
-	}
-
-	/**
-	 * @param string $key
-	 */
-	public function delete(string $key)
-	{
-		$this->getFlintstone()->delete($key);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getKeys(): array
-	{
-		return $this->getFlintstone()->getKeys();
-	}
-
-	public function flush()
-	{
-		$this->getFlintstone()->flush();
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getFlintstone()
-	{
-		return $this->flintstone;
-	}
-
-	/**
-	 * @param mixed $flintstone
-	 */
-	public function setFlintstone($flintstone)
-	{
-		$this->flintstone = $flintstone;
+		if (empty($key) || is_object($key) || is_array($key)) {
+			throw new Exception('Key cannot be empty or object or array');
+		}
 	}
 
 }

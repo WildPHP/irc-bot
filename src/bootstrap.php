@@ -11,7 +11,7 @@ use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\Parser;
-use WildPHP\Core\Security\Validator;
+use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\UserDataCollector;
 use WildPHP\Core\Connection\PingPongHandler;
 
@@ -69,9 +69,12 @@ CapabilityHandler::initialize();
 ChannelDataCollector::initialize();
 UserDataCollector::initialize();
 CommandHandler::initialize();
+TaskController::setup($loop);
 
 new \WildPHP\Core\Commands\HelpCommand();
 new \WildPHP\Core\Security\PermissionCommands();
+new \WildPHP\Core\Management\ManagementCommands();
+new WildPHP\Core\Moderation\ModerationCommands();
 
 include($rootdir . '/modules.php');
 

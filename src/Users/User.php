@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Users;
 
 use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Logger\Logger;
 
 class User
 {
@@ -28,6 +29,16 @@ class User
 	 * @var string
 	 */
 	protected $nickname = '';
+
+	/**
+	 * @var string
+	 */
+	protected $hostname = '';
+
+	/**
+	 * @var string
+	 */
+	protected $username = '';
 
 	/**
 	 * @var string
@@ -42,6 +53,38 @@ class User
 	public function __construct()
 	{
 		$this->channelCollection = new ChannelCollection();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getHostname(): string
+	{
+		return $this->hostname;
+	}
+
+	/**
+	 * @param string $hostname
+	 */
+	public function setHostname(string $hostname)
+	{
+		$this->hostname = $hostname;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUsername(): string
+	{
+		return $this->username;
+	}
+
+	/**
+	 * @param string $username
+	 */
+	public function setUsername(string $username)
+	{
+		$this->username = $username;
 	}
 
 	/**

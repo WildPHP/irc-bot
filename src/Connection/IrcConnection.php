@@ -105,6 +105,11 @@ class IrcConnection
 		{
 			$this->close();
 		});
+
+		EventEmitter::on('irc.force.close', function ()
+		{
+			$this->close();
+		});
 	}
 
 	/**

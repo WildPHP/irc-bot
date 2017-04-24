@@ -113,6 +113,7 @@ class PingPongHandler
 	{
 		Logger::warning('The server has not responded to the last PING command. Is the network down? Closing link.');
 		$queue->quit('No vital signs detected, closing link...');
+		EventEmitter::emit('irc.force.close');
 		return true;
 	}
 }

@@ -24,36 +24,42 @@ namespace WildPHP\Core\Connection\Commands;
 class Part extends BaseCommand
 {
 	/**
-	 * @var string
+	 * @var string|array
 	 */
 	protected $channel;
 
 	/**
-	 * @param string $channel
+	 * @param string|array $channel
+	 * @param string|array $key
 	 */
-	public function __construct(string $channel)
+	public function __construct($channel, $key = '')
 	{
 		$this->setChannel($channel);
 	}
 
 	/**
-	 * @return string
+	 * @return string|array
 	 */
-	public function getChannel(): string
+	public function getChannel()
 	{
 		return $this->channel;
 	}
 
 	/**
-	 * @param string $channel
+	 * @param string|array $channel
 	 */
-	public function setChannel(string $channel)
+	public function setChannel($channel)
 	{
 		$this->channel = $channel;
 	}
 
 	public function formatMessage(): string
 	{
-		return 'JOIN ' . $this->getChannel() . "\r\n";
+		$channels = $this->getChannel();
+		$chans = '';
+		if (is_array($channels))
+			$chans = implode(',', $channels);
+
+		return 'PART ' . $chans . "\r\n";
 	}
 }

@@ -65,7 +65,7 @@ class UserCollection
 	{
 		if (!$this->isUserInCollection($user))
 		{
-			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$user]);
+			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$user->getNickname()]);
 
 			return;
 		}

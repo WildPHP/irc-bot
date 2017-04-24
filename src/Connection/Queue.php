@@ -23,12 +23,15 @@ namespace WildPHP\Core\Connection;
 use WildPHP\Core\Connection\Commands\BaseCommand;
 use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
+use WildPHP\Core\Connection\Commands\Kick;
+use WildPHP\Core\Connection\Commands\Mode;
 use WildPHP\Core\Connection\Commands\Nick;
 use WildPHP\Core\Connection\Commands\Part;
 use WildPHP\Core\Connection\Commands\Ping;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\Quit;
+use WildPHP\Core\Connection\Commands\Topic;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
 use WildPHP\Core\Logger\Logger;
@@ -230,9 +233,9 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param string $channel
+	 * @param array|string $channel
 	 */
-	public function part(string $channel)
+	public function part($channel)
 	{
 		$part = new Part($channel);
 		$this->insertMessage($part);
@@ -264,5 +267,28 @@ class Queue implements QueueInterface
 	{
 		$quit = new Quit($message);
 		$this->insertMessage($quit);
+	}
+
+	/**
+	 * @param string $channelName
+	 * @param string $nickname
+	 * @param string $message
+	 */
+	public function kick(string $channelName, string $nickname, string $message = '')
+	{
+		$kick = new Kick($channelName, $nickname, $message);
+		$this->insertMessage($kick);
+	}
+
+	public function mode(string $target, string $flags, string $args)
+	{
+		$mode = new Mode($target, $flags, $args);
+		$this->insertMessage($mode);
+	}
+
+	public function topic(string $channelName, string $message)
+	{
+		$topic = new Topic($channelName, $message);
+		$this->insertMessage($topic);
 	}
 }

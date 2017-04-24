@@ -98,9 +98,9 @@ interface QueueInterface
 	public function join($channel, $key = '');
 
 	/**
-	 * @param string $channel
+	 * @param array|string $channel
 	 *
 	 * @return void
 	 */
-	public function part(string $channel);
+	public function part($channel);
 }

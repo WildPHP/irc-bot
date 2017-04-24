@@ -20,6 +20,7 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Connection\IncomingIrcMessage;
@@ -110,6 +111,19 @@ class Channel
 		if (!array_key_exists($mode, $this->modeMap))
 			return false;
 
+		return in_array($user, $this->modeMap[$mode]);
+	}
+
+	/**
+	 * @param string $mode
+	 * @return bool
+	 */
+	public function isBotInMode(string $mode): bool
+	{
+		if (!array_key_exists($mode, $this->modeMap))
+			return false;
+
+		$user = GlobalUserCollection::getSelf();
 		return in_array($user, $this->modeMap[$mode]);
 	}
 
@@ -355,5 +369,11 @@ class Channel
 	public function setDescription(string $description)
 	{
 		$this->description = $description;
+	}
+
+	public static function isValidName(string $name)
+	{
+		$prefix = Configuration::get('serverConfig.chantypes')->getValue();
+		return substr($name, 0, strlen($prefix)) == $prefix;
 	}
 }

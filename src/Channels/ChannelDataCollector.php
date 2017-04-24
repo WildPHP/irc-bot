@@ -25,6 +25,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Users\GlobalUserCollection;
 
 class ChannelDataCollector
 {
@@ -47,6 +48,10 @@ class ChannelDataCollector
 		EventEmitter::on('irc.line.in.001', __NAMESPACE__ . '\ChannelDataCollector::joinInitialChannels');
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function joinInitialChannels(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channels = Configuration::get('channels')->getValue();
@@ -64,6 +69,9 @@ class ChannelDataCollector
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function createModeMap()
 	{
 		$availablemodes = Configuration::get('serverConfig.prefix')->getValue();
@@ -77,6 +85,10 @@ class ChannelDataCollector
 		Logger::debug('Set new mode map', ['map' => self::$modeMap]);
 	}
 
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public static function updateChannelTopic(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channel = $incomingIrcMessage->getArgs()[1];
@@ -90,11 +102,18 @@ class ChannelDataCollector
 		$channel->setTopic($topic);
 	}
 
+	/**
+	 * @param string $name
+	 * @return Channel
+	 */
 	public static function addNewChannelByName(string $name): Channel
 	{
 		$channel = new Channel();
 		$channel->setName($name);
 		self::$channelCollection->addChannel($channel);
+
+		if (!$channel->getUserCollection()->isUserInCollection(GlobalUserCollection::getSelf()))
+			$channel->getUserCollection()->addUser(GlobalUserCollection::getSelf());
 
 		return $channel;
 	}

@@ -27,6 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\Security\Validator;
 
 class CommandHandler
 {
@@ -68,7 +69,23 @@ class CommandHandler
 		if (!$dictionary->keyExists($command))
 			return;
 
-		call_user_func($dictionary[$command]->getCallback(), $source, $user, $args, $queue);
+		$commandObject = $dictionary[$command];
+		$permission = $commandObject->getRequiredPermission();
+		if ($permission && !Validator::isAllowedTo($permission, $user, $source))
+		{
+			$queue->privmsg($source->getName(), $user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
+			return;
+		}
+
+		$maximumArguments = $commandObject->getMaximumArguments();
+		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
+		{
+			$prefix = Configuration::get('prefix')->getValue();
+			$queue->privmsg($source->getName(), 'Invalid arguments. Please check ' . $prefix . 'help ' . $command . ' for usage instructions.');
+			return;
+		}
+
+		call_user_func($commandObject->getCallback(), $source, $user, $args, $queue);
 	}
 
 	/**

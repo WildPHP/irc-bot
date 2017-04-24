@@ -21,6 +21,8 @@
 namespace WildPHP\Core\Channels;
 
 
+use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
@@ -32,6 +34,24 @@ class ChannelCollection
 	 */
 	protected $collection = [];
 
+	public function __construct()
+	{
+		EventEmitter::on('user.part', [$this, 'cleanupChannel']);
+	}
+
+	public function cleanupChannel(User $user, string $channel, Queue $queue)
+	{
+		if (!$this->channelExistsByName($channel))
+			return;
+
+		$botObj = GlobalUserCollection::getSelf();
+
+		if ($botObj !== $user)
+			return;
+
+		$this->removeChannelByName($channel);
+	}
+
 	/**
 	 * @param Channel $channel
 	 */
@@ -39,7 +59,7 @@ class ChannelCollection
 	{
 		if (self::channelExists($channel) || self::channelExistsByName($channel->getName()))
 		{
-			Logger::warning('Trying to add existing channel to collection', [$channel]);
+			Logger::warning('Trying to add existing channel to collection', [$channel->getName()]);
 
 			return;
 		}
@@ -70,12 +90,24 @@ class ChannelCollection
 	{
 		if (!self::channelExists($channel))
 		{
+			Logger::warning('Trying to remove non-existing channel from collection', [$channel->getName()]);
+
+			return;
+		}
+
+		unset($this->collection[$channel->getName()]);
+	}
+
+	public function removeChannelByName(string $channel)
+	{
+		if (!self::channelExistsByName($channel))
+		{
 			Logger::warning('Trying to remove non-existing channel from collection', [$channel]);
 
 			return;
 		}
 
-		unset($this->collection[array_search($channel->getName(), $this->collection)]);
+		unset($this->collection[$channel]);
 	}
 
 	/**

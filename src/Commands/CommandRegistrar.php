@@ -27,18 +27,30 @@ class CommandRegistrar
 	 * @param callable $callback
 	 *
 	 * @param CommandHelp|null $commandHelp
+	 * @param int $minarguments
+	 * @param int $maxarguments
 	 * @throws CommandAlreadyExistsException
 	 */
-	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null)
+	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null, int $minarguments = -1, int $maxarguments = -1, string $requiredPermission = '')
 	{
 		if (GlobalCommandDictionary::getDictionary()->keyExists($command))
+		{
 			throw new CommandAlreadyExistsException();
+		}
 
-        $commandObject = new Command();
-        $commandObject->setCallback($callback);
+		$commandObject = new Command();
+		$commandObject->setCallback($callback);
+		$commandObject->setMinimumArguments($minarguments);
+		$commandObject->setMaximumArguments($maxarguments);
+		$commandObject->setRequiredPermission($requiredPermission);
 
-        if (!is_null($commandHelp))
-            $commandObject->setHelp($commandHelp);
+		if (!empty($requiredPermission))
+			$commandHelp->addPage('Required permission: ' . $requiredPermission);
+
+		if (!is_null($commandHelp))
+		{
+			$commandObject->setHelp($commandHelp);
+		}
 
 		GlobalCommandDictionary::getDictionary()[$command] = $commandObject;
 	}
@@ -51,6 +63,12 @@ class CommandRegistrar
 		return array_keys(GlobalCommandDictionary::getDictionary()->toArray());
 	}
 
+	public static function commandExists(string $command): bool
+	{
+		$commands = self::listCommands();
+		return in_array($command, $commands);
+	}
+
 	/**
 	 * @param string $command
 	 *
@@ -59,7 +77,9 @@ class CommandRegistrar
 	public static function deregisterCommand(string $command)
 	{
 		if (!GlobalCommandDictionary::getDictionary()->keyExists($command))
+		{
 			throw new CommandDoesNotExistException();
+		}
 
 		GlobalCommandDictionary::getDictionary()->offsetUnset($command);
 	}

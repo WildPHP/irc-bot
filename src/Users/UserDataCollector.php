@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Users;
 
 
+use WildPHP\Core\Channels\GlobalChannelCollection;
 use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
@@ -45,6 +46,9 @@ class UserDataCollector
 		EventEmitter::on('irc.line.in.part', __CLASS__ . '::processPart');
 		EventEmitter::on('irc.line.in.nick', __CLASS__ . '::processNick');
 		EventEmitter::on('irc.line.in.mode', __CLASS__ . '::processMode');
+
+		// Kicks can be handled in the same way parts are.
+		EventEmitter::on('irc.line.in.kick', __CLASS__ . '::processPart');
 	}
 
 	/**
@@ -54,7 +58,7 @@ class UserDataCollector
 	public static function sendWhox(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$channel = $incomingIrcMessage->getArgs()[1];
-		$queue->who($channel, '%na');
+		$queue->who($channel, '%nuhaf');
 	}
 
 	/**
@@ -64,27 +68,18 @@ class UserDataCollector
 	public static function processWhox(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$args = $incomingIrcMessage->getArgs();
-		$nickname = $args[1];
-		$accountname = $args[2];
+		$username = $args[1];
+		$hostname = $args[2];
+		$nickname = $args[3];
+		$accountname = $args[5];
 		$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
 
-		self::updateAccountnameForUser($userObject, $accountname, $queue);
-	}
-
-	/**
-	 * @param User $userObject
-	 * @param string $accountname
-	 * @param Queue $queue
-	 */
-	protected static function updateAccountnameForUser(User $userObject, string $accountname, Queue $queue)
-	{
-		if ($userObject->getIrcAccount() == $accountname)
-			return;
-
+		$userObject->setUsername($username);
+		$userObject->setHostname($hostname);
 		$userObject->setIrcAccount($accountname);
+
 		self::$userCollection->addUser($userObject);
-		$nickname = $userObject->getNickname();
-		EventEmitter::emit('user.account.changed', [$nickname, $accountname, $queue]);
+		EventEmitter::emit('user.account.changed', [$userObject, $queue]);
 	}
 
 	/**
@@ -97,6 +92,9 @@ class UserDataCollector
 		$nickname = explode('!', $prefix)[0];
 		$args = $incomingIrcMessage->getArgs();
 		$channel = $args[0];
+
+		if ($incomingIrcMessage->getVerb() == 'KICK')
+			$nickname = $args[1];
 
 		$userObject = self::$userCollection->findUserByNickname($nickname);
 
@@ -137,24 +135,17 @@ class UserDataCollector
 		$nickname = explode('!', $prefix)[0];
 		$args = $incomingIrcMessage->getArgs();
 		$channel = $args[0];
+		$accountname = $args[1];
 
 		$userObject = GlobalUserCollection::getOrCreateUserByNickname($nickname);
 
 		if ($userObject == false)
 			return;
 
+		$userObject->setIrcAccount($accountname);
+
 		EventEmitter::emit('user.join', [$userObject, $channel, $queue]);
-
-		if (!CapabilityHandler::isCapabilityAcknowledged('extended-join'))
-		{
-			$queue->who($nickname, '%na');
-
-			return;
-		}
-
-		$accountname = $args[1];
-
-		self::updateAccountnameForUser($userObject, $accountname, $queue);
+		$queue->who($nickname, '%nuhaf');
 	}
 
 	/**
