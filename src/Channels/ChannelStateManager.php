@@ -191,9 +191,6 @@ class ChannelStateManager
 		$channel = ChannelCollection::getGlobalInstance()->findByChannelName($args[2]);
 		$nicknames = explode(' ', $args[3]);
 
-		if (empty(ChannelDataCollector::$modeMap))
-			ChannelDataCollector::createModeMap();
-
 		foreach ($nicknames as $nicknameWithMode)
 		{
 			$nickname = $nicknameWithMode;
