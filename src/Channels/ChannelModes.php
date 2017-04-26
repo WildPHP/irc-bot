@@ -68,7 +68,7 @@ class ChannelModes
 			return false;
 
 		$user = UserCollection::getGlobalSelf();
-		return $this->isUserInMode($mode, $user);
+		return $user ? $this->isUserInMode($mode, $user) : false;
 	}
 
 
