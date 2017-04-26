@@ -64,6 +64,13 @@ class Channel
 		Logger::debug('Channel object destructed.', ['name' => $this->getName()]);
 	}
 
+	public function abandon()
+	{
+		$this->getUserCollection()->clear();
+		$this->setChannelModes(new ChannelModes());
+		Logger::debug('Channel object cleared of data.', ['name' => $this->getName()]);
+	}
+
 	/**
 	 * @return ChannelModes
 	 */
