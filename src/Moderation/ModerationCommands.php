@@ -30,6 +30,7 @@ use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Tasks\Task;
 use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class ModerationCommands
 {
@@ -54,10 +55,23 @@ class ModerationCommands
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Bans the specified user from the channel.');
-		$commandHelp->addPage('Usage #1: kban [nickname] [minutes]');
-		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel]');
+		$commandHelp->addPage('Usage #1: ban [nickname] [minutes]');
+		$commandHelp->addPage('Usage #2: ban [nickname] [minutes] [redirect channel]');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
 		CommandRegistrar::registerCommand('ban', [$this, 'banCommand'], $commandHelp, 2, 3, 'ban');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Bans the specified host from the channel.');
+		$commandHelp->addPage('Usage #1: ban [hostname [minutes]');
+		$commandHelp->addPage('Usage #2: ban [hostname] [minutes] [redirect channel]');
+		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
+		CommandRegistrar::registerCommand('banhost', [$this, 'banhostCommand'], $commandHelp, 2, 3, 'ban');
+
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Changes mode for a specified user.');
+		$commandHelp->addPage('Usage: mode [nickname] [modes]');
+		CommandRegistrar::registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 2, -1, 'mode');
 	}
 
 	/**
@@ -164,6 +178,54 @@ class ModerationCommands
 
 		$time = time() + 60 * $minutes;
 		$this->banUser($source, $userObj, $queue, $time, $redirect);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function banhostCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$hostname = array_shift($args);
+		$minutes = array_shift($args);
+		$redirect = !empty($args) && Channel::isValidName($args[0]) ? array_shift($args) : '';
+		$time = time() + 60 * $minutes;
+		$this->banUser($source, $hostname, $queue, $time, $redirect);
+
+		if (!empty($redirect))
+			$hostname .= '$' . $redirect;
+
+		if ($time != 0)
+		{
+			$args = [$source, $hostname, $queue];
+			$task = new Task([$this, 'removeBan'], $time, $args);
+			TaskController::addTask($task);
+		}
+
+		$queue->mode($source->getName(), '+b', $hostname);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function modeCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$nickname = array_shift($args);
+		$modes = array_shift($args);
+		$userObj = $source->getUserCollection()->findByNickname($nickname);
+
+		if (!$userObj)
+		{
+			$queue->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			return;
+		}
+
+		$queue->mode($source->getName(), $modes, $nickname);
 	}
 
 	/**
