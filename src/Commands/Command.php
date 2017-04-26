@@ -53,9 +53,9 @@ class Command
 	}
 
 	/**
-	 * @return CommandHelp
+	 * @return CommandHelp|null
 	 */
-	public function getHelp(): CommandHelp
+	public function getHelp(): ?CommandHelp
 	{
 		return $this->help;
 	}
