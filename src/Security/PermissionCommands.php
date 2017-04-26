@@ -267,6 +267,8 @@ class PermissionCommands
 			return;
 		}
 
+		if (!$userToAdd)
+			return;
 
 		$group->removeMember($userToAdd);
 		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $userToAdd->getIrcAccount() . ') has been removed from the permission group "' . $groupName . '"');
