@@ -21,7 +21,6 @@
 namespace WildPHP\Core\Users;
 
 use WildPHP\Core\Channels\ChannelCollection;
-use WildPHP\Core\Logger\Logger;
 
 class User
 {

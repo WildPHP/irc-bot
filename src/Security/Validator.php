@@ -34,7 +34,7 @@ class Validator
 	 */
 	public static function isUserOPInChannel(Channel $channel, User $user)
 	{
-		return $channel->isUserInMode('o', $user);
+		return $channel->getChannelModes()->isUserInMode('o', $user);
 	}
 
 	/**
@@ -44,7 +44,7 @@ class Validator
 	 */
 	public static function isUserVoicedInChannel(Channel $channel, User $user)
 	{
-		return $channel->isUserInMode('v', $user);
+		return $channel->getChannelModes()->isUserInMode('v', $user);
 	}
 
 	/**
@@ -85,10 +85,7 @@ class Validator
 			if (!$item->getCanHaveMembers())
 				return false;
 
-			if ($item->isMember($user))
-				return true;
-
-			return false;
+			return $item->isMember($user);
 		});
 
 		foreach ($groups as $group)

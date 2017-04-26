@@ -65,7 +65,8 @@ class CommandHelp
 
     public function getFirstPage(): string
     {
-        return end(array_reverse($this->pages));
+    	$reverse = array_reverse($this->pages);
+        return end($reverse);
     }
 
     public function getPages(): array

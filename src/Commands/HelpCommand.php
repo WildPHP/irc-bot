@@ -46,7 +46,7 @@ class HelpCommand
 
 		CommandRegistrar::registerCommand('lsnicks', function (Channel $source, User $user, $args, Queue $queue)
 		{
-			$nicks = $source->getUserCollection()->getAllUsersAsString();
+			$nicks = $source->getUserCollection()->getAllNicknames();
 			$queue->privmsg($user->getNickname(), $source->getName() . ': ' . implode(', ', $nicks));
 		});
 
@@ -61,7 +61,7 @@ class HelpCommand
 			else
 				$queue->privmsg($user->getNickname(), 'I have identified you to be ' . $user->getIrcAccount() . ' based on your network services account, and will use this account for identification purposes in the future.');
 
-			$channelList = array_keys($user->getChannelCollection()->getAllChannels());
+			$channelList = array_keys($user->getChannelCollection()->toArray());
 			$channelCount = count($channelList);
 			$queue->privmsg($user->getNickname(), 'I can see you in ' . $channelCount . ' channels, namely:');
 			$queue->privmsg($user->getNickname(), implode(', ', $channelList));

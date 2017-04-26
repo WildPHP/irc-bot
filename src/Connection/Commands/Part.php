@@ -30,9 +30,8 @@ class Part extends BaseCommand
 
 	/**
 	 * @param string|array $channel
-	 * @param string|array $key
 	 */
-	public function __construct($channel, $key = '')
+	public function __construct($channel)
 	{
 		$this->setChannel($channel);
 	}

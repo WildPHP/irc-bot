@@ -66,8 +66,8 @@ $nickname = Configuration::get('nick')->getValue();
 
 $ircConnection->createFromConnector($connector, $server, $port);
 CapabilityHandler::initialize();
-ChannelDataCollector::initialize();
-UserDataCollector::initialize();
+new \WildPHP\Core\Channels\ChannelStateManager();
+new \WildPHP\Core\Users\UserStateManager();
 CommandHandler::initialize();
 TaskController::setup($loop);
 

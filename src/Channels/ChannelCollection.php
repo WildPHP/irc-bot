@@ -20,51 +20,28 @@
 
 namespace WildPHP\Core\Channels;
 
-
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Users\GlobalUserCollection;
+use Collections\Collection;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
-class ChannelCollection
+class ChannelCollection extends Collection
 {
+	protected static $globalInstance = null;
+
 	/**
-	 * @var Channel[]
+	 * @return ChannelCollection
 	 */
-	protected $collection = [];
+	public static function getGlobalInstance(): ChannelCollection
+	{
+		if (is_null(self::$globalInstance))
+			self::$globalInstance = new ChannelCollection();
+
+		return self::$globalInstance;
+	}
 
 	public function __construct()
 	{
-		EventEmitter::on('user.part', [$this, 'cleanupChannel']);
-	}
-
-	public function cleanupChannel(User $user, string $channel, Queue $queue)
-	{
-		if (!$this->channelExistsByName($channel))
-			return;
-
-		$botObj = GlobalUserCollection::getSelf();
-
-		if ($botObj !== $user)
-			return;
-
-		$this->removeChannelByName($channel);
-	}
-
-	/**
-	 * @param Channel $channel
-	 */
-	public function addChannel(Channel $channel)
-	{
-		if (self::channelExists($channel) || self::channelExistsByName($channel->getName()))
-		{
-			Logger::warning('Trying to add existing channel to collection', [$channel->getName()]);
-
-			return;
-		}
-
-		$this->collection[$channel->getName()] = $channel;
+		parent::__construct('\WildPHP\Core\Channels\Channel');
 	}
 
 	/**
@@ -77,83 +54,31 @@ class ChannelCollection
 	{
 		$channel = new Channel();
 		$channel->setName($user->getNickname());
-		$channel->updateParticipatingUsers($user, $user->getNickname());
-		$channel->updateParticipatingUsers(GlobalUserCollection::getSelf(), $user->getNickname());
-		$this->addChannel($channel);
+		$channel->getUserCollection()->add($user);
+		$channel->getUserCollection()->add(UserCollection::getGlobalSelf());
+		$this->add($channel);
 		return $channel;
 	}
 
 	/**
-	 * @param Channel $channel
-	 */
-	public function removeChannel(Channel $channel)
-	{
-		if (!self::channelExists($channel))
-		{
-			Logger::warning('Trying to remove non-existing channel from collection', [$channel->getName()]);
-
-			return;
-		}
-
-		unset($this->collection[$channel->getName()]);
-	}
-
-	public function removeChannelByName(string $channel)
-	{
-		if (!self::channelExistsByName($channel))
-		{
-			Logger::warning('Trying to remove non-existing channel from collection', [$channel]);
-
-			return;
-		}
-
-		unset($this->collection[$channel]);
-	}
-
-	/**
-	 * @param Channel $channel
-	 *
-	 * @return bool
-	 */
-	public function channelExists(Channel $channel): bool
-	{
-		return in_array($channel, $this->collection);
-	}
-
-	/**
 	 * @param string $name
 	 *
 	 * @return bool
 	 */
-	public function channelExistsByName(string $name): bool
+	public function containsChannelName(string $name): bool
 	{
-		return array_key_exists($name, $this->collection);
+		return !empty($this->findByChannelName($name));
 	}
 
 	/**
 	 * @param string $name
-	 *
-	 * @return Channel
+	 * @return false|Channel
 	 */
-	public function getChannelByName(string $name): Channel
+	public function findByChannelName(string $name)
 	{
-		// TODO
-		return $this->collection[$name];
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getAllChannels(): array
-	{
-		return $this->collection;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function count(): int
-	{
-		return count($this->collection);
+		return $this->find(function (Channel $channel) use ($name)
+		{
+			return $channel->getName() == $name;
+		});
 	}
 }

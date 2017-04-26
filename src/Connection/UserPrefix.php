@@ -26,7 +26,7 @@ class UserPrefix
 	/**
 	 * @var string
 	 */
-	static $regex = "/^(?<nick>[^!]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x";
+	static $regex = '/^(?<nick>[^!]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x';
 
 	/**
 	 * @var string
@@ -101,7 +101,7 @@ class UserPrefix
 	/**
 	 * @param string $prefix
 	 *
-	 * @return UserPrefix
+	 * @return \self
 	 */
 	public static function fromString(string $prefix): self
 	{
@@ -118,7 +118,7 @@ class UserPrefix
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return UserPrefix
+	 * @return \self
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

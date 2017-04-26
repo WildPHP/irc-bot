@@ -49,7 +49,7 @@ class ParsedIrcMessageLine
 	public static function split($line)
 	{
 		$line = rtrim($line, "\r\n");
-		$line = explode(" ", $line);
+		$line = explode(' ', $line);
 		$index = 0;
 		$arv_count = count($line);
 		$parv = [];

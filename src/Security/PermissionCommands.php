@@ -25,8 +25,8 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class PermissionCommands
 {
@@ -217,7 +217,7 @@ class PermissionCommands
 			return;
 		}
 
-		$userToAdd = GlobalUserCollection::getUserByNickname($nickname);
+		$userToAdd = UserCollection::getGlobalInstance()->findByNickname($nickname);
 
 		if (empty($userToAdd) || empty($userToAdd))
 		{
@@ -227,7 +227,7 @@ class PermissionCommands
 		}
 
 		$group->addMember($userToAdd);
-		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $user->getIrcAccount() . ') has been added to the permission group "' . $groupName . '"');
+		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $userToAdd->getIrcAccount() . ') has been added to the permission group "' . $groupName . '"');
 	}
 
 	/**
@@ -250,7 +250,7 @@ class PermissionCommands
 			return;
 		}
 
-		$userToAdd = GlobalUserCollection::getUserByNickname($nickname);
+		$userToAdd = UserCollection::getGlobalInstance()->findByNickname($nickname);
 
 		if (empty($userToAdd) && !$group->isMemberByIrcAccount($nickname))
 		{
@@ -269,7 +269,7 @@ class PermissionCommands
 
 
 		$group->removeMember($userToAdd);
-		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $user->getIrcAccount() . ') has been removed from the permission group "' . $groupName . '"');
+		$queue->privmsg($source->getName(), $user->getNickname() . ': User ' . $nickname . ' (identified by ' . $userToAdd->getIrcAccount() . ') has been removed from the permission group "' . $groupName . '"');
 	}
 
 	/**
@@ -280,7 +280,7 @@ class PermissionCommands
 	 */
 	public function haspermCommand(Channel $source, User $user, $args, Queue $queue)
 	{
-		if (empty($args[1]) || ($valUser = GlobalUserCollection::getUserByNickname($args[1])) == false)
+		if (empty($args[1]) || ($valUser = UserCollection::getGlobalInstance()->findByNickname($args[1])) == false)
 		{
 			$valUser = $user;
 		}

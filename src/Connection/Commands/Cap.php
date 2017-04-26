@@ -8,10 +8,6 @@
 
 namespace WildPHP\Core\Connection\Commands;
 
-
-/**
- * @todo Simplify this
- */
 class Cap extends BaseCommand
 {
 	/**

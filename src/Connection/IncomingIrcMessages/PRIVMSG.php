@@ -22,11 +22,11 @@ namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\GlobalChannelCollection;
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class PRIVMSG implements BaseMessage
 {
@@ -63,20 +63,20 @@ class PRIVMSG implements BaseMessage
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channel = $incomingIrcMessage->getArgs()[0];
-		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
+		$user = UserCollection::getGlobalInstance()->findByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
-		if (GlobalChannelCollection::getChannelCollection()->channelExistsByName($channel))
-			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channel);
+		if (ChannelCollection::getGlobalInstance()->containsChannelName($channel))
+			$channel = ChannelCollection::getGlobalInstance()->findByChannelName($channel);
 
 		// It's most likely a private conversation.
-		elseif (!GlobalChannelCollection::getChannelCollection()->channelExistsByName($user->getNickname()))
-			$channel = GlobalChannelCollection::getChannelCollection()->createFakeConversationChannel($user);
+		elseif (!ChannelCollection::getGlobalInstance()->containsChannelName($user->getNickname()))
+			$channel = ChannelCollection::getGlobalInstance()->createFakeConversationChannel($user);
 
 		else
-			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($user->getNickname());
+			$channel = ChannelCollection::getGlobalInstance()->findByChannelName($user->getNickname());
 
 		$message = $incomingIrcMessage->getArgs()[1];
 

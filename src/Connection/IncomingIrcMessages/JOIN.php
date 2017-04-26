@@ -22,11 +22,11 @@ namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\GlobalChannelCollection;
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\GlobalUserCollection;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class JOIN implements BaseMessage
 {
@@ -59,7 +59,7 @@ class JOIN implements BaseMessage
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
 		$channels = self::getChannelsByList($channelNameList);
-		$user = GlobalUserCollection::getUserFromIncomingIrcMessage($incomingIrcMessage);
+		$user = UserCollection::globalFindOrCreateByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
@@ -83,7 +83,7 @@ class JOIN implements BaseMessage
 		$channelObjects = [];
 		foreach ($channelNames as $channelName)
 		{
-			$channel = GlobalChannelCollection::getChannelCollection()->getChannelByName($channelName);
+			$channel = ChannelCollection::getGlobalInstance()->findByChannelName($channelName);
 			$channelObjects[] = $channel;
 		}
 

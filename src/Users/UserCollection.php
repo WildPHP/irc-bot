@@ -20,23 +20,27 @@
 
 namespace WildPHP\Core\Users;
 
-use WildPHP\Core\Logger\Logger;
+use Collections\Collection;
+use WildPHP\Core\Configuration\Configuration;
 
-class UserCollection
+class UserCollection extends Collection
 {
-	/**
-	 * @var User[]
-	 */
-	protected $members = [];
+	protected static $globalInstance = null;
 
 	/**
-	 * @param User $user
-	 *
-	 * @return bool
+	 * @return UserCollection
 	 */
-	public function isUserInCollection(User $user): bool
+	public static function getGlobalInstance(): UserCollection
 	{
-		return in_array($user, $this->members);
+		if (is_null(self::$globalInstance))
+			self::$globalInstance = new UserCollection();
+
+		return self::$globalInstance;
+	}
+
+	public function __construct()
+	{
+		parent::__construct('\WildPHP\Core\Users\User');
 	}
 
 	/**
@@ -44,77 +48,75 @@ class UserCollection
 	 *
 	 * @return bool
 	 */
-	public function isUserInCollectionByNickname(string $nickname): bool
+	public function containsNickname(string $nickname): bool
 	{
-		return array_key_exists($nickname, $this->members);
-	}
-
-	/**
-	 * @param User $user
-	 */
-	public function addUser(User $user)
-	{
-		$nickname = $user->getNickname();
-		$this->members[$nickname] = $user;
-	}
-
-	/**
-	 * @param User $user
-	 */
-	public function removeUser(User $user)
-	{
-		if (!$this->isUserInCollection($user))
-		{
-			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$user->getNickname()]);
-
-			return;
-		}
-
-		$nickname = $user->getNickname();
-		unset($this->members[$nickname]);
+		return !empty($this->findByNickname($nickname));
 	}
 
 	/**
 	 * @param string $nickname
+	 * @return false|User
 	 */
-	public function removeUserByNickname(string $nickname)
+	public function findByNickname(string $nickname)
 	{
-		if (!$this->isUserInCollectionByNickname($nickname))
+		return $this->find(function (User $user) use ($nickname)
 		{
-			Logger::warning('Trying to remove non-existing user from collection. Ignoring request.', [$nickname]);
-
-			return;
-		}
-
-		unset($this->members[$nickname]);
-	}
-
-	/**
-	 * @param string $nickname
-	 *
-	 * @return bool|User
-	 */
-	public function findUserByNickname(string $nickname)
-	{
-		if (!$this->isUserInCollectionByNickname($nickname))
-			return false;
-
-		return $this->members[$nickname];
-	}
-
-	/**
-	 * @return User[]
-	 */
-	public function getAllUsers()
-	{
-		return $this->members;
+			return $user->getNickname() == $nickname;
+		});
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getAllUsersAsString()
+	public function getAllNicknames(): array
 	{
-		return array_keys($this->members);
+		$array = $this->toArray();
+
+		$nicknames = [];
+		foreach ($array as $user)
+		{
+			$nicknames[] = $user->getNickname();
+		}
+
+		return $nicknames;
+	}
+
+	/**
+	 * @return false|User
+	 */
+	public function getSelf()
+	{
+		$ownNickname = Configuration::get('currentNickname')->getValue();
+		return $this->findByNickname($ownNickname);
+	}
+
+	/**
+	 * @return false|User
+	 */
+	public static function getGlobalSelf()
+	{
+		$ownNickname = Configuration::get('currentNickname')->getValue();
+		$collection = self::getGlobalInstance();
+		return $collection->findByNickname($ownNickname);
+	}
+
+	/**
+	 * @param string $nickname
+	 * @param bool $addToCollection
+	 * @return User
+	 */
+	public static function globalFindOrCreateByNickname(string $nickname, bool $addToCollection = true): User
+	{
+		$collection = self::getGlobalInstance();
+		if ($collection->containsNickname($nickname))
+			return $collection->findByNickname($nickname);
+
+		$user = new User();
+		$user->setNickname($nickname);
+
+		if ($addToCollection)
+			$collection->add($user);
+
+		return $user;
 	}
 }

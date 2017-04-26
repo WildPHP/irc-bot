@@ -29,6 +29,7 @@ class CommandRegistrar
 	 * @param CommandHelp|null $commandHelp
 	 * @param int $minarguments
 	 * @param int $maxarguments
+	 * @param string $requiredPermission
 	 * @throws CommandAlreadyExistsException
 	 */
 	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null, int $minarguments = -1, int $maxarguments = -1, string $requiredPermission = '')
@@ -44,7 +45,7 @@ class CommandRegistrar
 		$commandObject->setMaximumArguments($maxarguments);
 		$commandObject->setRequiredPermission($requiredPermission);
 
-		if (!empty($requiredPermission))
+		if (!empty($requiredPermission) && !is_null($commandHelp))
 			$commandHelp->addPage('Required permission: ' . $requiredPermission);
 
 		if (!is_null($commandHelp))

@@ -38,22 +38,19 @@ class ModerationCommands
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Kicks the specified user from the channel.');
 		$commandHelp->addPage('Usage: kick [nickname] ([reason])');
-		$commandHelp->addPage('Required permission: kick');
-		CommandRegistrar::registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1);
+		CommandRegistrar::registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1, -1, 'kick');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Changes the topic for the specified channel.');
 		$commandHelp->addPage('Usage: topic ([channel]) [message]');
-		$commandHelp->addPage('Required permission: topic');
-		CommandRegistrar::registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1);
+		CommandRegistrar::registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1, -1, 'topic');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Kicks the specified user from the channel and adds a ban.');
 		$commandHelp->addPage('Usage #1: kban [nickname] [minutes] ([reason])');
 		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel] ([reason])');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
-		$commandHelp->addPage('Required permission: kban');
-		CommandRegistrar::registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2);
+		CommandRegistrar::registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2, -1, 'kban');
 	}
 
 	/**
@@ -64,17 +61,9 @@ class ModerationCommands
 	 */
 	public function kickCommand(Channel $source, User $user, $args, Queue $queue)
 	{
-		$result = Validator::isAllowedTo('kick', $user, $source);
-
-		if (!$result)
-		{
-			$queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the kick command.');
-			return;
-		}
-
 		$nickname = array_shift($args);
 		$message = !empty($args) ? implode(' ', $args) : $nickname;
-		$userObj = $source->getUserCollection()->findUserByNickname($nickname);
+		$userObj = $source->getUserCollection()->findByNickname($nickname);
 
 		if ($nickname == Configuration::get('currentNickname')->getValue())
 		{
@@ -99,14 +88,6 @@ class ModerationCommands
 	 */
 	public function topicCommand(Channel $source, User $user, $args, Queue $queue)
 	{
-		$result = Validator::isAllowedTo('topic', $user, $source);
-
-		if (!$result)
-		{
-			$queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the topic command.');
-			return;
-		}
-
 		$channelName = $source->getName();
 
 		if (Channel::isValidName($args[0]))
@@ -125,19 +106,11 @@ class ModerationCommands
 	 */
 	public function kbanCommand(Channel $source, User $user, $args, Queue $queue)
 	{
-		$result = Validator::isAllowedTo('kick', $user, $source);
-
-		if (!$result)
-		{
-			$queue->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the kban command.');
-			return;
-		}
-
 		$nickname = array_shift($args);
 		$minutes = array_shift($args);
 		$redirect = !empty($args) && Channel::isValidName($args[0]) ? array_shift($args) : '';
 		$message = !empty($args) ? implode(' ', $args) : $nickname;
-		$userObj = $source->getUserCollection()->findUserByNickname($nickname);
+		$userObj = $source->getUserCollection()->findByNickname($nickname);
 
 		if ($nickname == Configuration::get('currentNickname')->getValue())
 		{
@@ -162,6 +135,7 @@ class ModerationCommands
 	 * @param User $userObj
 	 * @param Queue $queue
 	 * @param int $until
+	 * @param string $redirect
 	 */
 	protected function banUser(Channel $source, User $userObj, Queue $queue, int $until, string $redirect = '')
 	{
