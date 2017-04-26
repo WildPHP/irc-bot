@@ -51,6 +51,13 @@ class ModerationCommands
 		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel] ([reason])');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
 		CommandRegistrar::registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2, -1, 'kban');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Bans the specified user from the channel.');
+		$commandHelp->addPage('Usage #1: kban [nickname] [minutes]');
+		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel]');
+		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
+		CommandRegistrar::registerCommand('ban', [$this, 'banCommand'], $commandHelp, 2, 3, 'ban');
 	}
 
 	/**
@@ -128,6 +135,35 @@ class ModerationCommands
 		$this->banUser($source, $userObj, $queue, $time, $redirect);
 
 		$queue->kick($source->getName(), $nickname, $message);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param Queue $queue
+	 */
+	public function banCommand(Channel $source, User $user, $args, Queue $queue)
+	{
+		$nickname = array_shift($args);
+		$minutes = array_shift($args);
+		$redirect = !empty($args) && Channel::isValidName($args[0]) ? array_shift($args) : '';
+		$userObj = $source->getUserCollection()->findByNickname($nickname);
+
+		if ($nickname == Configuration::get('currentNickname')->getValue())
+		{
+			$queue->privmsg($source->getName(), 'I refuse to hurt myself!');
+			return;
+		}
+
+		if (!$userObj)
+		{
+			$queue->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			return;
+		}
+
+		$time = time() + 60 * $minutes;
+		$this->banUser($source, $userObj, $queue, $time, $redirect);
 	}
 
 	/**
