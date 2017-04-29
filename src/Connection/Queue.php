@@ -31,6 +31,7 @@ use WildPHP\Core\Connection\Commands\Ping;
 use WildPHP\Core\Connection\Commands\Pong;
 use WildPHP\Core\Connection\Commands\Privmsg;
 use WildPHP\Core\Connection\Commands\Quit;
+use WildPHP\Core\Connection\Commands\Raw;
 use WildPHP\Core\Connection\Commands\Topic;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
@@ -290,5 +291,11 @@ class Queue implements QueueInterface
 	{
 		$topic = new Topic($channelName, $message);
 		$this->insertMessage($topic);
+	}
+
+	public function raw(string $raw)
+	{
+		$raw = new Raw($raw);
+		$this->insertMessage($raw);
 	}
 }
