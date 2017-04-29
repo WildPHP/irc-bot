@@ -68,6 +68,7 @@ class ChannelStateManager
 		$userObject->setIrcAccount($accountname);
 		$userObject->setHostname($prefix->getHostname());
 		$userObject->setUsername($prefix->getUsername());
+		$userObject->getChannelCollection()->add($channel);
 
 		$channel->getUserCollection()->add($userObject);
 
@@ -91,12 +92,20 @@ class ChannelStateManager
 		$channel = ChannelCollection::getGlobalInstance()->findByChannelName($args[0]);
 		$userObject = UserCollection::getGlobalInstance()->findByNickname($userPrefix->getNickname());
 
+		if ($userObject === UserCollection::getGlobalSelf())
+			$channel->abandon();
+
 		$removed = $channel->getUserCollection()->remove(function (User $user) use ($userObject)
 		{
 			return $user === $userObject;
 		});
 
-		if ($removed)
+		$removedChannel = $userObject->getChannelCollection()->remove(function (Channel $channelObject) use ($channel)
+		{
+			return $channelObject === $channel;
+		});
+
+		if ($removed && $removedChannel)
 			Logger::debug('Removed user from channel', [
 				'reason' => 'part',
 				'nickname' => $userObject->getNickname(),
@@ -119,7 +128,12 @@ class ChannelStateManager
 			return $user === $userObject;
 		});
 
-		if ($removed)
+		$removedChannel = $userObject->getChannelCollection()->remove(function (Channel $channelObject) use ($channel)
+		{
+			return $channelObject === $channel;
+		});
+
+		if ($removed && $removedChannel)
 			Logger::debug('Removed user from channel', [
 				'reason' => 'kick',
 				'nickname' => $userObject->getNickname(),
@@ -139,9 +153,18 @@ class ChannelStateManager
 		{
 			$userCollection = $channel->getUserCollection();
 
-			$removed = $userCollection->remove(function (User $user) use ($userObject)
+			$removed = $userCollection->remove(function (User $user) use ($userObject, $channel)
 			{
-				return $user === $userObject;
+
+				if ($user === $userObject)
+				{
+					$user->getChannelCollection()->remove(function (Channel $channelObject) use ($channel)
+					{
+						return $channelObject === $channel;
+					});
+					return true;
+				}
+				return false;
 			});
 
 			if ($removed)
@@ -202,6 +225,9 @@ class ChannelStateManager
 				foreach ($modes as $mode)
 					$channel->getChannelModes()->addUserToMode($mode, $userObject);
 			}
+
+			if (!$userObject->getChannelCollection()->findByChannelName($channel->getName()))
+				$userObject->getChannelCollection()->add($channel);
 
 			if (!$channel->getUserCollection()->findByNickname($userObject->getNickname()))
 				$channel->getUserCollection()->add($userObject);

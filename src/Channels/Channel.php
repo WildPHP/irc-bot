@@ -66,6 +66,13 @@ class Channel
 
 	public function abandon()
 	{
+		foreach ($this->getUserCollection()->toArray() as $user)
+		{
+			$user->getChannelCollection()->remove(function (Channel $channel)
+			{
+				return $channel === $this;
+			});
+		}
 		$this->getUserCollection()->clear();
 		$this->setChannelModes(new ChannelModes());
 		Logger::debug('Channel object cleared of data.', ['name' => $this->getName()]);
