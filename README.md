@@ -32,7 +32,6 @@ To install the latest development build, you need [Composer](https://getcomposer
 
     $ git clone https://github.com/WildPHP/Wild-IRC-Bot
     $ cd Wild-IRC-Bot
-    $ git checkout 3.0
     $ composer install
 
 This will pull all Composer dependencies required to run the bot.
