@@ -20,6 +20,7 @@
 
 namespace WildPHP\Core\Connection;
 
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Commands\BaseCommand;
 use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
@@ -35,7 +36,6 @@ use WildPHP\Core\Connection\Commands\Raw;
 use WildPHP\Core\Connection\Commands\Topic;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
-use WildPHP\Core\Logger\Logger;
 
 class Queue implements QueueInterface
 {
@@ -75,6 +75,16 @@ class Queue implements QueueInterface
 	protected $floodControlEnabled = false;
 
 	/**
+	 * @var ComponentContainer
+	 */
+	protected $container;
+
+	public function __construct(ComponentContainer $container)
+	{
+		$this->setContainer($container);
+	}
+
+	/**
 	 * @param BaseCommand $command
 	 */
 	public function insertMessage(BaseCommand $command)
@@ -82,7 +92,7 @@ class Queue implements QueueInterface
 		$time = $this->calculateNextMessageTime();
 
 		if ($time > time())
-			Logger::warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
+			$this->getContainer()->getLogger()->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
 
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);
@@ -172,6 +182,22 @@ class Queue implements QueueInterface
 	public function isFloodControlEnabled(): bool
 	{
 		return $this->floodControlEnabled;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 
 	/**

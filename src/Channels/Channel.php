@@ -20,8 +20,6 @@
 
 namespace WildPHP\Core\Channels;
 
-use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\UserCollection;
 
 class Channel
@@ -51,31 +49,10 @@ class Channel
 	 */
 	protected $channelModes;
 
-	public function __construct()
+	public function __construct(UserCollection $userCollection, ChannelModes $channelModes)
 	{
-		$this->userCollection = new UserCollection();
-		$this->channelModes = new ChannelModes();
-	}
-
-	public function __destruct()
-	{
-		$this->setUserCollection(null);
-		$this->setChannelModes(null);
-		Logger::debug('Channel object destructed.', ['name' => $this->getName()]);
-	}
-
-	public function abandon()
-	{
-		foreach ($this->getUserCollection()->toArray() as $user)
-		{
-			$user->getChannelCollection()->remove(function (Channel $channel)
-			{
-				return $channel === $this;
-			});
-		}
-		$this->getUserCollection()->clear();
-		$this->setChannelModes(new ChannelModes());
-		Logger::debug('Channel object cleared of data.', ['name' => $this->getName()]);
+		$this->setUserCollection($userCollection);
+		$this->setChannelModes($channelModes);
 	}
 
 	/**
@@ -89,7 +66,7 @@ class Channel
 	/**
 	 * @param ChannelModes $channelModes
 	 */
-	public function setChannelModes(?ChannelModes $channelModes)
+	public function setChannelModes(ChannelModes $channelModes)
 	{
 		$this->channelModes = $channelModes;
 	}
@@ -160,11 +137,13 @@ class Channel
 
 	/**
 	 * @param string $name
+	 * @param string $prefix
 	 * @return bool
 	 */
-	public static function isValidName(string $name)
+	public static function isValidName(string $name, string $prefix)
 	{
-		$prefix = Configuration::get('serverConfig.chantypes')->getValue();
 		return substr($name, 0, strlen($prefix)) == $prefix;
 	}
+
+
 }

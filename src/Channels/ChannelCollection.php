@@ -21,27 +21,25 @@
 namespace WildPHP\Core\Channels;
 
 use Collections\Collection;
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class ChannelCollection extends Collection
 {
-	protected static $globalInstance = null;
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container = null;
 
 	/**
-	 * @return ChannelCollection
+	 * ChannelCollection constructor.
+	 * @param ComponentContainer $container
 	 */
-	public static function getGlobalInstance(): ChannelCollection
+	public function __construct(ComponentContainer $container)
 	{
-		if (is_null(self::$globalInstance))
-			self::$globalInstance = new ChannelCollection();
-
-		return self::$globalInstance;
-	}
-
-	public function __construct()
-	{
-		parent::__construct('\WildPHP\Core\Channels\Channel');
+		parent::__construct(Channel::class);
+		$this->setContainer($container);
 	}
 
 	/**
@@ -52,10 +50,12 @@ class ChannelCollection extends Collection
 	 */
 	public function createFakeConversationChannel(User $user)
 	{
-		$channel = new Channel();
+		$userCollection = new UserCollection($this->getContainer());
+		$channelModes = new ChannelModes($this->getContainer());
+		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($user->getNickname());
 		$channel->getUserCollection()->add($user);
-		$channel->getUserCollection()->add(UserCollection::getGlobalSelf());
+		$channel->getUserCollection()->add($this->getContainer()->getUserCollection()->getSelf());
 		$this->add($channel);
 		return $channel;
 	}
@@ -80,5 +80,21 @@ class ChannelCollection extends Collection
 		{
 			return $channel->getName() == $name;
 		});
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getContainer()
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param mixed $container
+	 */
+	public function setContainer($container)
+	{
+		$this->container = $container;
 	}
 }

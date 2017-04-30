@@ -21,26 +21,18 @@
 namespace WildPHP\Core\Users;
 
 use Collections\Collection;
-use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\ComponentContainer;
 
 class UserCollection extends Collection
 {
-	protected static $globalInstance = null;
-
 	/**
-	 * @return UserCollection
+	 * @var ComponentContainer
 	 */
-	public static function getGlobalInstance(): UserCollection
-	{
-		if (is_null(self::$globalInstance))
-			self::$globalInstance = new UserCollection();
-
-		return self::$globalInstance;
-	}
-
-	public function __construct()
+	protected $container = null;
+	public function __construct(ComponentContainer $container)
 	{
 		parent::__construct('\WildPHP\Core\Users\User');
+		$this->setContainer($container);
 	}
 
 	/**
@@ -86,37 +78,39 @@ class UserCollection extends Collection
 	 */
 	public function getSelf()
 	{
-		$ownNickname = Configuration::get('currentNickname')->getValue();
+		$ownNickname = $this->getContainer()->getConfiguration()->get('currentNickname')->getValue();
 		return $this->findByNickname($ownNickname);
 	}
 
 	/**
-	 * @return false|User
+	 * @param string $nickname
+	 * @return User
 	 */
-	public static function getGlobalSelf()
+	public function findOrCreateByNickname(string $nickname): User
 	{
-		$ownNickname = Configuration::get('currentNickname')->getValue();
-		$collection = self::getGlobalInstance();
-		return $collection->findByNickname($ownNickname);
+		if ($this->containsNickname($nickname))
+			return $this->findByNickname($nickname);
+
+		$user = new User($this->getContainer());
+		$user->setNickname($nickname);
+		$this->add($user);
+
+		return $user;
 	}
 
 	/**
-	 * @param string $nickname
-	 * @param bool $addToCollection
-	 * @return User
+	 * @return ComponentContainer
 	 */
-	public static function globalFindOrCreateByNickname(string $nickname, bool $addToCollection = true): User
+	public function getContainer(): ComponentContainer
 	{
-		$collection = self::getGlobalInstance();
-		if ($collection->containsNickname($nickname))
-			return $collection->findByNickname($nickname);
+		return $this->container;
+	}
 
-		$user = new User();
-		$user->setNickname($nickname);
-
-		if ($addToCollection)
-			$collection->add($user);
-
-		return $user;
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

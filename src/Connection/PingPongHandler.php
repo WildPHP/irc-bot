@@ -21,10 +21,7 @@
 namespace WildPHP\Core\Connection;
 
 use React\EventLoop\LoopInterface;
-use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-
+use WildPHP\Core\ComponentContainer;
 class PingPongHandler
 {
 	/**
@@ -51,15 +48,25 @@ class PingPongHandler
 	 */
 	protected $disconnectInterval = 120;
 
-	public function __construct()
-	{
-		EventEmitter::on('irc.line.in', [$this, 'updateLastMessageReceived']);
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container;
 
-		EventEmitter::on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	/**
+	 * PingPongHandler constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
+	{
+		$container->getEventEmitter()->on('irc.line.in', [$this, 'updateLastMessageReceived']);
+
+		$container->getEventEmitter()->on('irc.line.in.ping', function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 		{
 			$queue->pong($incomingIrcMessage->getArgs()[0]);
 		});
 		$this->updateLastMessageReceived();
+		$this->setContainer($container);
 	}
 
 	public function updateLastMessageReceived()
@@ -98,8 +105,8 @@ class PingPongHandler
 	 */
 	public function sendPing(Queue $queue)
 	{
-		Logger::debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
-		$server = Configuration::get('serverConfig.hostname')->getValue();
+		$this->getContainer()->getLogger()->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
+		$server = $this->getContainer()->getConfiguration()->get('serverConfig.hostname')->getValue();
 		$queue->ping($server);
 		return true;
 	}
@@ -111,9 +118,25 @@ class PingPongHandler
 	 */
 	public function forceDisconnect(Queue $queue)
 	{
-		Logger::warning('The server has not responded to the last PING command. Is the network down? Closing link.');
+		$this->getContainer()->getLogger()->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
 		$queue->quit('No vital signs detected, closing link...');
-		EventEmitter::emit('irc.force.close');
+		$this->getContainer()->getEventEmitter()->emit('irc.force.close');
 		return true;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getContainer()
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param mixed $container
+	 */
+	public function setContainer($container)
+	{
+		$this->container = $container;
 	}
 }

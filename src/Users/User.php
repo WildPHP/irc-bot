@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Users;
 
 use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\ComponentContainer;
 
 class User
 {
@@ -49,9 +50,9 @@ class User
 	 */
 	protected $channelCollection;
 
-	public function __construct()
+	public function __construct(ComponentContainer $container)
 	{
-		$this->channelCollection = new ChannelCollection();
+		$this->channelCollection = new ChannelCollection($container);
 	}
 
 	/**

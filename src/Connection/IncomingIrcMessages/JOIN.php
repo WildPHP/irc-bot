@@ -22,11 +22,9 @@ namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 class JOIN implements BaseMessage
 {
@@ -58,8 +56,13 @@ class JOIN implements BaseMessage
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
-		$channels = self::getChannelsByList($channelNameList);
-		$user = UserCollection::globalFindOrCreateByNickname($prefix->getNickname());
+		$channelObjects = [];
+		foreach ($channelNameList as $channelName)
+		{
+			$channel = $incomingIrcMessage->getContainer()->getChannelCollection()->findByChannelName($channelName);
+			$channelObjects[] = $channel;
+		}
+		$user = $incomingIrcMessage->getContainer()->getUserCollection()->findOrCreateByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
@@ -68,26 +71,9 @@ class JOIN implements BaseMessage
 
 		$object->setPrefix($prefix);
 		$object->setUser($user);
-		$object->setChannels($channels);
+		$object->setChannels($channelObjects);
 
 		return $object;
-	}
-
-	/**
-	 * @param array $channelNames
-	 *
-	 * @return Channel[]
-	 */
-	protected static function getChannelsByList(array $channelNames): array
-	{
-		$channelObjects = [];
-		foreach ($channelNames as $channelName)
-		{
-			$channel = ChannelCollection::getGlobalInstance()->findByChannelName($channelName);
-			$channelObjects[] = $channel;
-		}
-
-		return $channelObjects;
 	}
 
 	/**

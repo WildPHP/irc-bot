@@ -22,5 +22,5 @@ namespace WildPHP\Core\Configuration;
 
 interface ConfigurationBackendInterface
 {
-	public static function getAllEntries(): array;
+	public function getAllEntries(): array;
 }

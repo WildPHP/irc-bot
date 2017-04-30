@@ -9,17 +9,23 @@
 namespace WildPHP\Core\Users;
 
 
-use WildPHP\Core\Connection\CapabilityHandler;
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Events\EventEmitter;
 
 class UserStateManager
 {
-	public function __construct()
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container;
+
+	public function __construct(ComponentContainer $container)
 	{
 		$events = [
+			'irc.cap.ls' => 'requestChghost',
+
 			// 366: RPL_ENDOFNAMES
 			'irc.line.in.366' => 'sendInitialWhoxMessage',
 			// 354: RPL_WHOSPCRPL
@@ -34,10 +40,15 @@ class UserStateManager
 
 		foreach ($events as $event => $callback)
 		{
-			EventEmitter::on($event, [$this, $callback]);
+			$container->getEventEmitter()->on($event, [$this, $callback]);
 		}
 
-		CapabilityHandler::requestCapability('chghost');
+		$this->setContainer($container);
+	}
+
+	public function requestChghost()
+	{
+		$this->getContainer()->getCapabilityHandler()->requestCapability('chghost');
 	}
 
 	/**
@@ -61,31 +72,31 @@ class UserStateManager
 		$hostname = $args[2];
 		$nickname = $args[3];
 		$accountname = $args[5];
-		$userObject = UserCollection::globalFindOrCreateByNickname($nickname);
+		$userObject = $this->getContainer()->getUserCollection()->findOrCreateByNickname($nickname);
 
 		$userObject->setUsername($username);
 		$userObject->setHostname($hostname);
 		$userObject->setIrcAccount($accountname);
 
-		EventEmitter::emit('user.account.changed', [$userObject, $queue]);
+		$this->getContainer()->getEventEmitter()->emit('user.account.changed', [$userObject, $queue]);
 	}
 
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public static function processUserQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function processUserQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
 		$nickname = explode('!', $prefix)[0];
 
-		$userObject = UserCollection::getGlobalInstance()->findByNickname($nickname);
+		$userObject = $this->getContainer()->getUserCollection()->findByNickname($nickname);
 
 		if ($userObject == false)
 			return;
 
-		EventEmitter::emit('user.quit', [$userObject, $queue]);
-		UserCollection::getGlobalInstance()->remove(function (User $user) use ($userObject)
+		$this->getContainer()->getEventEmitter()->emit('user.quit', [$userObject, $queue]);
+		$this->getContainer()->getUserCollection()->remove(function (User $user) use ($userObject)
 		{
 			return $user === $userObject;
 		});
@@ -95,20 +106,20 @@ class UserStateManager
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public static function processUserNicknameChange(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function processUserNicknameChange(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$prefix = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$oldNickname = explode('!', $prefix)[0];
 		$newNickname = $args[0];
 
-		$userObject = UserCollection::getGlobalInstance()->findByNickname($oldNickname);
+		$userObject = $this->getContainer()->getUserCollection()->findByNickname($oldNickname);
 
 		if ($userObject == false)
 			return;
 
 		$userObject->setNickname($newNickname);
-		EventEmitter::emit('user.nick', [$userObject, $oldNickname, $newNickname, $queue]);
+		$this->getContainer()->getEventEmitter()->emit('user.nick', [$userObject, $oldNickname, $newNickname, $queue]);
 	}
 
 	/**
@@ -122,15 +133,15 @@ class UserStateManager
 		$target = !empty($args[2]) ? $args[2] : $args[0];
 		$channel = !empty($args[2]) ? $args[0] : '';
 
-		$userObject = UserCollection::getGlobalInstance()->findByNickname($target);
+		$userObject = $this->getContainer()->getUserCollection()->findByNickname($target);
 
 		if ($userObject == false)
 			return;
 
 		if (!empty($channel))
-			EventEmitter::emit('user.mode.channel', [$channel, $mode, $userObject, $queue]);
+			$this->getContainer()->getEventEmitter()->emit('user.mode.channel', [$channel, $mode, $userObject, $queue]);
 		else
-			EventEmitter::emit('user.mode', [$mode, $userObject, $queue]);
+			$this->getContainer()->getEventEmitter()->emit('user.mode', [$mode, $userObject, $queue]);
 	}
 
 	/**
@@ -143,11 +154,27 @@ class UserStateManager
 		$newUsername = $args[0];
 		$newHostname = $args[1];
 		$userPrefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
-		$userObject = UserCollection::getGlobalInstance()->findByNickname($userPrefix->getNickname());
+		$userObject = $this->getContainer()->getUserCollection()->findByNickname($userPrefix->getNickname());
 
 		$userObject->setHostname($newHostname);
 		$userObject->setUsername($newUsername);
 
-		EventEmitter::emit('user.host', [$userObject, $newUsername, $newHostname, $queue]);
+		$this->getContainer()->getEventEmitter()->emit('user.host', [$userObject, $newUsername, $newHostname, $queue]);
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

@@ -20,19 +20,28 @@
 
 namespace WildPHP\Core\Security;
 
-use Flintstone\Config;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Users\User;
 
 class Validator
 {
 	/**
+	 * @var ComponentContainer
+	 */
+	protected $container;
+
+	public function __construct(ComponentContainer $container)
+	{
+		$this->setContainer($container);
+	}
+
+	/**
 	 * @param Channel $channel
 	 * @param User $user
 	 * @return bool
 	 */
-	public static function isUserOPInChannel(Channel $channel, User $user)
+	public function isUserOPInChannel(Channel $channel, User $user)
 	{
 		return $channel->getChannelModes()->isUserInMode('o', $user);
 	}
@@ -42,7 +51,7 @@ class Validator
 	 * @param User $user
 	 * @return bool
 	 */
-	public static function isUserVoicedInChannel(Channel $channel, User $user)
+	public function isUserVoicedInChannel(Channel $channel, User $user)
 	{
 		return $channel->getChannelModes()->isUserInMode('v', $user);
 	}
@@ -54,19 +63,19 @@ class Validator
 	 *
 	 * @return string|boolean String with reason on success; boolean false otherwise.
 	 */
-	public static function isAllowedTo(string $permissionName = '', User $user, Channel $channel = null)
+	public function isAllowedTo(string $permissionName = '', User $user, Channel $channel = null)
 	{
 		// The order to check in:
 		// 0. Is bot owner (has all perms)
 		// 1. User OP in channel
 		// 2. User Voice in channel
 		// 3. User in other group with permission
-		if ($user->getIrcAccount() == Configuration::get('owner')->getValue())
+		if ($user->getIrcAccount() == $this->getContainer()->getConfiguration()->get('owner')->getValue())
 			return 'owner';
 
 		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
 		{
-			$opGroup = GlobalPermissionGroupCollection::getPermissionGroupCollection()->findGroupByName('op');
+			$opGroup = $this->getContainer()->getPermissionGroupCollection()->findGroupByName('op');
 
 			if ($opGroup->hasPermission($permissionName))
 				return 'op';
@@ -74,13 +83,13 @@ class Validator
 
 		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
 		{
-			$voiceGroup = GlobalPermissionGroupCollection::getPermissionGroupCollection()->findGroupByName('voice');
+			$voiceGroup = $this->getContainer()->getPermissionGroupCollection()->findGroupByName('voice');
 
 			if ($voiceGroup->hasPermission($permissionName))
 				return 'voice';
 		}
 
-		$groups = GlobalPermissionGroupCollection::getPermissionGroupCollection()->findall(function ($item) use ($user)
+		$groups = $this->getContainer()->getPermissionGroupCollection()->findAll(function ($item) use ($user)
 		{
 			if (!$item->getCanHaveMembers())
 				return false;
@@ -88,12 +97,28 @@ class Validator
 			return $item->isMember($user);
 		});
 
-		foreach ($groups as $group)
+		foreach ($groups->toArray() as $group)
 		{
 			if ($group->hasPermission($permissionName))
 				return $group->getName();
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

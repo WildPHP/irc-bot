@@ -20,10 +20,9 @@
 
 namespace WildPHP\Core\Commands;
 
-class CommandRegistrar
+class CommandFactory
 {
 	/**
-	 * @param string $command
 	 * @param callable $callback
 	 *
 	 * @param CommandHelp|null $commandHelp
@@ -31,14 +30,11 @@ class CommandRegistrar
 	 * @param int $maxarguments
 	 * @param string $requiredPermission
 	 * @throws CommandAlreadyExistsException
+	 *
+	 * @return Command
 	 */
-	public static function registerCommand(string $command, callable $callback, CommandHelp $commandHelp = null, int $minarguments = -1, int $maxarguments = -1, string $requiredPermission = '')
+	public static function create(callable $callback, CommandHelp $commandHelp = null, int $minarguments = -1, int $maxarguments = -1, string $requiredPermission = '')
 	{
-		if (GlobalCommandDictionary::getDictionary()->keyExists($command))
-		{
-			throw new CommandAlreadyExistsException();
-		}
-
 		$commandObject = new Command();
 		$commandObject->setCallback($callback);
 		$commandObject->setMinimumArguments($minarguments);
@@ -53,35 +49,6 @@ class CommandRegistrar
 			$commandObject->setHelp($commandHelp);
 		}
 
-		GlobalCommandDictionary::getDictionary()[$command] = $commandObject;
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function listCommands(): array
-	{
-		return array_keys(GlobalCommandDictionary::getDictionary()->toArray());
-	}
-
-	public static function commandExists(string $command): bool
-	{
-		$commands = self::listCommands();
-		return in_array($command, $commands);
-	}
-
-	/**
-	 * @param string $command
-	 *
-	 * @throws CommandDoesNotExistException
-	 */
-	public static function deregisterCommand(string $command)
-	{
-		if (!GlobalCommandDictionary::getDictionary()->keyExists($command))
-		{
-			throw new CommandDoesNotExistException();
-		}
-
-		GlobalCommandDictionary::getDictionary()->offsetUnset($command);
+		return $commandObject;
 	}
 }

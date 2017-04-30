@@ -20,8 +20,7 @@
 
 namespace WildPHP\Core\Tasks;
 
-
-use React\EventLoop\LoopInterface;
+use WildPHP\Core\ComponentContainer;
 
 class TaskController
 {
@@ -32,12 +31,12 @@ class TaskController
 	 */
 	protected static $tasks = [];
 
-	public static function setup(LoopInterface $loop)
+	public function __construct(ComponentContainer $container)
 	{
-		$loop->addPeriodicTimer(self::$loopInterval, __CLASS__ . '::runTasks');
+		$container->getLoop()->addPeriodicTimer(self::$loopInterval, [$this, 'runTasks']);
 	}
 
-	public static function addTask(Task $task): bool
+	public function addTask(Task $task): bool
 	{
 		if (self::taskExists($task))
 			return false;
@@ -46,7 +45,7 @@ class TaskController
 		return true;
 	}
 
-	public static function removeTask(Task $task): bool
+	public function removeTask(Task $task): bool
 	{
 		if (!self::taskExists($task))
 			return false;
@@ -55,12 +54,12 @@ class TaskController
 		return true;
 	}
 
-	public static function taskExists(Task $task): bool
+	public function taskExists(Task $task): bool
 	{
 		return in_array($task, self::$tasks);
 	}
 
-	public static function runTasks()
+	public function runTasks()
 	{
 		foreach (self::$tasks as $task)
 		{

@@ -24,7 +24,6 @@ namespace WildPHP\Core\DataStorage;
 use Flintstone\Exception;
 use Flintstone\Flintstone;
 use Flintstone\Formatter\JsonFormatter;
-use WildPHP\Core\Configuration\Configuration;
 
 class DataStorage extends Flintstone
 {
@@ -36,7 +35,7 @@ class DataStorage extends Flintstone
 	public function __construct($name)
 	{
 		$config = [
-			'dir' => Configuration::get('rootdir')->getValue() . '/storage',
+			'dir' => WPHP_ROOT_DIR . '/storage',
 			'formatter' => new JsonFormatter()
 		];
 		parent::__construct($name, $config);

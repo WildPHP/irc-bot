@@ -20,105 +20,127 @@
 
 namespace WildPHP\Core\Logger;
 
-class Logger
+use Psr\Log\LoggerInterface;
+
+class Logger implements LoggerInterface
 {
 	/**
 	 * @var \Katzgrau\KLogger\Logger
 	 */
-	protected static $logger = null;
+	protected $logger = null;
 
-	public static function initialize()
+	public function __construct(\Katzgrau\KLogger\Logger $logger)
 	{
-		self::$logger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
-		self::info('WildPHP starting up!');
+		$this->setLogger($logger);
 	}
 
 	/**
 	 * KLogger does not natively support writing to stdout. This function works around that.
 	 */
-	public static function echoLastLine()
+	public function echoLastLine()
 	{
-		$lastline = self::$logger->getLastLogLine();
+		$lastline = $this->getLogger()->getLastLogLine();
 		echo $lastline . PHP_EOL;
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function emergency(string $message, array $context = [])
+	public function emergency($message, array $context = [])
 	{
-		self::$logger->emergency($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->emergency($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function alert(string $message, array $context = [])
+	public function alert($message, array $context = [])
 	{
-		self::$logger->alert($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->alert($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function critical(string $message, array $context = [])
+	public function critical($message, array $context = [])
 	{
-		self::$logger->critical($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->critical($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function error(string $message, array $context = [])
+	public function error($message, array $context = [])
 	{
-		self::$logger->error($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->error($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function warning(string $message, array $context = [])
+	public function warning($message, array $context = [])
 	{
-		self::$logger->warning($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->warning($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function notice(string $message, array $context = [])
+	public function notice($message, array $context = [])
 	{
-		self::$logger->notice($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->notice($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function info(string $message, array $context = [])
+	public function info($message, array $context = [])
 	{
-		self::$logger->info($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->info($message, $context);
+		$this->echoLastLine();
 	}
 
 	/**
-	 * @param string $message
+	 * @param $message
 	 * @param array $context
 	 */
-	public static function debug(string $message, array $context = [])
+	public function debug($message, array $context = [])
 	{
-		self::$logger->debug($message, $context);
-		self::echoLastLine();
+		$this->getLogger()->debug($message, $context);
+		$this->echoLastLine();
+	}
+
+	public function log($level, $message, array $context = [])
+	{
+		$this->getLogger()->log($level, $message, $context);
+	}
+
+	/**
+	 * @return \Katzgrau\KLogger\Logger
+	 */
+	public function getLogger(): \Katzgrau\KLogger\Logger
+	{
+		return $this->logger;
+	}
+
+	/**
+	 * @param \Katzgrau\KLogger\Logger $logger
+	 */
+	public function setLogger(\Katzgrau\KLogger\Logger $logger)
+	{
+		$this->logger = $logger;
 	}
 }
