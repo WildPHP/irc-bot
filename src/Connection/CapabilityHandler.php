@@ -244,9 +244,9 @@ class CapabilityHandler
 		$ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
 		$this->setAcknowledgedCapabilities($ackCapabilities);
 		Logger::fromContainer($this->getContainer())
-			->debug('Updated list of not acknowledged capabilities.',
+			->debug('Updated list of acknowledged capabilities.',
 				[
-					'notAcknowledgedCapabilities' => $ackCapabilities
+					'acknowledgedCapabilities' => $ackCapabilities
 				]);
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
