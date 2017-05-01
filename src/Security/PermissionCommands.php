@@ -228,7 +228,9 @@ class PermissionCommands
 
 		$members = $group->getUserCollection();
 		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': The following members are in this group: ' . implode(', ', $members));
+			->privmsg($source->getName(), sprintf('%s: The following members are in this group: %s',
+				$user->getNickname(),
+				implode(', ', $members)));
 	}
 
 	/**
@@ -267,7 +269,11 @@ class PermissionCommands
 		$group->addMember($userToAdd);
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
-				$user->getNickname() . ': User ' . $nickname . ' (identified by ' . $userToAdd->getIrcAccount() . ') has been added to the permission group "' . $groupName . '"');
+				sprintf('%s: User %s (identified by %s) has been added to the permission group "%s"',
+					$user->getNickname(),
+					$nickname,
+					$userToAdd->getIrcAccount(),
+					$groupName));
 	}
 
 	/**
@@ -318,7 +324,11 @@ class PermissionCommands
 		$group->removeMember($userToAdd);
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
-				$user->getNickname() . ': User ' . $nickname . ' (identified by ' . $userToAdd->getIrcAccount() . ') has been removed from the permission group "' . $groupName . '"');
+				sprintf('%s: User %s (identified by %s) has been removed from the permission group "%s"',
+					$user->getNickname(),
+					$nickname,
+					$userToAdd->getIrcAccount(),
+					$groupName));
 	}
 
 	/**
@@ -343,7 +353,10 @@ class PermissionCommands
 
 		if ($result)
 		{
-			$message = $valUser->getNickname() . ' passes validation for permission "' . $perm . '" in this context. (permitted by group: ' . $result . ')';
+			$message = sprintf('%s passes validation for permission "%s" in this context. (permitted by group: %s)',
+				$valUser->getNickname(),
+				$perm,
+				$result);
 		}
 
 		else
