@@ -15,6 +15,10 @@ class Raw extends BaseCommand
 	 */
 	protected $command;
 
+	/**
+	 * Raw constructor.
+	 * @param string $command
+	 */
 	public function __construct(string $command)
 	{
 		$this->setCommand($command);

@@ -34,6 +34,11 @@ class QueueItem
 	 */
 	protected $time;
 
+	/**
+	 * QueueItem constructor.
+	 * @param BaseCommand $command
+	 * @param int $time
+	 */
 	public function __construct(BaseCommand $command, int $time)
 	{
 		$this->setCommandObject($command);

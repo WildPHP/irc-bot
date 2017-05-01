@@ -52,6 +52,9 @@ class Ping extends BaseCommand
 		$this->server = $server;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		return 'PING :' . $this->getServer() . "\r\n";

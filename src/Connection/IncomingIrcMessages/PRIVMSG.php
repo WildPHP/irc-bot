@@ -65,20 +65,28 @@ class PRIVMSG implements BaseMessage
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channel = $incomingIrcMessage->getArgs()[0];
-		$user = UserCollection::fromContainer($container)->findByNickname($prefix->getNickname());
+		$user = UserCollection::fromContainer($container)
+			->findByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
 
-		if (ChannelCollection::fromContainer($container)->containsChannelName($channel))
-			$channel = ChannelCollection::fromContainer($container)->findByChannelName($channel);
+		if (ChannelCollection::fromContainer($container)
+			->containsChannelName($channel)
+		)
+			$channel = ChannelCollection::fromContainer($container)
+				->findByChannelName($channel);
 
 		// It's most likely a private conversation.
-		elseif (!ChannelCollection::fromContainer($container)->containsChannelName($user->getNickname()))
-			$channel = ChannelCollection::fromContainer($container)->createFakeConversationChannel($user);
+		elseif (!ChannelCollection::fromContainer($container)
+			->containsChannelName($user->getNickname())
+		)
+			$channel = ChannelCollection::fromContainer($container)
+				->createFakeConversationChannel($user);
 
 		else
-			$channel = ChannelCollection::fromContainer($container)->findByChannelName($user->getNickname());
+			$channel = ChannelCollection::fromContainer($container)
+				->findByChannelName($user->getNickname());
 
 		$message = $incomingIrcMessage->getArgs()[1];
 

@@ -42,6 +42,13 @@ class Task
 	 */
 	protected $storedArguments = [];
 
+	/**
+	 * Task constructor.
+	 * @param callable $callback
+	 * @param int $time
+	 * @param array $args
+	 * @param int $repeatInterval
+	 */
 	public function __construct(callable $callback, int $time, array $args = [], int $repeatInterval = 0)
 	{
 		$this->setCallback($callback);

@@ -78,6 +78,10 @@ class CapabilityHandler
 		$this->setContainer($container);
 	}
 
+	/**
+	 * @param array $availableCapabilities
+	 * @param Queue $queue
+	 */
 	public function requestCoreCapabilities(array $availableCapabilities, Queue $queue)
 	{
 		if (in_array('extended-join', $availableCapabilities))
@@ -95,7 +99,8 @@ class CapabilityHandler
 	 */
 	public function initNegotiation(Queue $queue)
 	{
-		Logger::fromContainer($this->getContainer())->debug('Capability negotiation started, requesting list of capabilities.');
+		Logger::fromContainer($this->getContainer())
+			->debug('Capability negotiation started, requesting list of capabilities.');
 		$queue->cap('LS');
 	}
 
@@ -107,7 +112,8 @@ class CapabilityHandler
 		if (empty($this->getCapabilitiesToRequest()))
 			return;
 
-		Logger::fromContainer($this->getContainer())->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
 		$queue->cap('REQ :' . implode(' ', $this->getCapabilitiesToRequest()));
 	}
 
@@ -120,19 +126,27 @@ class CapabilityHandler
 		if (!self::canEndNegotiation())
 			return;
 
-		Logger::fromContainer($this->getContainer())->debug('Ending capability negotiation.');
+		Logger::fromContainer($this->getContainer())
+			->debug('Ending capability negotiation.');
 		$queue->cap('END');
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.end', [$queue]);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.cap.end', [$queue]);
 	}
 
+	/**
+	 * @param string $capability
+	 * @return bool
+	 */
 	public function requestCapability(string $capability)
 	{
 		if (!self::isCapabilityAvailable($capability))
 		{
-			Logger::fromContainer($this->getContainer())->warning('Capability was requested, but is not available on the server.', [
-				'capability' => $capability,
-				'availableCapabilities' => $this->getAvailableCapabilities()
-			]);
+			Logger::fromContainer($this->getContainer())
+				->warning('Capability was requested, but is not available on the server.',
+					[
+						'capability' => $capability,
+						'availableCapabilities' => $this->getAvailableCapabilities()
+					]);
 
 			return false;
 		}
@@ -143,7 +157,8 @@ class CapabilityHandler
 		if (in_array($capability, $this->getCapabilitiesToRequest()))
 			return true;
 
-		Logger::fromContainer($this->getContainer())->debug('Capability queued for request on next flush.', ['capability' => $capability]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Capability queued for request on next flush.', ['capability' => $capability]);
 		$this->capabilitiesToRequest[] = $capability;
 
 		return true;
@@ -183,7 +198,8 @@ class CapabilityHandler
 		{
 			case 'LS':
 				$this->updateAvailableCapabilities($capability, $queue);
-				EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.ls.after', [$queue]);
+				EventEmitter::fromContainer($this->getContainer())
+					->emit('irc.cap.ls.after', [$queue]);
 				break;
 
 			case 'ACK':
@@ -206,10 +222,13 @@ class CapabilityHandler
 	{
 		$capabilities = explode(' ', trim($capabilities));
 		$this->setAvailableCapabilities($capabilities);
-		Logger::fromContainer($this->getContainer())->debug('Updated list of available capabilities.', [
-			'availableCapabilities' => $capabilities
-		]);
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.ls', [$capabilities, $queue]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Updated list of available capabilities.',
+				[
+					'availableCapabilities' => $capabilities
+				]);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.cap.ls', [$capabilities, $queue]);
 	}
 
 	/**
@@ -224,10 +243,13 @@ class CapabilityHandler
 
 		$ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
 		$this->setAcknowledgedCapabilities($ackCapabilities);
-		Logger::fromContainer($this->getContainer())->debug('Updated list of not acknowledged capabilities.', [
-			'notAcknowledgedCapabilities' => $ackCapabilities
-		]);
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Updated list of not acknowledged capabilities.',
+				[
+					'notAcknowledgedCapabilities' => $ackCapabilities
+				]);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
 
 	/**
@@ -241,10 +263,13 @@ class CapabilityHandler
 
 		$nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(), $capabilities)));
 		$this->setNotAcknowledgedCapabilities($nakCapabilities);
-		Logger::fromContainer($this->getContainer())->debug('Updated list of not acknowledged capabilities.', [
-			'notAcknowledgedCapabilities' => $nakCapabilities
-		]);
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Updated list of not acknowledged capabilities.',
+				[
+					'notAcknowledgedCapabilities' => $nakCapabilities
+				]);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
 	}
 
 	/**
@@ -252,7 +277,8 @@ class CapabilityHandler
 	 */
 	public function canEndNegotiation(): bool
 	{
-		$saslIsComplete = $this->getSasl()->hasCompleted();
+		$saslIsComplete = $this->getSasl()
+			->hasCompleted();
 
 		$reqCount = count($this->getCapabilitiesToRequest());
 		$ackCount = count($this->getAcknowledgedCapabilities());

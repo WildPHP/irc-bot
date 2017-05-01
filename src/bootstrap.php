@@ -5,15 +5,15 @@ use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
+use WildPHP\Core\Connection\IrcConnection;
+use WildPHP\Core\Connection\Parser;
+use WildPHP\Core\Connection\PingPongHandler;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\DataStorage\DataStorage;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Connection\IrcConnection;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\Parser;
 use WildPHP\Core\Security\PermissionGroup;
 use WildPHP\Core\Tasks\TaskController;
-use WildPHP\Core\Connection\PingPongHandler;
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
@@ -33,6 +33,9 @@ use WildPHP\Core\Connection\PingPongHandler;
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * @return Logger
+ */
 function setupLogger()
 {
 	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
@@ -40,6 +43,9 @@ function setupLogger()
 	return new Logger($klogger);
 }
 
+/**
+ * @return Configuration
+ */
 function setupConfiguration()
 {
 	$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(WPHP_ROOT_DIR . '/config.neon');
@@ -47,14 +53,21 @@ function setupConfiguration()
 	$configuration = new Configuration($neonBackend);
 	$rootdir = dirname(dirname(__FILE__));
 	$configuration->set(new ConfigurationItem('rootdir', $rootdir));
+
 	return $configuration;
 }
 
+/**
+ * @return EventEmitter
+ */
 function setupEventEmitter()
 {
 	return new EventEmitter();
 }
 
+/**
+ * @return \WildPHP\Core\Security\PermissionGroupCollection
+ */
 function setupPermissionGroupCollection()
 {
 	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
@@ -85,13 +98,20 @@ function setupPermissionGroupCollection()
 	return $globalPermissionGroup;
 }
 
+/**
+ * @param \WildPHP\Core\ComponentContainer $container
+ * @return IrcConnection
+ */
 function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 {
 	$loop = $container->getLoop();
 	$configuration = Configuration::fromContainer($container);
 	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
-	if (Configuration::fromContainer($container)->get('secure')->getValue())
+	if (Configuration::fromContainer($container)
+		->get('secure')
+		->getValue()
+	)
 		$connector = $connectorFactory->createSecure();
 	else
 		$connector = $connectorFactory->create();
@@ -104,25 +124,35 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 	$pingPongHandler = new PingPongHandler($container);
 	$pingPongHandler->registerPingLoop($loop, $queue);
 
-	$username = $configuration->get('user')->getValue();
+	$username = $configuration->get('user')
+		->getValue();
 	$hostname = gethostname();
-	$server = $configuration->get('server')->getValue();
-	$port = $configuration->get('port')->getValue();
-	$realname = $configuration->get('realname')->getValue();
-	$nickname = $configuration->get('nick')->getValue();
+	$server = $configuration->get('server')
+		->getValue();
+	$port = $configuration->get('port')
+		->getValue();
+	$realname = $configuration->get('realname')
+		->getValue();
+	$nickname = $configuration->get('nick')
+		->getValue();
 
 	$ircConnection->createFromConnector($connector, $server, $port);
 
-	EventEmitter::fromContainer($container)->on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
-	{
-		$queue->user($username, $hostname, $server, $realname);
-		$queue->nick($nickname);
-	});
+	EventEmitter::fromContainer($container)
+		->on('stream.created',
+			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+			{
+				$queue->user($username, $hostname, $server, $realname);
+				$queue->nick($nickname);
+			});
 
-	EventEmitter::fromContainer($container)->on('stream.closed', function () use ($loop)
-	{
-		$loop->stop();
-	});
+	EventEmitter::fromContainer($container)
+		->on('stream.closed',
+			function () use ($loop)
+			{
+				$loop->stop();
+			});
+
 	return $ircConnection;
 }
 
@@ -156,27 +186,30 @@ new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
 
 try
 {
-	$modules = Configuration::fromContainer($componentContainer)->get('modules')->getValue();
+	$modules = Configuration::fromContainer($componentContainer)
+		->get('modules')
+		->getValue();
 
 	foreach ($modules as $module)
 	{
 		try
 		{
 			new $module($componentContainer);
-		}
-		catch (\Exception $e)
+		} catch (\Exception $e)
 		{
-			Logger::fromContainer($componentContainer)->error('Could not properly load module; stability not guaranteed!', [
-				'class' => $module,
-				'message' => $e->getMessage()
-			]);
+			Logger::fromContainer($componentContainer)
+				->error('Could not properly load module; stability not guaranteed!',
+					[
+						'class' => $module,
+						'message' => $e->getMessage()
+					]);
 		}
 
 	}
-}
-catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
+} catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
 {
 	echo $e->getMessage();
 }
 
-$componentContainer->getLoop()->run();
+$componentContainer->getLoop()
+	->run();

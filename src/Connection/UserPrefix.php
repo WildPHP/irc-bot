@@ -43,6 +43,12 @@ class UserPrefix
 	 */
 	protected $hostname = '';
 
+	/**
+	 * UserPrefix constructor.
+	 * @param string $nickname
+	 * @param string $username
+	 * @param string $hostname
+	 */
 	public function __construct(string $nickname = '', string $username = '', string $hostname = '')
 	{
 		$this->setNickname($nickname);

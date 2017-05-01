@@ -83,6 +83,10 @@ class Queue implements QueueInterface
 	 */
 	protected $container;
 
+	/**
+	 * Queue constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		$this->setContainer($container);
@@ -96,7 +100,8 @@ class Queue implements QueueInterface
 		$time = $this->calculateNextMessageTime();
 
 		if ($time > time())
-			Logger::fromContainer($this->getContainer())->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
+			Logger::fromContainer($this->getContainer())
+				->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
 
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);
@@ -311,18 +316,30 @@ class Queue implements QueueInterface
 		$this->insertMessage($kick);
 	}
 
+	/**
+	 * @param string $target
+	 * @param string $flags
+	 * @param string $args
+	 */
 	public function mode(string $target, string $flags, string $args)
 	{
 		$mode = new Mode($target, $flags, $args);
 		$this->insertMessage($mode);
 	}
 
+	/**
+	 * @param string $channelName
+	 * @param string $message
+	 */
 	public function topic(string $channelName, string $message)
 	{
 		$topic = new Topic($channelName, $message);
 		$this->insertMessage($topic);
 	}
 
+	/**
+	 * @param string $raw
+	 */
 	public function raw(string $raw)
 	{
 		$raw = new Raw($raw);

@@ -57,9 +57,13 @@ class ChannelCollection extends Collection
 		$channelModes = new ChannelModes($this->getContainer());
 		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($user->getNickname());
-		$channel->getUserCollection()->add($user);
-		$channel->getUserCollection()->add(UserCollection::fromContainer($this->getContainer())->getSelf());
+		$channel->getUserCollection()
+			->add($user);
+		$channel->getUserCollection()
+			->add(UserCollection::fromContainer($this->getContainer())
+				->getSelf());
 		$this->add($channel);
+
 		return $channel;
 	}
 

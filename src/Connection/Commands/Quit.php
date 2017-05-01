@@ -52,6 +52,9 @@ class Quit extends BaseCommand
 		$this->message = $message;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		return 'QUIT :' . $this->getMessage() . "\r\n";

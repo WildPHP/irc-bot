@@ -32,6 +32,10 @@ class DataStorage extends Flintstone
 	 */
 	protected $flintstone;
 
+	/**
+	 * DataStorage constructor.
+	 * @param \Flintstone\Database|string $name
+	 */
 	public function __construct($name)
 	{
 		$config = [
@@ -41,9 +45,14 @@ class DataStorage extends Flintstone
 		parent::__construct($name, $config);
 	}
 
+	/**
+	 * @param string $key
+	 * @throws Exception
+	 */
 	public function validateKey($key)
 	{
-		if (empty($key) || is_object($key) || is_array($key)) {
+		if (empty($key) || is_object($key) || is_array($key))
+		{
 			throw new Exception('Key cannot be empty or object or array');
 		}
 	}

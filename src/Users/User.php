@@ -50,6 +50,10 @@ class User
 	 */
 	protected $channelCollection;
 
+	/**
+	 * User constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		$this->channelCollection = new ChannelCollection($container);

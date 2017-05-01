@@ -22,6 +22,9 @@ namespace WildPHP\Core\Configuration;
 
 class ConfigurationStorage
 {
+	/**
+	 * @var array
+	 */
 	private $config = [];
 
 	/**

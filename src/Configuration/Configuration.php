@@ -36,6 +36,10 @@ class Configuration
 	 */
 	protected $storage = null;
 
+	/**
+	 * Configuration constructor.
+	 * @param ConfigurationBackendInterface $configurationBackend
+	 */
 	public function __construct(ConfigurationBackendInterface $configurationBackend)
 	{
 		$this->setBackend($configurationBackend);
@@ -51,7 +55,8 @@ class Configuration
 	 */
 	public function get(string $key)
 	{
-		return $this->getStorage()->getItem($key);
+		return $this->getStorage()
+			->getItem($key);
 	}
 
 	/**
@@ -59,7 +64,8 @@ class Configuration
 	 */
 	public function set(ConfigurationItem $configurationItem)
 	{
-		$this->getStorage()->setItem($configurationItem);
+		$this->getStorage()
+			->setItem($configurationItem);
 	}
 
 	/**

@@ -22,11 +22,18 @@ class ComponentContainer
 	 */
 	protected $storedComponents = [];
 
+	/**
+	 * @param $object
+	 */
 	public function store($object)
 	{
 		$this->storedComponents[get_class($object)] = $object;
 	}
 
+	/**
+	 * @param string $className
+	 * @return object
+	 */
 	public function retrieve(string $className)
 	{
 		if (!array_key_exists($className, $this->storedComponents))

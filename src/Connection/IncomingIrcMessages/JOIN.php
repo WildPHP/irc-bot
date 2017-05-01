@@ -61,10 +61,12 @@ class JOIN implements BaseMessage
 		$channelObjects = [];
 		foreach ($channelNameList as $channelName)
 		{
-			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())->findByChannelName($channelName);
+			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())
+				->findByChannelName($channelName);
 			$channelObjects[] = $channel;
 		}
-		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())->findOrCreateByNickname($prefix->getNickname());
+		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())
+			->findOrCreateByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');

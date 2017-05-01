@@ -14,11 +14,28 @@ use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
 
 class IncomingIrcMessage
 {
+	/**
+	 * @var string
+	 */
 	protected $prefix = '';
+	/**
+	 * @var string
+	 */
 	protected $verb = '';
+	/**
+	 * @var array
+	 */
 	protected $args = [];
+	/**
+	 * @var
+	 */
 	protected $container;
 
+	/**
+	 * IncomingIrcMessage constructor.
+	 * @param ParsedIrcMessageLine $line
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ParsedIrcMessageLine $line, ComponentContainer $container)
 	{
 		$this->setPrefix($line->prefix);
@@ -31,6 +48,10 @@ class IncomingIrcMessage
 		$this->setContainer($container);
 	}
 
+	/**
+	 * @return BaseMessage
+	 * @throws MessageNotImplementedException
+	 */
 	public function specialize(): BaseMessage
 	{
 		$verb = $this->getVerb();

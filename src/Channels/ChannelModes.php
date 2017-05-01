@@ -10,8 +10,14 @@ use WildPHP\Core\Users\UserCollection;
 
 class ChannelModes
 {
+	/**
+	 * @var array
+	 */
 	protected $definitions = [];
 
+	/**
+	 * @var array
+	 */
 	protected $modeMap = [];
 
 	/**
@@ -19,6 +25,10 @@ class ChannelModes
 	 */
 	protected $container = null;
 
+	/**
+	 * ChannelModes constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		$this->setContainer($container);
@@ -26,7 +36,9 @@ class ChannelModes
 
 	public function fetchModeDefinitions()
 	{
-		$availablemodes = Configuration::fromContainer($this->getContainer())->get('serverConfig.prefix')->getValue();
+		$availablemodes = Configuration::fromContainer($this->getContainer())
+			->get('serverConfig.prefix')
+			->getValue();
 
 		preg_match('/\((.+)\)(.+)/', $availablemodes, $out);
 
@@ -34,14 +46,21 @@ class ChannelModes
 		$prefixes = str_split($out[2]);
 		$this->definitions = array_combine($prefixes, $modes);
 
-		Logger::fromContainer($this->getContainer())->debug('Set new mode map', ['map' => $this->definitions]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Set new mode map', ['map' => $this->definitions]);
 	}
 
+	/**
+	 * @param array $modemap
+	 */
 	public function setModeDefinitions(array $modemap)
 	{
 		$this->definitions = $modemap;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getModeDefinitions(): array
 	{
 		if (empty($this->definitions))
@@ -50,6 +69,9 @@ class ChannelModes
 		return $this->definitions;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getModeNames(): array
 	{
 		return array_keys($this->definitions);
@@ -78,7 +100,9 @@ class ChannelModes
 		if (!array_key_exists($mode, $this->modeMap))
 			return false;
 
-		$user = UserCollection::fromContainer($this->getContainer())->getSelf();
+		$user = UserCollection::fromContainer($this->getContainer())
+			->getSelf();
+
 		return $user ? $this->isUserInMode($mode, $user) : false;
 	}
 

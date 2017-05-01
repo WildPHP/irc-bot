@@ -57,7 +57,7 @@ class PermissionGroup
 		if ($load)
 			$this->loadPermissionsFromStorage();
 
-		register_shutdown_function(array($this, 'savePermissions'));
+		register_shutdown_function([$this, 'savePermissions']);
 	}
 
 	/**
@@ -67,12 +67,14 @@ class PermissionGroup
 	{
 		$dataStorage = new DataStorage('permissiongroup_' . $this->getName());
 
-		$this->setCanHaveMembers((bool) $dataStorage->get('canHaveMembers'));
-		$this->setUserCollection((array) $dataStorage->get('members'));
+		$this->setCanHaveMembers((bool)$dataStorage->get('canHaveMembers'));
+		$this->setUserCollection((array)$dataStorage->get('members'));
 
 		$permissions = $dataStorage->get('allowedPermissions');
 		foreach ($permissions as $permission)
+		{
 			$this->addPermission($permission);
+		}
 	}
 
 	/**
@@ -82,7 +84,7 @@ class PermissionGroup
 	{
 		$dataStorage = new DataStorage('permissiongroup_' . $this->getName());
 
-		$dataStorage->set('canHaveMembers', (int) $this->getCanHaveMembers());
+		$dataStorage->set('canHaveMembers', (int)$this->getCanHaveMembers());
 		$dataStorage->set('members', $this->getUserCollection());
 		$dataStorage->set('allowedPermissions', $this->listPermissions());
 	}
@@ -119,6 +121,7 @@ class PermissionGroup
 			return true;
 
 		$this->userCollection[] = $ircAccount;
+
 		return true;
 	}
 
@@ -132,6 +135,7 @@ class PermissionGroup
 			return true;
 
 		$this->userCollection[] = $ircAccount;
+
 		return true;
 	}
 
@@ -149,6 +153,7 @@ class PermissionGroup
 			return true;
 
 		unset($this->userCollection[array_search($ircAccount, $this->userCollection)]);
+
 		return true;
 	}
 
@@ -162,6 +167,7 @@ class PermissionGroup
 			return true;
 
 		unset($this->userCollection[array_search($ircAccount, $this->userCollection)]);
+
 		return true;
 	}
 
@@ -232,6 +238,7 @@ class PermissionGroup
 			return false;
 
 		$this->allowedPermissions[] = $permission;
+
 		return true;
 	}
 
@@ -245,6 +252,7 @@ class PermissionGroup
 			return false;
 
 		unset($this->allowedPermissions[array_search($permission, $this->allowedPermissions)]);
+
 		return true;
 	}
 

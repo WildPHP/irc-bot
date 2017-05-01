@@ -15,6 +15,10 @@ class Cap extends BaseCommand
 	 */
 	protected $command;
 
+	/**
+	 * Cap constructor.
+	 * @param string $command
+	 */
 	public function __construct(string $command)
 	{
 		$this->setCommand($command);

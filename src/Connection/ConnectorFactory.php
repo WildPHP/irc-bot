@@ -71,6 +71,10 @@ class ConnectorFactory
 	 */
 	protected $resolver = null;
 
+	/**
+	 * ConnectorFactory constructor.
+	 * @param LoopInterface $loop
+	 */
 	public function __construct(LoopInterface $loop)
 	{
 		$this->setLoop($loop);

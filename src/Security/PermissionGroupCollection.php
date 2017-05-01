@@ -27,6 +27,7 @@ use WildPHP\Core\ComponentTrait;
 class PermissionGroupCollection extends Collection
 {
 	use ComponentTrait;
+
 	/**
 	 * PermissionGroupCollection constructor.
 	 */
@@ -53,7 +54,7 @@ class PermissionGroupCollection extends Collection
 	 */
 	public function findAllGroupsForIrcAccount(string $ircAccount)
 	{
-		return $this->findall(function (PermissionGroup $group) use ($ircAccount)
+		return $this->findAll(function (PermissionGroup $group) use ($ircAccount)
 		{
 			return $group->isMemberByIrcAccount($ircAccount);
 		});

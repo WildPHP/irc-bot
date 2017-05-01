@@ -32,6 +32,10 @@ class Logger implements LoggerInterface
 	 */
 	protected $logger = null;
 
+	/**
+	 * Logger constructor.
+	 * @param \Katzgrau\KLogger\Logger $logger
+	 */
 	public function __construct(\Katzgrau\KLogger\Logger $logger)
 	{
 		$this->setLogger($logger);
@@ -42,7 +46,8 @@ class Logger implements LoggerInterface
 	 */
 	public function echoLastLine()
 	{
-		$lastline = $this->getLogger()->getLastLogLine();
+		$lastline = $this->getLogger()
+			->getLastLogLine();
 		echo $lastline . PHP_EOL;
 	}
 
@@ -52,7 +57,8 @@ class Logger implements LoggerInterface
 	 */
 	public function emergency($message, array $context = [])
 	{
-		$this->getLogger()->emergency($message, $context);
+		$this->getLogger()
+			->emergency($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -62,7 +68,8 @@ class Logger implements LoggerInterface
 	 */
 	public function alert($message, array $context = [])
 	{
-		$this->getLogger()->alert($message, $context);
+		$this->getLogger()
+			->alert($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -72,7 +79,8 @@ class Logger implements LoggerInterface
 	 */
 	public function critical($message, array $context = [])
 	{
-		$this->getLogger()->critical($message, $context);
+		$this->getLogger()
+			->critical($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -82,7 +90,8 @@ class Logger implements LoggerInterface
 	 */
 	public function error($message, array $context = [])
 	{
-		$this->getLogger()->error($message, $context);
+		$this->getLogger()
+			->error($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -92,7 +101,8 @@ class Logger implements LoggerInterface
 	 */
 	public function warning($message, array $context = [])
 	{
-		$this->getLogger()->warning($message, $context);
+		$this->getLogger()
+			->warning($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -102,7 +112,8 @@ class Logger implements LoggerInterface
 	 */
 	public function notice($message, array $context = [])
 	{
-		$this->getLogger()->notice($message, $context);
+		$this->getLogger()
+			->notice($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -112,7 +123,8 @@ class Logger implements LoggerInterface
 	 */
 	public function info($message, array $context = [])
 	{
-		$this->getLogger()->info($message, $context);
+		$this->getLogger()
+			->info($message, $context);
 		$this->echoLastLine();
 	}
 
@@ -122,13 +134,20 @@ class Logger implements LoggerInterface
 	 */
 	public function debug($message, array $context = [])
 	{
-		$this->getLogger()->debug($message, $context);
+		$this->getLogger()
+			->debug($message, $context);
 		$this->echoLastLine();
 	}
 
+	/**
+	 * @param mixed $level
+	 * @param string $message
+	 * @param array $context
+	 */
 	public function log($level, $message, array $context = [])
 	{
-		$this->getLogger()->log($level, $message, $context);
+		$this->getLogger()
+			->log($level, $message, $context);
 	}
 
 	/**

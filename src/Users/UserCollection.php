@@ -33,6 +33,11 @@ class UserCollection extends Collection
 	 * @var ComponentContainer
 	 */
 	protected $container = null;
+
+	/**
+	 * UserCollection constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		parent::__construct('\WildPHP\Core\Users\User');
@@ -82,7 +87,10 @@ class UserCollection extends Collection
 	 */
 	public function getSelf()
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
+		$ownNickname = Configuration::fromContainer($this->getContainer())
+			->get('currentNickname')
+			->getValue();
+
 		return $this->findByNickname($ownNickname);
 	}
 

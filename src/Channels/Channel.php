@@ -49,6 +49,11 @@ class Channel
 	 */
 	protected $channelModes;
 
+	/**
+	 * Channel constructor.
+	 * @param UserCollection $userCollection
+	 * @param ChannelModes $channelModes
+	 */
 	public function __construct(UserCollection $userCollection, ChannelModes $channelModes)
 	{
 		$this->setUserCollection($userCollection);

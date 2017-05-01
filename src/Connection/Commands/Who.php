@@ -20,6 +20,11 @@ class Who extends BaseCommand
 	 */
 	protected $options = '';
 
+	/**
+	 * Who constructor.
+	 * @param string $channel
+	 * @param string $options
+	 */
 	public function __construct(string $channel, string $options = '')
 	{
 		$this->setChannel($channel);
@@ -58,6 +63,9 @@ class Who extends BaseCommand
 		$this->options = $options;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		$options = $this->getOptions();

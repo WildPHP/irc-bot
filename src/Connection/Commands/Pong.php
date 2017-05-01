@@ -52,6 +52,9 @@ class Pong extends BaseCommand
 		$this->server = $server;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		return 'PONG :' . $this->getServer() . "\r\n";

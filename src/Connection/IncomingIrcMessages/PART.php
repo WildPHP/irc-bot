@@ -44,10 +44,12 @@ class PART extends JOIN
 		$channelObjects = [];
 		foreach ($channelNameList as $channelName)
 		{
-			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())->findByChannelName($channelName);
+			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())
+				->findByChannelName($channelName);
 			$channelObjects[] = $channel;
 		}
-		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())->findByNickname($prefix->getNickname());
+		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())
+			->findByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');

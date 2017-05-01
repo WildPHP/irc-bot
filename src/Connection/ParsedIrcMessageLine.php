@@ -55,14 +55,18 @@ class ParsedIrcMessageLine
 		$parv = [];
 
 		while ($index < $arv_count && $line[$index] === '')
+		{
 			$index++;
+		}
 
 		if ($index < $arv_count && $line[$index][0] == '@')
 		{
 			$parv[] = $line[$index];
 			$index++;
 			while ($index < $arv_count && $line[$index] === '')
+			{
 				$index++;
+			}
 		}
 
 		if ($index < $arv_count && $line[$index][0] == ':')
@@ -70,7 +74,9 @@ class ParsedIrcMessageLine
 			$parv[] = $line[$index];
 			$index++;
 			while ($index < $arv_count && $line[$index] === '')
+			{
 				$index++;
+			}
 		}
 
 		while ($index < $arv_count)
@@ -135,6 +141,11 @@ class ParsedIrcMessageLine
 	}
 }
 
+/**
+ * @param $str
+ * @param $start
+ * @return bool|string
+ */
 function _substr($str, $start)
 {
 	$ret = substr($str, $start);

@@ -69,45 +69,60 @@ class SASL
 	 */
 	protected $container = null;
 
+	/**
+	 * SASL constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		try
 		{
-			Configuration::fromContainer($container)->get('sasl');
-			Configuration::fromContainer($container)->get('sasl.username');
-			Configuration::fromContainer($container)->get('sasl.password');
-		}
-		catch (ConfigurationItemNotFoundException $e)
+			Configuration::fromContainer($container)
+				->get('sasl');
+			Configuration::fromContainer($container)
+				->get('sasl.username');
+			Configuration::fromContainer($container)
+				->get('sasl.password');
+		} catch (ConfigurationItemNotFoundException $e)
 		{
-			Logger::fromContainer($container)->info('SASL not initialized because no credentials were provided.');
-			EventEmitter::fromContainer($container)->emit('irc.sasl.error', [[], Queue::fromContainer($container)]);
+			Logger::fromContainer($container)
+				->info('SASL not initialized because no credentials were provided.');
+			EventEmitter::fromContainer($container)
+				->emit('irc.sasl.error', [[], Queue::fromContainer($container)]);
 			$this->setHasCompleted(true);
 
 			return;
 		}
 
-		EventEmitter::fromContainer($container)->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
-		EventEmitter::fromContainer($container)->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
-		EventEmitter::fromContainer($container)->on('irc.cap.ls', [$this, 'requestCapability']);
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.ls', [$this, 'requestCapability']);
 
 		// Map all numeric SASL responses to either the success or error handler:
 		foreach ($this->successCodes as $code => $reason)
 		{
-			EventEmitter::fromContainer($container)->on('irc.line.in.' . $code, [$this, 'handlePositiveResponse']);
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in.' . $code, [$this, 'handlePositiveResponse']);
 		}
 
 		foreach ($this->errorCodes as $code => $reason)
 		{
-			EventEmitter::fromContainer($container)->on('irc.line.in.' . $code, [$this, 'handleNegativeResponse']);
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in.' . $code, [$this, 'handleNegativeResponse']);
 		}
 
-		Logger::fromContainer($container)->debug('[SASL] Initialized, awaiting server response.');
+		Logger::fromContainer($container)
+			->debug('[SASL] Initialized, awaiting server response.');
 		$this->setContainer($container);
 	}
 
 	public function requestCapability()
 	{
-		CapabilityHandler::fromContainer($this->getContainer())->requestCapability('sasl');
+		CapabilityHandler::fromContainer($this->getContainer())
+			->requestCapability('sasl');
 	}
 
 	/**
@@ -120,7 +135,8 @@ class SASL
 			return;
 
 		$queue->insertMessage(new Authenticate('PLAIN'));
-		Logger::fromContainer($this->getContainer())->debug('[SASL] Authentication mechanism requested, awaiting server response.');
+		Logger::fromContainer($this->getContainer())
+			->debug('[SASL] Authentication mechanism requested, awaiting server response.');
 	}
 
 	/**
@@ -145,11 +161,16 @@ class SASL
 		if ($message->getResponse() != '+')
 			return;
 
-		$username = Configuration::fromContainer($this->getContainer())->get('sasl.username')->getValue();
-		$password = Configuration::fromContainer($this->getContainer())->get('sasl.password')->getValue();
+		$username = Configuration::fromContainer($this->getContainer())
+			->get('sasl.username')
+			->getValue();
+		$password = Configuration::fromContainer($this->getContainer())
+			->get('sasl.password')
+			->getValue();
 		$credentials = $this->generateCredentialString($username, $password);
 		$queue->insertMessage(new Authenticate($credentials));
-		Logger::fromContainer($this->getContainer())->debug('[SASL] Sent authentication details, awaiting response from server.');
+		Logger::fromContainer($this->getContainer())
+			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
 
 	/**
@@ -168,8 +189,10 @@ class SASL
 			return;
 
 		// This event has to fit on the events used in CapabilityHandler.
-		Logger::fromContainer($this->getContainer())->info('[SASL] Authentication successful!');
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.sasl.complete', [[], $queue]);
+		Logger::fromContainer($this->getContainer())
+			->info('[SASL] Authentication successful!');
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.sasl.complete', [[], $queue]);
 	}
 
 	/**
@@ -186,8 +209,10 @@ class SASL
 		$this->setIsSuccessful(false);
 
 		// This event has to fit on the events used in CapabilityHandler.
-		Logger::fromContainer($this->getContainer())->warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.sasl.error', [[], $queue]);
+		Logger::fromContainer($this->getContainer())
+			->warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.sasl.error', [[], $queue]);
 	}
 
 	/**

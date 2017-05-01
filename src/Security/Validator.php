@@ -35,6 +35,10 @@ class Validator
 	 */
 	protected $container;
 
+	/**
+	 * Validator constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		$this->setContainer($container);
@@ -49,7 +53,8 @@ class Validator
 	 */
 	public function isUserOPInChannel(Channel $channel, User $user)
 	{
-		return $channel->getChannelModes()->isUserInMode('o', $user);
+		return $channel->getChannelModes()
+			->isUserInMode('o', $user);
 	}
 
 	/**
@@ -59,7 +64,8 @@ class Validator
 	 */
 	public function isUserVoicedInChannel(Channel $channel, User $user)
 	{
-		return $channel->getChannelModes()->isUserInMode('v', $user);
+		return $channel->getChannelModes()
+			->isUserInMode('v', $user);
 	}
 
 	/**
@@ -76,12 +82,16 @@ class Validator
 		// 1. User OP in channel
 		// 2. User Voice in channel
 		// 3. User in other group with permission
-		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())->get('owner')->getValue())
+		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())
+				->get('owner')
+				->getValue()
+		)
 			return 'owner';
 
 		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
 		{
-			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())->findGroupByName('op');
+			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
+				->findGroupByName('op');
 
 			if ($opGroup->hasPermission($permissionName))
 				return 'op';
@@ -89,19 +99,21 @@ class Validator
 
 		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
 		{
-			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())->findGroupByName('voice');
+			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
+				->findGroupByName('voice');
 
 			if ($voiceGroup->hasPermission($permissionName))
 				return 'voice';
 		}
 
-		$groups = PermissionGroupCollection::fromContainer($this->getContainer())->findAll(function ($item) use ($user)
-		{
-			if (!$item->getCanHaveMembers())
-				return false;
+		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
+			->findAll(function ($item) use ($user)
+			{
+				if (!$item->getCanHaveMembers())
+					return false;
 
-			return $item->isMember($user);
-		});
+				return $item->isMember($user);
+			});
 
 		foreach ($groups->toArray() as $group)
 		{

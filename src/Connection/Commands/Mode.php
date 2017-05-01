@@ -97,6 +97,9 @@ class Mode extends BaseCommand
 		$this->args = $args;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		$target = $this->getTarget();

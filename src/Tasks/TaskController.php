@@ -37,29 +37,48 @@ class TaskController
 	 */
 	protected $tasks = [];
 
+	/**
+	 * TaskController constructor.
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
-		$container->getLoop()->addPeriodicTimer($this->loopInterval, [$this, 'runTasks']);
+		$container->getLoop()
+			->addPeriodicTimer($this->loopInterval, [$this, 'runTasks']);
 	}
 
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
 	public function addTask(Task $task): bool
 	{
 		if (self::taskExists($task))
 			return false;
 
 		$this->tasks[] = $task;
+
 		return true;
 	}
 
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
 	public function removeTask(Task $task): bool
 	{
 		if (!self::taskExists($task))
 			return false;
 
 		unset($this->tasks[array_search($task, $this->tasks)]);
+
 		return true;
 	}
 
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
 	public function taskExists(Task $task): bool
 	{
 		return in_array($task, $this->tasks);
@@ -79,6 +98,7 @@ class TaskController
 			if ($repeatInterval)
 			{
 				$task->setExpiryTime(time() + $repeatInterval);
+
 				return;
 			}
 
