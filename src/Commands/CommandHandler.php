@@ -23,12 +23,18 @@ namespace WildPHP\Core\Commands;
 
 use Collections\Dictionary;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Security\Validator;
 
 class CommandHandler
 {
+	use ComponentTrait;
+
 	/**
 	 * @var Dictionary
 	 */
@@ -37,14 +43,14 @@ class CommandHandler
 	/**
 	 * @var ComponentContainer
 	 */
-	protected $componentContainer = null;
+	protected $container = null;
 
 	public function __construct(ComponentContainer $container, Dictionary $commandDictionary)
 	{
 		$this->setCommandDictionary($commandDictionary);
 
-		$container->getEventEmitter()->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
-		$this->setComponentContainer($container);
+		EventEmitter::fromContainer($container)->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
+		$this->setContainer($container);
 	}
 
 	/**
@@ -83,7 +89,7 @@ class CommandHandler
 		if ($command === false)
 			return;
 
-		$this->getComponentContainer()->getEventEmitter()->emit('irc.command', [$command, $source, $user, $args, $this->getComponentContainer()]);
+		EventEmitter::fromContainer($this->getContainer())->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
 
 		$dictionary = $this->getCommandDictionary();
 
@@ -92,7 +98,7 @@ class CommandHandler
 
 		$commandObject = $dictionary[$command];
 		$permission = $commandObject->getRequiredPermission();
-		if ($permission && !$this->getComponentContainer()->getValidator()->isAllowedTo($permission, $user, $source))
+		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
 		{
 			$queue->privmsg($source->getName(), $user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
 			return;
@@ -101,12 +107,12 @@ class CommandHandler
 		$maximumArguments = $commandObject->getMaximumArguments();
 		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
 		{
-			$prefix = $this->getComponentContainer()->getConfiguration()->get('prefix')->getValue();
+			$prefix = Configuration::fromContainer($this->getContainer())->get('prefix')->getValue();
 			$queue->privmsg($source->getName(), 'Invalid arguments. Please check ' . $prefix . 'help ' . $command . ' for usage instructions.');
 			return;
 		}
 
-		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getComponentContainer());
+		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer());
 	}
 
 	/**
@@ -119,7 +125,7 @@ class CommandHandler
 	{
 		$messageParts = explode(' ', $message);
 		$firstPart = $messageParts[0];
-		$prefix = $this->getComponentContainer()->getConfiguration()->get('prefix')->getValue();
+		$prefix = Configuration::fromContainer($this->getContainer())->get('prefix')->getValue();
 
 		if (strlen($firstPart) == strlen($prefix))
 			return false;
@@ -153,16 +159,16 @@ class CommandHandler
 	/**
 	 * @return ComponentContainer
 	 */
-	public function getComponentContainer(): ComponentContainer
+	public function getContainer(): ComponentContainer
 	{
-		return $this->componentContainer;
+		return $this->container;
 	}
 
 	/**
 	 * @param ComponentContainer $componentContainer
 	 */
-	public function setComponentContainer(ComponentContainer $componentContainer)
+	public function setContainer(ComponentContainer $componentContainer)
 	{
-		$this->componentContainer = $componentContainer;
+		$this->container = $componentContainer;
 	}
 }

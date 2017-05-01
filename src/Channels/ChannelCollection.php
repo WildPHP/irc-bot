@@ -22,11 +22,14 @@ namespace WildPHP\Core\Channels;
 
 use Collections\Collection;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class ChannelCollection extends Collection
 {
+	use ComponentTrait;
+
 	/**
 	 * @var ComponentContainer
 	 */
@@ -55,7 +58,7 @@ class ChannelCollection extends Collection
 		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($user->getNickname());
 		$channel->getUserCollection()->add($user);
-		$channel->getUserCollection()->add($this->getContainer()->getUserCollection()->getSelf());
+		$channel->getUserCollection()->add(UserCollection::fromContainer($this->getContainer())->getSelf());
 		$this->add($channel);
 		return $channel;
 	}

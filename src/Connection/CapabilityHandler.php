@@ -21,9 +21,14 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 
 class CapabilityHandler
 {
+	use ComponentTrait;
+
 	/**
 	 * @var array
 	 */
@@ -61,7 +66,7 @@ class CapabilityHandler
 
 	public function __construct(ComponentContainer $container)
 	{
-		$eventEmitter = $container->getEventEmitter();
+		$eventEmitter = EventEmitter::fromContainer($container);
 		$eventEmitter->on('stream.created', [$this, 'initNegotiation']);
 		$eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
 		$eventEmitter->on('irc.cap.ls', [$this, 'requestCoreCapabilities']);
@@ -90,7 +95,7 @@ class CapabilityHandler
 	 */
 	public function initNegotiation(Queue $queue)
 	{
-		$this->getContainer()->getLogger()->debug('Capability negotiation started, requesting list of capabilities.');
+		Logger::fromContainer($this->getContainer())->debug('Capability negotiation started, requesting list of capabilities.');
 		$queue->cap('LS');
 	}
 
@@ -102,7 +107,7 @@ class CapabilityHandler
 		if (empty($this->getCapabilitiesToRequest()))
 			return;
 
-		$this->getContainer()->getLogger()->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
+		Logger::fromContainer($this->getContainer())->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
 		$queue->cap('REQ :' . implode(' ', $this->getCapabilitiesToRequest()));
 	}
 
@@ -115,16 +120,16 @@ class CapabilityHandler
 		if (!self::canEndNegotiation())
 			return;
 
-		$this->getContainer()->getLogger()->debug('Ending capability negotiation.');
+		Logger::fromContainer($this->getContainer())->debug('Ending capability negotiation.');
 		$queue->cap('END');
-		$this->getContainer()->getEventEmitter()->emit('irc.cap.end', [$queue]);
+		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.end', [$queue]);
 	}
 
 	public function requestCapability(string $capability)
 	{
 		if (!self::isCapabilityAvailable($capability))
 		{
-			$this->getContainer()->getLogger()->warning('Capability was requested, but is not available on the server.', [
+			Logger::fromContainer($this->getContainer())->warning('Capability was requested, but is not available on the server.', [
 				'capability' => $capability,
 				'availableCapabilities' => $this->getAvailableCapabilities()
 			]);
@@ -138,7 +143,7 @@ class CapabilityHandler
 		if (in_array($capability, $this->getCapabilitiesToRequest()))
 			return true;
 
-		$this->getContainer()->getLogger()->debug('Capability queued for request on next flush.', ['capability' => $capability]);
+		Logger::fromContainer($this->getContainer())->debug('Capability queued for request on next flush.', ['capability' => $capability]);
 		$this->capabilitiesToRequest[] = $capability;
 
 		return true;
@@ -178,7 +183,7 @@ class CapabilityHandler
 		{
 			case 'LS':
 				$this->updateAvailableCapabilities($capability, $queue);
-				$this->getContainer()->getEventEmitter()->emit('irc.cap.ls.after', [$queue]);
+				EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.ls.after', [$queue]);
 				break;
 
 			case 'ACK':
@@ -201,10 +206,10 @@ class CapabilityHandler
 	{
 		$capabilities = explode(' ', trim($capabilities));
 		$this->setAvailableCapabilities($capabilities);
-		$this->getContainer()->getLogger()->debug('Updated list of available capabilities.', [
+		Logger::fromContainer($this->getContainer())->debug('Updated list of available capabilities.', [
 			'availableCapabilities' => $capabilities
 		]);
-		$this->getContainer()->getEventEmitter()->emit('irc.cap.ls', [$capabilities, $queue]);
+		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.ls', [$capabilities, $queue]);
 	}
 
 	/**
@@ -219,10 +224,10 @@ class CapabilityHandler
 
 		$ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
 		$this->setAcknowledgedCapabilities($ackCapabilities);
-		$this->getContainer()->getLogger()->debug('Updated list of not acknowledged capabilities.', [
+		Logger::fromContainer($this->getContainer())->debug('Updated list of not acknowledged capabilities.', [
 			'notAcknowledgedCapabilities' => $ackCapabilities
 		]);
-		$this->getContainer()->getEventEmitter()->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
+		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
 
 	/**
@@ -236,10 +241,10 @@ class CapabilityHandler
 
 		$nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(), $capabilities)));
 		$this->setNotAcknowledgedCapabilities($nakCapabilities);
-		$this->getContainer()->getLogger()->debug('Updated list of not acknowledged capabilities.', [
+		Logger::fromContainer($this->getContainer())->debug('Updated list of not acknowledged capabilities.', [
 			'notAcknowledgedCapabilities' => $nakCapabilities
 		]);
-		$this->getContainer()->getEventEmitter()->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
+		EventEmitter::fromContainer($this->getContainer())->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
 	}
 
 	/**

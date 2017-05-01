@@ -21,19 +21,25 @@
 namespace WildPHP\Core\Tasks;
 
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 
 class TaskController
 {
-	protected static $loopInterval = 2;
+	use ComponentTrait;
+
+	/**
+	 * @var int
+	 */
+	protected $loopInterval = 2;
 
 	/**
 	 * @var Task[]
 	 */
-	protected static $tasks = [];
+	protected $tasks = [];
 
 	public function __construct(ComponentContainer $container)
 	{
-		$container->getLoop()->addPeriodicTimer(self::$loopInterval, [$this, 'runTasks']);
+		$container->getLoop()->addPeriodicTimer($this->loopInterval, [$this, 'runTasks']);
 	}
 
 	public function addTask(Task $task): bool
@@ -41,7 +47,7 @@ class TaskController
 		if (self::taskExists($task))
 			return false;
 
-		self::$tasks[] = $task;
+		$this->tasks[] = $task;
 		return true;
 	}
 
@@ -50,18 +56,18 @@ class TaskController
 		if (!self::taskExists($task))
 			return false;
 
-		unset(self::$tasks[array_search($task, self::$tasks)]);
+		unset($this->tasks[array_search($task, $this->tasks)]);
 		return true;
 	}
 
 	public function taskExists(Task $task): bool
 	{
-		return in_array($task, self::$tasks);
+		return in_array($task, $this->tasks);
 	}
 
 	public function runTasks()
 	{
-		foreach (self::$tasks as $task)
+		foreach ($this->tasks as $task)
 		{
 			if (time() < $task->getExpiryTime())
 				continue;

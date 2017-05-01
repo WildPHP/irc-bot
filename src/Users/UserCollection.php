@@ -22,9 +22,13 @@ namespace WildPHP\Core\Users;
 
 use Collections\Collection;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Configuration\Configuration;
 
 class UserCollection extends Collection
 {
+	use ComponentTrait;
+
 	/**
 	 * @var ComponentContainer
 	 */
@@ -78,7 +82,7 @@ class UserCollection extends Collection
 	 */
 	public function getSelf()
 	{
-		$ownNickname = $this->getContainer()->getConfiguration()->get('currentNickname')->getValue();
+		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
 		return $this->findByNickname($ownNickname);
 	}
 

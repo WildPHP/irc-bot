@@ -22,9 +22,11 @@ namespace WildPHP\Core\Security;
 
 
 use Collections\Collection;
+use WildPHP\Core\ComponentTrait;
 
 class PermissionGroupCollection extends Collection
 {
+	use ComponentTrait;
 	/**
 	 * PermissionGroupCollection constructor.
 	 */

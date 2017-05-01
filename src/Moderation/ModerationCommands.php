@@ -22,9 +22,13 @@ namespace WildPHP\Core\Moderation;
 
 
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Tasks\Task;
+use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\User;
 
 class ModerationCommands
@@ -34,39 +38,39 @@ class ModerationCommands
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Kicks the specified user from the channel.');
 		$commandHelp->addPage('Usage: kick [nickname] ([reason])');
-		$container->getCommandHandler()->registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1, -1, 'kick');
+		CommandHandler::fromContainer($container)->registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1, -1, 'kick');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Changes the topic for the specified channel.');
 		$commandHelp->addPage('Usage: topic ([channel]) [message]');
-		$container->getCommandHandler()->registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1, -1, 'topic');
+		CommandHandler::fromContainer($container)->registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1, -1, 'topic');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Kicks the specified user from the channel and adds a ban.');
 		$commandHelp->addPage('Usage #1: kban [nickname] [minutes] ([reason])');
 		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel] ([reason])');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
-		$container->getCommandHandler()->registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2, -1, 'kban');
+		CommandHandler::fromContainer($container)->registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2, -1, 'kban');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Bans the specified user from the channel.');
 		$commandHelp->addPage('Usage #1: ban [nickname] [minutes]');
 		$commandHelp->addPage('Usage #2: ban [nickname] [minutes] [redirect channel]');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
-		$container->getCommandHandler()->registerCommand('ban', [$this, 'banCommand'], $commandHelp, 2, 3, 'ban');
+		CommandHandler::fromContainer($container)->registerCommand('ban', [$this, 'banCommand'], $commandHelp, 2, 3, 'ban');
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Bans the specified host from the channel.');
 		$commandHelp->addPage('Usage #1: ban [hostname [minutes]');
 		$commandHelp->addPage('Usage #2: ban [hostname] [minutes] [redirect channel]');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
-		$container->getCommandHandler()->registerCommand('banhost', [$this, 'banhostCommand'], $commandHelp, 2, 3, 'ban');
+		CommandHandler::fromContainer($container)->registerCommand('banhost', [$this, 'banhostCommand'], $commandHelp, 2, 3, 'ban');
 
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Changes mode for a specified user.');
 		$commandHelp->addPage('Usage: mode [nickname] [modes]');
-		$container->getCommandHandler()->registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 2, -1, 'mode');
+		CommandHandler::fromContainer($container)->registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 2, -1, 'mode');
 	}
 
 	/**
@@ -81,19 +85,19 @@ class ModerationCommands
 		$message = !empty($args) ? implode(' ', $args) : $nickname;
 		$userObj = $source->getUserCollection()->findByNickname($nickname);
 
-		if ($nickname == $container->getConfiguration()->get('currentNickname')->getValue())
+		if ($nickname == Configuration::fromContainer($container)->get('currentNickname')->getValue())
 		{
-			$container->getQueue()->privmsg($source->getName(), 'I refuse to hurt myself!');
+			Queue::fromContainer($container)->privmsg($source->getName(), 'I refuse to hurt myself!');
 			return;
 		}
 
 		if (!$userObj)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
 			return;
 		}
 
-		$container->getQueue()->kick($source->getName(), $nickname, $message);
+		Queue::fromContainer($container)->kick($source->getName(), $nickname, $message);
 	}
 
 	/**
@@ -106,12 +110,12 @@ class ModerationCommands
 	{
 		$channelName = $source->getName();
 
-		if (Channel::isValidName($args[0], $container->getConfiguration()->get('prefix')->getValue()))
+		if (Channel::isValidName($args[0], Configuration::fromContainer($container)->get('prefix')->getValue()))
 			$channelName = array_shift($args);
 
 		$message = implode(' ', $args);
 
-		$container->getQueue()->topic($channelName, $message);
+		Queue::fromContainer($container)->topic($channelName, $message);
 	}
 
 	/**
@@ -124,26 +128,26 @@ class ModerationCommands
 	{
 		$nickname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0], $container->getConfiguration()->get('prefix')->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)->get('prefix')->getValue()) ? array_shift($args) : '';
 		$message = !empty($args) ? implode(' ', $args) : $nickname;
 		$userObj = $source->getUserCollection()->findByNickname($nickname);
 
-		if ($nickname == $container->getConfiguration()->get('currentNickname')->getValue())
+		if ($nickname == Configuration::fromContainer($container)->get('currentNickname')->getValue())
 		{
-			$container->getQueue()->privmsg($source->getName(), 'I refuse to hurt myself!');
+			Queue::fromContainer($container)->privmsg($source->getName(), 'I refuse to hurt myself!');
 			return;
 		}
 
 		if (!$userObj)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
 			return;
 		}
 
 		$time = time() + 60 * $minutes;
 		$this->banUser($source, $userObj, $container, $time, $redirect);
 
-		$container->getQueue()->kick($source->getName(), $nickname, $message);
+		Queue::fromContainer($container)->kick($source->getName(), $nickname, $message);
 	}
 
 	/**
@@ -156,18 +160,18 @@ class ModerationCommands
 	{
 		$nickname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0], $container->getConfiguration()->get('prefix')->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)->get('prefix')->getValue()) ? array_shift($args) : '';
 		$userObj = $source->getUserCollection()->findByNickname($nickname);
 
-		if ($nickname == $container->getConfiguration()->get('currentNickname')->getValue())
+		if ($nickname == Configuration::fromContainer($container)->get('currentNickname')->getValue())
 		{
-			$container->getQueue()->privmsg($source->getName(), 'I refuse to hurt myself!');
+			Queue::fromContainer($container)->privmsg($source->getName(), 'I refuse to hurt myself!');
 			return;
 		}
 
 		if (!$userObj)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
 			return;
 		}
 
@@ -185,7 +189,7 @@ class ModerationCommands
 	{
 		$hostname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0], $container->getConfiguration()->get('prefix')->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)->get('prefix')->getValue()) ? array_shift($args) : '';
 		$time = time() + 60 * $minutes;
 		$this->banUser($source, $hostname, $container, $time, $redirect);
 
@@ -196,10 +200,10 @@ class ModerationCommands
 		{
 			$args = [$source, $hostname, $container];
 			$task = new Task([$this, 'removeBan'], $time, $args);
-			$container->getTaskController()->addTask($task);
+			TaskController::fromContainer($container)->addTask($task);
 		}
 
-		$container->getQueue()->mode($source->getName(), '+b', $hostname);
+		Queue::fromContainer($container)->mode($source->getName(), '+b', $hostname);
 	}
 
 	/**
@@ -216,11 +220,11 @@ class ModerationCommands
 
 		if (!$userObj)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
 			return;
 		}
 
-		$container->getQueue()->mode($source->getName(), $modes, $nickname);
+		Queue::fromContainer($container)->mode($source->getName(), $modes, $nickname);
 	}
 
 	/**
@@ -243,10 +247,10 @@ class ModerationCommands
 		{
 			$args = [$source, $ban, $container];
 			$task = new Task([$this, 'removeBan'], $until, $args);
-			$container->getTaskController()->addTask($task);
+			TaskController::fromContainer($container)->addTask($task);
 		}
 
-		$container->getQueue()->mode($source->getName(), '+b', $ban);
+		Queue::fromContainer($container)->mode($source->getName(), '+b', $ban);
 	}
 
 	/**
@@ -257,6 +261,6 @@ class ModerationCommands
 	 */
 	public function removeBan(Task $task, Channel $source, string $banmask, ComponentContainer $container)
 	{
-		$container->getQueue()->mode($source->getName(), '-b', $banmask);
+		Queue::fromContainer($container)->mode($source->getName(), '-b', $banmask);
 	}
 }

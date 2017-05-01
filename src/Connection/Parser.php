@@ -22,19 +22,20 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\EventEmitter;
 
 class Parser
 {
 	public function __construct(ComponentContainer $container)
 	{
-		$container->getEventEmitter()->on('stream.line.in', function ($line) use ($container)
+		EventEmitter::fromContainer($container)->on('stream.line.in', function ($line) use ($container)
 		{
 			$parsedLine = self::parseLine($line);
 			$ircMessage = new IncomingIrcMessage($parsedLine, $container);
 
 			$verb = strtolower($ircMessage->getVerb());
-			$container->getEventEmitter()->emit('irc.line.in', [$ircMessage, $container->getQueue()]);
-			$container->getEventEmitter()->emit('irc.line.in.' . $verb, [$ircMessage, $container->getQueue()]);
+			EventEmitter::fromContainer($container)->emit('irc.line.in', [$ircMessage, Queue::fromContainer($container)]);
+			EventEmitter::fromContainer($container)->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($container)]);
 		});
 	}
 

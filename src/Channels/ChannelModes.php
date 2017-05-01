@@ -3,7 +3,10 @@
 namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class ChannelModes
 {
@@ -23,7 +26,7 @@ class ChannelModes
 
 	public function fetchModeDefinitions()
 	{
-		$availablemodes = $this->getContainer()->getConfiguration()->get('serverConfig.prefix')->getValue();
+		$availablemodes = Configuration::fromContainer($this->getContainer())->get('serverConfig.prefix')->getValue();
 
 		preg_match('/\((.+)\)(.+)/', $availablemodes, $out);
 
@@ -31,7 +34,7 @@ class ChannelModes
 		$prefixes = str_split($out[2]);
 		$this->definitions = array_combine($prefixes, $modes);
 
-		$this->getContainer()->getLogger()->debug('Set new mode map', ['map' => $this->definitions]);
+		Logger::fromContainer($this->getContainer())->debug('Set new mode map', ['map' => $this->definitions]);
 	}
 
 	public function setModeDefinitions(array $modemap)
@@ -75,7 +78,7 @@ class ChannelModes
 		if (!array_key_exists($mode, $this->modeMap))
 			return false;
 
-		$user = $this->getContainer()->getUserCollection()->getSelf();
+		$user = UserCollection::fromContainer($this->getContainer())->getSelf();
 		return $user ? $this->isUserInMode($mode, $user) : false;
 	}
 

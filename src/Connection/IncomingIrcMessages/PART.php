@@ -21,8 +21,10 @@
 namespace WildPHP\Core\Connection\IncomingIrcMessages;
 
 
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
+use WildPHP\Core\Users\UserCollection;
 
 class PART extends JOIN
 {
@@ -42,10 +44,10 @@ class PART extends JOIN
 		$channelObjects = [];
 		foreach ($channelNameList as $channelName)
 		{
-			$channel = $incomingIrcMessage->getContainer()->getChannelCollection()->findByChannelName($channelName);
+			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())->findByChannelName($channelName);
 			$channelObjects[] = $channel;
 		}
-		$user = $incomingIrcMessage->getContainer()->getUserCollection()->findByNickname($prefix->getNickname());
+		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())->findByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');

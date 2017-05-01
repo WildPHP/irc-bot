@@ -20,9 +20,6 @@
 
 namespace WildPHP\Core\Tasks;
 
-
-use WildPHP\Core\Logger\Logger;
-
 class Task
 {
 	/**

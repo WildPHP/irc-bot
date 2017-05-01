@@ -22,8 +22,11 @@ namespace WildPHP\Core\Management;
 
 
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 
@@ -44,20 +47,20 @@ class ManagementCommands
 		$commandHelp->addPage('Joins the specified channel(s).');
 		$commandHelp->addPage('Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
 		$commandHelp->addPage('Required permission: join');
-		$container->getCommandHandler()->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5);
+		CommandHandler::fromContainer($container)->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5);
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Parts (leaves) the specified channel(s).');
 		$commandHelp->addPage('Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
 		$commandHelp->addPage('Required permission: part');
-		$container->getCommandHandler()->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5);
+		CommandHandler::fromContainer($container)->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5);
 		$this->setContainer($container);
 	}
 
 	protected function validateChannels(array $channels): array
 	{
 		$validChannels = [];
-		$serverChannelPrefix = $this->getContainer()->getConfiguration()->get('serverConfig.chantypes')->getValue();
+		$serverChannelPrefix = Configuration::fromContainer($this->getContainer())->get('serverConfig.chantypes')->getValue();
 		foreach ($channels as $channel)
 		{
 			if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix)
@@ -71,31 +74,31 @@ class ManagementCommands
 
 	public function joinCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
-		$result = $container->getValidator()->isAllowedTo('join', $user, $source);
+		$result = Validator::fromContainer($container)->isAllowedTo('join', $user, $source);
 
 		if (!$result)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the join command.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the join command.');
 			return;
 		}
 
 		$validChannels = $this->validateChannels($channels);
 
-		$container->getQueue()->join($validChannels);
+		Queue::fromContainer($container)->join($validChannels);
 
 		$diff = array_diff($channels, $validChannels);
 
 		if (!empty($diff))
-			$container->getQueue()->privmsg($user->getNickname(), 'Did not join the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
+			Queue::fromContainer($container)->privmsg($user->getNickname(), 'Did not join the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
 	}
 
 	public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
-		$result = $container->getValidator()->isAllowedTo('part', $user, $source);
+		$result = Validator::fromContainer($container)->isAllowedTo('part', $user, $source);
 
 		if (!$result)
 		{
-			$container->getQueue()->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the part command.');
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the part command.');
 			return;
 		}
 
@@ -104,12 +107,12 @@ class ManagementCommands
 
 		$validChannels = $this->validateChannels($channels);
 
-		$container->getQueue()->part($validChannels);
+		Queue::fromContainer($container)->part($validChannels);
 
 		$diff = array_diff($channels, $validChannels);
 
 		if (!empty($diff))
-			$container->getQueue()->privmsg($user->getNickname(), 'Did not part the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
+			Queue::fromContainer($container)->privmsg($user->getNickname(), 'Did not part the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
 	}
 
 	/**

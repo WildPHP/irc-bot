@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\Commands\BaseCommand;
 use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
@@ -36,9 +37,12 @@ use WildPHP\Core\Connection\Commands\Raw;
 use WildPHP\Core\Connection\Commands\Topic;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
+use WildPHP\Core\Logger\Logger;
 
 class Queue implements QueueInterface
 {
+	use ComponentTrait;
+
 	/**
 	 * An explanation of how this works.
 	 *
@@ -92,7 +96,7 @@ class Queue implements QueueInterface
 		$time = $this->calculateNextMessageTime();
 
 		if ($time > time())
-			$this->getContainer()->getLogger()->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
+			Logger::fromContainer($this->getContainer())->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
 
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);

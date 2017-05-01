@@ -21,9 +21,12 @@
 namespace WildPHP\Core\Logger;
 
 use Psr\Log\LoggerInterface;
+use WildPHP\Core\ComponentTrait;
 
 class Logger implements LoggerInterface
 {
+	use ComponentTrait;
+
 	/**
 	 * @var \Katzgrau\KLogger\Logger
 	 */

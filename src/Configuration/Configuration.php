@@ -20,8 +20,12 @@
 
 namespace WildPHP\Core\Configuration;
 
+use WildPHP\Core\ComponentTrait;
+
 class Configuration
 {
+	use ComponentTrait;
+
 	/**
 	 * @var ConfigurationBackendInterface
 	 */

@@ -22,10 +22,14 @@ namespace WildPHP\Core\Security;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Users\User;
 
 class Validator
 {
+	use ComponentTrait;
+
 	/**
 	 * @var ComponentContainer
 	 */
@@ -34,6 +38,8 @@ class Validator
 	public function __construct(ComponentContainer $container)
 	{
 		$this->setContainer($container);
+
+
 	}
 
 	/**
@@ -70,12 +76,12 @@ class Validator
 		// 1. User OP in channel
 		// 2. User Voice in channel
 		// 3. User in other group with permission
-		if ($user->getIrcAccount() == $this->getContainer()->getConfiguration()->get('owner')->getValue())
+		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())->get('owner')->getValue())
 			return 'owner';
 
 		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
 		{
-			$opGroup = $this->getContainer()->getPermissionGroupCollection()->findGroupByName('op');
+			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())->findGroupByName('op');
 
 			if ($opGroup->hasPermission($permissionName))
 				return 'op';
@@ -83,13 +89,13 @@ class Validator
 
 		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
 		{
-			$voiceGroup = $this->getContainer()->getPermissionGroupCollection()->findGroupByName('voice');
+			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())->findGroupByName('voice');
 
 			if ($voiceGroup->hasPermission($permissionName))
 				return 'voice';
 		}
 
-		$groups = $this->getContainer()->getPermissionGroupCollection()->findAll(function ($item) use ($user)
+		$groups = PermissionGroupCollection::fromContainer($this->getContainer())->findAll(function ($item) use ($user)
 		{
 			if (!$item->getCanHaveMembers())
 				return false;

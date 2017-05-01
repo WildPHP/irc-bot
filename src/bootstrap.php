@@ -1,12 +1,12 @@
 <?php
 
 use React\EventLoop\Factory as LoopFactory;
-use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\DataStorage\DataStorage;
+use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Queue;
@@ -52,7 +52,7 @@ function setupConfiguration()
 
 function setupEventEmitter()
 {
-	return new Evenement\EventEmitter();
+	return new EventEmitter();
 }
 
 function setupPermissionGroupCollection()
@@ -88,17 +88,17 @@ function setupPermissionGroupCollection()
 function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 {
 	$loop = $container->getLoop();
-	$configuration = $container->getConfiguration();
+	$configuration = Configuration::fromContainer($container);
 	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
-	if ($container->getConfiguration()->get('secure')->getValue())
+	if (Configuration::fromContainer($container)->get('secure')->getValue())
 		$connector = $connectorFactory->createSecure();
 	else
 		$connector = $connectorFactory->create();
 
 	$ircConnection = new IrcConnection($container);
 	$queue = new Queue($container);
-	$container->setQueue($queue);
+	$container->store($queue);
 	$ircConnection->registerQueueFlusher($loop, $queue);
 	new Parser($container);
 	$pingPongHandler = new PingPongHandler($container);
@@ -113,13 +113,13 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 
 	$ircConnection->createFromConnector($connector, $server, $port);
 
-	$container->getEventEmitter()->on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+	EventEmitter::fromContainer($container)->on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 	{
 		$queue->user($username, $hostname, $server, $realname);
 		$queue->nick($nickname);
 	});
 
-	$container->getEventEmitter()->on('stream.closed', function () use ($loop)
+	EventEmitter::fromContainer($container)->on('stream.closed', function () use ($loop)
 	{
 		$loop->stop();
 	});
@@ -128,20 +128,23 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 
 $componentContainer = new \WildPHP\Core\ComponentContainer();
 $componentContainer->setLoop(LoopFactory::create());
-$componentContainer->setEventEmitter(setupEventEmitter());
-$componentContainer->setLogger(setupLogger());
-$componentContainer->setConfiguration(setupConfiguration());
-$componentContainer->setCapabilityHandler(new CapabilityHandler($componentContainer));
-$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
-$componentContainer->getCapabilityHandler()->setSasl($sasl);
-$componentContainer->setCommandHandler(new CommandHandler($componentContainer, new \Collections\Dictionary()));
-$componentContainer->setTaskController(new TaskController($componentContainer));
+$componentContainer->store(setupEventEmitter());
+$componentContainer->store(setupLogger());
+$componentContainer->store(setupConfiguration());
 
-$componentContainer->setChannelCollection(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
-$componentContainer->setUserCollection(new \WildPHP\Core\Users\UserCollection($componentContainer));
-$componentContainer->setPermissionGroupCollection(setupPermissionGroupCollection());
-$componentContainer->setIrcConnection(setupIrcConnection($componentContainer));
-$componentContainer->setValidator(new \WildPHP\Core\Security\Validator($componentContainer));
+$capabilityHandler = new CapabilityHandler($componentContainer);
+$componentContainer->store($capabilityHandler);
+$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
+$capabilityHandler->setSasl($sasl);
+
+$componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
+$componentContainer->store(new TaskController($componentContainer));
+
+$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
+$componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentContainer));
+$componentContainer->store(setupPermissionGroupCollection());
+$componentContainer->store(setupIrcConnection($componentContainer));
+$componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
 
 
 new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
@@ -153,9 +156,8 @@ new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
 
 try
 {
-	$modules = $componentContainer->getConfiguration()->get('modules')->getValue();
+	$modules = Configuration::fromContainer($componentContainer)->get('modules')->getValue();
 
-	var_dump($modules);
 	foreach ($modules as $module)
 	{
 		try
@@ -164,7 +166,7 @@ try
 		}
 		catch (\Exception $e)
 		{
-			$componentContainer->getLogger()->error('Could not properly load module; stability not guaranteed!', [
+			Logger::fromContainer($componentContainer)->error('Could not properly load module; stability not guaranteed!', [
 				'class' => $module,
 				'message' => $e->getMessage()
 			]);
