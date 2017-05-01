@@ -56,7 +56,27 @@ class ManagementCommands
 		$commandHelp->addPage('Required permission: part');
 		CommandHandler::fromContainer($container)
 			->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5);
+		CommandHandler::fromContainer($container)
+			->registerCommand('quit', [$this, 'testQuit']);
 		$this->setContainer($container);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param ComponentContainer $container
+	 */
+	public function testQuit(Channel $source, User $user, $args, ComponentContainer $container)
+	{
+		$result = Validator::fromContainer($container)
+			->isAllowedTo('quit', $user, $source);
+		if (!$result)
+		{
+			return;
+		}
+		Queue::fromContainer($container)
+			->quit('Quit command given by ' . $user->getNickname());
 	}
 
 	/**
