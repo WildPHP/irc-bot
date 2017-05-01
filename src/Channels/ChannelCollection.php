@@ -90,17 +90,17 @@ class ChannelCollection extends Collection
 	}
 
 	/**
-	 * @return mixed
+	 * @return ComponentContainer
 	 */
-	public function getContainer()
+	public function getContainer(): ComponentContainer
 	{
 		return $this->container;
 	}
 
 	/**
-	 * @param mixed $container
+	 * @param ComponentContainer $container
 	 */
-	public function setContainer($container)
+	public function setContainer(ComponentContainer $container)
 	{
 		$this->container = $container;
 	}
