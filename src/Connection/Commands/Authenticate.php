@@ -28,6 +28,10 @@ class Authenticate extends BaseCommand
 	 */
 	protected $command;
 
+	/**
+	 * Authenticate constructor.
+	 * @param string $command
+	 */
 	public function __construct(string $command)
 	{
 		$this->setCommand($command);

@@ -21,19 +21,30 @@
 namespace WildPHP\Core\Configuration;
 
 use Nette\Neon\Neon;
-use WildPHP\Core\Logger\Logger;
 
 class NeonBackend implements ConfigurationBackendInterface
 {
-	const CONFIG_FILE = WPHP_ROOT_DIR . 'config.neon';
+	/**
+	 * @var string
+	 */
+	protected $configFile = '';
+
+	/**
+	 * NeonBackend constructor.
+	 * @param string $configFile
+	 */
+	public function __construct(string $configFile)
+	{
+		$this->setConfigFile($configFile);
+	}
 
 	/**
 	 * @return array
 	 */
-	public static function getAllEntries(): array
+	public function getAllEntries(): array
 	{
-		$data = self::readNeonFile(self::CONFIG_FILE);
-		$decodedData = self::parseNeonData($data);
+		$data = $this->readNeonFile($this->getConfigFile());
+		$decodedData = $this->parseNeonData($data);
 
 		return $decodedData;
 	}
@@ -43,7 +54,7 @@ class NeonBackend implements ConfigurationBackendInterface
 	 *
 	 * @return array
 	 */
-	protected static function parseNeonData(string $data): array
+	protected function parseNeonData(string $data): array
 	{
 		$decodedData = Neon::decode($data);
 
@@ -58,9 +69,8 @@ class NeonBackend implements ConfigurationBackendInterface
 	 *
 	 * @return string
 	 */
-	protected static function readNeonFile(string $file): string
+	protected function readNeonFile(string $file): string
 	{
-		Logger::info('Reading config file', ['file' => $file]);
 		if (!file_exists($file) || !is_readable($file))
 			throw new \RuntimeException('NeonBackend: Cannot read NEON file ' . $file);
 
@@ -70,5 +80,21 @@ class NeonBackend implements ConfigurationBackendInterface
 			throw new \RuntimeException('NeonBackend: Failed to read NEON file ' . $file);
 
 		return $data;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getConfigFile(): string
+	{
+		return $this->configFile;
+	}
+
+	/**
+	 * @param string $configFile
+	 */
+	public function setConfigFile(string $configFile)
+	{
+		$this->configFile = $configFile;
 	}
 }

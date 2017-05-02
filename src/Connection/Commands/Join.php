@@ -78,6 +78,9 @@ class Join extends BaseCommand
 		$this->channel = $channel;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		$channels = $this->getChannel();

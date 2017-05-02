@@ -24,7 +24,6 @@ namespace WildPHP\Core\DataStorage;
 use Flintstone\Exception;
 use Flintstone\Flintstone;
 use Flintstone\Formatter\JsonFormatter;
-use WildPHP\Core\Configuration\Configuration;
 
 class DataStorage extends Flintstone
 {
@@ -33,18 +32,27 @@ class DataStorage extends Flintstone
 	 */
 	protected $flintstone;
 
+	/**
+	 * DataStorage constructor.
+	 * @param \Flintstone\Database|string $name
+	 */
 	public function __construct($name)
 	{
 		$config = [
-			'dir' => Configuration::get('rootdir')->getValue() . '/storage',
+			'dir' => WPHP_ROOT_DIR . '/storage',
 			'formatter' => new JsonFormatter()
 		];
 		parent::__construct($name, $config);
 	}
 
+	/**
+	 * @param string $key
+	 * @throws Exception
+	 */
 	public function validateKey($key)
 	{
-		if (empty($key) || is_object($key) || is_array($key)) {
+		if (empty($key) || is_object($key) || is_array($key))
+		{
 			throw new Exception('Key cannot be empty or object or array');
 		}
 	}

@@ -21,10 +21,11 @@
 namespace WildPHP\Core\Connection;
 
 
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItemNotFoundException;
 use WildPHP\Core\Connection\Commands\Authenticate;
-use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class SASL
@@ -32,20 +33,20 @@ class SASL
 	/**
 	 * @var bool
 	 */
-	protected static $hasCompleted = false;
+	protected $hasCompleted = false;
 	/**
 	 * @var bool|string
 	 */
-	protected static $errorReason = false;
+	protected $errorReason = false;
 	/**
 	 * @var bool
 	 */
-	protected static $isSuccessful = false;
+	protected $isSuccessful = false;
 
 	/**
 	 * @var array
 	 */
-	protected static $successCodes = [
+	protected $successCodes = [
 		'900' => 'RPL_LOGGEDIN',
 		'901' => 'RPL_LOGGEDOUT',
 		'903' => 'RPL_SASLSUCCESS',
@@ -55,7 +56,7 @@ class SASL
 	/**
 	 * @var array
 	 */
-	protected static $errorCodes = [
+	protected $errorCodes = [
 		'902' => 'ERR_NICKLOCKED',
 		'904' => 'ERR_SASLFAIL',
 		'905' => 'ERR_SASLTOOLONG',
@@ -63,52 +64,79 @@ class SASL
 		'907' => 'ERR_SASLALREADY'
 	];
 
-	public static function initialize(Queue $queue)
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container = null;
+
+	/**
+	 * SASL constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
 		try
 		{
-			Configuration::get('sasl');
-			Configuration::get('sasl.username');
-			Configuration::get('sasl.password');
-		}
-		catch (ConfigurationItemNotFoundException $e)
+			Configuration::fromContainer($container)
+				->get('sasl');
+			Configuration::fromContainer($container)
+				->get('sasl.username');
+			Configuration::fromContainer($container)
+				->get('sasl.password');
+		} catch (ConfigurationItemNotFoundException $e)
 		{
-			Logger::info('SASL not initialized because no credentials were provided.');
-			EventEmitter::emit('irc.sasl.error', [[], $queue]);
-			self::setHasCompleted(true);
+			Logger::fromContainer($container)
+				->info('SASL not initialized because no credentials were provided.');
+			EventEmitter::fromContainer($container)
+				->emit('irc.sasl.error', [[], Queue::fromContainer($container)]);
+			$this->setHasCompleted(true);
 
 			return;
 		}
 
-		EventEmitter::on('irc.cap.acknowledged', __NAMESPACE__ . '\\SASL::sendAuthenticationMechanism');
-		EventEmitter::on('irc.line.in.authenticate', __NAMESPACE__ . '\\SASL::sendCredentials');
-		CapabilityHandler::requestCapability('sasl');
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.ls', [$this, 'requestCapability']);
 
 		// Map all numeric SASL responses to either the success or error handler:
-		foreach (self::$successCodes as $code => $reason)
+		foreach ($this->successCodes as $code => $reason)
 		{
-			EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handlePositiveResponse');
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in.' . $code, [$this, 'handlePositiveResponse']);
 		}
 
-		foreach (self::$errorCodes as $code => $reason)
+		foreach ($this->errorCodes as $code => $reason)
 		{
-			EventEmitter::on('irc.line.in.' . $code, __NAMESPACE__ . '\\SASL::handleNegativeResponse');
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in.' . $code, [$this, 'handleNegativeResponse']);
 		}
 
-		Logger::debug('[SASL] Capability requested, awaiting server response.');
+		Logger::fromContainer($container)
+			->debug('[SASL] Initialized, awaiting server response.');
+		$this->setContainer($container);
+	}
+
+	public function requestCapability()
+	{
+		CapabilityHandler::fromContainer($this->getContainer())
+			->requestCapability('sasl');
 	}
 
 	/**
 	 * @param array $acknowledgedCapabilities
 	 * @param Queue $queue
 	 */
-	public static function sendAuthenticationMechanism(array $acknowledgedCapabilities, Queue $queue)
+	public function sendAuthenticationMechanism(array $acknowledgedCapabilities, Queue $queue)
 	{
 		if (!in_array('sasl', $acknowledgedCapabilities))
 			return;
 
 		$queue->insertMessage(new Authenticate('PLAIN'));
-		Logger::debug('[SASL] Authentication mechanism requested, awaiting server response.');
+		Logger::fromContainer($this->getContainer())
+			->debug('[SASL] Authentication mechanism requested, awaiting server response.');
 	}
 
 	/**
@@ -117,7 +145,7 @@ class SASL
 	 *
 	 * @return string
 	 */
-	protected static function generateCredentialString(string $username, string $password)
+	protected function generateCredentialString(string $username, string $password)
 	{
 		return base64_encode($username . "\0" . $username . "\0" . $password);
 	}
@@ -126,103 +154,128 @@ class SASL
 	 * @param IncomingIrcMessage $message
 	 * @param Queue $queue
 	 */
-	public static function sendCredentials(IncomingIrcMessage $message, Queue $queue)
+	public function sendCredentials(IncomingIrcMessage $message, Queue $queue)
 	{
 		$message = $message->specialize();
 
 		if ($message->getResponse() != '+')
 			return;
 
-		$username = Configuration::get('sasl.username')->getValue();
-		$password = Configuration::get('sasl.password')->getValue();
-		$credentials = self::generateCredentialString($username, $password);
+		$username = Configuration::fromContainer($this->getContainer())
+			->get('sasl.username')
+			->getValue();
+		$password = Configuration::fromContainer($this->getContainer())
+			->get('sasl.password')
+			->getValue();
+		$credentials = $this->generateCredentialString($username, $password);
 		$queue->insertMessage(new Authenticate($credentials));
-		Logger::debug('[SASL] Sent authentication details, awaiting response from server.');
+		Logger::fromContainer($this->getContainer())
+			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
 
 	/**
 	 * @param IncomingIrcMessage $message
 	 * @param Queue $queue
 	 */
-	public static function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
+	public function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
 	{
 		$code = $message->getVerb();
 
-		self::setErrorReason(false);
-		self::setHasCompleted(true);
-		self::setIsSuccessful(true);
+		$this->setErrorReason(false);
+		$this->setHasCompleted(true);
+		$this->setIsSuccessful(true);
 
 		if ($code != '903')
 			return;
 
 		// This event has to fit on the events used in CapabilityHandler.
-		Logger::info('[SASL] Authentication successful!');
-		EventEmitter::emit('irc.sasl.complete', [[], $queue]);
+		Logger::fromContainer($this->getContainer())
+			->info('[SASL] Authentication successful!');
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.sasl.complete', [[], $queue]);
 	}
 
 	/**
 	 * @param IncomingIrcMessage $message
 	 * @param Queue $queue
 	 */
-	public static function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
+	public function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
 	{
 		$code = $message->getVerb();
-		$reason = self::$errorCodes[$code];
+		$reason = $this->errorCodes[$code];
 
-		self::setErrorReason($reason);
-		self::setHasCompleted(true);
-		self::setIsSuccessful(false);
+		$this->setErrorReason($reason);
+		$this->setHasCompleted(true);
+		$this->setIsSuccessful(false);
 
 		// This event has to fit on the events used in CapabilityHandler.
-		Logger::warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
-		EventEmitter::emit('irc.sasl.error', [[], $queue]);
+		Logger::fromContainer($this->getContainer())
+			->warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.sasl.error', [[], $queue]);
 	}
 
 	/**
 	 * @param string|false $reason
 	 */
-	public static function setErrorReason($reason)
+	public function setErrorReason($reason)
 	{
-		self::$errorReason = $reason;
+		$this->errorReason = $reason;
 	}
 
 	/**
 	 * @param boolean $hasCompleted
 	 */
-	public static function setHasCompleted(bool $hasCompleted)
+	public function setHasCompleted(bool $hasCompleted)
 	{
-		self::$hasCompleted = $hasCompleted;
+		$this->hasCompleted = $hasCompleted;
 	}
 
 	/**
 	 * @param boolean $isSuccessful
 	 */
-	public static function setIsSuccessful(bool $isSuccessful)
+	public function setIsSuccessful(bool $isSuccessful)
 	{
-		self::$isSuccessful = $isSuccessful;
+		$this->isSuccessful = $isSuccessful;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public static function hasCompleted(): bool
+	public function hasCompleted(): bool
 	{
-		return self::$hasCompleted;
+		return $this->hasCompleted;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public static function isSuccessful(): bool
+	public function isSuccessful(): bool
 	{
-		return self::$isSuccessful;
+		return $this->isSuccessful;
 	}
 
 	/**
 	 * @return bool|string
 	 */
-	public static function hasEncounteredError()
+	public function hasEncounteredError()
 	{
-		return self::$errorReason;
+		return $this->errorReason;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

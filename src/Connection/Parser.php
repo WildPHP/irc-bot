@@ -20,21 +20,31 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\Events\EventEmitter;
+
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\EventEmitter;
 
 class Parser
 {
-	public static function initialize(Queue $queue)
+	/**
+	 * Parser constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
-		EventEmitter::on('stream.line.in', function ($line) use ($queue)
-		{
-			$parsedLine = self::parseLine($line);
-			$ircMessage = new IncomingIrcMessage($parsedLine);
+		EventEmitter::fromContainer($container)
+			->on('stream.line.in',
+				function ($line) use ($container)
+				{
+					$parsedLine = self::parseLine($line);
+					$ircMessage = new IncomingIrcMessage($parsedLine, $container);
 
-			$verb = strtolower($ircMessage->getVerb());
-			EventEmitter::emit('irc.line.in', [$ircMessage, $queue]);
-			EventEmitter::emit('irc.line.in.' . $verb, [$ircMessage, $queue]);
-		});
+					$verb = strtolower($ircMessage->getVerb());
+					EventEmitter::fromContainer($container)
+						->emit('irc.line.in', [$ircMessage, Queue::fromContainer($container)]);
+					EventEmitter::fromContainer($container)
+						->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($container)]);
+				});
 	}
 
 	/**

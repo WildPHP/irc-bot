@@ -24,17 +24,21 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
-use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class IrcConnection
 {
+	use ComponentTrait;
+
 	/**
 	 * @var Promise
 	 */
-	protected $connectorPromise = null;
+	protected $connectorPromise;
 
 	/**
 	 * @var string
@@ -42,41 +46,9 @@ class IrcConnection
 	protected $buffer = '';
 
 	/**
-	 * @var Queue
+	 * @var ComponentContainer
 	 */
-	protected $queue;
-
-	/**
-	 * @return Queue
-	 */
-	public function getQueue(): Queue
-	{
-		return $this->queue;
-	}
-
-	/**
-	 * @param Queue $queue
-	 */
-	public function setQueue(Queue $queue)
-	{
-		$this->queue = $queue;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getBuffer(): string
-	{
-		return $this->buffer;
-	}
-
-	/**
-	 * @param string $buffer
-	 */
-	public function setBuffer(string $buffer)
-	{
-		$this->buffer = $buffer;
-	}
+	protected $container;
 
 	/**
 	 * @param LoopInterface $loop
@@ -84,32 +56,46 @@ class IrcConnection
 	 */
 	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
 	{
-		$loop->addPeriodicTimer(0.5, function () use ($queue)
-		{
-			$queueItems = $queue->flush();
-
-			foreach ($queueItems as $item)
+		$loop->addPeriodicTimer(0.5,
+			function () use ($queue)
 			{
-				$this->write($item->getCommandObject()->formatMessage());
-			}
-		});
+				$queueItems = $queue->flush();
+
+				foreach ($queueItems as $item)
+				{
+					$this->write($item->getCommandObject()
+						->formatMessage());
+				}
+			});
 	}
 
-	public function __construct()
+	/**
+	 * IrcConnection constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
-		EventEmitter::on('stream.data.in', [$this, 'convertDataToLines']);
+		EventEmitter::fromContainer($container)
+			->on('stream.data.in', [$this, 'convertDataToLines']);
 
-		EventEmitter::on('irc.line.in.005', [$this, 'handleServerConfig']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.005', [$this, 'handleServerConfig']);
 
-		EventEmitter::on('irc.line.in.error', function ()
-		{
-			$this->close();
-		});
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.error',
+				function ()
+				{
+					$this->close();
+				});
 
-		EventEmitter::on('irc.force.close', function ()
-		{
-			$this->close();
-		});
+		EventEmitter::fromContainer($container)
+			->on('irc.force.close',
+				function ()
+				{
+					$this->close();
+				});
+
+		$this->setContainer($container);
 	}
 
 	/**
@@ -120,13 +106,16 @@ class IrcConnection
 		$args = $incomingIrcMessage->getArgs();
 
 		$hostname = $incomingIrcMessage->getPrefix();
-		Configuration::set(new ConfigurationItem('serverConfig.hostname', $hostname));
+		Configuration::fromContainer($this->getContainer())
+			->set(new ConfigurationItem('serverConfig.hostname', $hostname));
 
 		// The first argument is the nickname set.
-		$currentNickname = (string) $args[0];
-		Configuration::set(new ConfigurationItem('currentNickname', $currentNickname));
+		$currentNickname = (string)$args[0];
+		Configuration::fromContainer($this->getContainer())
+			->set(new ConfigurationItem('currentNickname', $currentNickname));
 		unset($args[0]);
-		Logger::debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
 
 		// The last argument is a message usually corresponding to something like "are supported by this server"
 		// Don't need that anymore.
@@ -139,10 +128,14 @@ class IrcConnection
 			$value = !empty($parts[1]) ? $parts[1] : true;
 
 			$configItem = new ConfigurationItem($key, $value);
-			Configuration::set($configItem);
+			Configuration::fromContainer($this->getContainer())
+				->set($configItem);
 		}
 
-		Logger::debug('Set new server configuration to configuration serverConfig.', [Configuration::get('serverConfig')]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Set new server configuration to configuration serverConfig.',
+				[Configuration::fromContainer($this->getContainer())
+					->get('serverConfig')]);
 	}
 
 	/**
@@ -162,8 +155,10 @@ class IrcConnection
 
 		foreach ($lines as $line)
 		{
-			Logger::debug('<< ' . $line);
-			EventEmitter::emit('stream.line.in', [$line]);
+			Logger::fromContainer($this->getContainer())
+				->debug('<< ' . $line);
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('stream.line.in', [$line]);
 		}
 	}
 
@@ -177,16 +172,20 @@ class IrcConnection
 		$this->connectorPromise = $connectorInterface->create($host, $port)
 			->then(function (Stream $stream) use ($host, $port, &$buffer)
 			{
-				EventEmitter::emit('stream.created', [$this->getQueue()]);
-				$stream->on('error', function ($error) use ($host, $port)
-				{
-					throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
-				});
+				EventEmitter::fromContainer($this->getContainer())
+					->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
+				$stream->on('error',
+					function ($error) use ($host, $port)
+					{
+						throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+					});
 
-				$stream->on('data', function ($data)
-				{
-					EventEmitter::emit('stream.data.in', [$data]);
-				});
+				$stream->on('data',
+					function ($data)
+					{
+						EventEmitter::fromContainer($this->getContainer())
+							->emit('stream.data.in', [$data]);
+					});
 
 				return $stream;
 			});
@@ -199,8 +198,10 @@ class IrcConnection
 	{
 		$this->connectorPromise->then(function (Stream $stream) use ($data)
 		{
-			EventEmitter::emit('stream.data.out', [$data]);
-			Logger::debug('>> ' . $data);
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('stream.data.out', [$data]);
+			Logger::fromContainer($this->getContainer())
+				->debug('>> ' . $data);
 			$stream->write($data);
 		});
 	}
@@ -209,9 +210,43 @@ class IrcConnection
 	{
 		$this->connectorPromise->then(function (Stream $stream)
 		{
-			Logger::warning('Closing connection...');
+			Logger::fromContainer($this->getContainer())
+				->warning('Closing connection...');
 			$stream->close();
-			EventEmitter::emit('stream.closed');
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('stream.closed');
 		});
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBuffer(): string
+	{
+		return $this->buffer;
+	}
+
+	/**
+	 * @param string $buffer
+	 */
+	public function setBuffer(string $buffer)
+	{
+		$this->buffer = $buffer;
 	}
 }

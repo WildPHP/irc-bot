@@ -98,6 +98,9 @@ class Kick extends BaseCommand
 		$this->nickname = $nickname;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		$message = $this->getMessage();

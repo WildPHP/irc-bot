@@ -20,9 +20,6 @@
 
 namespace WildPHP\Core\Tasks;
 
-
-use WildPHP\Core\Logger\Logger;
-
 class Task
 {
 	/**
@@ -45,11 +42,15 @@ class Task
 	 */
 	protected $storedArguments = [];
 
+	/**
+	 * Task constructor.
+	 * @param callable $callback
+	 * @param int $time
+	 * @param array $args
+	 * @param int $repeatInterval
+	 */
 	public function __construct(callable $callback, int $time, array $args = [], int $repeatInterval = 0)
 	{
-		if ($time < time())
-			Logger::warning('Scheduling task in the past!');
-
 		$this->setCallback($callback);
 		$this->setExpiryTime($time);
 		$this->setStoredArguments($args);

@@ -20,49 +20,73 @@
 
 namespace WildPHP\Core\Tasks;
 
-
-use React\EventLoop\LoopInterface;
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 
 class TaskController
 {
-	protected static $loopInterval = 2;
+	use ComponentTrait;
+
+	/**
+	 * @var int
+	 */
+	protected $loopInterval = 2;
 
 	/**
 	 * @var Task[]
 	 */
-	protected static $tasks = [];
+	protected $tasks = [];
 
-	public static function setup(LoopInterface $loop)
+	/**
+	 * TaskController constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
-		$loop->addPeriodicTimer(self::$loopInterval, __CLASS__ . '::runTasks');
+		$container->getLoop()
+			->addPeriodicTimer($this->loopInterval, [$this, 'runTasks']);
 	}
 
-	public static function addTask(Task $task): bool
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
+	public function addTask(Task $task): bool
 	{
 		if (self::taskExists($task))
 			return false;
 
-		self::$tasks[] = $task;
+		$this->tasks[] = $task;
+
 		return true;
 	}
 
-	public static function removeTask(Task $task): bool
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
+	public function removeTask(Task $task): bool
 	{
 		if (!self::taskExists($task))
 			return false;
 
-		unset(self::$tasks[array_search($task, self::$tasks)]);
+		unset($this->tasks[array_search($task, $this->tasks)]);
+
 		return true;
 	}
 
-	public static function taskExists(Task $task): bool
+	/**
+	 * @param Task $task
+	 * @return bool
+	 */
+	public function taskExists(Task $task): bool
 	{
-		return in_array($task, self::$tasks);
+		return in_array($task, $this->tasks);
 	}
 
-	public static function runTasks()
+	public function runTasks()
 	{
-		foreach (self::$tasks as $task)
+		foreach ($this->tasks as $task)
 		{
 			if (time() < $task->getExpiryTime())
 				continue;
@@ -74,6 +98,7 @@ class TaskController
 			if ($repeatInterval)
 			{
 				$task->setExpiryTime(time() + $repeatInterval);
+
 				return;
 			}
 

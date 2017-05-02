@@ -43,6 +43,12 @@ class UserPrefix
 	 */
 	protected $hostname = '';
 
+	/**
+	 * UserPrefix constructor.
+	 * @param string $nickname
+	 * @param string $username
+	 * @param string $hostname
+	 */
 	public function __construct(string $nickname = '', string $username = '', string $hostname = '')
 	{
 		$this->setNickname($nickname);
@@ -105,7 +111,7 @@ class UserPrefix
 	 */
 	public static function fromString(string $prefix): self
 	{
-		if (preg_match(self::$regex, $prefix, $matches) == false)
+		if (preg_match(self::$regex, $prefix, $matches) === false)
 			throw new \InvalidArgumentException('Got invalid prefix');
 
 		$nickname = $matches['nick'];

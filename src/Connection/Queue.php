@@ -20,6 +20,8 @@
 
 namespace WildPHP\Core\Connection;
 
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\Commands\BaseCommand;
 use WildPHP\Core\Connection\Commands\Cap;
 use WildPHP\Core\Connection\Commands\Join;
@@ -39,6 +41,8 @@ use WildPHP\Core\Logger\Logger;
 
 class Queue implements QueueInterface
 {
+	use ComponentTrait;
+
 	/**
 	 * An explanation of how this works.
 	 *
@@ -75,6 +79,20 @@ class Queue implements QueueInterface
 	protected $floodControlEnabled = false;
 
 	/**
+	 * @var ComponentContainer
+	 */
+	protected $container;
+
+	/**
+	 * Queue constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
+	{
+		$this->setContainer($container);
+	}
+
+	/**
 	 * @param BaseCommand $command
 	 */
 	public function insertMessage(BaseCommand $command)
@@ -82,7 +100,8 @@ class Queue implements QueueInterface
 		$time = $this->calculateNextMessageTime();
 
 		if ($time > time())
-			Logger::warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
+			Logger::fromContainer($this->getContainer())
+				->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
 
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);
@@ -172,6 +191,22 @@ class Queue implements QueueInterface
 	public function isFloodControlEnabled(): bool
 	{
 		return $this->floodControlEnabled;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 
 	/**
@@ -281,18 +316,30 @@ class Queue implements QueueInterface
 		$this->insertMessage($kick);
 	}
 
+	/**
+	 * @param string $target
+	 * @param string $flags
+	 * @param string $args
+	 */
 	public function mode(string $target, string $flags, string $args)
 	{
 		$mode = new Mode($target, $flags, $args);
 		$this->insertMessage($mode);
 	}
 
+	/**
+	 * @param string $channelName
+	 * @param string $message
+	 */
 	public function topic(string $channelName, string $message)
 	{
 		$topic = new Topic($channelName, $message);
 		$this->insertMessage($topic);
 	}
 
+	/**
+	 * @param string $raw
+	 */
 	public function raw(string $raw)
 	{
 		$raw = new Raw($raw);

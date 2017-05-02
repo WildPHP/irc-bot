@@ -22,34 +22,75 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Security\Validator;
 
 class CommandHandler
 {
+	use ComponentTrait;
+
 	/**
-	 * @var string
+	 * @var Dictionary
 	 */
-	protected static $prefix = '!';
+	protected $commandDictionary = null;
 
-	public static function initialize()
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container = null;
+
+	/**
+	 * CommandHandler constructor.
+	 * @param ComponentContainer $container
+	 * @param Dictionary $commandDictionary
+	 */
+	public function __construct(ComponentContainer $container, Dictionary $commandDictionary)
 	{
-		GlobalCommandDictionary::setDictionary(new Dictionary());
+		$this->setCommandDictionary($commandDictionary);
 
-		EventEmitter::on('irc.line.in.privmsg', __CLASS__ . '::parseAndRunCommand');
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
+		$this->setContainer($container);
+	}
 
-		self::setPrefix(Configuration::get('prefix')->getValue());
+	/**
+	 * @param string $command
+	 * @param callable $callback
+	 * @param CommandHelp|null $commandHelp
+	 * @param int $minarguments
+	 * @param int $maxarguments
+	 * @param string $requiredPermission
+	 * @return bool
+	 */
+	public function registerCommand(string $command,
+	                                callable $callback,
+	                                CommandHelp $commandHelp = null,
+	                                int $minarguments = -1,
+	                                int $maxarguments = -1,
+	                                string $requiredPermission = '')
+	{
+		if ($this->getCommandDictionary()
+			->keyExists($command)
+		)
+			return false;
+
+		$commandObject = CommandFactory::create($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
+		$this->getCommandDictionary()[$command] = $commandObject;
+
+		return true;
 	}
 
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public static function parseAndRunCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function parseAndRunCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
 	{
 		$privmsg = PRIVMSG::fromIncomingIrcMessage($incomingIrcMessage);
 		$source = $privmsg->getChannel();
@@ -62,30 +103,39 @@ class CommandHandler
 		if ($command === false)
 			return;
 
-		EventEmitter::emit('irc.command', [$command, $source, $user, $args, $queue]);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
 
-		$dictionary = GlobalCommandDictionary::getDictionary();
+		$dictionary = $this->getCommandDictionary();
 
 		if (!$dictionary->keyExists($command))
 			return;
 
 		$commandObject = $dictionary[$command];
 		$permission = $commandObject->getRequiredPermission();
-		if ($permission && !Validator::isAllowedTo($permission, $user, $source))
+		if ($permission && !Validator::fromContainer($this->getContainer())
+				->isAllowedTo($permission, $user, $source)
+		)
 		{
-			$queue->privmsg($source->getName(), $user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
+			$queue->privmsg($source->getName(),
+				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
+
 			return;
 		}
 
 		$maximumArguments = $commandObject->getMaximumArguments();
 		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
 		{
-			$prefix = Configuration::get('prefix')->getValue();
-			$queue->privmsg($source->getName(), 'Invalid arguments. Please check ' . $prefix . 'help ' . $command . ' for usage instructions.');
+			$prefix = Configuration::fromContainer($this->getContainer())
+				->get('prefix')
+				->getValue();
+			$queue->privmsg($source->getName(),
+				'Invalid arguments. Please check ' . $prefix . 'help ' . $command . ' for usage instructions.');
+
 			return;
 		}
 
-		call_user_func($commandObject->getCallback(), $source, $user, $args, $queue);
+		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer());
 	}
 
 	/**
@@ -94,18 +144,21 @@ class CommandHandler
 	 *
 	 * @return false|string
 	 */
-	protected static function parseCommandFromMessage(string $message, array &$args)
+	protected function parseCommandFromMessage(string $message, array &$args)
 	{
 		$messageParts = explode(' ', $message);
 		$firstPart = $messageParts[0];
+		$prefix = Configuration::fromContainer($this->getContainer())
+			->get('prefix')
+			->getValue();
 
-		if (strlen($firstPart) == strlen(self::getPrefix()))
+		if (strlen($firstPart) == strlen($prefix))
 			return false;
 
-		if (substr($firstPart, 0, strlen(self::getPrefix())) != self::getPrefix())
+		if (substr($firstPart, 0, strlen($prefix)) != $prefix)
 			return false;
 
-		$command = substr($firstPart, strlen(self::getPrefix()));
+		$command = substr($firstPart, strlen($prefix));
 		array_shift($messageParts);
 		$args = $messageParts;
 
@@ -113,18 +166,34 @@ class CommandHandler
 	}
 
 	/**
-	 * @return string
+	 * @return Dictionary
 	 */
-	public static function getPrefix()
+	public function getCommandDictionary(): Dictionary
 	{
-		return self::$prefix;
+		return $this->commandDictionary;
 	}
 
 	/**
-	 * @param string $prefix
+	 * @param Dictionary $commandDictionary
 	 */
-	public static function setPrefix($prefix)
+	public function setCommandDictionary(Dictionary $commandDictionary)
 	{
-		self::$prefix = $prefix;
+		$this->commandDictionary = $commandDictionary;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $componentContainer
+	 */
+	public function setContainer(ComponentContainer $componentContainer)
+	{
+		$this->container = $componentContainer;
 	}
 }

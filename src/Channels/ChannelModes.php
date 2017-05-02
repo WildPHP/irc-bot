@@ -2,6 +2,7 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
@@ -9,39 +10,71 @@ use WildPHP\Core\Users\UserCollection;
 
 class ChannelModes
 {
-	protected static $definitions = [];
+	/**
+	 * @var array
+	 */
+	protected $definitions = [];
 
+	/**
+	 * @var array
+	 */
 	protected $modeMap = [];
 
-	public static function fetchModeDefinitions()
+	/**
+	 * @var ComponentContainer
+	 */
+	protected $container = null;
+
+	/**
+	 * ChannelModes constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
-		$availablemodes = Configuration::get('serverConfig.prefix')->getValue();
+		$this->setContainer($container);
+	}
+
+	public function fetchModeDefinitions()
+	{
+		$availablemodes = Configuration::fromContainer($this->getContainer())
+			->get('serverConfig.prefix')
+			->getValue();
 
 		preg_match('/\((.+)\)(.+)/', $availablemodes, $out);
 
 		$modes = str_split($out[1]);
 		$prefixes = str_split($out[2]);
-		self::$definitions = array_combine($prefixes, $modes);
+		$this->definitions = array_combine($prefixes, $modes);
 
-		Logger::debug('Set new mode map', ['map' => self::$definitions]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Set new mode map', ['map' => $this->definitions]);
 	}
 
-	public static function setModeDefinitions(array $modemap)
+	/**
+	 * @param array $modemap
+	 */
+	public function setModeDefinitions(array $modemap)
 	{
-		self::$definitions = $modemap;
+		$this->definitions = $modemap;
 	}
 
-	public static function getModeDefinitions(): array
+	/**
+	 * @return array
+	 */
+	public function getModeDefinitions(): array
 	{
-		if (empty(self::$definitions))
-			self::fetchModeDefinitions();
+		if (empty($this->definitions))
+			$this->fetchModeDefinitions();
 
-		return self::$definitions;
+		return $this->definitions;
 	}
 
-	public static function getModeNames(): array
+	/**
+	 * @return array
+	 */
+	public function getModeNames(): array
 	{
-		return array_keys(self::$definitions);
+		return array_keys($this->definitions);
 	}
 
 	/**
@@ -67,7 +100,9 @@ class ChannelModes
 		if (!array_key_exists($mode, $this->modeMap))
 			return false;
 
-		$user = UserCollection::getGlobalSelf();
+		$user = UserCollection::fromContainer($this->getContainer())
+			->getSelf();
+
 		return $user ? $this->isUserInMode($mode, $user) : false;
 	}
 
@@ -155,9 +190,9 @@ class ChannelModes
 	 * @param string $remainders
 	 * @return array
 	 */
-	public static function extractUserModesFromNickname(string $nickname, string &$remainders): array
+	public function extractUserModesFromNickname(string $nickname, string &$remainders): array
 	{
-		$modeMap = self::getModeDefinitions();
+		$modeMap = $this->getModeDefinitions();
 		$parts = str_split($nickname);
 		$modes = [];
 
@@ -174,5 +209,21 @@ class ChannelModes
 		}
 
 		return $modes;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

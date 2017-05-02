@@ -123,6 +123,9 @@ class User extends BaseCommand
 		$this->setRealname($realname);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		$username = $this->getUsername();

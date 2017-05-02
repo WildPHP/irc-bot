@@ -9,15 +9,34 @@
 namespace WildPHP\Core\Connection;
 
 
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
 
 class IncomingIrcMessage
 {
+	/**
+	 * @var string
+	 */
 	protected $prefix = '';
+	/**
+	 * @var string
+	 */
 	protected $verb = '';
+	/**
+	 * @var array
+	 */
 	protected $args = [];
+	/**
+	 * @var
+	 */
+	protected $container;
 
-	public function __construct(ParsedIrcMessageLine $line)
+	/**
+	 * IncomingIrcMessage constructor.
+	 * @param ParsedIrcMessageLine $line
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ParsedIrcMessageLine $line, ComponentContainer $container)
 	{
 		$this->setPrefix($line->prefix);
 		$this->setVerb($line->verb);
@@ -26,8 +45,13 @@ class IncomingIrcMessage
 		$args = $line->args;
 		unset($args[0]);
 		$this->setArgs(array_values($args));
+		$this->setContainer($container);
 	}
 
+	/**
+	 * @return BaseMessage
+	 * @throws MessageNotImplementedException
+	 */
 	public function specialize(): BaseMessage
 	{
 		$verb = $this->getVerb();
@@ -85,6 +109,22 @@ class IncomingIrcMessage
 	public function setArgs($args)
 	{
 		$this->args = $args;
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }
 

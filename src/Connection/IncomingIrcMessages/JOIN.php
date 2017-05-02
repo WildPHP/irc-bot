@@ -58,8 +58,15 @@ class JOIN implements BaseMessage
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
-		$channels = self::getChannelsByList($channelNameList);
-		$user = UserCollection::globalFindOrCreateByNickname($prefix->getNickname());
+		$channelObjects = [];
+		foreach ($channelNameList as $channelName)
+		{
+			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())
+				->findByChannelName($channelName);
+			$channelObjects[] = $channel;
+		}
+		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())
+			->findOrCreateByNickname($prefix->getNickname());
 
 		if (!$user)
 			throw new \ErrorException('Could not find user in collection; state mismatch!');
@@ -68,26 +75,9 @@ class JOIN implements BaseMessage
 
 		$object->setPrefix($prefix);
 		$object->setUser($user);
-		$object->setChannels($channels);
+		$object->setChannels($channelObjects);
 
 		return $object;
-	}
-
-	/**
-	 * @param array $channelNames
-	 *
-	 * @return Channel[]
-	 */
-	protected static function getChannelsByList(array $channelNames): array
-	{
-		$channelObjects = [];
-		foreach ($channelNames as $channelName)
-		{
-			$channel = ChannelCollection::getGlobalInstance()->findByChannelName($channelName);
-			$channelObjects[] = $channel;
-		}
-
-		return $channelObjects;
 	}
 
 	/**

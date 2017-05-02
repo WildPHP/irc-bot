@@ -21,27 +21,28 @@
 namespace WildPHP\Core\Channels;
 
 use Collections\Collection;
+use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class ChannelCollection extends Collection
 {
-	protected static $globalInstance = null;
+	use ComponentTrait;
 
 	/**
-	 * @return ChannelCollection
+	 * @var ComponentContainer
 	 */
-	public static function getGlobalInstance(): ChannelCollection
-	{
-		if (is_null(self::$globalInstance))
-			self::$globalInstance = new ChannelCollection();
+	protected $container = null;
 
-		return self::$globalInstance;
-	}
-
-	public function __construct()
+	/**
+	 * ChannelCollection constructor.
+	 * @param ComponentContainer $container
+	 */
+	public function __construct(ComponentContainer $container)
 	{
-		parent::__construct('\WildPHP\Core\Channels\Channel');
+		parent::__construct(Channel::class);
+		$this->setContainer($container);
 	}
 
 	/**
@@ -52,11 +53,17 @@ class ChannelCollection extends Collection
 	 */
 	public function createFakeConversationChannel(User $user)
 	{
-		$channel = new Channel();
+		$userCollection = new UserCollection($this->getContainer());
+		$channelModes = new ChannelModes($this->getContainer());
+		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($user->getNickname());
-		$channel->getUserCollection()->add($user);
-		$channel->getUserCollection()->add(UserCollection::getGlobalSelf());
+		$channel->getUserCollection()
+			->add($user);
+		$channel->getUserCollection()
+			->add(UserCollection::fromContainer($this->getContainer())
+				->getSelf());
 		$this->add($channel);
+
 		return $channel;
 	}
 
@@ -80,5 +87,21 @@ class ChannelCollection extends Collection
 		{
 			return $channel->getName() == $name;
 		});
+	}
+
+	/**
+	 * @return ComponentContainer
+	 */
+	public function getContainer(): ComponentContainer
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ComponentContainer $container
+	 */
+	public function setContainer(ComponentContainer $container)
+	{
+		$this->container = $container;
 	}
 }

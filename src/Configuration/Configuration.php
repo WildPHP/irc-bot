@@ -20,26 +20,31 @@
 
 namespace WildPHP\Core\Configuration;
 
+use WildPHP\Core\ComponentTrait;
+
 class Configuration
 {
+	use ComponentTrait;
+
 	/**
-	 * @var string
+	 * @var ConfigurationBackendInterface
 	 */
-	const BACKEND = ConfigurationBackends::NEON;
+	protected $backend = null;
 
 	/**
 	 * @var ConfigurationStorage
 	 */
-	protected static $storage = null;
+	protected $storage = null;
 
-	public static function initialize()
+	/**
+	 * Configuration constructor.
+	 * @param ConfigurationBackendInterface $configurationBackend
+	 */
+	public function __construct(ConfigurationBackendInterface $configurationBackend)
 	{
-		$backendClass = self::BACKEND;
+		$this->setBackend($configurationBackend);
 
-		if (!class_exists($backendClass))
-			throw new \RuntimeException('The configuration backend ' . $backendClass . ' was not found!');
-
-		self::$storage = new ConfigurationStorage($backendClass::getAllEntries());
+		$this->setStorage(new ConfigurationStorage($configurationBackend->getAllEntries()));
 	}
 
 	/**
@@ -48,16 +53,50 @@ class Configuration
 	 * @return ConfigurationItem
 	 * @throws ConfigurationItemNotFoundException
 	 */
-	public static function get(string $key)
+	public function get(string $key)
 	{
-		return self::$storage->getItem($key);
+		return $this->getStorage()
+			->getItem($key);
 	}
 
 	/**
 	 * @param ConfigurationItem $configurationItem
 	 */
-	public static function set(ConfigurationItem $configurationItem)
+	public function set(ConfigurationItem $configurationItem)
 	{
-		self::$storage->setItem($configurationItem);
+		$this->getStorage()
+			->setItem($configurationItem);
+	}
+
+	/**
+	 * @return ConfigurationBackendInterface
+	 */
+	public function getBackend(): ConfigurationBackendInterface
+	{
+		return $this->backend;
+	}
+
+	/**
+	 * @param ConfigurationBackendInterface $backend
+	 */
+	public function setBackend(ConfigurationBackendInterface $backend)
+	{
+		$this->backend = $backend;
+	}
+
+	/**
+	 * @return ConfigurationStorage
+	 */
+	public function getStorage(): ConfigurationStorage
+	{
+		return $this->storage;
+	}
+
+	/**
+	 * @param ConfigurationStorage $storage
+	 */
+	public function setStorage(ConfigurationStorage $storage)
+	{
+		$this->storage = $storage;
 	}
 }

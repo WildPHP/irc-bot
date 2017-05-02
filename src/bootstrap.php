@@ -2,18 +2,18 @@
 
 use React\EventLoop\Factory as LoopFactory;
 use WildPHP\Core\Commands\CommandHandler;
-use WildPHP\Core\Channels\ChannelDataCollector;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
-use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Connection\IrcConnection;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\Parser;
-use WildPHP\Core\Tasks\TaskController;
-use WildPHP\Core\Users\UserDataCollector;
 use WildPHP\Core\Connection\PingPongHandler;
+use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\DataStorage\DataStorage;
+use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Security\PermissionGroup;
+use WildPHP\Core\Tasks\TaskController;
 
 /*
 	WildPHP - a modular and easily extendable IRC bot written in PHP
@@ -33,60 +33,183 @@ use WildPHP\Core\Connection\PingPongHandler;
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-Logger::initialize();
-Configuration::initialize();
-EventEmitter::initialize();
-
-$loop = LoopFactory::create();
-$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
-
-if (Configuration::get('secure')->getValue())
-	$connector = $connectorFactory->createSecure();
-else
-	$connector = $connectorFactory->create();
-
-$rootdir = dirname(dirname(__FILE__));
-Configuration::set(new ConfigurationItem('rootdir', $rootdir));
-\WildPHP\Core\Security\GlobalPermissionGroupCollection::setup();
-
-$ircConnection = new IrcConnection();
-$queue = new Queue();
-$ircConnection->setQueue($queue);
-$ircConnection->registerQueueFlusher($loop, $queue);
-Parser::initialize($queue);
-$pingPongHandler = new PingPongHandler();
-$pingPongHandler->registerPingLoop($loop, $queue);
-
-$username = Configuration::get('user')->getValue();
-$hostname = gethostname();
-$server = Configuration::get('server')->getValue();
-$port = Configuration::get('port')->getValue();
-$realname = Configuration::get('realname')->getValue();
-$nickname = Configuration::get('nick')->getValue();
-
-$ircConnection->createFromConnector($connector, $server, $port);
-CapabilityHandler::initialize();
-new \WildPHP\Core\Channels\ChannelStateManager();
-new \WildPHP\Core\Users\UserStateManager();
-CommandHandler::initialize();
-TaskController::setup($loop);
-
-new \WildPHP\Core\Commands\HelpCommand();
-new \WildPHP\Core\Security\PermissionCommands();
-new \WildPHP\Core\Management\ManagementCommands();
-new WildPHP\Core\Moderation\ModerationCommands();
-
-include($rootdir . '/modules.php');
-
-EventEmitter::on('stream.created', function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+/**
+ * @return Logger
+ */
+function setupLogger()
 {
-	$queue->user($username, $hostname, $server, $realname);
-	$queue->nick($nickname);
-});
+	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
 
-EventEmitter::on('stream.closed', function () use ($loop)
+	return new Logger($klogger);
+}
+
+/**
+ * @return Configuration
+ */
+function setupConfiguration()
 {
-	$loop->stop();
-});
+	$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(WPHP_ROOT_DIR . '/config.neon');
 
-$loop->run();
+	$configuration = new Configuration($neonBackend);
+	$rootdir = dirname(dirname(__FILE__));
+	$configuration->set(new ConfigurationItem('rootdir', $rootdir));
+
+	return $configuration;
+}
+
+/**
+ * @return EventEmitter
+ */
+function setupEventEmitter()
+{
+	return new EventEmitter();
+}
+
+/**
+ * @return \WildPHP\Core\Security\PermissionGroupCollection
+ */
+function setupPermissionGroupCollection()
+{
+	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
+
+	$dataStorage = new DataStorage('permissiongrouplist');
+
+	$groupsToLoad = $dataStorage->get('groupstoload');
+	foreach ($groupsToLoad as $group)
+	{
+		$pGroup = new PermissionGroup($group, true);
+		$globalPermissionGroup->add($pGroup);
+	}
+
+	register_shutdown_function(function () use ($globalPermissionGroup)
+	{
+		$groups = $globalPermissionGroup->toArray();
+		$groupList = [];
+
+		foreach ($groups as $group)
+		{
+			$groupList[] = $group->getName();
+		}
+
+		$dataStorage = new DataStorage('permissiongrouplist');
+		$dataStorage->set('groupstoload', $groupList);
+	});
+
+	return $globalPermissionGroup;
+}
+
+/**
+ * @param \WildPHP\Core\ComponentContainer $container
+ * @return IrcConnection
+ */
+function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
+{
+	$loop = $container->getLoop();
+	$configuration = Configuration::fromContainer($container);
+	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
+
+	if (Configuration::fromContainer($container)
+		->get('secure')
+		->getValue()
+	)
+		$connector = $connectorFactory->createSecure();
+	else
+		$connector = $connectorFactory->create();
+
+	$ircConnection = new IrcConnection($container);
+	$queue = new Queue($container);
+	$container->store($queue);
+	$ircConnection->registerQueueFlusher($loop, $queue);
+	new Parser($container);
+	$pingPongHandler = new PingPongHandler($container);
+	$pingPongHandler->registerPingLoop($loop, $queue);
+
+	$username = $configuration->get('user')
+		->getValue();
+	$hostname = gethostname();
+	$server = $configuration->get('server')
+		->getValue();
+	$port = $configuration->get('port')
+		->getValue();
+	$realname = $configuration->get('realname')
+		->getValue();
+	$nickname = $configuration->get('nick')
+		->getValue();
+
+	$ircConnection->createFromConnector($connector, $server, $port);
+
+	EventEmitter::fromContainer($container)
+		->on('stream.created',
+			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+			{
+				$queue->user($username, $hostname, $server, $realname);
+				$queue->nick($nickname);
+			});
+
+	EventEmitter::fromContainer($container)
+		->on('stream.closed',
+			function () use ($loop)
+			{
+				$loop->stop();
+			});
+
+	return $ircConnection;
+}
+
+$componentContainer = new \WildPHP\Core\ComponentContainer();
+$componentContainer->setLoop(LoopFactory::create());
+$componentContainer->store(setupEventEmitter());
+$componentContainer->store(setupLogger());
+$componentContainer->store(setupConfiguration());
+
+$capabilityHandler = new CapabilityHandler($componentContainer);
+$componentContainer->store($capabilityHandler);
+$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
+$capabilityHandler->setSasl($sasl);
+
+$componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
+$componentContainer->store(new TaskController($componentContainer));
+
+$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
+$componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentContainer));
+$componentContainer->store(setupPermissionGroupCollection());
+$componentContainer->store(setupIrcConnection($componentContainer));
+$componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
+
+
+new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
+new \WildPHP\Core\Users\UserStateManager($componentContainer);
+new \WildPHP\Core\Commands\HelpCommand($componentContainer);
+new \WildPHP\Core\Security\PermissionCommands($componentContainer);
+new \WildPHP\Core\Management\ManagementCommands($componentContainer);
+new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
+
+try
+{
+	$modules = Configuration::fromContainer($componentContainer)
+		->get('modules')
+		->getValue();
+
+	foreach ($modules as $module)
+	{
+		try
+		{
+			new $module($componentContainer);
+		} catch (\Exception $e)
+		{
+			Logger::fromContainer($componentContainer)
+				->error('Could not properly load module; stability not guaranteed!',
+					[
+						'class' => $module,
+						'message' => $e->getMessage()
+					]);
+		}
+
+	}
+} catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
+{
+	echo $e->getMessage();
+}
+
+$componentContainer->getLoop()
+	->run();

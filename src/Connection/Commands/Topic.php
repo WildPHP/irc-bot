@@ -75,6 +75,9 @@ class Topic extends BaseCommand
 		$this->message = $message;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function formatMessage(): string
 	{
 		return 'TOPIC ' . $this->getChannelName() . ' :' . $this->getMessage() . "\r\n";
