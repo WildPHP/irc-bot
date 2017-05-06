@@ -118,19 +118,19 @@ class CapabilityHandler
 	}
 
 	/**
-	 * @param array $capabilities
-	 * @param Queue $queue
+	 * @return bool
 	 */
-	public function tryEndNegotiation(array $capabilities, Queue $queue)
+	public function tryEndNegotiation(): bool
 	{
 		if (!self::canEndNegotiation())
-			return;
+			return false;
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Ending capability negotiation.');
-		$queue->cap('END');
+		Queue::fromContainer($this->getContainer())->cap('END');
 		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.cap.end', [$queue]);
+			->emit('irc.cap.end');
+		return true;
 	}
 
 	/**
