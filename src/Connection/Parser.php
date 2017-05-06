@@ -42,6 +42,8 @@ class Parser
 					$verb = strtolower($ircMessage->getVerb());
 					EventEmitter::fromContainer($container)
 						->emit('irc.line.in', [$ircMessage, Queue::fromContainer($container)]);
+
+					$ircMessage = $ircMessage->specialize();
 					EventEmitter::fromContainer($container)
 						->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($container)]);
 				});

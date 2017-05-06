@@ -11,6 +11,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
+use WildPHP\Core\Logger\Logger;
 
 class IncomingIrcMessage
 {
@@ -49,16 +50,21 @@ class IncomingIrcMessage
 	}
 
 	/**
-	 * @return BaseMessage
-	 * @throws MessageNotImplementedException
+	 * @return BaseMessage|IncomingIrcMessage
 	 */
-	public function specialize(): BaseMessage
+	public function specialize()
 	{
 		$verb = $this->getVerb();
 		$expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
 
-		if (!class_exists($expectedClass))
-			throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
+		if (!class_exists($expectedClass) || !($expectedClass instanceof BaseMessage))
+		{
+			Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
+				'verb' => $verb
+			]);
+
+			return $this;
+		}
 
 		return $expectedClass::fromIncomingIrcMessage($this);
 	}
