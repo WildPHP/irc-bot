@@ -57,7 +57,7 @@ class IncomingIrcMessage
 		$verb = $this->getVerb();
 		$expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
 
-		if (!class_exists($expectedClass) || !($expectedClass instanceof BaseMessage))
+		if (!class_exists($expectedClass))
 		{
 			Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
 				'verb' => $verb
