@@ -28,12 +28,14 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class IrcConnection
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var Promise
@@ -44,11 +46,6 @@ class IrcConnection
 	 * @var string
 	 */
 	protected $buffer = '';
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
 
 	/**
 	 * @param LoopInterface $loop
@@ -216,22 +213,6 @@ class IrcConnection
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.closed');
 		});
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 
 	/**

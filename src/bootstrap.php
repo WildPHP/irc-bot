@@ -166,7 +166,6 @@ $capabilityHandler = new CapabilityHandler($componentContainer);
 $componentContainer->store($capabilityHandler);
 $sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 $capabilityHandler->setSasl($sasl);
-
 $componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
 $componentContainer->store(new TaskController($componentContainer));
 
@@ -175,7 +174,6 @@ $componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentCont
 $componentContainer->store(setupPermissionGroupCollection());
 $componentContainer->store(setupIrcConnection($componentContainer));
 $componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
-
 
 new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
 new \WildPHP\Core\Users\UserStateManager($componentContainer);

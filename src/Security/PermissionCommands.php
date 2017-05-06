@@ -26,15 +26,13 @@ use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class PermissionCommands
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+	use ContainerTrait;
 
 	/**
 	 * PermissionCommands constructor.
@@ -462,22 +460,4 @@ class PermissionCommands
 				return $item->getName() == $groupName;
 			});
 	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
-	}
-
-
 }

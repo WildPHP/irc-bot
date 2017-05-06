@@ -37,11 +37,13 @@ use WildPHP\Core\Connection\Commands\Raw;
 use WildPHP\Core\Connection\Commands\Topic;
 use WildPHP\Core\Connection\Commands\User;
 use WildPHP\Core\Connection\Commands\Who;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 
 class Queue implements QueueInterface
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * An explanation of how this works.
@@ -77,11 +79,6 @@ class Queue implements QueueInterface
 	 * @var bool
 	 */
 	protected $floodControlEnabled = false;
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
 
 	/**
 	 * Queue constructor.
@@ -194,22 +191,6 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
-	}
-
-	/**
 	 * @param string $channel
 	 * @param string $message
 	 */
@@ -241,11 +222,12 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param string $server
+	 * @param string $server1
+	 * @param string $server2
 	 */
-	public function pong(string $server)
+	public function pong(string $server1, string $server2 = '')
 	{
-		$pong = new Pong($server);
+		$pong = new Pong($server1, $server2);
 		$this->insertMessage($pong);
 	}
 

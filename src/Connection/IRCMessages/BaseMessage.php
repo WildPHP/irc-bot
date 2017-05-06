@@ -18,11 +18,17 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Core\Connection\IncomingIrcMessages;
+namespace WildPHP\Core\Connection\IRCMessages;
 
 
 use WildPHP\Core\Connection\IncomingIrcMessage;
 
+/**
+ * Interface BaseMessage
+ * @package WildPHP\Core\Connection\IRCMessages
+ *
+ * A syntax sample is included with all supported messages.
+ */
 interface BaseMessage
 {
 	/**
@@ -31,4 +37,6 @@ interface BaseMessage
 	 * @return mixed
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
+
+	public function __toString();
 }

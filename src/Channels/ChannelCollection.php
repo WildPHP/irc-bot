@@ -23,17 +23,16 @@ namespace WildPHP\Core\Channels;
 use Collections\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class ChannelCollection extends Collection
 {
 	use ComponentTrait;
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
+	use ContainerTrait;
 
 	/**
 	 * ChannelCollection constructor.
@@ -51,7 +50,7 @@ class ChannelCollection extends Collection
 	 * @param User $user
 	 * @return Channel
 	 */
-	public function createFakeConversationChannel(User $user)
+	public function createFakeConversationChannel(User $user, $sendWhox = true)
 	{
 		$userCollection = new UserCollection($this->getContainer());
 		$channelModes = new ChannelModes($this->getContainer());
@@ -63,6 +62,49 @@ class ChannelCollection extends Collection
 			->add(UserCollection::fromContainer($this->getContainer())
 				->getSelf());
 		$this->add($channel);
+
+		if ($sendWhox)
+			Queue::fromContainer($this->getContainer())->who($user->getNickname(), '%nuhaf');
+
+		return $channel;
+	}
+
+	/**
+	 * This function is different from the findByChannelName
+	 * function in that it will always return a channel object.
+	 *
+	 * @param string $name
+	 * @param User|null $user
+	 *
+	 * @return Channel
+	 */
+	public function requestByChannelName(string $name, User $user): Channel
+	{
+		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
+
+		$conversationChannel = $ownNickname == $name;
+
+		// This channel exists.
+		if ($this->containsChannelName($name))
+			$channel = $this->findByChannelName($name);
+
+		// Else it's most likely a private conversation.
+		elseif ($conversationChannel && !$this->containsChannelName($user->getNickname()))
+			$channel = $this->createFakeConversationChannel($user);
+
+		// Maybe the user has had a private conversation with the bot before.
+		elseif ($conversationChannel)
+			$channel = $this->findByChannelName($user->getNickname());
+
+		// Dunno. Just create one; they requested it.
+		else
+		{
+			$userCollection = new UserCollection($this->getContainer());
+			$channelModes = new ChannelModes($this->getContainer());
+			$channel = new Channel($userCollection, $channelModes);
+			$channel->setName($name);
+			$this->add($channel);
+		}
 
 		return $channel;
 	}
@@ -87,21 +129,5 @@ class ChannelCollection extends Collection
 		{
 			return $channel->getName() == $name;
 		});
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

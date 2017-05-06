@@ -23,9 +23,18 @@ use WildPHP\Core\Connection\Commands\DummyCommand;
 
 class QueueTest extends PHPUnit_Framework_TestCase
 {
-    public function testQueueAddItem()
+	protected $container;
+
+	public function setUp()
+	{
+		$this->container = new \WildPHP\Core\ComponentContainer();
+		$klogger = new Katzgrau\KLogger\Logger('php://stdout');
+		$this->container->store(new \WildPHP\Core\Logger\Logger($klogger));
+	}
+
+	public function testQueueAddItem()
     {
-        $queue = new \WildPHP\Core\Connection\Queue();
+        $queue = new \WildPHP\Core\Connection\Queue($this->container);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
         
         $dummyCommand = new DummyCommand();
@@ -36,7 +45,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
     public function testCalculateTimeWithoutFoodControl()
     {
-        $queue = new Queue();
+        $queue = new Queue($this->container);
         $queue->setFloodControl(false);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
@@ -58,7 +67,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
     public function testCalculateTime()
     {
-        $queue = new Queue();
+        $queue = new Queue($this->container);
         $queue->setFloodControl(true);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
@@ -80,7 +89,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
     public function testQueueRun()
     {
-        $queue = new Queue();
+        $queue = new Queue($this->container);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         for ($i = 1; $i <= 3; $i++)

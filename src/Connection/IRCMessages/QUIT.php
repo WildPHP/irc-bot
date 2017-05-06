@@ -18,48 +18,54 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace WildPHP\Core\Connection\IncomingIrcMessages;
+namespace WildPHP\Core\Connection\IRCMessages;
 
-
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\UserCollection;
 
-class PART extends JOIN
+/**
+ * Class QUIT
+ * @package WildPHP\Core\Connection\IRCMessages
+ *
+ * Syntax: prefix QUIT :message
+ */
+class QUIT implements BaseMessage
 {
+	use PrefixTrait;
+	use NicknameTrait;
+	use MessageTrait;
+
+	protected static $verb = 'QUIT';
+
+	public function __construct(string $message)
+	{
+		$this->setMessage($message);
+	}
+
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return PART
+	 * @return QUIT
 	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
-		if ($incomingIrcMessage->getVerb() != 'PART')
-			throw new \InvalidArgumentException('Expected incoming PART; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::$verb)
+			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-		$channelNameList = explode(',', $incomingIrcMessage->getArgs()[0]);
-		$channelObjects = [];
-		foreach ($channelNameList as $channelName)
-		{
-			$channel = ChannelCollection::fromContainer($incomingIrcMessage->getContainer())
-				->findByChannelName($channelName);
-			$channelObjects[] = $channel;
-		}
-		$user = UserCollection::fromContainer($incomingIrcMessage->getContainer())
-			->findByNickname($prefix->getNickname());
+		$nickname = $prefix->getNickname();
+		$message = $incomingIrcMessage->getArgs()[0];
 
-		if (!$user)
-			throw new \ErrorException('Could not find user in collection; state mismatch!');
-
-		$object = new self();
-
+		$object = new self($message);
 		$object->setPrefix($prefix);
-		$object->setUser($user);
-		$object->setChannels($channelObjects);
+		$object->setNickname($nickname);
 
 		return $object;
+	}
+
+	public function __toString()
+	{
+		return 'QUIT :' . $this->getMessage() . "\r\n";
 	}
 }

@@ -23,11 +23,15 @@ namespace WildPHP\Core\Connection;
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\IRCMessages\PING;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class PingPongHandler
 {
+	use ContainerTrait;
+
 	/**
 	 * @var int
 	 */
@@ -53,11 +57,6 @@ class PingPongHandler
 	protected $disconnectInterval = 120;
 
 	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
-
-	/**
 	 * PingPongHandler constructor.
 	 * @param ComponentContainer $container
 	 */
@@ -68,9 +67,9 @@ class PingPongHandler
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.ping',
-				function (IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+				function (PING $pingMessage, Queue $queue)
 				{
-					$queue->pong($incomingIrcMessage->getArgs()[0]);
+					$queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
 				});
 		$this->updateLastMessageReceived();
 		$this->setContainer($container);
@@ -137,21 +136,5 @@ class PingPongHandler
 			->emit('irc.force.close');
 
 		return true;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

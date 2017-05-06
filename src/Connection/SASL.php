@@ -25,11 +25,15 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItemNotFoundException;
 use WildPHP\Core\Connection\Commands\Authenticate;
+use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE as IncomingAuthenticate;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class SASL
 {
+	use ContainerTrait;
+
 	/**
 	 * @var bool
 	 */
@@ -65,11 +69,6 @@ class SASL
 	];
 
 	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
-
-	/**
 	 * SASL constructor.
 	 *
 	 * @param ComponentContainer $container
@@ -93,17 +92,10 @@ class SASL
 				->on('irc.cap.ls', [$this, 'requestCapability']);
 
 			// Map all numeric SASL responses to either the success or error handler:
-			foreach ($this->successCodes as $code => $reason)
-			{
-				EventEmitter::fromContainer($container)
-					->on('irc.line.in.' . $code, [$this, 'handlePositiveResponse']);
-			}
-
-			foreach ($this->errorCodes as $code => $reason)
-			{
-				EventEmitter::fromContainer($container)
-					->on('irc.line.in.' . $code, [$this, 'handleNegativeResponse']);
-			}
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in', [$this, 'handlePositiveResponse']);
+			EventEmitter::fromContainer($container)
+				->on('irc.line.in', [$this, 'handleNegativeResponse']);
 
 			Logger::fromContainer($container)
 				->debug('[SASL] Initialized, awaiting server response.');
@@ -149,13 +141,11 @@ class SASL
 	}
 
 	/**
-	 * @param IncomingIrcMessage $message
+	 * @param IncomingAuthenticate $message
 	 * @param Queue $queue
 	 */
-	public function sendCredentials(IncomingIrcMessage $message, Queue $queue)
+	public function sendCredentials(IncomingAuthenticate $message, Queue $queue)
 	{
-		$message = $message->specialize();
-
 		if ($message->getResponse() != '+')
 			return;
 
@@ -178,6 +168,8 @@ class SASL
 	public function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
 	{
 		$code = $message->getVerb();
+		if (!array_key_exists($code, $this->successCodes))
+			return;
 
 		$this->setErrorReason(false);
 		$this->setHasCompleted(true);
@@ -200,6 +192,9 @@ class SASL
 	public function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
 	{
 		$code = $message->getVerb();
+		if (!array_key_exists($code, $this->errorCodes))
+			return;
+
 		$reason = $this->errorCodes[$code];
 
 		$this->setErrorReason($reason);
@@ -259,21 +254,5 @@ class SASL
 	public function hasEncounteredError()
 	{
 		return $this->errorReason;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

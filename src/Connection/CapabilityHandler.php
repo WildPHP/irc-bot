@@ -22,12 +22,14 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class CapabilityHandler
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var array
@@ -48,11 +50,6 @@ class CapabilityHandler
 	 * @var array
 	 */
 	protected $notAcknowledgedCapabilities = [];
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
 
 	/**
 	 * @var SASL
@@ -350,22 +347,6 @@ class CapabilityHandler
 	public function setNotAcknowledgedCapabilities(array $notAcknowledgedCapabilities)
 	{
 		$this->notAcknowledgedCapabilities = $notAcknowledgedCapabilities;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 
 	/**

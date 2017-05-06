@@ -10,11 +10,28 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
+use WildPHP\Core\Connection\IRCMessages\BaseMessage;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 
 class IncomingIrcMessage
 {
+	use ContainerTrait;
+
+	// This is necessary because PHP doesn't allow classes with numeric names.
+	protected static $numbers = [
+		0 => 'Zero',
+		1 => 'One',
+		2 => 'Two',
+		3 => 'Three',
+		4 => 'Four',
+		5 => 'Five',
+		6 => 'Six',
+		7 => 'Seven',
+		8 => 'Eight',
+		9 => 'Nine'
+	];
+
 	/**
 	 * @var string
 	 */
@@ -27,10 +44,6 @@ class IncomingIrcMessage
 	 * @var array
 	 */
 	protected $args = [];
-	/**
-	 * @var
-	 */
-	protected $container;
 
 	/**
 	 * IncomingIrcMessage constructor.
@@ -55,13 +68,22 @@ class IncomingIrcMessage
 	public function specialize()
 	{
 		$verb = $this->getVerb();
-		$expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
+
+		if (is_numeric($verb))
+		{
+			$numbers = str_split($verb);
+			$verb = '';
+			foreach ($numbers as $number)
+				$verb .= self::$numbers[$number];
+		}
+
+		$expectedClass = '\WildPHP\Core\Connection\IRCMessages\\' . $verb;
 
 		if (!class_exists($expectedClass))
 		{
-			Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
+			/**Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
 				'verb' => $verb
-			]);
+			]);*/
 
 			return $this;
 		}
@@ -115,22 +137,6 @@ class IncomingIrcMessage
 	public function setArgs($args)
 	{
 		$this->args = $args;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }
 

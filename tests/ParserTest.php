@@ -25,7 +25,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		$user = new \WildPHP\Core\Users\User();
+		$container = new \WildPHP\Core\ComponentContainer();
+		$user = new \WildPHP\Core\Users\User($container);
 		$user->setNickname('nickname');
 		\WildPHP\Core\Users\UserCollection::getGlobalInstance()->add($user);
 
@@ -50,7 +51,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$message = new IncomingIrcMessage($parsedLine);
 		$message = $message->specialize();
 
-		$this->assertInstanceOf('\WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG', $message);
+		$this->assertInstanceOf('\WildPHP\Core\Connection\IRCMessages\PRIVMSG', $message);
 	}
 
 	public function testAUTHENTICATE()
@@ -59,7 +60,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$authenticateMessage = \WildPHP\Core\Connection\IncomingIrcMessages\AUTHENTICATE::fromIncomingIrcMessage($message);
+		$authenticateMessage = \WildPHP\Core\Connection\IRCMessages\AUTHENTICATE::fromIncomingIrcMessage($message);
 
 		$this->assertEquals('+', $authenticateMessage->getResponse());
 	}
@@ -80,7 +81,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$joinMessage = \WildPHP\Core\Connection\IncomingIrcMessages\JOIN::fromIncomingIrcMessage($message);
+		$joinMessage = \WildPHP\Core\Connection\IRCMessages\JOIN::fromIncomingIrcMessage($message);
 
 		$this->assertSame($user, $joinMessage->getUser());
 		$this->assertSame($channel, $joinMessage->getChannels()[0]);
@@ -106,7 +107,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$kickMessage = \WildPHP\Core\Connection\IncomingIrcMessages\KICK::fromIncomingIrcMessage($message);
+		$kickMessage = \WildPHP\Core\Connection\IRCMessages\KICK::fromIncomingIrcMessage($message);
 
 		$this->assertEquals('message', $kickMessage->getMessage());
 		$this->assertEquals($expectedUserPrefix, $kickMessage->getPrefix());
@@ -133,7 +134,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$noticeMessage = \WildPHP\Core\Connection\IncomingIrcMessages\NOTICE::fromIncomingIrcMessage($message);
+		$noticeMessage = \WildPHP\Core\Connection\IRCMessages\NOTICE::fromIncomingIrcMessage($message);
 
 		$this->assertEquals('test', $noticeMessage->getMessage());
 		$this->assertEquals($expectedUserPrefix, $noticeMessage->getPrefix());
@@ -160,7 +161,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$partMessage = \WildPHP\Core\Connection\IncomingIrcMessages\PART::fromIncomingIrcMessage($message);
+		$partMessage = \WildPHP\Core\Connection\IRCMessages\PART::fromIncomingIrcMessage($message);
 
 		$this->assertSame($user, $partMessage->getUser());
 		$this->assertSame($channel, $partMessage->getChannels()[0]);
@@ -186,7 +187,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
 		$parsedLine = Parser::parseLine($lineToTest);
 		$message = new IncomingIrcMessage($parsedLine);
-		$privmsgMessage = \WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG::fromIncomingIrcMessage($message);
+		$privmsgMessage = \WildPHP\Core\Connection\IRCMessages\PRIVMSG::fromIncomingIrcMessage($message);
 
 		$this->assertEquals('test', $privmsgMessage->getMessage());
 		$this->assertEquals($expectedUserPrefix, $privmsgMessage->getPrefix());

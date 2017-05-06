@@ -9,11 +9,17 @@
 namespace WildPHP\Core\Channels;
 
 
+use Flintstone\Config;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\IRCMessages\JOIN;
+use WildPHP\Core\Connection\IRCMessages\KICK;
+use WildPHP\Core\Connection\IRCMessages\PART;
+use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\UserPrefix;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
@@ -21,13 +27,11 @@ use WildPHP\Core\Users\UserCollection;
 
 class ChannelStateManager
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
+	use ContainerTrait;
 
 	/**
 	 * ChannelStateManager constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -59,28 +63,18 @@ class ChannelStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param JOIN $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserJoin(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processUserJoin(JOIN $ircMessage, Queue $queue)
 	{
-		$prefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
+		$prefix = $ircMessage->getPrefix();
 		$userObject = UserCollection::fromContainer($this->getContainer())
-			->findOrCreateByNickname($prefix->getNickname());
-		$args = $ircMessage->getArgs();
-		$channel = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($args[0]);
-		$accountname = $args[1];
+			->findOrCreateByNickname($ircMessage->getNickname());
 
-		if ($channel == false)
-		{
-			$userCollection = new UserCollection($this->getContainer());
-			$channelmodes = new ChannelModes($this->getContainer());
-			$channel = new Channel($userCollection, $channelmodes);
-			$channel->setName($args[0]);
-			ChannelCollection::fromContainer($this->getContainer())
-				->add($channel);
-		}
+		$channel = ChannelCollection::fromContainer($this->getContainer())
+			->requestByChannelName($ircMessage->getChannels()[0], $userObject);
+		$accountname = $ircMessage->getIrcAccount();
 
 		// TODO Isn't this really UserStateManager's job?
 		$userObject->setIrcAccount($accountname);
@@ -105,21 +99,17 @@ class ChannelStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param PART $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserPart(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processUserPart(PART $ircMessage, Queue $queue)
 	{
-		$args = $ircMessage->getArgs();
-		$userPrefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
 		$channel = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($args[0]);
+			->findByChannelName($ircMessage->getChannel());
 		$userObject = UserCollection::fromContainer($this->getContainer())
-			->findByNickname($userPrefix->getNickname());
+			->findByNickname($ircMessage->getNickname());
 
-		if ($userObject === UserCollection::fromContainer($this->getContainer())
-				->getSelf()
-		)
+		if ($userObject === UserCollection::fromContainer($this->getContainer())->getSelf())
 			$channel->abandon();
 
 		$removed = $channel->getUserCollection()
@@ -145,16 +135,15 @@ class ChannelStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param KICK $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserKick(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processUserKick(KICK $ircMessage, Queue $queue)
 	{
-		$args = $ircMessage->getArgs();
 		$channel = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($args[0]);
+			->findByChannelName($ircMessage->getChannel());
 		$userObject = UserCollection::fromContainer($this->getContainer())
-			->findByNickname($args[1]);
+			->findByNickname($ircMessage->getTarget());
 
 		$removed = $channel->getUserCollection()
 			->remove(function (User $user) use ($userObject)
@@ -292,6 +281,12 @@ class ChannelStateManager
 			)
 				$channel->getUserCollection()
 					->add($userObject);
+
+			Logger::fromContainer($this->getContainer())->debug('Added user to channel', [
+				'reason' => 'initialJoin',
+				'nickname' => $userObject->getNickname(),
+				'channel' => $channel->getName()
+			]);
 		}
 	}
 
@@ -331,21 +326,5 @@ class ChannelStateManager
 					'count' => count($channels),
 					'channels' => $channels
 				]);
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }
