@@ -102,6 +102,8 @@ class PingPongHandler
 
 				if ($shouldSendPing)
 					return $this->sendPing($queue);
+
+				return true;
 			});
 	}
 
