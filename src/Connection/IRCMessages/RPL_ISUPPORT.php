@@ -28,8 +28,8 @@ class RPL_ISUPPORT implements BaseMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return RPL_ISUPPORT
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

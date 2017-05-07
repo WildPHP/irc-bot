@@ -26,8 +26,8 @@ class RPL_TOPIC implements BaseMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return RPL_TOPIC
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

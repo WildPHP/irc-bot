@@ -55,8 +55,8 @@ class PART implements BaseMessage, SendableMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return PART
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

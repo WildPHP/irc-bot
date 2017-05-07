@@ -27,8 +27,8 @@ class RPL_NAMREPLY implements BaseMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return RPL_NAMREPLY
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

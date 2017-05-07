@@ -48,8 +48,8 @@ class PRIVMSG implements BaseMessage, SendableMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return PRIVMSG
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{

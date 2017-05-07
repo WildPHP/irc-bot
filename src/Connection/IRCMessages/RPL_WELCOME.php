@@ -26,8 +26,8 @@ class RPL_WELCOME
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return RPL_WELCOME
-	 * @throws \ErrorException
+	 * @return \self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
