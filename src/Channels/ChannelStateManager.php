@@ -105,7 +105,7 @@ class ChannelStateManager
 	public function processUserPart(PART $ircMessage, Queue $queue)
 	{
 		$channel = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($ircMessage->getChannel());
+			->findByChannelName($ircMessage->getChannels()[0]);
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($ircMessage->getNickname());
 
