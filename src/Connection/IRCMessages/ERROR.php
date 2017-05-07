@@ -21,11 +21,6 @@ class ERROR implements BaseMessage
 
 	protected static $verb = 'ERROR';
 
-	public function __construct(string $message)
-	{
-		$this->setMessage($message);
-	}
-
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
@@ -38,13 +33,9 @@ class ERROR implements BaseMessage
 			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
 		$message = $incomingIrcMessage->getArgs()[0];
-		$object = new self($message);
+		$object = new self();
+		$object->setMessage($message);
 
 		return $object;
-	}
-
-	public function __toString()
-	{
-		return 'ERROR :' . $this->getMessage() . "\r\n";
 	}
 }

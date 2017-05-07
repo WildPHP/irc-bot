@@ -65,16 +65,6 @@ class IrcMessageTest extends TestCase
 		$this->assertEquals('A sample message', $away->getMessage());
 	}
 
-	public function testErrorCreate()
-	{
-		$error = new ERROR('Test error message');
-
-		$this->assertEquals('Test error message', $error->getMessage());
-
-		$expected = 'ERROR :Test error message' . "\r\n";
-		$this->assertEquals($expected, $error->__toString());
-	}
-
 	public function testErrorReceive()
 	{
 		$line = Parser::parseLine('ERROR :A sample message' . "\r\n");
