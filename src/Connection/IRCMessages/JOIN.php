@@ -32,7 +32,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax (regular): prefix JOIN #channel
  * Syntax (sender): JOIN #channels [keys]
  */
-class JOIN implements BaseMessage
+class JOIN implements BaseMessage, SendableMessage
 {
 	use ChannelsTrait;
 	use NicknameTrait;

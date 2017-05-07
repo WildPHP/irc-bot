@@ -29,7 +29,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  * Syntax: AUTHENTICATE response
  * @TODO look into the documentation
  */
-class AUTHENTICATE implements BaseMessage
+class AUTHENTICATE implements BaseMessage, SendableMessage
 {
 	protected static $verb = 'AUTHENTICATE';
 
