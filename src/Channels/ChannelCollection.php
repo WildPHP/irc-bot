@@ -127,7 +127,7 @@ class ChannelCollection extends Collection
 	 */
 	public function findByChannelName(string $name)
 	{
-		return $this->find(function (Channel $channel) use ($name)
+		return $this->find(function(Channel $channel) use ($name)
 		{
 			return $channel->getName() == $name;
 		});

@@ -71,11 +71,11 @@ class CommandHandler
 	 * @return bool
 	 */
 	public function registerCommand(string $command,
-	                                callable $callback,
-	                                CommandHelp $commandHelp = null,
-	                                int $minarguments = -1,
-	                                int $maxarguments = -1,
-	                                string $requiredPermission = '')
+					callable $callback,
+					CommandHelp $commandHelp = null,
+					int $minarguments = -1,
+					int $maxarguments = -1,
+					string $requiredPermission = '')
 	{
 		if ($this->getCommandDictionary()
 			->keyExists($command)
@@ -120,8 +120,7 @@ class CommandHandler
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())
 				->isAllowedTo($permission, $user, $source)
-		)
-		{
+		) {
 			$queue->privmsg($source->getName(),
 				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
 

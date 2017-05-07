@@ -307,7 +307,6 @@ class PermissionCommands
 
 			return;
 		}
-
 		elseif ($group->isMemberByIrcAccount($nickname))
 		{
 			$group->removeMemberByIrcAccount($nickname);
@@ -341,8 +340,7 @@ class PermissionCommands
 	{
 		if (empty($args[1]) || ($valUser = UserCollection::fromContainer($container)
 				->findByNickname($args[1])) == false
-		)
-		{
+		) {
 			$valUser = $user;
 		}
 
@@ -358,7 +356,6 @@ class PermissionCommands
 				$perm,
 				$result);
 		}
-
 		else
 		{
 			$message = $valUser->getNickname() . ' does not pass validation for permission "' . $perm . '" in this context.';
@@ -434,7 +431,7 @@ class PermissionCommands
 		}
 
 		$group = PermissionGroupCollection::fromContainer($this->getContainer())
-			->remove(function (PermissionGroup $item) use ($groupName)
+			->remove(function(PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});
@@ -458,7 +455,7 @@ class PermissionCommands
 	protected function findGroupByName(string $groupName)
 	{
 		return PermissionGroupCollection::fromContainer($this->getContainer())
-			->find(function (PermissionGroup $item) use ($groupName)
+			->find(function(PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});

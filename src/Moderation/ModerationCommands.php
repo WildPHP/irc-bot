@@ -99,8 +99,7 @@ class ModerationCommands
 		if ($nickname == Configuration::fromContainer($container)
 				->get('currentNickname')
 				->getValue()
-		)
-		{
+		) {
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
 
@@ -163,8 +162,7 @@ class ModerationCommands
 		if ($nickname == Configuration::fromContainer($container)
 				->get('currentNickname')
 				->getValue()
-		)
-		{
+		) {
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
 
@@ -206,8 +204,7 @@ class ModerationCommands
 		if ($nickname == Configuration::fromContainer($container)
 				->get('currentNickname')
 				->getValue()
-		)
-		{
+		) {
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
 

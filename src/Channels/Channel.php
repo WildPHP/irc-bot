@@ -135,7 +135,7 @@ class Channel
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getCreatedBy()
 	{
