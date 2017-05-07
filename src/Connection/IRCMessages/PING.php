@@ -15,7 +15,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: PING server1 [server2]
  */
-class PING implements BaseMessage
+class PING implements BaseMessage, SendableMessage
 {
 	protected static $verb = 'PING';
 

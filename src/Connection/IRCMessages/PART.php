@@ -21,10 +21,8 @@
 namespace WildPHP\Core\Connection\IRCMessages;
 
 
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\UserCollection;
 
 /**
  * Class PART
@@ -33,7 +31,7 @@ use WildPHP\Core\Users\UserCollection;
  * Syntax: prefix PART #channel [:message]
  * Syntax (sender): PART #channels [:message]
  */
-class PART implements BaseMessage
+class PART implements BaseMessage, SendableMessage
 {
 	/**
 	 * @var string

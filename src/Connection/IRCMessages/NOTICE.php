@@ -20,10 +20,8 @@
 
 namespace WildPHP\Core\Connection\IRCMessages;
 
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\UserCollection;
 
 /**
  * Class NOTICE
@@ -31,7 +29,7 @@ use WildPHP\Core\Users\UserCollection;
  *
  * Syntax: prefix NOTICE #channel :message
  */
-class NOTICE implements BaseMessage
+class NOTICE implements BaseMessage, SendableMessage
 {
 	use PrefixTrait;
 	use ChannelTrait;
