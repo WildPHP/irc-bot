@@ -11,5 +11,8 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 interface SendableMessage
 {
+	/**
+	 * @return string
+	 */
 	public function __toString();
 }

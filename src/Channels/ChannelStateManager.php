@@ -100,7 +100,6 @@ class ChannelStateManager
 
 	/**
 	 * @param PART $ircMessage
-	 * @param Queue $queue
 	 */
 	public function processUserPart(PART $ircMessage)
 	{
@@ -113,13 +112,13 @@ class ChannelStateManager
 			->findByNickname($ircMessage->getNickname());
 
 		$removed = $channel->getUserCollection()
-			->remove(function (User $user) use ($userObject)
+			->remove(function(User $user) use ($userObject)
 			{
 				return $user === $userObject;
 			});
 
 		$removedChannel = $userObject->getChannelCollection()
-			->remove(function (Channel $channelObject) use ($channel)
+			->remove(function(Channel $channelObject) use ($channel)
 			{
 				return $channelObject === $channel;
 			});
@@ -136,7 +135,6 @@ class ChannelStateManager
 
 	/**
 	 * @param KICK $ircMessage
-	 * @param Queue $queue
 	 */
 	public function processUserKick(KICK $ircMessage)
 	{
@@ -148,13 +146,13 @@ class ChannelStateManager
 			->findByNickname($ircMessage->getTarget());
 
 		$removed = $channel->getUserCollection()
-			->remove(function (User $user) use ($userObject)
+			->remove(function(User $user) use ($userObject)
 			{
 				return $user === $userObject;
 			});
 
 		$removedChannel = $userObject->getChannelCollection()
-			->remove(function (Channel $channelObject) use ($channel)
+			->remove(function(Channel $channelObject) use ($channel)
 			{
 				return $channelObject === $channel;
 			});
@@ -182,13 +180,13 @@ class ChannelStateManager
 		{
 			$userCollection = $channel->getUserCollection();
 
-			$removed = $userCollection->remove(function (User $user) use ($userObject, $channel)
+			$removed = $userCollection->remove(function(User $user) use ($userObject, $channel)
 			{
 
 				if ($user === $userObject)
 				{
 					$user->getChannelCollection()
-						->remove(function (Channel $channelObject) use ($channel)
+						->remove(function(Channel $channelObject) use ($channel)
 						{
 							return $channelObject === $channel;
 						});

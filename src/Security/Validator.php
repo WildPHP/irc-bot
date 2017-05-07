@@ -71,7 +71,7 @@ class Validator
 	 * @param User $user
 	 * @param Channel|null $channel
 	 *
-	 * @return string|boolean String with reason on success; boolean false otherwise.
+	 * @return string|false String with reason on success; boolean false otherwise.
 	 */
 	public function isAllowedTo(string $permissionName = '', User $user, Channel $channel = null)
 	{
@@ -108,7 +108,7 @@ class Validator
 
 		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
-			->findAll(function ($item) use ($user)
+			->findAll(function($item) use ($user)
 			{
 				/** @var PermissionGroup $item */
 				if (!$item->getCanHaveMembers())
