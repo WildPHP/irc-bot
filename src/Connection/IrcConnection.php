@@ -55,7 +55,7 @@ class IrcConnection
 	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
 	{
 		$loop->addPeriodicTimer(0.5,
-			function () use ($queue)
+			function() use ($queue)
 			{
 				$queueItems = $queue->flush();
 
@@ -81,14 +81,14 @@ class IrcConnection
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.error',
-				function ()
+				function()
 				{
 					$this->close();
 				});
 
 		EventEmitter::fromContainer($container)
 			->on('irc.force.close',
-				function ()
+				function()
 				{
 					$this->close();
 				});
@@ -164,18 +164,18 @@ class IrcConnection
 	public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
 	{
 		$this->connectorPromise = $connectorInterface->create($host, $port)
-			->then(function (Stream $stream) use ($host, $port, &$buffer)
+			->then(function(Stream $stream) use ($host, $port, &$buffer)
 			{
 				EventEmitter::fromContainer($this->getContainer())
 					->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
 				$stream->on('error',
-					function ($error) use ($host, $port)
+					function($error) use ($host, $port)
 					{
 						throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
 					});
 
 				$stream->on('data',
-					function ($data)
+					function($data)
 					{
 						EventEmitter::fromContainer($this->getContainer())
 							->emit('stream.data.in', [$data]);
@@ -190,7 +190,7 @@ class IrcConnection
 	 */
 	public function write(string $data)
 	{
-		$this->connectorPromise->then(function (Stream $stream) use ($data)
+		$this->connectorPromise->then(function(Stream $stream) use ($data)
 		{
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.data.out', [$data]);
@@ -202,7 +202,7 @@ class IrcConnection
 
 	public function close()
 	{
-		$this->connectorPromise->then(function (Stream $stream)
+		$this->connectorPromise->then(function(Stream $stream)
 		{
 			Logger::fromContainer($this->getContainer())
 				->warning('Closing connection...');

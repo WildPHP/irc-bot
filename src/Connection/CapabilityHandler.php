@@ -77,7 +77,6 @@ class CapabilityHandler
 
 	/**
 	 * @param array $availableCapabilities
-	 * @param Queue $queue
 	 */
 	public function requestCoreCapabilities(array $availableCapabilities)
 	{

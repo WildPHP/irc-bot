@@ -81,7 +81,7 @@ function setupPermissionGroupCollection()
 		$globalPermissionGroup->add($pGroup);
 	}
 
-	register_shutdown_function(function () use ($globalPermissionGroup)
+	register_shutdown_function(function() use ($globalPermissionGroup)
 	{
 		/** @var PermissionGroup[] $groups */
 		$groups = $globalPermissionGroup->toArray();
@@ -134,7 +134,7 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 
 	EventEmitter::fromContainer($container)
 		->on('stream.created',
-			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+			function(Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 			{
 				$queue->user($username, $hostname, $server, $realname);
 				$queue->nick($nickname);
@@ -142,7 +142,7 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 
 	EventEmitter::fromContainer($container)
 		->on('stream.closed',
-			function () use ($loop)
+			function() use ($loop)
 			{
 				$loop->stop();
 			});
