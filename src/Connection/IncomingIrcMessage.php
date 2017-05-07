@@ -20,11 +20,12 @@ class IncomingIrcMessage
 
 	// This is necessary because PHP doesn't allow classes with numeric names.
 	protected static $numbers = [
-		001 => 'RPL_WELCOME',
-		332 => 'RPL_TOPIC',
-		353 => 'RPL_NAMREPLY',
-		354 => 'RPL_WHOSPCRPL',
-		366 => 'RPL_ENDOFNAMES',
+		'001' => 'RPL_WELCOME',
+		'005' => 'RPL_ISUPPORT',
+		'332' => 'RPL_TOPIC',
+		'353' => 'RPL_NAMREPLY',
+		'354' => 'RPL_WHOSPCRPL',
+		'366' => 'RPL_ENDOFNAMES',
 	];
 
 	/**
