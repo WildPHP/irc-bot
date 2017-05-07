@@ -68,6 +68,7 @@ class UserCollection extends Collection
 	 */
 	public function getAllNicknames(): array
 	{
+		/** @var User[] $array */
 		$array = $this->toArray();
 
 		$nicknames = [];
