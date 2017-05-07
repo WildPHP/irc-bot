@@ -83,6 +83,7 @@ function setupPermissionGroupCollection()
 
 	register_shutdown_function(function () use ($globalPermissionGroup)
 	{
+		/** @var PermissionGroup[] $groups */
 		$groups = $globalPermissionGroup->toArray();
 		$groupList = [];
 
