@@ -53,7 +53,7 @@ class NICK implements BaseMessage, SendableMessage
 	 * @return \self
 	 * @throws \InvalidArgumentException
 	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage)
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
 		if ($incomingIrcMessage->getVerb() != self::$verb)
 			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
