@@ -67,8 +67,8 @@ class PermissionGroup
 	{
 		$dataStorage = new DataStorage('permissiongroup_' . $this->getName());
 
-		$this->setCanHaveMembers((bool)$dataStorage->get('canHaveMembers'));
-		$this->setUserCollection((array)$dataStorage->get('members'));
+		$this->setCanHaveMembers((bool) $dataStorage->get('canHaveMembers'));
+		$this->setUserCollection((array) $dataStorage->get('members'));
 
 		$permissions = $dataStorage->get('allowedPermissions');
 		foreach ($permissions as $permission)
@@ -84,7 +84,7 @@ class PermissionGroup
 	{
 		$dataStorage = new DataStorage('permissiongroup_' . $this->getName());
 
-		$dataStorage->set('canHaveMembers', (int)$this->getCanHaveMembers());
+		$dataStorage->set('canHaveMembers', (int) $this->getCanHaveMembers());
 		$dataStorage->set('members', $this->getUserCollection());
 		$dataStorage->set('allowedPermissions', $this->listPermissions());
 	}

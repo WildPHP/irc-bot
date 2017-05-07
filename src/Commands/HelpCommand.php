@@ -83,8 +83,7 @@ class HelpCommand
 		if (!CommandHandler::fromContainer($container)
 			->getCommandDictionary()
 			->keyExists($command)
-		)
-		{
+		) {
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'That command does not exist, sorry!');
 

@@ -67,7 +67,7 @@ class PingPongHandler
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.ping',
-				function (PING $pingMessage, Queue $queue)
+				function(PING $pingMessage, Queue $queue)
 				{
 					$queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
 				});
@@ -87,7 +87,7 @@ class PingPongHandler
 	public function registerPingLoop(LoopInterface $loop, Queue $queue)
 	{
 		$loop->addPeriodicTimer($this->loopInterval,
-			function () use ($queue)
+			function() use ($queue)
 			{
 				$currentTime = time();
 

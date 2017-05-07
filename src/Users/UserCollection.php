@@ -57,7 +57,7 @@ class UserCollection extends Collection
 	 */
 	public function findByNickname(string $nickname)
 	{
-		return $this->find(function (User $user) use ($nickname)
+		return $this->find(function(User $user) use ($nickname)
 		{
 			return $user->getNickname() == $nickname;
 		});
