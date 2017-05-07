@@ -23,11 +23,8 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Security\PermissionGroupCollection;
-use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 
 class HelpCommand
@@ -94,8 +91,10 @@ class HelpCommand
 			return;
 		}
 
+		/** @var Command $commandObject */
 		$commandObject = CommandHandler::fromContainer($container)
 			->getCommandDictionary()[$command];
+
 		$helpObject = $commandObject->getHelp();
 		if ($helpObject == null || !($helpObject instanceof CommandHelp))
 		{
