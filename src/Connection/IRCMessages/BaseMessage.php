@@ -37,6 +37,4 @@ interface BaseMessage
 	 * @return mixed
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
-
-	public function __toString();
 }
