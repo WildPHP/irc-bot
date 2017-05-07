@@ -22,6 +22,7 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
+use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
@@ -31,6 +32,7 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Security\Validator;
+use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class CommandHandler
@@ -92,7 +94,10 @@ class CommandHandler
 	 */
 	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
 	{
+		/** @var User $user */
 		$user = UserCollection::fromContainer($this->getContainer())->findOrCreateByNickname($privmsg->getNickname());
+
+		/** @var Channel $source */
 		$source = ChannelCollection::fromContainer($this->getContainer())->requestByChannelName($privmsg->getChannel(), $user);
 		$message = $privmsg->getMessage();
 
