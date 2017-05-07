@@ -21,13 +21,8 @@
 namespace WildPHP\Core\Connection\IRCMessages;
 
 
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 /**
  * Class PRIVMSG
@@ -35,7 +30,7 @@ use WildPHP\Core\Users\UserCollection;
  *
  * Syntax: prefix PRIVMSG #channel :message
  */
-class PRIVMSG implements BaseMessage
+class PRIVMSG implements BaseMessage, SendableMessage
 {
 	use PrefixTrait;
 	use ChannelTrait;

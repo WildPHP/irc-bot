@@ -20,10 +20,7 @@
 
 namespace WildPHP\Core\Connection\IRCMessages;
 
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
-use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\UserCollection;
 
 /**
  * Class PONG
@@ -31,7 +28,7 @@ use WildPHP\Core\Users\UserCollection;
  *
  * Syntax: PONG server1 [server2]
  */
-class PONG implements BaseMessage
+class PONG implements BaseMessage, SendableMessage
 {
 	protected static $verb = 'PONG';
 

@@ -29,7 +29,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix QUIT :message
  */
-class QUIT implements BaseMessage
+class QUIT implements BaseMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;
