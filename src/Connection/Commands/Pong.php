@@ -35,10 +35,12 @@ class Pong extends BaseCommand
 
 	/**
 	 * @param string $server1
+	 * @param string $server2
 	 */
 	public function __construct(string $server1, string $server2 = '')
 	{
 		$this->setServer1($server1);
+		$this->setServer2($server2);
 	}
 
 	/**
