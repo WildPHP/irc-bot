@@ -21,12 +21,8 @@
 namespace WildPHP\Core\Connection\IRCMessages;
 
 
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 /**
  * Class NICK
@@ -34,7 +30,7 @@ use WildPHP\Core\Users\UserCollection;
  *
  * Syntax: prefix NICK newnickname
  */
-class NICK implements BaseMessage
+class NICK implements BaseMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;
