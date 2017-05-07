@@ -20,6 +20,7 @@
 
 namespace WildPHP\Core\Security;
 
+use Collections\Collection;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
@@ -87,6 +88,7 @@ class Validator
 
 		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
 		{
+			/** @var PermissionGroup $opGroup */
 			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 				->findGroupByName('op');
 
@@ -96,6 +98,7 @@ class Validator
 
 		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
 		{
+			/** @var PermissionGroup $voiceGroup */
 			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 				->findGroupByName('voice');
 
@@ -103,9 +106,11 @@ class Validator
 				return 'voice';
 		}
 
+		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
 			->findAll(function ($item) use ($user)
 			{
+				/** @var PermissionGroup $item */
 				if (!$item->getCanHaveMembers())
 					return false;
 
@@ -114,6 +119,7 @@ class Validator
 
 		foreach ($groups->toArray() as $group)
 		{
+			/** @var PermissionGroup $group */
 			if ($group->hasPermission($permissionName))
 				return $group->getName();
 		}
