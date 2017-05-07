@@ -1,0 +1,3 @@
+build:
+    environment:
+        php: 7.1
