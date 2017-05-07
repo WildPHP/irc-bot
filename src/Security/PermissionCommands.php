@@ -252,6 +252,7 @@ class PermissionCommands
 			return;
 		}
 
+		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
@@ -295,6 +296,7 @@ class PermissionCommands
 			return;
 		}
 
+		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
@@ -374,6 +376,7 @@ class PermissionCommands
 	 */
 	public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
+		/** @var PermissionGroup[] $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
 			->toArray();
 
