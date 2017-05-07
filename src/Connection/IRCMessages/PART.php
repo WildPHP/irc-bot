@@ -72,6 +72,7 @@ class PART implements BaseMessage
 
 		$object = new self($channel, $message);
 		$object->setPrefix($prefix);
+		$object->setNickname($prefix->getNickname());
 
 		return $object;
 	}

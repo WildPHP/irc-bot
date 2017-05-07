@@ -33,7 +33,7 @@ use WildPHP\Core\Users\UserCollection;
  */
 class PONG implements BaseMessage
 {
-	protected static $verb = 'PING';
+	protected static $verb = 'PONG';
 
 	protected $server1 = '';
 

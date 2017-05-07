@@ -8,31 +8,25 @@
 
 namespace WildPHP\Core\Connection\IRCMessages;
 use WildPHP\Core\Connection\IncomingIrcMessage;
-use WildPHP\Core\Connection\UserPrefix;
 
 /**
- * Class AWAY
+ * Class RPL_WELCOME
  * @package WildPHP\Core\Connection\IRCMessages
  *
- * Syntax: prefix AWAY :message
+ * Syntax: :server 001 nickname :greeting
  */
-class AWAY implements BaseMessage
+class RPL_WELCOME
 {
-	use PrefixTrait;
-	use MessageTrait;
 	use NicknameTrait;
 
-	protected static $verb = 'AWAY';
+	protected static $verb = '001';
 
-	public function __construct(string $message)
-	{
-		$this->setMessage($message);
-	}
+	protected $server = '';
 
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return AWAY
+	 * @return RPL_WELCOME
 	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
@@ -40,19 +34,28 @@ class AWAY implements BaseMessage
 		if ($incomingIrcMessage->getVerb() != self::$verb)
 			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-
-		$message = $incomingIrcMessage->getArgs()[0];
-
-		$object = new self($message);
-		$object->setPrefix($prefix);
-		$object->setNickname($prefix->getNickname());
+		$nickname = $incomingIrcMessage->getArgs()[0];
+		$server = $incomingIrcMessage->getPrefix();
+		$object = new self();
+		$object->setNickname($nickname);
+		$object->setServer($server);
 
 		return $object;
 	}
 
-	public function __toString()
+	/**
+	 * @return string
+	 */
+	public function getServer(): string
 	{
-		return 'AWAY :' . $this->getMessage() . "\r\n";
+		return $this->server;
+	}
+
+	/**
+	 * @param string $server
+	 */
+	public function setServer(string $server)
+	{
+		$this->server = $server;
 	}
 }
