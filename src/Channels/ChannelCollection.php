@@ -48,6 +48,8 @@ class ChannelCollection extends Collection
 	 * Creates a fake channel with the bot and another user in it, to allow private conversations to happen.
 	 *
 	 * @param User $user
+	 * @param bool $sendWhox
+	 *
 	 * @return Channel
 	 */
 	public function createFakeConversationChannel(User $user, $sendWhox = true)
@@ -78,7 +80,7 @@ class ChannelCollection extends Collection
 	 *
 	 * @return Channel
 	 */
-	public function requestByChannelName(string $name, User $user): Channel
+	public function requestByChannelName(string $name, User $user = null): Channel
 	{
 		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
 
@@ -89,11 +91,11 @@ class ChannelCollection extends Collection
 			$channel = $this->findByChannelName($name);
 
 		// Else it's most likely a private conversation.
-		elseif ($conversationChannel && !$this->containsChannelName($user->getNickname()))
+		elseif ($user && $conversationChannel && !$this->containsChannelName($user->getNickname()))
 			$channel = $this->createFakeConversationChannel($user);
 
 		// Maybe the user has had a private conversation with the bot before.
-		elseif ($conversationChannel)
+		elseif ($user && $conversationChannel)
 			$channel = $this->findByChannelName($user->getNickname());
 
 		// Dunno. Just create one; they requested it.
