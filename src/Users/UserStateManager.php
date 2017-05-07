@@ -15,6 +15,8 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\MODE;
 use WildPHP\Core\Connection\IRCMessages\NICK;
 use WildPHP\Core\Connection\IRCMessages\QUIT;
+use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
+use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
@@ -62,26 +64,27 @@ class UserStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param RPL_ENDOFNAMES $ircMessage
 	 * @param Queue $queue
 	 */
-	public function sendInitialWhoxMessage(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function sendInitialWhoxMessage(RPL_ENDOFNAMES $ircMessage, Queue $queue)
 	{
-		$channel = $ircMessage->getArgs()[1];
+		$channel = $ircMessage->getChannel();
 		$queue->who($channel, '%nuhaf');
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param RPL_WHOSPCRPL $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processWhoxReply(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processWhoxReply(RPL_WHOSPCRPL $ircMessage, Queue $queue)
 	{
-		$args = $ircMessage->getArgs();
-		$username = $args[1];
-		$hostname = $args[2];
-		$nickname = $args[3];
-		$accountname = $args[5];
+		$username = $ircMessage->getUsername();
+		$hostname = $ircMessage->getHostname();
+		$nickname = $ircMessage->getNickname();
+		$accountname = $ircMessage->getAccountname();
+
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findOrCreateByNickname($nickname);
 
@@ -132,6 +135,7 @@ class UserStateManager
 		$oldNickname = $incomingIrcMessage->getNickname();
 		$newNickname = $incomingIrcMessage->getNewNickname();
 
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($oldNickname);
 
@@ -177,6 +181,7 @@ class UserStateManager
 		$newUsername = $args[0];
 		$newHostname = $args[1];
 		$userPrefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($userPrefix->getNickname());
 

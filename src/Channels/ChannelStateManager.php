@@ -8,17 +8,15 @@
 
 namespace WildPHP\Core\Channels;
 
-
-use Flintstone\Config;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\PART;
-use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
+use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
+use WildPHP\Core\Connection\IRCMessages\RPL_TOPIC;
+use WildPHP\Core\Connection\IRCMessages\RPL_WELCOME;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
@@ -69,9 +67,11 @@ class ChannelStateManager
 	public function processUserJoin(JOIN $ircMessage, Queue $queue)
 	{
 		$prefix = $ircMessage->getPrefix();
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findOrCreateByNickname($ircMessage->getNickname());
 
+		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
 			->requestByChannelName($ircMessage->getChannels()[0], $userObject);
 		$accountname = $ircMessage->getIrcAccount();
@@ -102,15 +102,15 @@ class ChannelStateManager
 	 * @param PART $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserPart(PART $ircMessage, Queue $queue)
+	public function processUserPart(PART $ircMessage)
 	{
+		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($ircMessage->getChannels()[0]);
+
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($ircMessage->getNickname());
-
-		if ($userObject === UserCollection::fromContainer($this->getContainer())->getSelf())
-			$channel->abandon();
 
 		$removed = $channel->getUserCollection()
 			->remove(function (User $user) use ($userObject)
@@ -138,10 +138,12 @@ class ChannelStateManager
 	 * @param KICK $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserKick(KICK $ircMessage, Queue $queue)
+	public function processUserKick(KICK $ircMessage)
 	{
+		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($ircMessage->getChannel());
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($ircMessage->getTarget());
 
@@ -169,10 +171,10 @@ class ChannelStateManager
 
 	/**
 	 * @param User $userObject
-	 * @param Queue $queue
 	 */
-	public function processUserQuit(User $userObject, Queue $queue)
+	public function processUserQuit(User $userObject)
 	{
+		/** @var Channel[] $channels */
 		$channels = ChannelCollection::fromContainer($this->getContainer())
 			->toArray();
 
@@ -218,6 +220,8 @@ class ChannelStateManager
 		$shouldBeRemoved = substr($mode, 0, 1) == '-';
 		$modes = substr($mode, 1);
 		$modes = str_split($modes);
+
+		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($channel);
 
@@ -225,7 +229,7 @@ class ChannelStateManager
 		{
 			if ($shouldBeRemoved)
 				$channel->getChannelModes()
-					->UserFromMode($mode, $target);
+					->removeUserFromMode($mode, $target);
 			else
 				$channel->getChannelModes()
 					->addUserToMode($mode, $target);
@@ -243,21 +247,23 @@ class ChannelStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
-	 * @param Queue $queue
+	 * @param RPL_NAMREPLY $ircMessage
 	 */
-	public function populateChannel(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function populateChannel(RPL_NAMREPLY $ircMessage)
 	{
-		$args = $ircMessage->getArgs();
+		$channel = $ircMessage->getChannel();
+		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($args[2]);
-		$nicknames = explode(' ', $args[3]);
+			->requestByChannelName($channel);
+		$nicknames = $ircMessage->getNicknames();
 
 		foreach ($nicknames as $nicknameWithMode)
 		{
 			$nickname = $nicknameWithMode;
 			$modes = $channel->getChannelModes()
 				->extractUserModesFromNickname($nicknameWithMode, $nickname);
+
+			/** @var User $userObject */
 			$userObject = UserCollection::fromContainer($this->getContainer())
 				->findOrCreateByNickname($nickname);
 
@@ -291,19 +297,25 @@ class ChannelStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
-	 * @param Queue $queue
+	 * @param RPL_TOPIC $ircMessage
 	 */
-	public function processChannelTopicChange(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processChannelTopicChange(RPL_TOPIC $ircMessage)
 	{
+		$channel = $ircMessage->getChannel();
 
+		/** @var Channel $channel */
+		$channel = ChannelCollection::fromContainer($this->getContainer())
+			->findByChannelName($channel);
+
+		if ($channel)
+			$channel->setTopic($ircMessage->getMessage());
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param RPL_WELCOME $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public function joinInitialChannels(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function joinInitialChannels(RPL_WELCOME $incomingIrcMessage, Queue $queue)
 	{
 		$channels = Configuration::fromContainer($this->getContainer())
 			->get('channels')
