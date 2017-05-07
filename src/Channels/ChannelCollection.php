@@ -84,30 +84,20 @@ class ChannelCollection extends Collection
 	{
 		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
 
-		$conversationChannel = $ownNickname == $name;
+		$conversationChannel = $user && $ownNickname == $name;
+		$channelName = $conversationChannel ? $user->getNickname() : $name;
 
-		// This channel exists.
-		if ($this->containsChannelName($name))
-			$channel = $this->findByChannelName($name);
+		if ($this->containsChannelName($channelName))
+			return $this->findByChannelName($name);
 
-		// Else it's most likely a private conversation.
-		elseif ($user && $conversationChannel && !$this->containsChannelName($user->getNickname()))
-			$channel = $this->createFakeConversationChannel($user);
+		if ($conversationChannel && !$this->findByChannelName($channelName))
+			return $this->createFakeConversationChannel($user);
 
-		// Maybe the user has had a private conversation with the bot before.
-		elseif ($user && $conversationChannel)
-			$channel = $this->findByChannelName($user->getNickname());
-
-		// Dunno. Just create one; they requested it.
-		else
-		{
-			$userCollection = new UserCollection($this->getContainer());
-			$channelModes = new ChannelModes($this->getContainer());
-			$channel = new Channel($userCollection, $channelModes);
-			$channel->setName($name);
-			$this->add($channel);
-		}
-
+		$userCollection = new UserCollection($this->getContainer());
+		$channelModes = new ChannelModes($this->getContainer());
+		$channel = new Channel($userCollection, $channelModes);
+		$channel->setName($name);
+		$this->add($channel);
 		return $channel;
 	}
 
