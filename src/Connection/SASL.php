@@ -187,9 +187,8 @@ class SASL
 
 	/**
 	 * @param IncomingIrcMessage $message
-	 * @param Queue $queue
 	 */
-	public function handleNegativeResponse(IncomingIrcMessage $message, Queue $queue)
+	public function handleNegativeResponse(IncomingIrcMessage $message)
 	{
 		$code = $message->getVerb();
 		if (!array_key_exists($code, $this->errorCodes))

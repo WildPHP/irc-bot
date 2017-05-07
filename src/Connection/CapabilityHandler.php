@@ -79,7 +79,7 @@ class CapabilityHandler
 	 * @param array $availableCapabilities
 	 * @param Queue $queue
 	 */
-	public function requestCoreCapabilities(array $availableCapabilities, Queue $queue)
+	public function requestCoreCapabilities(array $availableCapabilities)
 	{
 		if (in_array('extended-join', $availableCapabilities))
 			$this->requestCapability('extended-join');
