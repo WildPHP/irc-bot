@@ -35,7 +35,7 @@ class PingPongHandler
 	/**
 	 * @var int
 	 */
-	protected $lastMessasgeReceived = 0;
+	protected $lastMessageReceived = 0;
 
 	/**
 	 * The amount of seconds per time the checking loop is run.
@@ -77,7 +77,7 @@ class PingPongHandler
 
 	public function updateLastMessageReceived()
 	{
-		$this->lastMessasgeReceived = time();
+		$this->lastMessageReceived = time();
 	}
 
 	/**
@@ -91,13 +91,13 @@ class PingPongHandler
 			{
 				$currentTime = time();
 
-				$disconnectTime = $this->lastMessasgeReceived + $this->pingInterval + $this->disconnectInterval;
+				$disconnectTime = $this->lastMessageReceived + $this->pingInterval + $this->disconnectInterval;
 				$shouldDisconnect = $currentTime >= $disconnectTime;
 
 				if ($shouldDisconnect)
 					return $this->forceDisconnect($queue);
 
-				$scheduledPingTime = $this->lastMessasgeReceived + $this->pingInterval;
+				$scheduledPingTime = $this->lastMessageReceived + $this->pingInterval;
 				$shouldSendPing = $currentTime >= $scheduledPingTime;
 
 				if ($shouldSendPing)
