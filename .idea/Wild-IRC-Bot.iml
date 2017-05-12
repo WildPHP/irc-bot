@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/danielgsims/php-collections" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/evenement/evenement" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/fabpot/goutte" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/fire015/flintstone" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/nette/neon" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/child-process" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/dns" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/event-loop" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/http" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/promise" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/promise-timer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/react" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/socket" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/socket-client" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/react/stream" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/ringcentral/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/environment" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/version" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/browser-kit" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/css-selector" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/dom-crawler" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="PHP" type="php">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/danielgsims/php-collections" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
+          <root url="file://$MODULE_DIR$/vendor/evenement/evenement" />
+          <root url="file://$MODULE_DIR$/vendor/fabpot/goutte" />
+          <root url="file://$MODULE_DIR$/vendor/fire015/flintstone" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
+          <root url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
+          <root url="file://$MODULE_DIR$/vendor/nette/neon" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
+          <root url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
+          <root url="file://$MODULE_DIR$/vendor/psr/log" />
+          <root url="file://$MODULE_DIR$/vendor/react/cache" />
+          <root url="file://$MODULE_DIR$/vendor/react/child-process" />
+          <root url="file://$MODULE_DIR$/vendor/react/dns" />
+          <root url="file://$MODULE_DIR$/vendor/react/event-loop" />
+          <root url="file://$MODULE_DIR$/vendor/react/http" />
+          <root url="file://$MODULE_DIR$/vendor/react/http-client" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise-timer" />
+          <root url="file://$MODULE_DIR$/vendor/react/react" />
+          <root url="file://$MODULE_DIR$/vendor/react/socket" />
+          <root url="file://$MODULE_DIR$/vendor/react/socket-client" />
+          <root url="file://$MODULE_DIR$/vendor/react/stream" />
+          <root url="file://$MODULE_DIR$/vendor/ringcentral/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/environment" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/browser-kit" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/css-selector" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/dom-crawler" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/danielgsims/php-collections" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
+          <root url="file://$MODULE_DIR$/vendor/evenement/evenement" />
+          <root url="file://$MODULE_DIR$/vendor/fabpot/goutte" />
+          <root url="file://$MODULE_DIR$/vendor/fire015/flintstone" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
+          <root url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
+          <root url="file://$MODULE_DIR$/vendor/nette/neon" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
+          <root url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
+          <root url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
+          <root url="file://$MODULE_DIR$/vendor/psr/log" />
+          <root url="file://$MODULE_DIR$/vendor/react/cache" />
+          <root url="file://$MODULE_DIR$/vendor/react/child-process" />
+          <root url="file://$MODULE_DIR$/vendor/react/dns" />
+          <root url="file://$MODULE_DIR$/vendor/react/event-loop" />
+          <root url="file://$MODULE_DIR$/vendor/react/http" />
+          <root url="file://$MODULE_DIR$/vendor/react/http-client" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise-timer" />
+          <root url="file://$MODULE_DIR$/vendor/react/react" />
+          <root url="file://$MODULE_DIR$/vendor/react/socket" />
+          <root url="file://$MODULE_DIR$/vendor/react/socket-client" />
+          <root url="file://$MODULE_DIR$/vendor/react/stream" />
+          <root url="file://$MODULE_DIR$/vendor/ringcentral/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/environment" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/browser-kit" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/css-selector" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/dom-crawler" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="PHARS">
+        <CLASSES>
+          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.0.phar/" />
+        </CLASSES>
+        <SOURCES>
+          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.0.phar/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
