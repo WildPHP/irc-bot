@@ -15,7 +15,8 @@
     },
     "autoload": {
         "psr-4": {
-            "WildPHP\\Core\\": "src/"
+            "WildPHP\\Core\\": "src/",
+            "WildPHP\\Modules\\": "modules/"
         }
     },
 	"license": "GPL-3.0",
