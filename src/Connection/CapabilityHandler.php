@@ -22,12 +22,14 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class CapabilityHandler
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var array
@@ -48,11 +50,6 @@ class CapabilityHandler
 	 * @var array
 	 */
 	protected $notAcknowledgedCapabilities = [];
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
 
 	/**
 	 * @var SASL
@@ -80,9 +77,8 @@ class CapabilityHandler
 
 	/**
 	 * @param array $availableCapabilities
-	 * @param Queue $queue
 	 */
-	public function requestCoreCapabilities(array $availableCapabilities, Queue $queue)
+	public function requestCoreCapabilities(array $availableCapabilities)
 	{
 		if (in_array('extended-join', $availableCapabilities))
 			$this->requestCapability('extended-join');
@@ -118,19 +114,19 @@ class CapabilityHandler
 	}
 
 	/**
-	 * @param array $capabilities
-	 * @param Queue $queue
+	 * @return bool
 	 */
-	public function tryEndNegotiation(array $capabilities, Queue $queue)
+	public function tryEndNegotiation(): bool
 	{
 		if (!self::canEndNegotiation())
-			return;
+			return false;
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Ending capability negotiation.');
-		$queue->cap('END');
+		Queue::fromContainer($this->getContainer())->cap('END');
 		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.cap.end', [$queue]);
+			->emit('irc.cap.end');
+		return true;
 	}
 
 	/**
@@ -350,22 +346,6 @@ class CapabilityHandler
 	public function setNotAcknowledgedCapabilities(array $notAcknowledgedCapabilities)
 	{
 		$this->notAcknowledgedCapabilities = $notAcknowledgedCapabilities;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 
 	/**

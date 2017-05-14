@@ -4,12 +4,14 @@ namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class ChannelModes
 {
+	use ContainerTrait;
 	/**
 	 * @var array
 	 */
@@ -19,11 +21,6 @@ class ChannelModes
 	 * @var array
 	 */
 	protected $modeMap = [];
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
 
 	/**
 	 * ChannelModes constructor.
@@ -209,21 +206,5 @@ class ChannelModes
 		}
 
 		return $modes;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

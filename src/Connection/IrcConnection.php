@@ -28,12 +28,15 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
+use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 class IrcConnection
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var Promise
@@ -46,18 +49,13 @@ class IrcConnection
 	protected $buffer = '';
 
 	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
-
-	/**
 	 * @param LoopInterface $loop
 	 * @param QueueInterface $queue
 	 */
 	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
 	{
 		$loop->addPeriodicTimer(0.5,
-			function () use ($queue)
+			function() use ($queue)
 			{
 				$queueItems = $queue->flush();
 
@@ -83,14 +81,14 @@ class IrcConnection
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.error',
-				function ()
+				function()
 				{
 					$this->close();
 				});
 
 		EventEmitter::fromContainer($container)
 			->on('irc.force.close',
-				function ()
+				function()
 				{
 					$this->close();
 				});
@@ -99,29 +97,25 @@ class IrcConnection
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param RPL_ISUPPORT $incomingIrcMessage
 	 */
-	public function handleServerConfig(IncomingIrcMessage $incomingIrcMessage)
+	public function handleServerConfig(RPL_ISUPPORT $incomingIrcMessage)
 	{
-		$args = $incomingIrcMessage->getArgs();
-
-		$hostname = $incomingIrcMessage->getPrefix();
+		$hostname = $incomingIrcMessage->getServer();
 		Configuration::fromContainer($this->getContainer())
 			->set(new ConfigurationItem('serverConfig.hostname', $hostname));
 
 		// The first argument is the nickname set.
-		$currentNickname = (string)$args[0];
+		$currentNickname = $incomingIrcMessage->getNickname();
 		Configuration::fromContainer($this->getContainer())
 			->set(new ConfigurationItem('currentNickname', $currentNickname));
-		unset($args[0]);
+
 		Logger::fromContainer($this->getContainer())
 			->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
 
-		// The last argument is a message usually corresponding to something like "are supported by this server"
-		// Don't need that anymore.
-		array_pop($args);
+		$variables = $incomingIrcMessage->getVariables();
 
-		foreach ($args as $value)
+		foreach ($variables as $value)
 		{
 			$parts = explode('=', $value);
 			$key = 'serverConfig.' . strtolower($parts[0]);
@@ -170,18 +164,18 @@ class IrcConnection
 	public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
 	{
 		$this->connectorPromise = $connectorInterface->create($host, $port)
-			->then(function (Stream $stream) use ($host, $port, &$buffer)
+			->then(function(Stream $stream) use ($host, $port, &$buffer)
 			{
 				EventEmitter::fromContainer($this->getContainer())
 					->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
 				$stream->on('error',
-					function ($error) use ($host, $port)
+					function($error) use ($host, $port)
 					{
 						throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
 					});
 
 				$stream->on('data',
-					function ($data)
+					function($data)
 					{
 						EventEmitter::fromContainer($this->getContainer())
 							->emit('stream.data.in', [$data]);
@@ -196,7 +190,7 @@ class IrcConnection
 	 */
 	public function write(string $data)
 	{
-		$this->connectorPromise->then(function (Stream $stream) use ($data)
+		$this->connectorPromise->then(function(Stream $stream) use ($data)
 		{
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.data.out', [$data]);
@@ -208,7 +202,7 @@ class IrcConnection
 
 	public function close()
 	{
-		$this->connectorPromise->then(function (Stream $stream)
+		$this->connectorPromise->then(function(Stream $stream)
 		{
 			Logger::fromContainer($this->getContainer())
 				->warning('Closing connection...');
@@ -216,22 +210,6 @@ class IrcConnection
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.closed');
 		});
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 
 	/**

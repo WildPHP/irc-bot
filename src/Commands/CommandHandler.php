@@ -22,18 +22,23 @@ namespace WildPHP\Core\Commands;
 
 
 use Collections\Dictionary;
+use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IncomingIrcMessage;
-use WildPHP\Core\Connection\IncomingIrcMessages\PRIVMSG;
+use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Security\Validator;
+use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class CommandHandler
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var Dictionary
@@ -41,12 +46,8 @@ class CommandHandler
 	protected $commandDictionary = null;
 
 	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
-
-	/**
 	 * CommandHandler constructor.
+	 *
 	 * @param ComponentContainer $container
 	 * @param Dictionary $commandDictionary
 	 */
@@ -66,14 +67,15 @@ class CommandHandler
 	 * @param int $minarguments
 	 * @param int $maxarguments
 	 * @param string $requiredPermission
+	 *
 	 * @return bool
 	 */
 	public function registerCommand(string $command,
-	                                callable $callback,
-	                                CommandHelp $commandHelp = null,
-	                                int $minarguments = -1,
-	                                int $maxarguments = -1,
-	                                string $requiredPermission = '')
+					callable $callback,
+					CommandHelp $commandHelp = null,
+					int $minarguments = -1,
+					int $maxarguments = -1,
+					string $requiredPermission = '')
 	{
 		if ($this->getCommandDictionary()
 			->keyExists($command)
@@ -87,15 +89,18 @@ class CommandHandler
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param PRIVMSG $privmsg
 	 * @param Queue $queue
 	 */
-	public function parseAndRunCommand(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
 	{
-		$privmsg = PRIVMSG::fromIncomingIrcMessage($incomingIrcMessage);
-		$source = $privmsg->getChannel();
+		/** @var User $user */
+		$user = UserCollection::fromContainer($this->getContainer())->findOrCreateByNickname($privmsg->getNickname());
+
+		/** @var Channel $source */
+		$source = ChannelCollection::fromContainer($this->getContainer())->requestByChannelName($privmsg->getChannel(), $user);
 		$message = $privmsg->getMessage();
-		$user = $privmsg->getUser();
+
 
 		$args = [];
 		$command = self::parseCommandFromMessage($message, $args);
@@ -115,8 +120,7 @@ class CommandHandler
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())
 				->isAllowedTo($permission, $user, $source)
-		)
-		{
+		) {
 			$queue->privmsg($source->getName(),
 				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
 
@@ -179,21 +183,5 @@ class CommandHandler
 	public function setCommandDictionary(Dictionary $commandDictionary)
 	{
 		$this->commandDictionary = $commandDictionary;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $componentContainer
-	 */
-	public function setContainer(ComponentContainer $componentContainer)
-	{
-		$this->container = $componentContainer;
 	}
 }

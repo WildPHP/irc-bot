@@ -26,15 +26,14 @@ use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\DataStorage\DataStorage;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
 class PermissionCommands
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+	use ContainerTrait;
 
 	/**
 	 * PermissionCommands constructor.
@@ -84,22 +83,35 @@ class PermissionCommands
 			->registerCommand('allow', [$this, 'allowCommand'], $commandHelp, 2, 2, 'allow');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Remove a permission from a permission group.');
-		$commandHelp->addPage('Usage: deny [group name] [permission]');
+		$commandHelp->addPage('Remove a permission from a permission group. Usage: deny [group name] [permission]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('deny', [$this, 'denyCommand'], $commandHelp, 2, 2, 'deny');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('List all members in a permission group.');
-		$commandHelp->addPage('Usage: lsmembers [group name]');
+		$commandHelp->addPage('List all members in a permission group. Usage: lsmembers [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lsmembers', [$this, 'lsmembersCommand'], $commandHelp, 1, 1, 'listgroupmembers');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('List all permissions allowed to this group.');
-		$commandHelp->addPage('Usage: lsperms [group name]');
+		$commandHelp->addPage('List all permissions allowed to this group. Usage: lsperms [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lsperms', [$this, 'lspermsCommand'], $commandHelp, 1, 1, 'listgrouppermissions');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])');
+		CommandHandler::fromContainer($container)
+			->registerCommand('linkgroup', [$this, 'linkgroupCommand'], $commandHelp, 1, 2, 'linkgroup');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])');
+		CommandHandler::fromContainer($container)
+			->registerCommand('unlinkgroup', [$this, 'unlinkgroupCommand'], $commandHelp, 1, 2, 'unlinkgroup');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Shows info about a group. Usage: groupinfo [group name]');
+		CommandHandler::fromContainer($container)
+			->registerCommand('groupinfo', [$this, 'groupinfoCommand'], $commandHelp, 1, 2, 'groupinfo');
+
 
 		$this->setContainer($container);
 	}
@@ -125,7 +137,7 @@ class PermissionCommands
 			return;
 		}
 
-		if ($group->hasPermission($permission))
+		if ($group->containsPermission($permission))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is already allowed to do that.');
@@ -134,6 +146,7 @@ class PermissionCommands
 		}
 
 		$group->addPermission($permission);
+		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
 	}
@@ -159,7 +172,7 @@ class PermissionCommands
 			return;
 		}
 
-		if (!$group->hasPermission($permission))
+		if (!$group->containsPermission($permission))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is not allowed to do that.');
@@ -168,6 +181,7 @@ class PermissionCommands
 		}
 
 		$group->removePermission($permission);
+		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
 	}
@@ -254,6 +268,7 @@ class PermissionCommands
 			return;
 		}
 
+		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
@@ -267,6 +282,7 @@ class PermissionCommands
 		}
 
 		$group->addMember($userToAdd);
+		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
 				sprintf('%s: User %s (identified by %s) has been added to the permission group "%s"',
@@ -297,6 +313,7 @@ class PermissionCommands
 			return;
 		}
 
+		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
@@ -307,7 +324,6 @@ class PermissionCommands
 
 			return;
 		}
-
 		elseif ($group->isMemberByIrcAccount($nickname))
 		{
 			$group->removeMemberByIrcAccount($nickname);
@@ -322,6 +338,7 @@ class PermissionCommands
 			return;
 
 		$group->removeMember($userToAdd);
+		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
 				sprintf('%s: User %s (identified by %s) has been removed from the permission group "%s"',
@@ -341,8 +358,7 @@ class PermissionCommands
 	{
 		if (empty($args[1]) || ($valUser = UserCollection::fromContainer($container)
 				->findByNickname($args[1])) == false
-		)
-		{
+		) {
 			$valUser = $user;
 		}
 
@@ -358,7 +374,6 @@ class PermissionCommands
 				$perm,
 				$result);
 		}
-
 		else
 		{
 			$message = $valUser->getNickname() . ' does not pass validation for permission "' . $perm . '" in this context.';
@@ -376,6 +391,7 @@ class PermissionCommands
 	 */
 	public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
+		/** @var PermissionGroup[] $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
 			->toArray();
 
@@ -410,6 +426,7 @@ class PermissionCommands
 		$groupObj = new PermissionGroup($groupName);
 		PermissionGroupCollection::fromContainer($this->getContainer())
 			->add($groupObj);
+		$groupObj->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully created.');
 	}
@@ -433,7 +450,7 @@ class PermissionCommands
 		}
 
 		$group = PermissionGroupCollection::fromContainer($this->getContainer())
-			->remove(function (PermissionGroup $item) use ($groupName)
+			->remove(function(PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});
@@ -446,8 +463,119 @@ class PermissionCommands
 			return;
 		}
 
+		$storage = new DataStorage('permissiongroups');
+		$storage->delete($groupName);
+
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully deleted.');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param ComponentContainer $container
+	 */
+	public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+	{
+		$groupName = $args[0];
+		$channel = $args[1] ?? $source->getName();
+
+		$group = $this->findGroupByName($groupName);
+
+		if (empty($group))
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+			return;
+		}
+
+		if ($group->containsChannel($channel))
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': The group is already linked to this channel.');
+
+			return;
+		}
+
+		$group->addChannel($channel);
+		$group->save();
+		Queue::fromContainer($container)
+			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel . '"');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param ComponentContainer $container
+	 */
+	public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+	{
+		$groupName = $args[0];
+		$channel = $args[1] ?? $source->getName();
+
+		$group = $this->findGroupByName($groupName);
+
+		if (empty($group))
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+			return;
+		}
+
+		if (!$group->containsChannel($channel))
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': The group is not linked to this channel.');
+
+			return;
+		}
+
+		$group->removeChannel($channel);
+		$group->save();
+		Queue::fromContainer($container)
+			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel . '"');
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param ComponentContainer $container
+	 */
+	public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
+	{
+		$groupName = $args[0];
+
+		$group = $this->findGroupByName($groupName);
+
+		if (empty($group))
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+
+			return;
+		}
+
+		$channels = implode(', ', $group->listChannels());
+		$members = implode(', ', $group->getUserCollection());
+		$permissions = implode(', ', $group->listPermissions());
+
+		$lines = [
+			'This group is linked to the following channels:',
+			$channels,
+			'This group contains the following members:',
+			$members,
+			'This group is allowed the following permissions:',
+			$permissions
+		];
+
+		foreach ($lines as $line)
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $line);
 	}
 
 	/**
@@ -457,27 +585,9 @@ class PermissionCommands
 	protected function findGroupByName(string $groupName)
 	{
 		return PermissionGroupCollection::fromContainer($this->getContainer())
-			->find(function (PermissionGroup $item) use ($groupName)
+			->find(function(PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});
 	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
-	}
-
-
 }

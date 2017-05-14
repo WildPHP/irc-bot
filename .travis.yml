@@ -1,6 +1,5 @@
 language: php
 php:
-  - 7.0
   - 7.1
   - nightly
 
@@ -8,23 +7,8 @@ install:
   - composer install
 
 script:
-  - phpunit --coverage-clover=coverage.clover --bootstrap=./vendor/autoload.php tests
+  - phpunit -c phpunit.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php:
-      - nightly
-
-notifications:
-    irc:
-        channels:
-            # This must be encrypted or forks & PRs start spamming
-            # travis encrypt "ircs://irc.freenode.net:6697/#wildphp-dev" -r WildPHP/Wild-IRC-Bot
-            -  secure: "YfisfH8Pl6Zf3WsTOLnsWGJ6XDKWgQ2dwYkM0T0jBWXFpUM4A6UQGomx49cBQCa2s8lx59xVBqhRcrd6GwAn7yeGc64UdRVKHYm4LH4jUMVdewKsk4GKxj9FKUPQ6aHhbLyw0a6C8rAilxpmPmjT1LcJCGEH5IgB9mfgqGwJ+yI="
-        use_notice: true
-        skip_join: false

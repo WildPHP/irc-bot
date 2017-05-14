@@ -34,10 +34,10 @@ class CommandFactory
 	 * @return Command
 	 */
 	public static function create(callable $callback,
-	                              CommandHelp $commandHelp = null,
-	                              int $minarguments = -1,
-	                              int $maxarguments = -1,
-	                              string $requiredPermission = '')
+				      CommandHelp $commandHelp = null,
+				      int $minarguments = -1,
+				      int $maxarguments = -1,
+				      string $requiredPermission = '')
 	{
 		$commandObject = new Command();
 		$commandObject->setCallback($callback);

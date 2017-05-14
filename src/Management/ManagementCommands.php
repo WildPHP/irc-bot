@@ -27,15 +27,13 @@ use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 
 class ManagementCommands
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+	use ContainerTrait;
 
 	/**
 	 * ManagementCommands constructor.
@@ -166,22 +164,4 @@ class ManagementCommands
 				->privmsg($user->getNickname(),
 					'Did not part the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
 	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer($container)
-	{
-		$this->container = $container;
-	}
-
-
 }

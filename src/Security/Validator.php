@@ -20,20 +20,18 @@
 
 namespace WildPHP\Core\Security;
 
+use Collections\Collection;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
 
 class Validator
 {
 	use ComponentTrait;
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+	use ContainerTrait;
 
 	/**
 	 * Validator constructor.
@@ -73,7 +71,7 @@ class Validator
 	 * @param User $user
 	 * @param Channel|null $channel
 	 *
-	 * @return string|boolean String with reason on success; boolean false otherwise.
+	 * @return string|false String with reason on success; boolean false otherwise.
 	 */
 	public function isAllowedTo(string $permissionName = '', User $user, Channel $channel = null)
 	{
@@ -90,6 +88,7 @@ class Validator
 
 		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
 		{
+			/** @var PermissionGroup $opGroup */
 			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 				->findGroupByName('op');
 
@@ -99,6 +98,7 @@ class Validator
 
 		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
 		{
+			/** @var PermissionGroup $voiceGroup */
 			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 				->findGroupByName('voice');
 
@@ -106,9 +106,13 @@ class Validator
 				return 'voice';
 		}
 
+		$channelName = !empty($channel) ? $channel->getName() : '';
+
+		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
-			->findAll(function ($item) use ($user)
+			->findAll(function($item) use ($user)
 			{
+				/** @var PermissionGroup $item */
 				if (!$item->getCanHaveMembers())
 					return false;
 
@@ -117,26 +121,11 @@ class Validator
 
 		foreach ($groups->toArray() as $group)
 		{
-			if ($group->hasPermission($permissionName))
+			/** @var PermissionGroup $group */
+			if ($group->hasPermission($permissionName, $channelName))
 				return $group->getName();
 		}
 
 		return false;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

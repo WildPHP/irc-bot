@@ -40,6 +40,16 @@ class Channel
 	protected $topic = '';
 
 	/**
+	 * @var string
+	 */
+	protected $createdBy = '';
+
+	/**
+	 * @var int
+	 */
+	protected $createdTime = 0;
+
+	/**
 	 * @var UserCollection
 	 */
 	protected $userCollection;
@@ -122,6 +132,38 @@ class Channel
 	public function setTopic(string $topic)
 	{
 		$this->topic = $topic;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCreatedBy()
+	{
+		return $this->createdBy;
+	}
+
+	/**
+	 * @param mixed $createdBy
+	 */
+	public function setCreatedBy($createdBy)
+	{
+		$this->createdBy = $createdBy;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getCreatedTime(): int
+	{
+		return $this->createdTime;
+	}
+
+	/**
+	 * @param int $createdTime
+	 */
+	public function setCreatedTime(int $createdTime)
+	{
+		$this->createdTime = $createdTime;
 	}
 
 	/**

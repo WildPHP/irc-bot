@@ -12,16 +12,20 @@ namespace WildPHP\Core\Users;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\IRCMessages\MODE;
+use WildPHP\Core\Connection\IRCMessages\NICK;
+use WildPHP\Core\Connection\IRCMessages\QUIT;
+use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
+use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Connection\UserPrefix;
+use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 
 class UserStateManager
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+	use ContainerTrait;
 
 	/**
 	 * UserStateManager constructor.
@@ -40,7 +44,7 @@ class UserStateManager
 			'irc.line.in.nick' => 'processUserNicknameChange',
 			'irc.line.in.mode' => 'processUserModeChange',
 
-			// Requiers the chghost extension. Freenode doesn't have it.
+			// Requires the chghost extension. Freenode doesn't have it.
 			'irc.line.in.chghost' => 'processUserHostnameChange',
 		];
 
@@ -60,26 +64,27 @@ class UserStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param RPL_ENDOFNAMES $ircMessage
 	 * @param Queue $queue
 	 */
-	public function sendInitialWhoxMessage(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function sendInitialWhoxMessage(RPL_ENDOFNAMES $ircMessage, Queue $queue)
 	{
-		$channel = $ircMessage->getArgs()[1];
+		$channel = $ircMessage->getChannel();
 		$queue->who($channel, '%nuhaf');
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param RPL_WHOSPCRPL $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processWhoxReply(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processWhoxReply(RPL_WHOSPCRPL $ircMessage, Queue $queue)
 	{
-		$args = $ircMessage->getArgs();
-		$username = $args[1];
-		$hostname = $args[2];
-		$nickname = $args[3];
-		$accountname = $args[5];
+		$username = $ircMessage->getUsername();
+		$hostname = $ircMessage->getHostname();
+		$nickname = $ircMessage->getNickname();
+		$accountname = $ircMessage->getAccountname();
+
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findOrCreateByNickname($nickname);
 
@@ -87,18 +92,24 @@ class UserStateManager
 		$userObject->setHostname($hostname);
 		$userObject->setIrcAccount($accountname);
 
+		Logger::fromContainer($this->getContainer())->debug('Updated user details', [
+			'nickname' => $userObject->getNickname(),
+			'username' => $username,
+			'hostname' => $hostname,
+			'accountname' => $accountname
+		]);
+
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.account.changed', [$userObject, $queue]);
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param QUIT $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public function processUserQuit(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function processUserQuit(QUIT $incomingIrcMessage, Queue $queue)
 	{
-		$prefix = $incomingIrcMessage->getPrefix();
-		$nickname = explode('!', $prefix)[0];
+		$nickname = $incomingIrcMessage->getNickname();
 
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($nickname);
@@ -109,23 +120,22 @@ class UserStateManager
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.quit', [$userObject, $queue]);
 		UserCollection::fromContainer($this->getContainer())
-			->remove(function (User $user) use ($userObject)
+			->remove(function(User $user) use ($userObject)
 			{
 				return $user === $userObject;
 			});
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param NICK $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public function processUserNicknameChange(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function processUserNicknameChange(NICK $incomingIrcMessage, Queue $queue)
 	{
-		$prefix = $incomingIrcMessage->getPrefix();
-		$args = $incomingIrcMessage->getArgs();
-		$oldNickname = explode('!', $prefix)[0];
-		$newNickname = $args[0];
+		$oldNickname = $incomingIrcMessage->getNickname();
+		$newNickname = $incomingIrcMessage->getNewNickname();
 
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($oldNickname);
 
@@ -138,15 +148,14 @@ class UserStateManager
 	}
 
 	/**
-	 * @param IncomingIrcMessage $ircMessage
+	 * @param MODE $ircMessage
 	 * @param Queue $queue
 	 */
-	public function processUserModeChange(IncomingIrcMessage $ircMessage, Queue $queue)
+	public function processUserModeChange(MODE $ircMessage, Queue $queue)
 	{
-		$args = $ircMessage->getArgs();
-		$mode = $args[1];
-		$target = !empty($args[2]) ? $args[2] : $args[0];
-		$channel = !empty($args[2]) ? $args[0] : '';
+		$mode = $ircMessage->getFlags();
+		$target = $ircMessage->getArguments()[0] ?? '';
+		$channel = $ircMessage->getTarget();
 
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($target);
@@ -172,6 +181,7 @@ class UserStateManager
 		$newUsername = $args[0];
 		$newHostname = $args[1];
 		$userPrefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
+		/** @var User $userObject */
 		$userObject = UserCollection::fromContainer($this->getContainer())
 			->findByNickname($userPrefix->getNickname());
 
@@ -180,21 +190,5 @@ class UserStateManager
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.host', [$userObject, $newUsername, $newHostname, $queue]);
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

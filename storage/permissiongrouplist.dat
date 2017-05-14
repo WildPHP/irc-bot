@@ -1,1 +1,1 @@
-groupstoload=["op","voice","admin","kickers"]
+groupstoload=["op","voice","admin","kickers","test"]

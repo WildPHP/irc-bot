@@ -5,7 +5,6 @@ logs/*
 config.neon
 *.komodoproject
 .komodotools/
-.idea
 php_errors
 
 /vendor/

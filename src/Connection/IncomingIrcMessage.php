@@ -10,10 +10,24 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IncomingIrcMessages\BaseMessage;
+use WildPHP\Core\Connection\IRCMessages\BaseMessage;
+use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Logger\Logger;
 
 class IncomingIrcMessage
 {
+	use ContainerTrait;
+
+	// This is necessary because PHP doesn't allow classes with numeric names.
+	protected static $numbers = [
+		'001' => 'RPL_WELCOME',
+		'005' => 'RPL_ISUPPORT',
+		'332' => 'RPL_TOPIC',
+		'353' => 'RPL_NAMREPLY',
+		'354' => 'RPL_WHOSPCRPL',
+		'366' => 'RPL_ENDOFNAMES',
+	];
+
 	/**
 	 * @var string
 	 */
@@ -26,10 +40,6 @@ class IncomingIrcMessage
 	 * @var array
 	 */
 	protected $args = [];
-	/**
-	 * @var
-	 */
-	protected $container;
 
 	/**
 	 * IncomingIrcMessage constructor.
@@ -49,16 +59,25 @@ class IncomingIrcMessage
 	}
 
 	/**
-	 * @return BaseMessage
-	 * @throws MessageNotImplementedException
+	 * @return BaseMessage|IncomingIrcMessage
 	 */
-	public function specialize(): BaseMessage
+	public function specialize()
 	{
 		$verb = $this->getVerb();
-		$expectedClass = '\WildPHP\Core\Connection\IncomingIrcMessages\\' . $verb;
+
+		if (is_numeric($verb))
+			$verb = array_key_exists($verb, self::$numbers) ? self::$numbers[$verb] : $verb;
+
+		$expectedClass = '\WildPHP\Core\Connection\IRCMessages\\' . $verb;
 
 		if (!class_exists($expectedClass))
-			throw new MessageNotImplementedException('Incoming message not implemented, cannot specialize: ' . $verb);
+		{
+			Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
+				'verb' => $verb
+			]);
+
+			return $this;
+		}
 
 		return $expectedClass::fromIncomingIrcMessage($this);
 	}
@@ -109,22 +128,6 @@ class IncomingIrcMessage
 	public function setArgs($args)
 	{
 		$this->args = $args;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }
 

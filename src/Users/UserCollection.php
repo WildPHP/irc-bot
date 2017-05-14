@@ -24,15 +24,12 @@ use Collections\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\ContainerTrait;
 
 class UserCollection extends Collection
 {
 	use ComponentTrait;
-
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container = null;
+	use ContainerTrait;
 
 	/**
 	 * UserCollection constructor.
@@ -40,7 +37,7 @@ class UserCollection extends Collection
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		parent::__construct('\WildPHP\Core\Users\User');
+		parent::__construct(User::class);
 		$this->setContainer($container);
 	}
 
@@ -60,7 +57,7 @@ class UserCollection extends Collection
 	 */
 	public function findByNickname(string $nickname)
 	{
-		return $this->find(function (User $user) use ($nickname)
+		return $this->find(function(User $user) use ($nickname)
 		{
 			return $user->getNickname() == $nickname;
 		});
@@ -71,6 +68,7 @@ class UserCollection extends Collection
 	 */
 	public function getAllNicknames(): array
 	{
+		/** @var User[] $array */
 		$array = $this->toArray();
 
 		$nicknames = [];
@@ -91,7 +89,7 @@ class UserCollection extends Collection
 			->get('currentNickname')
 			->getValue();
 
-		return $this->findByNickname($ownNickname);
+		return $this->findOrCreateByNickname($ownNickname);
 	}
 
 	/**
@@ -108,21 +106,5 @@ class UserCollection extends Collection
 		$this->add($user);
 
 		return $user;
-	}
-
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
 	}
 }

@@ -23,11 +23,9 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Connection\TextFormatter;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Security\PermissionGroupCollection;
-use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 
 class HelpCommand
@@ -48,6 +46,30 @@ class HelpCommand
 		$commandHelp->addPage('Shows the list of available commands. No arguments.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lscommands', [$this, 'lscommandsCommand'], $commandHelp);
+
+		CommandHandler::fromContainer($container)->registerCommand('testbold', function (Channel $source, User $user, $args, ComponentContainer $container)
+		{
+			$args = implode(' ', $args);
+			$args = TextFormatter::bold($args);
+
+			Queue::fromContainer($container)->privmsg($source->getName(), $args);
+		}, null, 1);
+
+		CommandHandler::fromContainer($container)->registerCommand('testitalic', function (Channel $source, User $user, $args, ComponentContainer $container)
+		{
+			$args = implode(' ', $args);
+			$args = TextFormatter::italic($args);
+
+			Queue::fromContainer($container)->privmsg($source->getName(), $args);
+		}, null, 1);
+
+		CommandHandler::fromContainer($container)->registerCommand('testunderline', function (Channel $source, User $user, $args, ComponentContainer $container)
+		{
+			$args = implode(' ', $args);
+			$args = TextFormatter::underline($args);
+
+			Queue::fromContainer($container)->privmsg($source->getName(), $args);
+		}, null, 1);
 	}
 
 	/**
@@ -86,16 +108,17 @@ class HelpCommand
 		if (!CommandHandler::fromContainer($container)
 			->getCommandDictionary()
 			->keyExists($command)
-		)
-		{
+		) {
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'That command does not exist, sorry!');
 
 			return;
 		}
 
+		/** @var Command $commandObject */
 		$commandObject = CommandHandler::fromContainer($container)
 			->getCommandDictionary()[$command];
+
 		$helpObject = $commandObject->getHelp();
 		if ($helpObject == null || !($helpObject instanceof CommandHelp))
 		{

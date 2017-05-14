@@ -26,30 +26,53 @@ class Pong extends BaseCommand
 	/**
 	 * @var string
 	 */
-	protected $server;
+	protected $server1;
 
 	/**
-	 * @param string $server
+	 * @var string
 	 */
-	public function __construct(string $server)
+	protected $server2 = '';
+
+	/**
+	 * @param string $server1
+	 * @param string $server2
+	 */
+	public function __construct(string $server1, string $server2 = '')
 	{
-		$this->setServer($server);
+		$this->setServer1($server1);
+		$this->setServer2($server2);
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getServer(): string
+	public function getServer1(): string
 	{
-		return $this->server;
+		return $this->server1;
 	}
 
 	/**
-	 * @param string $server
+	 * @param string $server1
 	 */
-	public function setServer(string $server)
+	public function setServer1(string $server1)
 	{
-		$this->server = $server;
+		$this->server1 = $server1;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getServer2(): string
+	{
+		return $this->server2;
+	}
+
+	/**
+	 * @param string $server2
+	 */
+	public function setServer2(string $server2)
+	{
+		$this->server2 = $server2;
 	}
 
 	/**
@@ -57,6 +80,7 @@ class Pong extends BaseCommand
 	 */
 	public function formatMessage(): string
 	{
-		return 'PONG :' . $this->getServer() . "\r\n";
+		$server2 = $this->getServer2();
+		return 'PONG ' . $this->getServer1() . (!empty($server2) ? ' ' . $server2 : '') . "\r\n";
 	}
 }

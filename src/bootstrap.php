@@ -72,17 +72,18 @@ function setupPermissionGroupCollection()
 {
 	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
 
-	$dataStorage = new DataStorage('permissiongrouplist');
+	$dataStorage = new DataStorage('permissiongroups');
 
-	$groupsToLoad = $dataStorage->get('groupstoload');
+	$groupsToLoad = $dataStorage->getKeys();
 	foreach ($groupsToLoad as $group)
 	{
 		$pGroup = new PermissionGroup($group, true);
 		$globalPermissionGroup->add($pGroup);
 	}
 
-	register_shutdown_function(function () use ($globalPermissionGroup)
+	register_shutdown_function(function() use ($globalPermissionGroup)
 	{
+		/** @var PermissionGroup[] $groups */
 		$groups = $globalPermissionGroup->toArray();
 		$groupList = [];
 
@@ -100,18 +101,16 @@ function setupPermissionGroupCollection()
 
 /**
  * @param \WildPHP\Core\ComponentContainer $container
+ * @param array $connectionDetails
+ *
  * @return IrcConnection
  */
-function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
+function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $connectionDetails)
 {
 	$loop = $container->getLoop();
-	$configuration = Configuration::fromContainer($container);
 	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
-	if (Configuration::fromContainer($container)
-		->get('secure')
-		->getValue()
-	)
+	if ($connectionDetails['secure'])
 		$connector = $connectorFactory->createSecure();
 	else
 		$connector = $connectorFactory->create();
@@ -124,23 +123,18 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 	$pingPongHandler = new PingPongHandler($container);
 	$pingPongHandler->registerPingLoop($loop, $queue);
 
-	$username = $configuration->get('user')
-		->getValue();
+	$username = $connectionDetails['user'];
 	$hostname = gethostname();
-	$server = $configuration->get('server')
-		->getValue();
-	$port = $configuration->get('port')
-		->getValue();
-	$realname = $configuration->get('realname')
-		->getValue();
-	$nickname = $configuration->get('nick')
-		->getValue();
+	$server = $connectionDetails['server'];
+	$port = $connectionDetails['port'];
+	$realname = $connectionDetails['realname'];
+	$nickname = $connectionDetails['nick'];
 
 	$ircConnection->createFromConnector($connector, $server, $port);
 
 	EventEmitter::fromContainer($container)
 		->on('stream.created',
-			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+			function(Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
 			{
 				$queue->user($username, $hostname, $server, $realname);
 				$queue->nick($nickname);
@@ -148,7 +142,7 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 
 	EventEmitter::fromContainer($container)
 		->on('stream.closed',
-			function () use ($loop)
+			function() use ($loop)
 			{
 				$loop->stop();
 			});
@@ -156,60 +150,72 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container)
 	return $ircConnection;
 }
 
-$componentContainer = new \WildPHP\Core\ComponentContainer();
-$componentContainer->setLoop(LoopFactory::create());
-$componentContainer->store(setupEventEmitter());
-$componentContainer->store(setupLogger());
-$componentContainer->store(setupConfiguration());
-
-$capabilityHandler = new CapabilityHandler($componentContainer);
-$componentContainer->store($capabilityHandler);
-$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
-$capabilityHandler->setSasl($sasl);
-
-$componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
-$componentContainer->store(new TaskController($componentContainer));
-
-$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
-$componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentContainer));
-$componentContainer->store(setupPermissionGroupCollection());
-$componentContainer->store(setupIrcConnection($componentContainer));
-$componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
-
-
-new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
-new \WildPHP\Core\Users\UserStateManager($componentContainer);
-new \WildPHP\Core\Commands\HelpCommand($componentContainer);
-new \WildPHP\Core\Security\PermissionCommands($componentContainer);
-new \WildPHP\Core\Management\ManagementCommands($componentContainer);
-new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
-
-try
+function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, array $connectionDetails)
 {
-	$modules = Configuration::fromContainer($componentContainer)
-		->get('modules')
-		->getValue();
+	$componentContainer = new \WildPHP\Core\ComponentContainer();
+	$componentContainer->setLoop($loop);
+	$componentContainer->store(setupEventEmitter());
+	$componentContainer->store(setupLogger());
+	$componentContainer->store($configuration);
 
-	foreach ($modules as $module)
+	$capabilityHandler = new CapabilityHandler($componentContainer);
+	$componentContainer->store($capabilityHandler);
+	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
+	$capabilityHandler->setSasl($sasl);
+	$componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
+	$componentContainer->store(new TaskController($componentContainer));
+
+	$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
+	$componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentContainer));
+	$componentContainer->store(setupPermissionGroupCollection());
+	$componentContainer->store(setupIrcConnection($componentContainer, $connectionDetails));
+	$componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
+
+	new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
+	new \WildPHP\Core\Users\UserStateManager($componentContainer);
+	new \WildPHP\Core\Commands\HelpCommand($componentContainer);
+	new \WildPHP\Core\Security\PermissionCommands($componentContainer);
+	new \WildPHP\Core\Management\ManagementCommands($componentContainer);
+	new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
+
+	try
 	{
-		try
-		{
-			new $module($componentContainer);
-		} catch (\Exception $e)
-		{
-			Logger::fromContainer($componentContainer)
-				->error('Could not properly load module; stability not guaranteed!',
-					[
-						'class' => $module,
-						'message' => $e->getMessage()
-					]);
-		}
+		$modules = Configuration::fromContainer($componentContainer)
+			->get('modules')
+			->getValue();
 
+		foreach ($modules as $module)
+		{
+			try
+			{
+				new $module($componentContainer);
+			}
+			catch (\Exception $e)
+			{
+				Logger::fromContainer($componentContainer)
+					->error('Could not properly load module; stability not guaranteed!',
+						[
+							'class' => $module,
+							'message' => $e->getMessage()
+						]);
+			}
+
+		}
 	}
-} catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
-{
-	echo $e->getMessage();
+	catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
+	{
+		echo $e->getMessage();
+	}
 }
 
-$componentContainer->getLoop()
-	->run();
+$loop = LoopFactory::create();
+$configuration = setupConfiguration();
+
+$connections = $configuration->get('connections')->getValue();
+
+foreach ($connections as $connection)
+{
+	createNewInstance($loop, $configuration, $connection);
+}
+
+$loop->run();
