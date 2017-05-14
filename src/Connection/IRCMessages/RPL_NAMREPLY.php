@@ -37,6 +37,7 @@ class RPL_NAMREPLY implements BaseMessage
 
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);
+		$visibility = array_shift($args);
 		$channel = array_shift($args);
 		$nicknames = explode(' ', array_shift($args));
 
