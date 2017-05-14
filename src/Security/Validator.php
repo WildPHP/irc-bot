@@ -106,6 +106,8 @@ class Validator
 				return 'voice';
 		}
 
+		$channelName = !empty($channel) ? $channel->getName() : '';
+
 		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
 			->findAll(function($item) use ($user)
@@ -120,7 +122,7 @@ class Validator
 		foreach ($groups->toArray() as $group)
 		{
 			/** @var PermissionGroup $group */
-			if ($group->hasPermission($permissionName))
+			if ($group->hasPermission($permissionName, $channelName))
 				return $group->getName();
 		}
 

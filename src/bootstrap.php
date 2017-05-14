@@ -72,9 +72,9 @@ function setupPermissionGroupCollection()
 {
 	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
 
-	$dataStorage = new DataStorage('permissiongrouplist');
+	$dataStorage = new DataStorage('permissiongroups');
 
-	$groupsToLoad = $dataStorage->get('groupstoload');
+	$groupsToLoad = $dataStorage->getKeys();
 	foreach ($groupsToLoad as $group)
 	{
 		$pGroup = new PermissionGroup($group, true);
