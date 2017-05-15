@@ -190,12 +190,20 @@ class PermissionGroup
 		return true;
 	}
 
-	public function containsChannel(string $channelName): bool
+    /**
+     * @param string $channelName
+     * @return bool
+     */
+    public function containsChannel(string $channelName): bool
 	{
 		return in_array($channelName, $this->channels);
 	}
 
-	public function addChannel(string $channelName): bool
+    /**
+     * @param string $channelName
+     * @return bool
+     */
+    public function addChannel(string $channelName): bool
 	{
 		if ($this->containsChannel($channelName))
 			return false;
@@ -204,7 +212,11 @@ class PermissionGroup
 		return true;
 	}
 
-	public function removeChannel(string $channelName): bool
+    /**
+     * @param string $channelName
+     * @return bool
+     */
+    public function removeChannel(string $channelName): bool
 	{
 		if (!$this->containsChannel($channelName))
 			return false;
@@ -213,7 +225,10 @@ class PermissionGroup
 		return true;
 	}
 
-	public function listChannels(): array
+    /**
+     * @return array
+     */
+    public function listChannels(): array
 	{
 		return $this->channels;
 	}
@@ -275,7 +290,12 @@ class PermissionGroup
 		return in_array($permission, $this->allowedPermissions);
 	}
 
-	public function hasPermission(string $permission, string $channel = ''): bool
+    /**
+     * @param string $permission
+     * @param string $channel
+     * @return bool
+     */
+    public function hasPermission(string $permission, string $channel = ''): bool
 	{
 		$hasPermission = $this->containsPermission($permission);
 		$isCorrectChannel = empty($this->listChannels()) ? true : !empty($channel) ? $this->containsChannel($channel) : false;
