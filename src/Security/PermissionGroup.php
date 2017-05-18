@@ -74,21 +74,7 @@ class PermissionGroup
 			return;
 
 		$data = $dataStorage->get($this->getName());
-
-		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
-		$this->setUserCollection((array) $data['members']);
-
-		$permissions = $data['allowedPermissions'];
-		foreach ($permissions as $permission)
-		{
-			$this->addPermission($permission);
-		}
-
-		$channels = $data['linkedChannels'];
-		foreach ($channels as $channel)
-		{
-			$this->addChannel($channel);
-		}
+        $this->fromArray($data);
 	}
 
 	/**
@@ -98,14 +84,7 @@ class PermissionGroup
 	{
 		$dataStorage = new DataStorage('permissiongroups');
 
-		$data = [
-			'canHaveMembers' => (int) $this->getCanHaveMembers(),
-			'members' => $this->getUserCollection(),
-			'allowedPermissions' => $this->listPermissions(),
-			'linkedChannels' => $this->listChannels(),
-		];
-
-		$dataStorage->set($this->getName(), $data);
+		$dataStorage->set($this->getName(), $this->toArray());
 	}
 
 	/**
@@ -337,4 +316,32 @@ class PermissionGroup
 	{
 		return $this->allowedPermissions;
 	}
+
+	public function toArray(): array
+    {
+        return [
+            'canHaveMembers' => (int) $this->getCanHaveMembers(),
+            'members' => $this->getUserCollection(),
+            'allowedPermissions' => $this->listPermissions(),
+            'linkedChannels' => $this->listChannels(),
+        ];
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->setCanHaveMembers((bool) $data['canHaveMembers']);
+        $this->setUserCollection((array) $data['members']);
+
+        $permissions = $data['allowedPermissions'];
+        foreach ($permissions as $permission)
+        {
+            $this->addPermission($permission);
+        }
+
+        $channels = $data['linkedChannels'];
+        foreach ($channels as $channel)
+        {
+            $this->addChannel($channel);
+        }
+    }
 }

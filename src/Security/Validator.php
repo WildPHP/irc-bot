@@ -86,7 +86,7 @@ class Validator
 		)
 			return 'owner';
 
-		if (!empty($channel) && self::isUserOPInChannel($channel, $user))
+		if (!empty($channel) && $this->isUserOPInChannel($channel, $user))
 		{
 			/** @var PermissionGroup $opGroup */
 			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
@@ -96,7 +96,7 @@ class Validator
 				return 'op';
 		}
 
-		if (!empty($channel) && self::isUserVoicedInChannel($channel, $user))
+		if (!empty($channel) && $this->isUserVoicedInChannel($channel, $user))
 		{
 			/** @var PermissionGroup $voiceGroup */
 			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
