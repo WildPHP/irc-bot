@@ -88,10 +88,10 @@ class ChannelCollection extends Collection
 		$channelName = $conversationChannel ? $user->getNickname() : $name;
 
 		if ($this->containsChannelName($channelName))
-			return $this->findByChannelName($name);
+            return $this->findByChannelName($channelName);
 
 		if ($conversationChannel && !$this->findByChannelName($channelName))
-			return $this->createFakeConversationChannel($user);
+            return $this->createFakeConversationChannel($user);
 
 		$userCollection = new UserCollection($this->getContainer());
 		$channelModes = new ChannelModes($this->getContainer());
