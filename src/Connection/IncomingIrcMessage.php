@@ -72,10 +72,6 @@ class IncomingIrcMessage
 
 		if (!class_exists($expectedClass))
 		{
-			Logger::fromContainer($this->getContainer())->warning('Not Implemented: Unable to specialize message; no valid class found', [
-				'verb' => $verb
-			]);
-
 			return $this;
 		}
 

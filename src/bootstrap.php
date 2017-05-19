@@ -34,11 +34,23 @@ use WildPHP\Core\Tasks\TaskController;
 */
 
 /**
+ * @param Configuration $configuration
  * @return Logger
  */
-function setupLogger()
+function setupLogger(Configuration $configuration): Logger
 {
-	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs');
+    try
+    {
+        $logLevel = $configuration->get('loglevel')->getValue();
+
+        if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
+            $logLevel = 'info';
+    }
+    catch (\Exception $e)
+    {
+        $logLevel = 'info';
+    }
+	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs', $logLevel);
 
 	return new Logger($klogger);
 }
@@ -159,8 +171,10 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer = new \WildPHP\Core\ComponentContainer();
 	$componentContainer->setLoop($loop);
 	$componentContainer->store(setupEventEmitter());
-	$componentContainer->store(setupLogger());
+	$logger = setupLogger($configuration);
+	$componentContainer->store($logger);
 	$componentContainer->store($configuration);
+	$logger->info('WildPHP initializing');
 
 	$capabilityHandler = new CapabilityHandler($componentContainer);
 	$componentContainer->store($capabilityHandler);
@@ -193,11 +207,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 			try
 			{
 				new $module($componentContainer);
+				$logger->info('Loaded module with class ' . $module);
 			}
 			catch (\Exception $e)
 			{
-				Logger::fromContainer($componentContainer)
-					->error('Could not properly load module; stability not guaranteed!',
+				$logger->error('Could not properly load module; stability not guaranteed!',
 						[
 							'class' => $module,
 							'message' => $e->getMessage()
@@ -210,6 +224,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	{
 		echo $e->getMessage();
 	}
+
+	$logger->info('A connection has been set up successfully and will be started. This may take a while.', [
+	    'server' => $connectionDetails['server'] . ':' . $connectionDetails['port'],
+        'wantedNickname' => $connectionDetails['nick']
+    ]);
 }
 
 $loop = LoopFactory::create();

@@ -61,6 +61,8 @@ class IrcConnection
 
 				foreach ($queueItems as $item)
 				{
+				    EventEmitter::fromContainer($this->getContainer())
+                        ->emit('irc.line.out', [$item, $this->getContainer()]);
 					$this->write($item->getCommandObject());
 				}
 			});
@@ -193,6 +195,7 @@ class IrcConnection
 		{
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.data.out', [$data]);
+
 			Logger::fromContainer($this->getContainer())
 				->debug('>> ' . $data);
 			$stream->write($data);

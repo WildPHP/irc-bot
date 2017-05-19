@@ -32,6 +32,11 @@ class Logger implements LoggerInterface
 	 */
 	protected $logger = null;
 
+    /**
+     * @var string
+     */
+	protected $lastLine = '';
+
 	/**
 	 * Logger constructor.
 	 * @param \Katzgrau\KLogger\Logger $logger
@@ -48,6 +53,10 @@ class Logger implements LoggerInterface
 	{
 		$lastline = $this->getLogger()
 			->getLastLogLine();
+		if ($lastline == $this->lastLine || empty($lastline))
+		    return;
+
+        $this->lastLine = $lastline;
 		echo $lastline . PHP_EOL;
 	}
 

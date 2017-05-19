@@ -7,8 +7,16 @@ connections:
         user: MyBot
         realname: A WildPHP Bot
 
+        # Not required to be set, can be used with e.g. ZNC servers.
+        password:
+
+# Prefix used for command parsing.
 prefix: '!'
 owner: 'SomeIRCAccountName'
+
+# One of debug, info, warning, error
+# It is recommended to leave this in debug for now as the other modes barely show information.
+loglevel: debug
 
 channels:
 	- '#somechannel'
