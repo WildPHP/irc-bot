@@ -104,11 +104,11 @@ class ChannelModes
 	}
 
 
-	/**
-	 * @param string $mode
-	 * @param User[] $users
-	 * @return void
-	 */
+    /**
+     * @param string $mode
+     * @param User[] ...$users
+     * @return void
+     */
 	public function addUserToMode(string $mode, User ...$users): void
 	{
 		foreach ($users as $user)
@@ -124,7 +124,7 @@ class ChannelModes
 
 	/**
 	 * @param string $mode
-	 * @param User[] $users
+	 * @param User[] ...$users
 	 * @internal param User $user
 	 *
 	 * @return void
