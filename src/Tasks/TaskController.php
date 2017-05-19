@@ -39,6 +39,7 @@ class TaskController
 
 	/**
 	 * TaskController constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -49,6 +50,7 @@ class TaskController
 
 	/**
 	 * @param Task $task
+	 *
 	 * @return bool
 	 */
 	public function addTask(Task $task): bool
@@ -63,6 +65,7 @@ class TaskController
 
 	/**
 	 * @param Task $task
+	 *
 	 * @return bool
 	 */
 	public function removeTask(Task $task): bool
@@ -77,6 +80,7 @@ class TaskController
 
 	/**
 	 * @param Task $task
+	 *
 	 * @return bool
 	 */
 	public function taskExists(Task $task): bool

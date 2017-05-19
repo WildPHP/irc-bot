@@ -52,6 +52,7 @@ class PermissionGroup
 
 	/**
 	 * PermissionGroup constructor.
+	 *
 	 * @param string $name
 	 * @param bool $load
 	 */
@@ -74,7 +75,7 @@ class PermissionGroup
 			return;
 
 		$data = $dataStorage->get($this->getName());
-        $this->fromArray($data);
+		$this->fromArray($data);
 	}
 
 	/**
@@ -89,6 +90,7 @@ class PermissionGroup
 
 	/**
 	 * @param string $ircAccount
+	 *
 	 * @return bool
 	 */
 	public function isMemberByIrcAccount(string $ircAccount)
@@ -98,6 +100,7 @@ class PermissionGroup
 
 	/**
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function isMember(User $user)
@@ -107,6 +110,7 @@ class PermissionGroup
 
 	/**
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function addMember(User $user)
@@ -125,6 +129,7 @@ class PermissionGroup
 
 	/**
 	 * @param string $ircAccount
+	 *
 	 * @return bool
 	 */
 	public function addMemberByIrcAccount(string $ircAccount)
@@ -139,6 +144,7 @@ class PermissionGroup
 
 	/**
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function removeMember(User $user)
@@ -157,6 +163,7 @@ class PermissionGroup
 
 	/**
 	 * @param string $ircAccount
+	 *
 	 * @return bool
 	 */
 	public function removeMemberByIrcAccount(string $ircAccount)
@@ -169,45 +176,50 @@ class PermissionGroup
 		return true;
 	}
 
-    /**
-     * @param string $channelName
-     * @return bool
-     */
-    public function containsChannel(string $channelName): bool
+	/**
+	 * @param string $channelName
+	 *
+	 * @return bool
+	 */
+	public function containsChannel(string $channelName): bool
 	{
 		return in_array($channelName, $this->channels);
 	}
 
-    /**
-     * @param string $channelName
-     * @return bool
-     */
-    public function addChannel(string $channelName): bool
+	/**
+	 * @param string $channelName
+	 *
+	 * @return bool
+	 */
+	public function addChannel(string $channelName): bool
 	{
 		if ($this->containsChannel($channelName))
 			return false;
 
 		$this->channels[] = $channelName;
+
 		return true;
 	}
 
-    /**
-     * @param string $channelName
-     * @return bool
-     */
-    public function removeChannel(string $channelName): bool
+	/**
+	 * @param string $channelName
+	 *
+	 * @return bool
+	 */
+	public function removeChannel(string $channelName): bool
 	{
 		if (!$this->containsChannel($channelName))
 			return false;
 
 		unset($this->channels[array_search($channelName, $this->channels)]);
+
 		return true;
 	}
 
-    /**
-     * @return array
-     */
-    public function listChannels(): array
+	/**
+	 * @return array
+	 */
+	public function listChannels(): array
 	{
 		return $this->channels;
 	}
@@ -262,6 +274,7 @@ class PermissionGroup
 
 	/**
 	 * @param string $permission
+	 *
 	 * @return bool
 	 */
 	public function containsPermission(string $permission): bool
@@ -269,20 +282,23 @@ class PermissionGroup
 		return in_array($permission, $this->allowedPermissions);
 	}
 
-    /**
-     * @param string $permission
-     * @param string $channel
-     * @return bool
-     */
-    public function hasPermission(string $permission, string $channel = ''): bool
+	/**
+	 * @param string $permission
+	 * @param string $channel
+	 *
+	 * @return bool
+	 */
+	public function hasPermission(string $permission, string $channel = ''): bool
 	{
 		$hasPermission = $this->containsPermission($permission);
 		$isCorrectChannel = empty($this->listChannels()) ? true : !empty($channel) ? $this->containsChannel($channel) : false;
+
 		return $hasPermission && $isCorrectChannel;
 	}
 
 	/**
 	 * @param string $permission
+	 *
 	 * @return bool
 	 */
 	public function addPermission(string $permission): bool
@@ -297,6 +313,7 @@ class PermissionGroup
 
 	/**
 	 * @param string $permission
+	 *
 	 * @return bool
 	 */
 	public function removePermission(string $permission): bool
@@ -318,30 +335,30 @@ class PermissionGroup
 	}
 
 	public function toArray(): array
-    {
-        return [
-            'canHaveMembers' => (int) $this->getCanHaveMembers(),
-            'members' => $this->getUserCollection(),
-            'allowedPermissions' => $this->listPermissions(),
-            'linkedChannels' => $this->listChannels(),
-        ];
-    }
+	{
+		return [
+			'canHaveMembers' => (int) $this->getCanHaveMembers(),
+			'members' => $this->getUserCollection(),
+			'allowedPermissions' => $this->listPermissions(),
+			'linkedChannels' => $this->listChannels(),
+		];
+	}
 
-    public function fromArray(array $data)
-    {
-        $this->setCanHaveMembers((bool) $data['canHaveMembers']);
-        $this->setUserCollection((array) $data['members']);
+	public function fromArray(array $data)
+	{
+		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
+		$this->setUserCollection((array) $data['members']);
 
-        $permissions = $data['allowedPermissions'];
-        foreach ($permissions as $permission)
-        {
-            $this->addPermission($permission);
-        }
+		$permissions = $data['allowedPermissions'];
+		foreach ($permissions as $permission)
+		{
+			$this->addPermission($permission);
+		}
 
-        $channels = $data['linkedChannels'];
-        foreach ($channels as $channel)
-        {
-            $this->addChannel($channel);
-        }
-    }
+		$channels = $data['linkedChannels'];
+		foreach ($channels as $channel)
+		{
+			$this->addChannel($channel);
+		}
+	}
 }

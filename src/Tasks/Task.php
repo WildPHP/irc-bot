@@ -44,6 +44,7 @@ class Task
 
 	/**
 	 * Task constructor.
+	 *
 	 * @param callable $callback
 	 * @param int $time
 	 * @param array $args

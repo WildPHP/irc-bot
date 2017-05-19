@@ -31,6 +31,7 @@ class NeonBackend implements ConfigurationBackendInterface
 
 	/**
 	 * NeonBackend constructor.
+	 *
 	 * @param string $configFile
 	 */
 	public function __construct(string $configFile)

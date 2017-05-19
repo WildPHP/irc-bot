@@ -38,13 +38,13 @@ class TextFormatter
 	 * @var array
 	 */
 	protected static $asciiMap = [
-        'bold' => "\x02",
-        'underline' => "\x1F",
-        'italic' => "\x09",
-        'strikethrough' => "\x13",
-        'reverse' => "\x16",
-        'color' => "\x03"
-    ];
+		'bold' => "\x02",
+		'underline' => "\x1F",
+		'italic' => "\x09",
+		'strikethrough' => "\x13",
+		'reverse' => "\x16",
+		'color' => "\x03"
+	];
 
 	/**
 	 * @param string $text

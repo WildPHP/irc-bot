@@ -21,7 +21,6 @@
 namespace WildPHP\Core\Connection\IRCMessages;
 
 use WildPHP\Core\Connection\IncomingIrcMessage;
-use WildPHP\Core\Connection\UserPrefix;
 
 /**
  * Class PASS
@@ -31,50 +30,51 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class PASS implements BaseMessage, SendableMessage
 {
-    protected static $verb = 'PASS';
+	protected static $verb = 'PASS';
 
-    protected $password = '';
+	protected $password = '';
 
-    public function __construct(string $password)
-    {
-        $this->setPassword($password);
-    }
+	public function __construct(string $password)
+	{
+		$this->setPassword($password);
+	}
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     *
-     * @return \self
-     * @throws \InvalidArgumentException
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-    {
-        if ($incomingIrcMessage->getVerb() != self::$verb)
-            throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return \self
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+	{
+		if ($incomingIrcMessage->getVerb() != self::$verb)
+			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-        $password = $incomingIrcMessage->getArgs()[0];
+		$password = $incomingIrcMessage->getArgs()[0];
 
-        $object = new self($password);
-        return $object;
-    }
+		$object = new self($password);
 
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
+		return $object;
+	}
 
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
+	/**
+	 * @return string
+	 */
+	public function getPassword(): string
+	{
+		return $this->password;
+	}
 
-    public function __toString()
-    {
-        return 'PASS :' . $this->getPassword() . "\r\n";
-    }
+	/**
+	 * @param string $password
+	 */
+	public function setPassword(string $password)
+	{
+		$this->password = $password;
+	}
+
+	public function __toString()
+	{
+		return 'PASS :' . $this->getPassword() . "\r\n";
+	}
 }

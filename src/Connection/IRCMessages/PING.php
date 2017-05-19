@@ -7,6 +7,7 @@
  */
 
 namespace WildPHP\Core\Connection\IRCMessages;
+
 use WildPHP\Core\Connection\IncomingIrcMessage;
 
 /**
@@ -82,6 +83,7 @@ class PING implements BaseMessage, SendableMessage
 	public function __toString()
 	{
 		$server2 = $this->getServer2();
+
 		return 'PING ' . $this->getServer1() . (!empty($server2) ? ' ' . $server2 : '') . "\r\n";
 	}
 }

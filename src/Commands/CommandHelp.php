@@ -30,6 +30,7 @@ class CommandHelp
 
 	/**
 	 * @param string $contents
+	 *
 	 * @return int
 	 */
 	public function addPage(string $contents): int
@@ -47,6 +48,7 @@ class CommandHelp
 
 	/**
 	 * @param int $index
+	 *
 	 * @return int
 	 */
 	public function indexExists(int $index): int
@@ -64,6 +66,7 @@ class CommandHelp
 
 	/**
 	 * @param int $position
+	 *
 	 * @return bool
 	 */
 	public function removePageAt(int $position): bool
@@ -107,6 +110,7 @@ class CommandHelp
 
 	/**
 	 * @param int $index
+	 *
 	 * @return string
 	 */
 	public function getPageAt(int $index): string

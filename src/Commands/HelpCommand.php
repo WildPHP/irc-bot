@@ -24,7 +24,6 @@ namespace WildPHP\Core\Commands;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\TextFormatter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
 
@@ -32,6 +31,7 @@ class HelpCommand
 {
 	/**
 	 * HelpCommand constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -84,7 +84,8 @@ class HelpCommand
 		if (!CommandHandler::fromContainer($container)
 			->getCommandDictionary()
 			->keyExists($command)
-		) {
+		)
+		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'That command does not exist, sorry!');
 

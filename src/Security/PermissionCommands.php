@@ -37,6 +37,7 @@ class PermissionCommands
 
 	/**
 	 * PermissionCommands constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -358,7 +359,8 @@ class PermissionCommands
 	{
 		if (empty($args[1]) || ($valUser = UserCollection::fromContainer($container)
 				->findByNickname($args[1])) == false
-		) {
+		)
+		{
 			$valUser = $user;
 		}
 
@@ -450,7 +452,7 @@ class PermissionCommands
 		}
 
 		$group = PermissionGroupCollection::fromContainer($this->getContainer())
-			->remove(function(PermissionGroup $item) use ($groupName)
+			->remove(function (PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});
@@ -580,12 +582,13 @@ class PermissionCommands
 
 	/**
 	 * @param string $groupName
+	 *
 	 * @return bool|PermissionGroup
 	 */
 	protected function findGroupByName(string $groupName)
 	{
 		return PermissionGroupCollection::fromContainer($this->getContainer())
-			->find(function(PermissionGroup $item) use ($groupName)
+			->find(function (PermissionGroup $item) use ($groupName)
 			{
 				return $item->getName() == $groupName;
 			});

@@ -34,6 +34,7 @@ class DataStorage extends Flintstone
 
 	/**
 	 * DataStorage constructor.
+	 *
 	 * @param \Flintstone\Database|string $name
 	 */
 	public function __construct($name)
@@ -47,6 +48,7 @@ class DataStorage extends Flintstone
 
 	/**
 	 * @param string $key
+	 *
 	 * @throws Exception
 	 */
 	public function validateKey($key)

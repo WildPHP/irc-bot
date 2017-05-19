@@ -73,10 +73,10 @@ class ConfigurationStorage
 		$value = $configurationItem->getValue();
 		$pieces = explode('.', $key);
 
-		$lastPiece = & $this->config;
+		$lastPiece = &$this->config;
 		foreach ($pieces as $piece)
 		{
-			$lastPiece = & $lastPiece[$piece];
+			$lastPiece = &$lastPiece[$piece];
 		}
 		$lastPiece = $value;
 	}

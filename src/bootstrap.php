@@ -35,21 +35,23 @@ use WildPHP\Core\Tasks\TaskController;
 
 /**
  * @param Configuration $configuration
+ *
  * @return Logger
  */
 function setupLogger(Configuration $configuration): Logger
 {
-    try
-    {
-        $logLevel = $configuration->get('loglevel')->getValue();
+	try
+	{
+		$logLevel = $configuration->get('loglevel')
+			->getValue();
 
-        if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
-            $logLevel = 'info';
-    }
-    catch (\Exception $e)
-    {
-        $logLevel = 'info';
-    }
+		if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
+			$logLevel = 'info';
+	}
+	catch (\Exception $e)
+	{
+		$logLevel = 'info';
+	}
 	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs', $logLevel);
 
 	return new Logger($klogger);
@@ -93,7 +95,7 @@ function setupPermissionGroupCollection()
 		$globalPermissionGroup->add($pGroup);
 	}
 
-	register_shutdown_function(function() use ($globalPermissionGroup)
+	register_shutdown_function(function () use ($globalPermissionGroup)
 	{
 		/** @var PermissionGroup[] $groups */
 		$groups = $globalPermissionGroup->toArray();
@@ -147,18 +149,18 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 
 	EventEmitter::fromContainer($container)
 		->on('stream.created',
-			function(Queue $queue) use ($username, $hostname, $server, $realname, $nickname, $password)
+			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname, $password)
 			{
 				$queue->user($username, $hostname, $server, $realname);
 				$queue->nick($nickname);
 
 				if (!empty($password))
-				    $queue->pass($password);
+					$queue->pass($password);
 			});
 
 	EventEmitter::fromContainer($container)
 		->on('stream.closed',
-			function() use ($loop)
+			function () use ($loop)
 			{
 				$loop->stop();
 			});
@@ -212,10 +214,10 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 			catch (\Exception $e)
 			{
 				$logger->error('Could not properly load module; stability not guaranteed!',
-						[
-							'class' => $module,
-							'message' => $e->getMessage()
-						]);
+					[
+						'class' => $module,
+						'message' => $e->getMessage()
+					]);
 			}
 
 		}
@@ -226,15 +228,16 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	}
 
 	$logger->info('A connection has been set up successfully and will be started. This may take a while.', [
-	    'server' => $connectionDetails['server'] . ':' . $connectionDetails['port'],
-        'wantedNickname' => $connectionDetails['nick']
-    ]);
+		'server' => $connectionDetails['server'] . ':' . $connectionDetails['port'],
+		'wantedNickname' => $connectionDetails['nick']
+	]);
 }
 
 $loop = LoopFactory::create();
 $configuration = setupConfiguration();
 
-$connections = $configuration->get('connections')->getValue();
+$connections = $configuration->get('connections')
+	->getValue();
 
 foreach ($connections as $connection)
 {

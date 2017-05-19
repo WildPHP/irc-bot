@@ -36,6 +36,7 @@ class ChannelCollection extends Collection
 
 	/**
 	 * ChannelCollection constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -66,7 +67,8 @@ class ChannelCollection extends Collection
 		$this->add($channel);
 
 		if ($sendWhox)
-			Queue::fromContainer($this->getContainer())->who($user->getNickname(), '%nuhaf');
+			Queue::fromContainer($this->getContainer())
+				->who($user->getNickname(), '%nuhaf');
 
 		return $channel;
 	}
@@ -82,22 +84,25 @@ class ChannelCollection extends Collection
 	 */
 	public function requestByChannelName(string $name, User $user = null): Channel
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())->get('currentNickname')->getValue();
+		$ownNickname = Configuration::fromContainer($this->getContainer())
+			->get('currentNickname')
+			->getValue();
 
 		$conversationChannel = $user && $ownNickname == $name;
 		$channelName = $conversationChannel ? $user->getNickname() : $name;
 
 		if ($this->containsChannelName($channelName))
-            return $this->findByChannelName($channelName);
+			return $this->findByChannelName($channelName);
 
 		if ($conversationChannel && !$this->findByChannelName($channelName))
-            return $this->createFakeConversationChannel($user);
+			return $this->createFakeConversationChannel($user);
 
 		$userCollection = new UserCollection($this->getContainer());
 		$channelModes = new ChannelModes($this->getContainer());
 		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($name);
 		$this->add($channel);
+
 		return $channel;
 	}
 
@@ -113,11 +118,12 @@ class ChannelCollection extends Collection
 
 	/**
 	 * @param string $name
+	 *
 	 * @return false|Channel
 	 */
 	public function findByChannelName(string $name)
 	{
-		return $this->find(function(Channel $channel) use ($name)
+		return $this->find(function (Channel $channel) use ($name)
 		{
 			return $channel->getName() == $name;
 		});

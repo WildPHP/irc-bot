@@ -45,6 +45,7 @@ class UserPrefix
 
 	/**
 	 * UserPrefix constructor.
+	 *
 	 * @param string $nickname
 	 * @param string $username
 	 * @param string $hostname

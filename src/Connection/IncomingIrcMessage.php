@@ -12,7 +12,6 @@ namespace WildPHP\Core\Connection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IRCMessages\BaseMessage;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Logger\Logger;
 
 class IncomingIrcMessage
 {
@@ -43,6 +42,7 @@ class IncomingIrcMessage
 
 	/**
 	 * IncomingIrcMessage constructor.
+	 *
 	 * @param ParsedIrcMessageLine $line
 	 * @param ComponentContainer $container
 	 */

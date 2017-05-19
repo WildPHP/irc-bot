@@ -32,6 +32,7 @@ class ComponentContainer
 
 	/**
 	 * @param string $className
+	 *
 	 * @return object
 	 */
 	public function retrieve(string $className)

@@ -36,6 +36,7 @@ class QueueItem
 
 	/**
 	 * QueueItem constructor.
+	 *
 	 * @param BaseMessage $command
 	 * @param int $time
 	 */

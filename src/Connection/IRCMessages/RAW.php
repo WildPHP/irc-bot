@@ -7,6 +7,7 @@
  */
 
 namespace WildPHP\Core\Connection\IRCMessages;
+
 use WildPHP\Core\Connection\IncomingIrcMessage;
 
 /**
@@ -24,6 +25,7 @@ class RAW implements BaseMessage, SendableMessage
 
 	/**
 	 * RAW constructor.
+	 *
 	 * @param string $command
 	 */
 	public function __construct(string $command)
@@ -31,15 +33,16 @@ class RAW implements BaseMessage, SendableMessage
 		$this->setCommand($command);
 	}
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     * @return RAW
-     * @throws \ErrorException
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-    {
-        throw new \ErrorException('You could not have received this message... :o');
-    }
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return RAW
+	 * @throws \ErrorException
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+	{
+		throw new \ErrorException('You could not have received this message... :o');
+	}
 
 	/**
 	 * @return string

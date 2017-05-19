@@ -37,6 +37,7 @@ class ManagementCommands
 
 	/**
 	 * ManagementCommands constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -79,6 +80,7 @@ class ManagementCommands
 
 	/**
 	 * @param array $channels
+	 *
 	 * @return array
 	 */
 	protected function validateChannels(array $channels): array

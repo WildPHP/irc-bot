@@ -35,6 +35,7 @@ class Validator
 
 	/**
 	 * Validator constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -47,6 +48,7 @@ class Validator
 	/**
 	 * @param Channel $channel
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function isUserOPInChannel(Channel $channel, User $user)
@@ -58,6 +60,7 @@ class Validator
 	/**
 	 * @param Channel $channel
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function isUserVoicedInChannel(Channel $channel, User $user)
@@ -110,7 +113,7 @@ class Validator
 
 		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
-			->findAll(function($item) use ($user)
+			->findAll(function ($item) use ($user)
 			{
 				/** @var PermissionGroup $item */
 				if (!$item->getCanHaveMembers())

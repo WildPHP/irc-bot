@@ -29,6 +29,7 @@ class UserStateManager
 
 	/**
 	 * UserStateManager constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -92,12 +93,13 @@ class UserStateManager
 		$userObject->setHostname($hostname);
 		$userObject->setIrcAccount($accountname);
 
-		Logger::fromContainer($this->getContainer())->debug('Updated user details', [
-			'nickname' => $userObject->getNickname(),
-			'username' => $username,
-			'hostname' => $hostname,
-			'accountname' => $accountname
-		]);
+		Logger::fromContainer($this->getContainer())
+			->debug('Updated user details', [
+				'nickname' => $userObject->getNickname(),
+				'username' => $username,
+				'hostname' => $hostname,
+				'accountname' => $accountname
+			]);
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.account.changed', [$userObject, $queue]);
@@ -120,7 +122,7 @@ class UserStateManager
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.quit', [$userObject, $queue]);
 		UserCollection::fromContainer($this->getContainer())
-			->remove(function(User $user) use ($userObject)
+			->remove(function (User $user) use ($userObject)
 			{
 				return $user === $userObject;
 			});

@@ -52,6 +52,7 @@ class User
 
 	/**
 	 * User constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)

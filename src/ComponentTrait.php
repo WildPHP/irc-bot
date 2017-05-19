@@ -12,6 +12,7 @@ trait ComponentTrait
 {
 	/**
 	 * @param ComponentContainer $container
+	 *
 	 * @return null|object
 	 */
 	public static function fromContainer(ComponentContainer $container)

@@ -79,6 +79,7 @@ class PART implements BaseMessage, SendableMessage
 	{
 		$channels = implode(',', $this->getChannels());
 		$message = $this->getMessage();
+
 		return 'PART ' . $channels . (!empty($message) ? ' :' . $message : '') . "\r\n";
 	}
 }

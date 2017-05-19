@@ -38,11 +38,12 @@ class PermissionGroupCollection extends Collection
 
 	/**
 	 * @param string $name
+	 *
 	 * @return bool|mixed
 	 */
 	public function findGroupByName(string $name)
 	{
-		return $this->find(function(PermissionGroup $group) use ($name)
+		return $this->find(function (PermissionGroup $group) use ($name)
 		{
 			return $group->getName() == $name;
 		});
@@ -50,11 +51,12 @@ class PermissionGroupCollection extends Collection
 
 	/**
 	 * @param string $ircAccount
+	 *
 	 * @return Collection
 	 */
 	public function findAllGroupsForIrcAccount(string $ircAccount)
 	{
-		return $this->findAll(function(PermissionGroup $group) use ($ircAccount)
+		return $this->findAll(function (PermissionGroup $group) use ($ircAccount)
 		{
 			return $group->isMemberByIrcAccount($ircAccount);
 		});

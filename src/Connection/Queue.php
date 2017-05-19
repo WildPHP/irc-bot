@@ -83,6 +83,7 @@ class Queue implements QueueInterface
 
 	/**
 	 * Queue constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -197,7 +198,7 @@ class Queue implements QueueInterface
 	 */
 	public function privmsg(string $channel, string $message)
 	{
-	    $privmsg = new PRIVMSG($channel, $message);
+		$privmsg = new PRIVMSG($channel, $message);
 		$this->insertMessage($privmsg);
 	}
 
@@ -206,7 +207,7 @@ class Queue implements QueueInterface
 	 */
 	public function nick(string $nickname)
 	{
-	    $nick = new NICK($nickname);
+		$nick = new NICK($nickname);
 		$this->insertMessage($nick);
 	}
 
@@ -218,7 +219,7 @@ class Queue implements QueueInterface
 	 */
 	public function user(string $username, string $hostname, string $servername, string $realname)
 	{
-	    $user = new USER($username, $hostname, $servername, $realname);
+		$user = new USER($username, $hostname, $servername, $realname);
 		$this->insertMessage($user);
 	}
 
@@ -232,13 +233,13 @@ class Queue implements QueueInterface
 		$this->insertMessage($pong);
 	}
 
-    /**
-     * @param string $server1
-     * @param string $server2
-     */
+	/**
+	 * @param string $server1
+	 * @param string $server2
+	 */
 	public function ping(string $server1, string $server2 = '')
 	{
-	    $ping = new PING($server1, $server2);
+		$ping = new PING($server1, $server2);
 		$this->insertMessage($ping);
 	}
 
@@ -248,7 +249,7 @@ class Queue implements QueueInterface
 	 */
 	public function join($channel, $key = '')
 	{
-	    $join = new JOIN($channel, $key);
+		$join = new JOIN($channel, $key);
 		$this->insertMessage($join);
 	}
 
@@ -257,23 +258,23 @@ class Queue implements QueueInterface
 	 */
 	public function part($channel)
 	{
-	    $part = new PART($channel);
+		$part = new PART($channel);
 		$this->insertMessage($part);
 	}
 
-    /**
-     * @param $password
-     */
+	/**
+	 * @param $password
+	 */
 	public function pass($password)
-    {
-        $pass = new PASS($password);
-        $this->insertMessage($pass);
-    }
+	{
+		$pass = new PASS($password);
+		$this->insertMessage($pass);
+	}
 
-    /**
-     * @param string $command
-     * @param array $capabilities
-     */
+	/**
+	 * @param string $command
+	 * @param array $capabilities
+	 */
 	public function cap(string $command, array $capabilities = [])
 	{
 		$cap = new CAP($command, $capabilities);
@@ -295,7 +296,7 @@ class Queue implements QueueInterface
 	 */
 	public function quit(string $message)
 	{
-	    $quit = new QUIT($message);
+		$quit = new QUIT($message);
 		$this->insertMessage($quit);
 	}
 
@@ -306,7 +307,7 @@ class Queue implements QueueInterface
 	 */
 	public function kick(string $channelName, string $nickname, string $message = '')
 	{
-	    $kick = new KICK($channelName, $nickname, $message);
+		$kick = new KICK($channelName, $nickname, $message);
 		$this->insertMessage($kick);
 	}
 
@@ -317,7 +318,7 @@ class Queue implements QueueInterface
 	 */
 	public function mode(string $target, string $flags, array $args)
 	{
-	    $mode = new MODE($target, $flags, $args);
+		$mode = new MODE($target, $flags, $args);
 		$this->insertMessage($mode);
 	}
 
@@ -336,7 +337,7 @@ class Queue implements QueueInterface
 	 */
 	public function raw(string $raw)
 	{
-	    $raw = new RAW($raw);
+		$raw = new RAW($raw);
 		$this->insertMessage($raw);
 	}
 }

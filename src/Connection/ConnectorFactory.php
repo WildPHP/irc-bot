@@ -73,6 +73,7 @@ class ConnectorFactory
 
 	/**
 	 * ConnectorFactory constructor.
+	 *
 	 * @param LoopInterface $loop
 	 */
 	public function __construct(LoopInterface $loop)

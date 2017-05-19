@@ -18,51 +18,53 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class CAP implements BaseMessage, SendableMessage
 {
-    protected static $verb = 'CAP';
+	protected static $verb = 'CAP';
 
-    use NicknameTrait;
+	use NicknameTrait;
 
 	/**
 	 * @var string
 	 */
 	protected $command = '';
 
-    /**
-     * @var array
-     */
+	/**
+	 * @var array
+	 */
 	protected $capabilities = [];
 
-    /**
-     * CAP constructor.
-     * @param string $command
-     * @param array $capabilities
-     */
+	/**
+	 * CAP constructor.
+	 *
+	 * @param string $command
+	 * @param array $capabilities
+	 */
 	public function __construct(string $command, array $capabilities = [])
 	{
 		$this->setCommand($command);
 		$this->setCapabilities($capabilities);
 	}
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     *
-     * @return \self
-     * @throws \InvalidArgumentException
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-    {
-        if ($incomingIrcMessage->getVerb() != self::$verb)
-            throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return \self
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+	{
+		if ($incomingIrcMessage->getVerb() != self::$verb)
+			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-        $args = $incomingIrcMessage->getArgs();
-        $nickname = array_shift($args);
-        $command = array_shift($args);
-        $capabilities = explode(' ', array_shift($args));
+		$args = $incomingIrcMessage->getArgs();
+		$nickname = array_shift($args);
+		$command = array_shift($args);
+		$capabilities = explode(' ', array_shift($args));
 
-        $object = new self($command, $capabilities);
-        $object->setNickname($nickname);
-        return $object;
-    }
+		$object = new self($command, $capabilities);
+		$object->setNickname($nickname);
+
+		return $object;
+	}
 
 	/**
 	 * @return string
@@ -80,28 +82,29 @@ class CAP implements BaseMessage, SendableMessage
 		$this->command = $command;
 	}
 
-    /**
-     * @return array
-     */
-    public function getCapabilities(): array
-    {
-        return $this->capabilities;
-    }
+	/**
+	 * @return array
+	 */
+	public function getCapabilities(): array
+	{
+		return $this->capabilities;
+	}
 
-    /**
-     * @param array $capabilities
-     */
-    public function setCapabilities(array $capabilities)
-    {
-        $this->capabilities = $capabilities;
-    }
+	/**
+	 * @param array $capabilities
+	 */
+	public function setCapabilities(array $capabilities)
+	{
+		$this->capabilities = $capabilities;
+	}
 
 	/**
 	 * @return string
 	 */
 	public function __toString(): string
 	{
-	    $capabilities = implode(' ', $this->getCapabilities());
+		$capabilities = implode(' ', $this->getCapabilities());
+
 		return 'CAP ' . $this->getCommand() . (!empty($capabilities) ? ' :' . $capabilities : '') . "\r\n";
 	}
 }

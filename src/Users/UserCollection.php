@@ -33,6 +33,7 @@ class UserCollection extends Collection
 
 	/**
 	 * UserCollection constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -53,11 +54,12 @@ class UserCollection extends Collection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return false|User
 	 */
 	public function findByNickname(string $nickname)
 	{
-		return $this->find(function(User $user) use ($nickname)
+		return $this->find(function (User $user) use ($nickname)
 		{
 			return $user->getNickname() == $nickname;
 		});
@@ -94,6 +96,7 @@ class UserCollection extends Collection
 
 	/**
 	 * @param string $nickname
+	 *
 	 * @return User
 	 */
 	public function findOrCreateByNickname(string $nickname): User

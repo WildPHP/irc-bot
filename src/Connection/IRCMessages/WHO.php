@@ -7,6 +7,7 @@
  */
 
 namespace WildPHP\Core\Connection\IRCMessages;
+
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
 
@@ -18,10 +19,10 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class WHO implements BaseMessage, SendableMessage
 {
-    protected static $verb = 'WHO';
+	protected static $verb = 'WHO';
 
-    use PrefixTrait;
-    use ChannelTrait;
+	use PrefixTrait;
+	use ChannelTrait;
 
 	/**
 	 * @var string
@@ -30,6 +31,7 @@ class WHO implements BaseMessage, SendableMessage
 
 	/**
 	 * WHO constructor.
+	 *
 	 * @param string $channel
 	 * @param string $options
 	 */
@@ -39,26 +41,27 @@ class WHO implements BaseMessage, SendableMessage
 		$this->setOptions($options);
 	}
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     *
-     * @return \self
-     * @throws \InvalidArgumentException
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-    {
-        if ($incomingIrcMessage->getVerb() != self::$verb)
-            throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return \self
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+	{
+		if ($incomingIrcMessage->getVerb() != self::$verb)
+			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-        $args = $incomingIrcMessage->getArgs();
-        $channel = array_shift($args);
-        $options = array_shift($args);
+		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+		$args = $incomingIrcMessage->getArgs();
+		$channel = array_shift($args);
+		$options = array_shift($args);
 
-        $object = new self($channel, $options);
-        $object->setPrefix($prefix);
-        return $object;
-    }
+		$object = new self($channel, $options);
+		$object->setPrefix($prefix);
+
+		return $object;
+	}
 
 	/**
 	 * @return string

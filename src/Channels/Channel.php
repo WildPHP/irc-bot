@@ -61,6 +61,7 @@ class Channel
 
 	/**
 	 * Channel constructor.
+	 *
 	 * @param UserCollection $userCollection
 	 * @param ChannelModes $channelModes
 	 */
@@ -185,6 +186,7 @@ class Channel
 	/**
 	 * @param string $name
 	 * @param string $prefix
+	 *
 	 * @return bool
 	 */
 	public static function isValidName(string $name, string $prefix)

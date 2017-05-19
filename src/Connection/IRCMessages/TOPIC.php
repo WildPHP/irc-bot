@@ -31,7 +31,7 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class TOPIC implements BaseMessage, SendableMessage
 {
-    protected static $verb = 'TOPIC';
+	protected static $verb = 'TOPIC';
 
 	use MessageTrait;
 	use ChannelTrait;
@@ -47,26 +47,27 @@ class TOPIC implements BaseMessage, SendableMessage
 		$this->setMessage($message);
 	}
 
-    /**
-     * @param IncomingIrcMessage $incomingIrcMessage
-     *
-     * @return \self
-     * @throws \InvalidArgumentException
-     */
-    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-    {
-        if ($incomingIrcMessage->getVerb() != self::$verb)
-            throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+	/**
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return \self
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+	{
+		if ($incomingIrcMessage->getVerb() != self::$verb)
+			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-        $args = $incomingIrcMessage->getArgs();
-        $channel = array_shift($args);
-        $message = array_shift($args);
+		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+		$args = $incomingIrcMessage->getArgs();
+		$channel = array_shift($args);
+		$message = array_shift($args);
 
-        $object = new self($channel, $message);
-        $object->setPrefix($prefix);
-        return $object;
-    }
+		$object = new self($channel, $message);
+		$object->setPrefix($prefix);
+
+		return $object;
+	}
 
 	/**
 	 * @return string

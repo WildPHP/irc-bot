@@ -95,6 +95,7 @@ class PONG implements BaseMessage, SendableMessage
 	public function __toString()
 	{
 		$server2 = $this->getServer2();
+
 		return 'PONG ' . $this->getServer1() . (!empty($server2) ? ' ' . $server2 : '') . "\r\n";
 	}
 }

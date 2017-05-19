@@ -59,6 +59,7 @@ class CapabilityHandler
 
 	/**
 	 * CapabilityHandler constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 
@@ -124,14 +125,17 @@ class CapabilityHandler
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Ending capability negotiation.');
-		Queue::fromContainer($this->getContainer())->cap('END');
+		Queue::fromContainer($this->getContainer())
+			->cap('END');
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.end');
+
 		return true;
 	}
 
 	/**
 	 * @param string $capability
+	 *
 	 * @return bool
 	 */
 	public function requestCapability(string $capability)
@@ -181,10 +185,10 @@ class CapabilityHandler
 		return in_array($capability, $this->acknowledgedCapabilities);
 	}
 
-    /**
-     * @param CAP $incomingIrcMessage
-     * @param Queue $queue
-     */
+	/**
+	 * @param CAP $incomingIrcMessage
+	 * @param Queue $queue
+	 */
 	public function responseRouter(CAP $incomingIrcMessage, Queue $queue)
 	{
 		$command = $incomingIrcMessage->getCommand();

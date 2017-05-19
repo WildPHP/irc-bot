@@ -22,7 +22,6 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\BaseMessage;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -30,10 +29,11 @@ use WildPHP\Core\Logger\Logger;
 
 class Parser
 {
-    use ContainerTrait;
+	use ContainerTrait;
 
 	/**
 	 * Parser constructor.
+	 *
 	 * @param ComponentContainer $container
 	 */
 	public function __construct(ComponentContainer $container)
@@ -54,34 +54,38 @@ class Parser
 						->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($container)]);
 				});
 
-		EventEmitter::fromContainer($container)->on('irc.line.in.privmsg', [$this, 'prettifyPrivmsg']);
-		EventEmitter::fromContainer($container)->on('irc.line.out', [$this, 'prettifyOutgoingPrivmsg']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.privmsg', [$this, 'prettifyPrivmsg']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.out', [$this, 'prettifyOutgoingPrivmsg']);
 		$this->setContainer($container);
 	}
 
 	public function prettifyPrivmsg(PRIVMSG $incoming, Queue $queue)
-    {
-        $nickname = $incoming->getNickname();
-        $channel = $incoming->getChannel();
-        $message = $incoming->getMessage();
+	{
+		$nickname = $incoming->getNickname();
+		$channel = $incoming->getChannel();
+		$message = $incoming->getMessage();
 
-        $toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
+		$toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
 
-        Logger::fromContainer($this->getContainer())->info($toLog);
-    }
+		Logger::fromContainer($this->getContainer())
+			->info($toLog);
+	}
 
-    public function prettifyOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
-    {
-        $message = $message->getCommandObject();
-        if (!($message instanceof PRIVMSG))
-            return;
+	public function prettifyOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
+	{
+		$message = $message->getCommandObject();
+		if (!($message instanceof PRIVMSG))
+			return;
 
-        $channel = $message->getChannel();
-        $message = $message->getMessage();
+		$channel = $message->getChannel();
+		$message = $message->getMessage();
 
-        $toLog = 'OUT: [' . $channel . '] ' . $message;
-        Logger::fromContainer($container)->info($toLog);
-    }
+		$toLog = 'OUT: [' . $channel . '] ' . $message;
+		Logger::fromContainer($container)
+			->info($toLog);
+	}
 
 	/**
 	 * @param string $line

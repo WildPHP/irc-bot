@@ -7,6 +7,7 @@
  */
 
 namespace WildPHP\Core\Connection\IRCMessages;
+
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\UserPrefix;
 
@@ -118,6 +119,7 @@ class MODE implements BaseMessage, SendableMessage
 	public function __toString()
 	{
 		$arguments = implode(' ', $this->getArguments());
+
 		return 'MODE ' . $this->getTarget() . ' ' . $this->getFlags() . ' ' . $arguments . "\r\n";
 	}
 }

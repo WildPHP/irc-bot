@@ -157,6 +157,7 @@ class JOIN implements BaseMessage, SendableMessage
 	{
 		$channels = implode(',', $this->getChannels());
 		$keys = implode(',', $this->getKeys());
+
 		return 'JOIN ' . $channels . (!empty($keys) ? ' ' . $keys : '') . "\r\n";
 	}
 }

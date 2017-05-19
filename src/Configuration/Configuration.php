@@ -38,6 +38,7 @@ class Configuration
 
 	/**
 	 * Configuration constructor.
+	 *
 	 * @param ConfigurationBackendInterface $configurationBackend
 	 */
 	public function __construct(ConfigurationBackendInterface $configurationBackend)
