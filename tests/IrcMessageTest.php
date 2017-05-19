@@ -19,6 +19,7 @@ use WildPHP\Core\Connection\IRCMessages\MODE;
 use WildPHP\Core\Connection\IRCMessages\NICK;
 use WildPHP\Core\Connection\IRCMessages\NOTICE;
 use WildPHP\Core\Connection\IRCMessages\PART;
+use WildPHP\Core\Connection\IRCMessages\PASS;
 use WildPHP\Core\Connection\IRCMessages\PING;
 use WildPHP\Core\Connection\IRCMessages\PONG;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
@@ -277,6 +278,25 @@ class IrcMessageTest extends TestCase
 		$this->assertEquals(['#channel'], $part->getChannels());
 		$this->assertEquals('I have a valid reason', $part->getMessage());
 	}
+
+	public function testPassCreate()
+    {
+        $pass = new PASS('myseekritpassw0rd');
+
+        $this->assertEquals('myseekritpassw0rd', $pass->getPassword());
+
+        $expected = 'PASS myseekritpassw0rd' . "\r\n";
+        $this->assertEquals($expected, $pass->__toString());
+    }
+
+    public function testPassReceive()
+    {
+        $line = Parser::parseLine('PASS myseekritpassw0rd' . "\r\n");
+        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $pass = PASS::fromIncomingIrcMessage($incoming);
+
+        $this->assertEquals('myseekritpassw0rd', $pass->getPassword());
+    }
 
 	public function testPingCreate()
 	{

@@ -29,6 +29,7 @@ use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\MODE;
 use WildPHP\Core\Connection\IRCMessages\NICK;
 use WildPHP\Core\Connection\IRCMessages\PART;
+use WildPHP\Core\Connection\IRCMessages\PASS;
 use WildPHP\Core\Connection\IRCMessages\PING;
 use WildPHP\Core\Connection\IRCMessages\PONG;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
@@ -259,6 +260,15 @@ class Queue implements QueueInterface
 	    $part = new PART($channel);
 		$this->insertMessage($part);
 	}
+
+    /**
+     * @param $password
+     */
+	public function pass($password)
+    {
+        $pass = new PASS($password);
+        $this->insertMessage($pass);
+    }
 
     /**
      * @param string $command
