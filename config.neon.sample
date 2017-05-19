@@ -12,3 +12,7 @@ owner: 'SomeIRCAccountName'
 
 channels:
 	- '#somechannel'
+
+#sasl:
+#    username: Username
+#    password: 'myS3cretP@ssword'
