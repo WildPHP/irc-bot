@@ -296,7 +296,7 @@ class IrcMessageTest extends TestCase
 
         $this->assertEquals('myseekritpassw0rd', $pass->getPassword());
 
-        $expected = 'PASS myseekritpassw0rd' . "\r\n";
+        $expected = 'PASS :myseekritpassw0rd' . "\r\n";
         $this->assertEquals($expected, $pass->__toString());
     }
 
