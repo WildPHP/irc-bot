@@ -129,15 +129,19 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 	$port = $connectionDetails['port'];
 	$realname = $connectionDetails['realname'];
 	$nickname = $connectionDetails['nick'];
+	$password = $connectionDetails['password'] ?? '';
 
 	$ircConnection->createFromConnector($connector, $server, $port);
 
 	EventEmitter::fromContainer($container)
 		->on('stream.created',
-			function(Queue $queue) use ($username, $hostname, $server, $realname, $nickname)
+			function(Queue $queue) use ($username, $hostname, $server, $realname, $nickname, $password)
 			{
 				$queue->user($username, $hostname, $server, $realname);
 				$queue->nick($nickname);
+
+				if (!empty($password))
+				    $queue->pass($password);
 			});
 
 	EventEmitter::fromContainer($container)
