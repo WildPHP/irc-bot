@@ -252,7 +252,7 @@ class ModerationCommands
 		}
 
 		Queue::fromContainer($container)
-			->mode($source->getName(), '+b', $hostname);
+			->mode($source->getName(), '+b', [$hostname]);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class ModerationCommands
 		}
 
 		Queue::fromContainer($container)
-			->mode($source->getName(), $modes, $nickname);
+			->mode($source->getName(), $modes, [$nickname]);
 	}
 
 	/**
@@ -305,7 +305,7 @@ class ModerationCommands
 		}
 
 		Queue::fromContainer($container)
-			->mode($source->getName(), '+b', $ban);
+			->mode($source->getName(), '+b', [$ban]);
 	}
 
 	/**
@@ -317,6 +317,6 @@ class ModerationCommands
 	public function removeBan(Task $task, Channel $source, string $banmask, ComponentContainer $container)
 	{
 		Queue::fromContainer($container)
-			->mode($source->getName(), '-b', $banmask);
+			->mode($source->getName(), '-b', [$banmask]);
 	}
 }

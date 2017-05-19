@@ -20,23 +20,23 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\IRCMessages\BaseMessage;
 
 interface QueueInterface
 {
 	/**
-	 * @param BaseCommand $command
+	 * @param BaseMessage $command
 	 *
 	 * @return void
 	 */
-	public function insertMessage(BaseCommand $command);
+	public function insertMessage(BaseMessage $command);
 
 	/**
-	 * @param BaseCommand $command
+	 * @param BaseMessage $command
 	 *
 	 * @return void
 	 */
-	public function removeMessage(BaseCommand $command);
+	public function removeMessage(BaseMessage $command);
 
 	/**
 	 * @param int $index

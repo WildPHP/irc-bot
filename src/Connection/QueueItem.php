@@ -20,12 +20,12 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\Connection\Commands\BaseCommand;
+use WildPHP\Core\Connection\IRCMessages\BaseMessage;
 
 class QueueItem
 {
 	/**
-	 * @var BaseCommand
+	 * @var BaseMessage
 	 */
 	protected $commandObject;
 
@@ -36,27 +36,27 @@ class QueueItem
 
 	/**
 	 * QueueItem constructor.
-	 * @param BaseCommand $command
+	 * @param BaseMessage $command
 	 * @param int $time
 	 */
-	public function __construct(BaseCommand $command, int $time)
+	public function __construct(BaseMessage $command, int $time)
 	{
 		$this->setCommandObject($command);
 		$this->setTime($time);
 	}
 
 	/**
-	 * @return BaseCommand
+	 * @return BaseMessage
 	 */
-	public function getCommandObject(): BaseCommand
+	public function getCommandObject(): BaseMessage
 	{
 		return $this->commandObject;
 	}
 
 	/**
-	 * @param BaseCommand $commandObject
+	 * @param BaseMessage $commandObject
 	 */
-	public function setCommandObject(BaseCommand $commandObject)
+	public function setCommandObject(BaseMessage $commandObject)
 	{
 		$this->commandObject = $commandObject;
 	}

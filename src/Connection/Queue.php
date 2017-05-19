@@ -22,21 +22,21 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
-use WildPHP\Core\Connection\Commands\BaseCommand;
-use WildPHP\Core\Connection\Commands\Cap;
-use WildPHP\Core\Connection\Commands\Join;
-use WildPHP\Core\Connection\Commands\Kick;
-use WildPHP\Core\Connection\Commands\Mode;
-use WildPHP\Core\Connection\Commands\Nick;
-use WildPHP\Core\Connection\Commands\Part;
-use WildPHP\Core\Connection\Commands\Ping;
-use WildPHP\Core\Connection\Commands\Pong;
-use WildPHP\Core\Connection\Commands\Privmsg;
-use WildPHP\Core\Connection\Commands\Quit;
-use WildPHP\Core\Connection\Commands\Raw;
-use WildPHP\Core\Connection\Commands\Topic;
-use WildPHP\Core\Connection\Commands\User;
-use WildPHP\Core\Connection\Commands\Who;
+use WildPHP\Core\Connection\IRCMessages\BaseMessage;
+use WildPHP\Core\Connection\IRCMessages\CAP;
+use WildPHP\Core\Connection\IRCMessages\JOIN;
+use WildPHP\Core\Connection\IRCMessages\KICK;
+use WildPHP\Core\Connection\IRCMessages\MODE;
+use WildPHP\Core\Connection\IRCMessages\NICK;
+use WildPHP\Core\Connection\IRCMessages\PART;
+use WildPHP\Core\Connection\IRCMessages\PING;
+use WildPHP\Core\Connection\IRCMessages\PONG;
+use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
+use WildPHP\Core\Connection\IRCMessages\QUIT;
+use WildPHP\Core\Connection\IRCMessages\RAW;
+use WildPHP\Core\Connection\IRCMessages\TOPIC;
+use WildPHP\Core\Connection\IRCMessages\USER;
+use WildPHP\Core\Connection\IRCMessages\WHO;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 
@@ -90,9 +90,9 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param BaseCommand $command
+	 * @param BaseMessage $command
 	 */
-	public function insertMessage(BaseCommand $command)
+	public function insertMessage(BaseMessage $command)
 	{
 		$time = $this->calculateNextMessageTime();
 
@@ -105,9 +105,9 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param BaseCommand $command
+	 * @param BaseMessage $command
 	 */
-	public function removeMessage(BaseCommand $command)
+	public function removeMessage(BaseMessage $command)
 	{
 		if (in_array($command, $this->messageQueue))
 			$this->removeMessageByIndex(array_search($command, $this->messageQueue));
@@ -196,7 +196,7 @@ class Queue implements QueueInterface
 	 */
 	public function privmsg(string $channel, string $message)
 	{
-		$privmsg = new Privmsg($channel, $message);
+	    $privmsg = new PRIVMSG($channel, $message);
 		$this->insertMessage($privmsg);
 	}
 
@@ -205,7 +205,7 @@ class Queue implements QueueInterface
 	 */
 	public function nick(string $nickname)
 	{
-		$nick = new Nick($nickname);
+	    $nick = new NICK($nickname);
 		$this->insertMessage($nick);
 	}
 
@@ -217,7 +217,7 @@ class Queue implements QueueInterface
 	 */
 	public function user(string $username, string $hostname, string $servername, string $realname)
 	{
-		$user = new User($username, $hostname, $servername, $realname);
+	    $user = new USER($username, $hostname, $servername, $realname);
 		$this->insertMessage($user);
 	}
 
@@ -227,16 +227,17 @@ class Queue implements QueueInterface
 	 */
 	public function pong(string $server1, string $server2 = '')
 	{
-		$pong = new Pong($server1, $server2);
+		$pong = new PONG($server1, $server2);
 		$this->insertMessage($pong);
 	}
 
-	/**
-	 * @param string $server
-	 */
-	public function ping(string $server)
+    /**
+     * @param string $server1
+     * @param string $server2
+     */
+	public function ping(string $server1, string $server2 = '')
 	{
-		$ping = new Ping($server);
+	    $ping = new PING($server1, $server2);
 		$this->insertMessage($ping);
 	}
 
@@ -246,7 +247,7 @@ class Queue implements QueueInterface
 	 */
 	public function join($channel, $key = '')
 	{
-		$join = new Join($channel, $key);
+	    $join = new JOIN($channel, $key);
 		$this->insertMessage($join);
 	}
 
@@ -255,16 +256,17 @@ class Queue implements QueueInterface
 	 */
 	public function part($channel)
 	{
-		$part = new Part($channel);
+	    $part = new PART($channel);
 		$this->insertMessage($part);
 	}
 
-	/**
-	 * @param string $command
-	 */
-	public function cap(string $command)
+    /**
+     * @param string $command
+     * @param array $capabilities
+     */
+	public function cap(string $command, array $capabilities = [])
 	{
-		$cap = new Cap($command);
+		$cap = new CAP($command, $capabilities);
 		$this->insertMessage($cap);
 	}
 
@@ -274,7 +276,7 @@ class Queue implements QueueInterface
 	 */
 	public function who(string $channel, string $options = '')
 	{
-		$who = new Who($channel, $options);
+		$who = new WHO($channel, $options);
 		$this->insertMessage($who);
 	}
 
@@ -283,7 +285,7 @@ class Queue implements QueueInterface
 	 */
 	public function quit(string $message)
 	{
-		$quit = new Quit($message);
+	    $quit = new QUIT($message);
 		$this->insertMessage($quit);
 	}
 
@@ -294,18 +296,18 @@ class Queue implements QueueInterface
 	 */
 	public function kick(string $channelName, string $nickname, string $message = '')
 	{
-		$kick = new Kick($channelName, $nickname, $message);
+	    $kick = new KICK($channelName, $nickname, $message);
 		$this->insertMessage($kick);
 	}
 
 	/**
 	 * @param string $target
 	 * @param string $flags
-	 * @param string $args
+	 * @param array $args
 	 */
-	public function mode(string $target, string $flags, string $args)
+	public function mode(string $target, string $flags, array $args)
 	{
-		$mode = new Mode($target, $flags, $args);
+	    $mode = new MODE($target, $flags, $args);
 		$this->insertMessage($mode);
 	}
 
@@ -315,7 +317,7 @@ class Queue implements QueueInterface
 	 */
 	public function topic(string $channelName, string $message)
 	{
-		$topic = new Topic($channelName, $message);
+		$topic = new TOPIC($channelName, $message);
 		$this->insertMessage($topic);
 	}
 
@@ -324,7 +326,7 @@ class Queue implements QueueInterface
 	 */
 	public function raw(string $raw)
 	{
-		$raw = new Raw($raw);
+	    $raw = new RAW($raw);
 		$this->insertMessage($raw);
 	}
 }

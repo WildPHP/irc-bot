@@ -61,8 +61,7 @@ class IrcConnection
 
 				foreach ($queueItems as $item)
 				{
-					$this->write($item->getCommandObject()
-						->formatMessage());
+					$this->write($item->getCommandObject());
 				}
 			});
 	}
