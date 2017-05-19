@@ -11,6 +11,7 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\Connection\IRCMessages\AWAY;
+use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\Connection\IRCMessages\ERROR;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
@@ -22,6 +23,10 @@ use WildPHP\Core\Connection\IRCMessages\PING;
 use WildPHP\Core\Connection\IRCMessages\PONG;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\IRCMessages\QUIT;
+use WildPHP\Core\Connection\IRCMessages\RAW;
+use WildPHP\Core\Connection\IRCMessages\TOPIC;
+use WildPHP\Core\Connection\IRCMessages\USER;
+use WildPHP\Core\Connection\IRCMessages\WHO;
 use WildPHP\Core\Connection\Parser;
 
 class IrcMessageTest extends TestCase
@@ -64,6 +69,28 @@ class IrcMessageTest extends TestCase
 		$this->assertEquals('nickname', $away->getNickname());
 		$this->assertEquals('A sample message', $away->getMessage());
 	}
+
+	public function testCapCreate()
+    {
+        $cap = new CAP('REQ', ['cap1', 'cap2']);
+
+        $this->assertEquals('REQ', $cap->getCommand());
+        $this->assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
+
+        $expected = 'CAP REQ :cap1 cap2' . "\r\n";
+        $this->assertEquals($expected, $cap->__toString());
+    }
+
+    public function testCapReceive()
+    {
+        $line = Parser::parseLine('CAP * LS :cap1 cap2' . "\r\n");
+        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $cap = CAP::fromIncomingIrcMessage($incoming);
+
+        $this->assertEquals('LS', $cap->getCommand());
+        $this->assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
+        $this->assertEquals('*', $cap->getNickname());
+    }
 
 	public function testErrorReceive()
 	{
@@ -333,4 +360,81 @@ class IrcMessageTest extends TestCase
 		$this->assertEquals('nickname', $quit->getNickname());
 		$this->assertEquals('A sample message', $quit->getMessage());
 	}
+
+	public function testRawCreate()
+    {
+        $raw = new RAW('a command');
+
+        $this->assertEquals('a command', $raw->getCommand());
+
+        $expected = 'a command' . "\r\n";
+        $this->assertEquals($expected, $raw->__toString());
+    }
+
+	public function testTopicCreate()
+    {
+        $topic = new TOPIC('#someChannel', 'Test message');
+
+        $this->assertEquals('#someChannel', $topic->getChannel());
+        $this->assertEquals('Test message', $topic->getMessage());
+
+        $expected = 'TOPIC #someChannel :Test message' . "\r\n";
+        $this->assertEquals($expected, $topic->__toString());
+    }
+
+    public function testTopicReceive()
+    {
+        $line = Parser::parseLine(':nickname!host TOPIC #someChannel :This is a new topic' . "\r\n");
+        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $topic = TOPIC::fromIncomingIrcMessage($incoming);
+
+        $this->assertEquals('#someChannel', $topic->getChannel());
+        $this->assertEquals('This is a new topic', $topic->getMessage());
+    }
+
+    public function testUserCreate()
+    {
+        $user = new USER('myusername', 'localhost', 'someserver', 'arealname');
+
+        $this->assertEquals('myusername', $user->getUsername());
+        $this->assertEquals('localhost', $user->getHostname());
+        $this->assertEquals('someserver', $user->getServername());
+        $this->assertEquals('arealname', $user->getRealname());
+
+        $expected = 'USER myusername localhost someserver arealname' . "\r\n";
+        $this->assertEquals($expected, $user->__toString());
+    }
+
+    public function testUserReceive()
+    {
+        $line = Parser::parseLine('USER myusername localhost someserver arealname' . "\r\n");
+        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $user = USER::fromIncomingIrcMessage($incoming);
+
+        $this->assertEquals('myusername', $user->getUsername());
+        $this->assertEquals('localhost', $user->getHostname());
+        $this->assertEquals('someserver', $user->getServername());
+        $this->assertEquals('arealname', $user->getRealname());
+    }
+
+	public function testWhoCreate()
+    {
+        $who = new WHO('#someChannel', '%nuhaf');
+
+        $this->assertEquals('#someChannel', $who->getChannel());
+        $this->assertEquals('%nuhaf', $who->getOptions());
+
+        $expected = 'WHO #someChannel %nuhaf' . "\r\n";
+        $this->assertEquals($expected, $who->__toString());
+    }
+
+    public function testWhoReceive()
+    {
+        $line = Parser::parseLine(':nickname!host WHO #someChannel %nuhaf' . "\r\n");
+        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $who = WHO::fromIncomingIrcMessage($incoming);
+
+        $this->assertEquals('#someChannel', $who->getChannel());
+        $this->assertEquals('%nuhaf', $who->getOptions());
+    }
 }
