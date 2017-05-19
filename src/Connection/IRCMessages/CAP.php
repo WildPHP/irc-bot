@@ -40,6 +40,7 @@ class CAP implements BaseMessage, SendableMessage
 	public function __construct(string $command, array $capabilities = [])
 	{
 		$this->setCommand($command);
+		$this->setCapabilities($capabilities);
 	}
 
     /**
