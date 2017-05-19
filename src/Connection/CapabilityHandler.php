@@ -22,6 +22,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
@@ -180,43 +181,39 @@ class CapabilityHandler
 		return in_array($capability, $this->acknowledgedCapabilities);
 	}
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 * @param Queue $queue
-	 */
-	public function responseRouter(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+    /**
+     * @param CAP $incomingIrcMessage
+     * @param Queue $queue
+     */
+	public function responseRouter(CAP $incomingIrcMessage, Queue $queue)
 	{
-		$args = $incomingIrcMessage->getArgs();
-		$responseCommand = $args[1];
-		$capability = $args[2];
+		$command = $incomingIrcMessage->getCommand();
+		$capabilities = $incomingIrcMessage->getCapabilities();
 
-		switch ($responseCommand)
+		switch ($command)
 		{
 			case 'LS':
-				$this->updateAvailableCapabilities($capability, $queue);
+				$this->updateAvailableCapabilities($capabilities, $queue);
 				EventEmitter::fromContainer($this->getContainer())
 					->emit('irc.cap.ls.after', [$queue]);
 				break;
 
 			case 'ACK':
-				$capabilities = explode(' ', $capability);
 				$this->updateAcknowledgedCapabilities($capabilities, $queue);
 				break;
 
 			case 'NAK':
-				$capabilities = explode(' ', $capability);
 				$this->updateNotAcknowledgedCapabilities($capabilities, $queue);
 				break;
 		}
 	}
 
 	/**
-	 * @param string $capabilities
+	 * @param array $capabilities
 	 * @param Queue $queue
 	 */
-	protected function updateAvailableCapabilities(string $capabilities, Queue $queue)
+	protected function updateAvailableCapabilities(array $capabilities, Queue $queue)
 	{
-		$capabilities = explode(' ', trim($capabilities));
 		$this->setAvailableCapabilities($capabilities);
 		Logger::fromContainer($this->getContainer())
 			->debug('Updated list of available capabilities.',

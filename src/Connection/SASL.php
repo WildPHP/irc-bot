@@ -24,8 +24,7 @@ namespace WildPHP\Core\Connection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItemNotFoundException;
-use WildPHP\Core\Connection\Commands\Authenticate;
-use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE as IncomingAuthenticate;
+use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
@@ -124,7 +123,7 @@ class SASL
 		if (!in_array('sasl', $acknowledgedCapabilities))
 			return;
 
-		$queue->insertMessage(new Authenticate('PLAIN'));
+		$queue->insertMessage(new AUTHENTICATE('PLAIN'));
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Authentication mechanism requested, awaiting server response.');
 	}
@@ -141,10 +140,10 @@ class SASL
 	}
 
 	/**
-	 * @param IncomingAuthenticate $message
+	 * @param AUTHENTICATE $message
 	 * @param Queue $queue
 	 */
-	public function sendCredentials(IncomingAuthenticate $message, Queue $queue)
+	public function sendCredentials(AUTHENTICATE $message, Queue $queue)
 	{
 		if ($message->getResponse() != '+')
 			return;
@@ -156,7 +155,7 @@ class SASL
 			->get('sasl.password')
 			->getValue();
 		$credentials = $this->generateCredentialString($username, $password);
-		$queue->insertMessage(new Authenticate($credentials));
+		$queue->insertMessage(new AUTHENTICATE($credentials));
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
