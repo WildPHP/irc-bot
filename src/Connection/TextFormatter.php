@@ -38,13 +38,13 @@ class TextFormatter
 	 * @var array
 	 */
 	protected static $asciiMap = [
-		'bold' => 0x02,
-		'color' => 0x03,
-		'italic' => 0x1D,
-		'underline' => 0x1F,
-		'reverse' => 0x16,
-		'reset' => 0x0F
-	];
+        'bold' => "\x02",
+        'underline' => "\x1F",
+        'italic' => "\x09",
+        'strikethrough' => "\x13",
+        'reverse' => "\x16",
+        'color' => "\x03"
+    ];
 
 	/**
 	 * @param string $text
@@ -53,7 +53,7 @@ class TextFormatter
 	 */
 	public static function bold(string $text)
 	{
-		return chr(self::$asciiMap['bold']) . $text . chr(self::$asciiMap['bold']);
+		return self::$asciiMap['bold'] . $text . self::$asciiMap['bold'];
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TextFormatter
 	 */
 	public static function italic(string $text)
 	{
-		return chr(self::$asciiMap['italic']) . $text . chr(self::$asciiMap['italic']);
+		return self::$asciiMap['italic'] . $text . self::$asciiMap['italic'];
 	}
 
 	/**
@@ -73,7 +73,7 @@ class TextFormatter
 	 */
 	public static function underline(string $text)
 	{
-		return chr(self::$asciiMap['underline']) . $text . chr(self::$asciiMap['underline']);
+		return self::$asciiMap['underline'] . $text . self::$asciiMap['underline'];
 	}
 
 	/**
@@ -91,7 +91,7 @@ class TextFormatter
 		if (!is_numeric($background))
 			$background = self::findColorByString($background);
 
-		return chr(self::$asciiMap['color']) . $foreground . ',' . $background . $text . chr(self::$asciiMap['color']);
+		return self::$asciiMap['color'] . $foreground . ',' . $background . $text . self::$asciiMap['color'];
 	}
 
 	/**
