@@ -19,7 +19,6 @@
 */
 
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\Commands\DummyCommand;
 
 class QueueTest extends PHPUnit_Framework_TestCase
 {
@@ -37,7 +36,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
         $queue = new \WildPHP\Core\Connection\Queue($this->container);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
         
-        $dummyCommand = new DummyCommand();
+        $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
         $queue->insertMessage($dummyCommand);
         
         static::assertEquals(1, $queue->getAmountOfItemsInQueue());
@@ -55,7 +54,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
         for ($i = 1; $i <= 10; $i++)
         {
-            $dummyCommand = new DummyCommand();
+            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
 
@@ -77,7 +76,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
         for ($i = 1; $i <= 10; $i++)
         {
-            $dummyCommand = new DummyCommand();
+            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
 
@@ -94,7 +93,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 
         for ($i = 1; $i <= 3; $i++)
         {
-            $dummyCommand = new DummyCommand();
+            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
 
