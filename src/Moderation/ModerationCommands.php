@@ -41,45 +41,39 @@ class ModerationCommands
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Kicks the specified user from the channel.');
-		$commandHelp->addPage('Usage: kick [nickname] ([reason])');
+		$commandHelp->addPage('Kicks the specified user from the channel. Usage: kick [nickname] ([reason])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1, -1, 'kick');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Changes the topic for the specified channel.');
-		$commandHelp->addPage('Usage: topic ([channel]) [message]');
+		$commandHelp->addPage('Changes the topic for the specified channel. Usage: topic ([channel]) [message]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1, -1, 'topic');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Kicks the specified user from the channel and adds a ban.');
-		$commandHelp->addPage('Usage #1: kban [nickname] [minutes] ([reason])');
+		$commandHelp->addPage('Kicks the specified user from the channel and adds a ban. Usage #1: kban [nickname] [minutes] ([reason])');
 		$commandHelp->addPage('Usage #2: kban [nickname] [minutes] [redirect channel] ([reason])');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('kban', [$this, 'kbanCommand'], $commandHelp, 2, -1, 'kban');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Bans the specified user from the channel.');
-		$commandHelp->addPage('Usage #1: ban [nickname] [minutes]');
+		$commandHelp->addPage('Bans the specified user from the channel. Usage #1: ban [nickname] [minutes]');
 		$commandHelp->addPage('Usage #2: ban [nickname] [minutes] [redirect channel]');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('ban', [$this, 'banCommand'], $commandHelp, 2, 3, 'ban');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Bans the specified host from the channel.');
-		$commandHelp->addPage('Usage #1: ban [hostname [minutes]');
-		$commandHelp->addPage('Usage #2: ban [hostname] [minutes] [redirect channel]');
+		$commandHelp->addPage('Bans the specified host from the channel. Usage #1: banhost [hostname] [minutes]');
+		$commandHelp->addPage('Usage #2: banhost [hostname] [minutes] [redirect channel]');
 		$commandHelp->addPage('Pass 0 minutes for an indefinite ban.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('banhost', [$this, 'banhostCommand'], $commandHelp, 2, 3, 'ban');
 
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Changes mode for a specified user.');
-		$commandHelp->addPage('Usage: mode [nickname] [modes]');
+		$commandHelp->addPage('Changes mode for a specified user. Usage: mode [nickname] [modes]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 2, -1, 'mode');
 	}
