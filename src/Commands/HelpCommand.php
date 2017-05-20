@@ -37,15 +37,15 @@ class HelpCommand
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows the help pages for a specific command. (use the lscommands command to list available commands)');
-		$commandHelp->addPage('Usage: help [command] [page]');
+		$commandHelp->addPage('Shows the help pages for a specific command. (use the lscommands command to list available commands) ' .
+			'Usage: help [command] [page]');
 		CommandHandler::fromContainer($container)
-			->registerCommand('help', [$this, 'helpCommand'], $commandHelp);
+			->registerCommand('help', [$this, 'helpCommand'], $commandHelp, 0, 2);
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Shows the list of available commands. No arguments.');
 		CommandHandler::fromContainer($container)
-			->registerCommand('lscommands', [$this, 'lscommandsCommand'], $commandHelp);
+			->registerCommand('lscommands', [$this, 'lscommandsCommand'], $commandHelp, 0, 0);
 	}
 
 	/**
