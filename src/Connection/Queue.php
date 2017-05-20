@@ -245,11 +245,11 @@ class Queue implements QueueInterface
 
 	/**
 	 * @param array|string $channel
-	 * @param string $key
+	 * @param array $keys
 	 */
-	public function join($channel, $key = '')
+	public function join($channel, $keys = [])
 	{
-		$join = new JOIN($channel, $key);
+		$join = new JOIN($channel, $keys);
 		$this->insertMessage($join);
 	}
 
