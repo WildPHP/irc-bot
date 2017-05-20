@@ -43,20 +43,20 @@ class ManagementCommands
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Joins the specified channel(s).');
-		$commandHelp->addPage('Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
-		$commandHelp->addPage('Required permission: join');
+		$commandHelp->addPage('Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
 		CommandHandler::fromContainer($container)
-			->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5);
+			->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5, 'join');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Parts (leaves) the specified channel(s).');
-		$commandHelp->addPage('Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
-		$commandHelp->addPage('Required permission: part');
+		$commandHelp->addPage('Parts (leaves) the specified channel(s). Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
 		CommandHandler::fromContainer($container)
-			->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5);
+			->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5, 'part');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Quits the IRC network. Usage: quit ([message])');
 		CommandHandler::fromContainer($container)
-			->registerCommand('quit', [$this, 'testQuit']);
+			->registerCommand('quit', [$this, 'quitCommand'], $commandHelp, 0, -1, 'quit');
+
 		$this->setContainer($container);
 	}
 
@@ -66,16 +66,15 @@ class ManagementCommands
 	 * @param $args
 	 * @param ComponentContainer $container
 	 */
-	public function testQuit(Channel $source, User $user, $args, ComponentContainer $container)
+	public function quitCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$result = Validator::fromContainer($container)
-			->isAllowedTo('quit', $user, $source);
-		if (!$result)
-		{
-			return;
-		}
+		$message = implode(' ', $args);
+
+		if (empty($message))
+			$message = 'Quit command given by ' . $user->getNickname();
+
 		Queue::fromContainer($container)
-			->quit('Quit command given by ' . $user->getNickname());
+			->quit($message);
 	}
 
 	/**
@@ -108,17 +107,6 @@ class ManagementCommands
 	 */
 	public function joinCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
-		$result = Validator::fromContainer($container)
-			->isAllowedTo('join', $user, $source);
-
-		if (!$result)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the join command.');
-
-			return;
-		}
-
 		$validChannels = $this->validateChannels($channels);
 
 		Queue::fromContainer($container)
@@ -140,17 +128,6 @@ class ManagementCommands
 	 */
 	public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
-		$result = Validator::fromContainer($container)
-			->isAllowedTo('part', $user, $source);
-
-		if (!$result)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': You are not allowed to use the part command.');
-
-			return;
-		}
-
 		if (empty($channels))
 			$channels = [$source->getName()];
 
