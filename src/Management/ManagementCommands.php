@@ -28,7 +28,7 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Security\Validator;
+
 use WildPHP\Core\Users\User;
 
 class ManagementCommands
