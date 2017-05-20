@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: prefix CAP nickname command [:capabilities]
  */
-class CAP implements BaseMessage, SendableMessage
+class CAP implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'CAP';
 

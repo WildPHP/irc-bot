@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix AWAY :message
  */
-class AWAY implements BaseMessage, SendableMessage
+class AWAY implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use MessageTrait;

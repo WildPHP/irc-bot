@@ -22,7 +22,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
-use WildPHP\Core\Connection\IRCMessages\BaseMessage;
+use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
@@ -92,9 +92,9 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param BaseMessage $command
+	 * @param SendableMessage $command
 	 */
-	public function insertMessage(BaseMessage $command)
+	public function insertMessage(SendableMessage $command)
 	{
 		$time = $this->calculateNextMessageTime();
 
@@ -107,9 +107,9 @@ class Queue implements QueueInterface
 	}
 
 	/**
-	 * @param BaseMessage $command
+	 * @param SendableMessage $command
 	 */
-	public function removeMessage(BaseMessage $command)
+	public function removeMessage(SendableMessage $command)
 	{
 		if (in_array($command, $this->messageQueue))
 			$this->removeMessageByIndex(array_search($command, $this->messageQueue));

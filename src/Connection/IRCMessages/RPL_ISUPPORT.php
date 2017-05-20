@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: :server 005 nickname VARIABLE[=key] VARIABLE[=key] ... :greeting
  */
-class RPL_ISUPPORT implements BaseMessage
+class RPL_ISUPPORT implements ReceivableMessage
 {
 	use NicknameTrait;
 

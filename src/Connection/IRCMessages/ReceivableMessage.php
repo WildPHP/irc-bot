@@ -24,12 +24,12 @@ namespace WildPHP\Core\Connection\IRCMessages;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 
 /**
- * Interface BaseMessage
+ * Interface ReceivableMessage
  * @package WildPHP\Core\Connection\IRCMessages
  *
  * A syntax sample is included with all supported messages.
  */
-interface BaseMessage
+interface ReceivableMessage
 {
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage

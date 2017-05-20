@@ -30,7 +30,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix PRIVMSG #channel :message
  */
-class PRIVMSG implements BaseMessage, SendableMessage
+class PRIVMSG implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use ChannelTrait;

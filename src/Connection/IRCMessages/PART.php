@@ -31,7 +31,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax: prefix PART #channel [:message]
  * Syntax (sender): PART #channels [:message]
  */
-class PART implements BaseMessage, SendableMessage
+class PART implements ReceivableMessage, SendableMessage
 {
 	/**
 	 * @var string

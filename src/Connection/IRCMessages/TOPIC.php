@@ -29,7 +29,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix TOPIC channel :topic
  */
-class TOPIC implements BaseMessage, SendableMessage
+class TOPIC implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'TOPIC';
 

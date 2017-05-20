@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: PONG server1 [server2]
  */
-class PONG implements BaseMessage, SendableMessage
+class PONG implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'PONG';
 

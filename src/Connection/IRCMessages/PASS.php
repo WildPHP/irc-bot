@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: PASS password
  */
-class PASS implements BaseMessage, SendableMessage
+class PASS implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'PASS';
 

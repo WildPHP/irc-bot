@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix WHO nickname/channel options
  */
-class WHO implements BaseMessage, SendableMessage
+class WHO implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'WHO';
 

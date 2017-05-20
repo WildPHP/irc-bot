@@ -30,7 +30,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix NICK newnickname
  */
-class NICK implements BaseMessage, SendableMessage
+class NICK implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;

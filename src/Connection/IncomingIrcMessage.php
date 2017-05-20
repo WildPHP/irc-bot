@@ -21,7 +21,7 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\BaseMessage;
+use WildPHP\Core\Connection\IRCMessages\ReceivableMessage;
 use WildPHP\Core\ContainerTrait;
 
 class IncomingIrcMessage
@@ -70,7 +70,7 @@ class IncomingIrcMessage
 	}
 
 	/**
-	 * @return BaseMessage|IncomingIrcMessage
+	 * @return ReceivableMessage|IncomingIrcMessage
 	 */
 	public function specialize()
 	{

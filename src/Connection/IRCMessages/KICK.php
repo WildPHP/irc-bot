@@ -30,7 +30,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix KICK #channel nickname :message
  */
-class KICK implements BaseMessage, SendableMessage
+class KICK implements ReceivableMessage, SendableMessage
 {
 	use ChannelTrait;
 	use PrefixTrait;

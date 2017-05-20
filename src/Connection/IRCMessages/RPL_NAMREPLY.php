@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: :server 353 nickname visibility channel :nicknames
  */
-class RPL_NAMREPLY implements BaseMessage
+class RPL_NAMREPLY implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ChannelTrait;

@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: ERROR :message
  */
-class ERROR implements BaseMessage
+class ERROR implements ReceivableMessage
 {
 	use MessageTrait;
 

@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: prefix RAW nickname/channel options
  */
-class RAW implements BaseMessage, SendableMessage
+class RAW implements ReceivableMessage, SendableMessage
 {
 	/**
 	 * @var string

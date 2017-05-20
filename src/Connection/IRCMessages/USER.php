@@ -28,7 +28,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: prefix USER username hostname servername realname
  */
-class USER implements BaseMessage, SendableMessage
+class USER implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'USER';
 

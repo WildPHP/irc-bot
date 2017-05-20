@@ -29,7 +29,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix NOTICE #channel :message
  */
-class NOTICE implements BaseMessage, SendableMessage
+class NOTICE implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use ChannelTrait;

@@ -27,7 +27,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: :server 332 nickname #channel :topic
  */
-class RPL_TOPIC implements BaseMessage
+class RPL_TOPIC implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ChannelTrait;

@@ -30,7 +30,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax (user): prefix MODE nickname flags
  * Syntax (channel): prefix MODE #channel flags [arguments]
  */
-class MODE implements BaseMessage, SendableMessage
+class MODE implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;
