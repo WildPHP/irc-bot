@@ -23,6 +23,7 @@ namespace WildPHP\Core\Connection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\IRCMessages\NOTICE;
+use WildPHP\Core\Connection\IRCMessages\REMOVE;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
@@ -319,11 +320,22 @@ class Queue implements QueueInterface
 	}
 
 	/**
+	 * @param string $channelName
+	 * @param string $nickname
+	 * @param string $message
+	 */
+	public function remove(string $channelName, string $nickname, string $message = '')
+	{
+		$remove = new REMOVE($channelName, $nickname, $message);
+		$this->insertMessage($remove);
+	}
+
+	/**
 	 * @param string $target
 	 * @param string $flags
 	 * @param array $args
 	 */
-	public function mode(string $target, string $flags, array $args)
+	public function mode(string $target, string $flags, array $args  = [])
 	{
 		$mode = new MODE($target, $flags, $args);
 		$this->insertMessage($mode);
