@@ -9,9 +9,8 @@
         "nette/neon": "^2",
         "katzgrau/klogger": "^1.2",
         "danielgsims/php-collections": "^1",
-        "fire015/flintstone": "^2.0",
-        "guzzlehttp/guzzle": "6.2.3",
-        "fabpot/goutte": "v3.2.1"
+        "fire015/flintstone": "^2.0"
+
     },
     "autoload": {
         "psr-4": {
