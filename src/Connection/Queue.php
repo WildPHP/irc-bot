@@ -22,6 +22,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\Connection\IRCMessages\NOTICE;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
@@ -200,6 +201,12 @@ class Queue implements QueueInterface
 	{
 		$privmsg = new PRIVMSG($channel, $message);
 		$this->insertMessage($privmsg);
+	}
+
+	public function notice(string $channel, string $message)
+	{
+		$notice = new NOTICE($channel, $message);
+		$this->insertMessage($notice);
 	}
 
 	/**
