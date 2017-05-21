@@ -162,8 +162,8 @@ class CommandHandler
 	 */
 	protected function parseCommandFromMessage(string $message, array &$args)
 	{
-		$messageParts = explode(' ', $message);
-		$firstPart = $messageParts[0];
+		$messageParts = explode(' ', trim($message));
+		$firstPart = array_shift($messageParts);
 		$prefix = Configuration::fromContainer($this->getContainer())
 			->get('prefix')
 			->getValue();
@@ -175,8 +175,9 @@ class CommandHandler
 			return false;
 
 		$command = substr($firstPart, strlen($prefix));
-		array_shift($messageParts);
-		$args = $messageParts;
+
+		// Remove empty elements and excessive spaces.
+		$args = array_values(array_map('trim', array_filter($messageParts)));
 
 		return $command;
 	}
