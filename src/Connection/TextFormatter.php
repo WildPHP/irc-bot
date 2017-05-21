@@ -42,7 +42,8 @@ class TextFormatter
 		'royal' => '12',
 		'fuchsia' => '13',
 		'grey' => '14',
-		'silver' => '15'
+		'silver' => '15',
+		'transparent' => '35',
 	];
 
 	/**
@@ -94,7 +95,7 @@ class TextFormatter
 	 *
 	 * @return string
 	 */
-	public static function color(string $text, string $foreground, string $background = 'white')
+	public static function color(string $text, string $foreground, string $background = 'transparent')
 	{
 		if (!is_numeric($foreground))
 			$foreground = self::findColorByString($foreground);
@@ -114,7 +115,7 @@ class TextFormatter
 	{
 		$color = strtolower($color);
 		if (!array_key_exists($color, self::$colorMap))
-			return '00';
+			return '';
 
 		return self::$colorMap[$color];
 	}
