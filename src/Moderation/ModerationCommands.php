@@ -46,6 +46,11 @@ class ModerationCommands
 			->registerCommand('kick', [$this, 'kickCommand'], $commandHelp, 1, -1, 'kick');
 
 		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Requests a user to leave the channel. Usage: remove [nickname] ([reason])');
+		CommandHandler::fromContainer($container)
+			->registerCommand('remove', [$this, 'removeCommand'], $commandHelp, 1, -1, 'remove');
+
+		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Changes the topic for the specified channel. Usage: topic ([channel]) [message]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('topic', [$this, 'topicCommand'], $commandHelp, 1, -1, 'topic');
@@ -71,11 +76,10 @@ class ModerationCommands
 		CommandHandler::fromContainer($container)
 			->registerCommand('banhost', [$this, 'banhostCommand'], $commandHelp, 2, 3, 'ban');
 
-
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Changes mode for a specified user. Usage: mode [nickname] [modes]');
+		$commandHelp->addPage('Changes mode for a specified user, or channel if no user given. Usage: mode [modes] ([nickname])');
 		CommandHandler::fromContainer($container)
-			->registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 2, -1, 'mode');
+			->registerCommand('mode', [$this, 'modeCommand'], $commandHelp, 1, 2, 'mode');
 	}
 
 	/**
@@ -112,6 +116,42 @@ class ModerationCommands
 
 		Queue::fromContainer($container)
 			->kick($source->getName(), $nickname, $message);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param $args
+	 * @param ComponentContainer $container
+	 */
+	public function removeCommand(Channel $source, User $user, $args, ComponentContainer $container)
+	{
+		$nickname = array_shift($args);
+		$message = !empty($args) ? implode(' ', $args) : $nickname;
+		$userObj = $source->getUserCollection()
+			->findByNickname($nickname);
+
+		if ($nickname == Configuration::fromContainer($container)
+				->get('currentNickname')
+				->getValue()
+		)
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), 'What? I can\'t leave...!');
+
+			return;
+		}
+
+		if (!$userObj)
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+
+			return;
+		}
+
+		Queue::fromContainer($container)
+			->remove($source->getName(), $nickname, $message);
 	}
 
 	/**
@@ -261,21 +301,27 @@ class ModerationCommands
 	 */
 	public function modeCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$nickname = array_shift($args);
 		$modes = array_shift($args);
-		$userObj = $source->getUserCollection()
-			->findByNickname($nickname);
+		$nickname = array_shift($args);
 
-		if (!$userObj)
+		$target = [];
+		if (!empty($nickname))
 		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+			$userObj = $source->getUserCollection()
+				->findByNickname($nickname);
 
-			return;
+			if (!$userObj)
+			{
+				Queue::fromContainer($container)
+					->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
+
+				return;
+			}
+			$target = [$nickname];
 		}
 
 		Queue::fromContainer($container)
-			->mode($source->getName(), $modes, [$nickname]);
+			->mode($source->getName(), $modes, $target);
 	}
 
 	/**
