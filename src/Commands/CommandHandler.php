@@ -88,6 +88,16 @@ class CommandHandler
 		return true;
 	}
 
+	public function alias(string $originalCommand, string $alias)
+	{
+		if (!$this->getCommandDictionary()->keyExists($originalCommand) || $this->getCommandDictionary()->keyExists($alias))
+			return false;
+
+		$commandObject = $this->getCommandDictionary()[$originalCommand];
+		$this->getCommandDictionary()[$alias] = $commandObject;
+		return true;
+	}
+
 	/**
 	 * @param PRIVMSG $privmsg
 	 * @param Queue $queue
@@ -102,7 +112,6 @@ class CommandHandler
 		$source = ChannelCollection::fromContainer($this->getContainer())
 			->requestByChannelName($privmsg->getChannel(), $user);
 		$message = $privmsg->getMessage();
-
 
 		$args = [];
 		$command = self::parseCommandFromMessage($message, $args);
