@@ -76,6 +76,11 @@ class Queue implements QueueInterface
 	protected $messagesPerSecond = 1;
 
 	/**
+	 * @var int
+	 */
+	protected $floodControlMessageThreshold = 5;
+
+	/**
 	 * This is disabled by default to allow for fast registration. It will be automatically enabled
 	 * once the bot has been registered on the network.
 	 *
@@ -140,10 +145,11 @@ class Queue implements QueueInterface
 	public function calculateNextMessageTime(): int
 	{
 		// If the queue is empty, this message can be sent immediately. Do not bother calculating.
-		if ($this->getAmountOfItemsInQueue() == 0 || !$this->isFloodControlEnabled())
+		if ($this->getAmountOfItemsInQueue() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled())
 			return time();
 
 		$numItems = $this->getAmountOfItemsInQueue();
+		$numItems = $numItems - $this->floodControlMessageThreshold;
 		$messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
 
 		// For every message pair, we add the specified delay.
