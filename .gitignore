@@ -1,10 +1,5 @@
 logs/*
-.buildpath
-.project
-.settings/
 config.neon
-*.komodoproject
-.komodotools/
 php_errors
 
 /vendor/
