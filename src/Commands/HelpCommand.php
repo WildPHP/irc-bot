@@ -59,9 +59,15 @@ class HelpCommand
 		$commands = array_keys(CommandHandler::fromContainer($container)
 			->getCommandDictionary()
 			->toArray());
-		$commands = implode(', ', $commands);
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), 'Available commands: ' . $commands);
+
+		$commands = array_chunk($commands, 10);
+
+		foreach ($commands as $key => $commandList)
+		{
+			$readableCommands = implode(', ', $commandList);
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': Available commands: ' . $readableCommands);
+		}
 	}
 
 	/**
@@ -76,6 +82,12 @@ class HelpCommand
 		{
 			$args[0] = 'help';
 			$args[1] = '1';
+		}
+
+		if (count($args) == 1)
+		{
+			$args[1] = $args[0];
+			$args[0] = 'help';
 		}
 
 		$command = $args[0];
