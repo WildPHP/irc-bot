@@ -27,9 +27,11 @@ use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
 
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserCollection;
 
 class ManagementCommands
 {
@@ -56,6 +58,16 @@ class ManagementCommands
 		$commandHelp->addPage('Quits the IRC network. Usage: quit ([message])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('quit', [$this, 'quitCommand'], $commandHelp, 0, -1, 'quit');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Shows info about a user. Usage: whois [nickname]');
+		CommandHandler::fromContainer($container)
+			->registerCommand('whois', [$this, 'whoisCommand'], $commandHelp, 1, 1, 'whois');
+
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Changes the nickname of the bot. Usage: nick [nickname]');
+		CommandHandler::fromContainer($container)
+			->registerCommand('nick', [$this, 'nickCommand'], $commandHelp, 0, 1, 'nick');
 
 		$this->setContainer($container);
 	}
@@ -142,5 +154,49 @@ class ManagementCommands
 			Queue::fromContainer($container)
 				->privmsg($user->getNickname(),
 					'Did not part the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param array $args
+	 * @param ComponentContainer $container
+	 */
+	public function whoisCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+	{
+		$wantedNickname = $args[0];
+		/** @var User $userObject */
+		$userObject = UserCollection::fromContainer($container)->findByNickname($wantedNickname);
+
+		if (!$userObject)
+		{
+			Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': This user is not online.');
+			return;
+		}
+
+		Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': I am sending you the data in private.');
+
+		$hostname = $userObject->getHostname();
+		$username = $userObject->getUsername();
+		$channels = $userObject->getChannelCollection()->toArray();
+		foreach ($channels as $key => $channel)
+		{
+			$channels[$key] = $channel->getName();
+		}
+		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ': username: ' . $username);
+		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ': hostname: ' . $hostname);
+		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ' is on channels ' . implode(', ', $channels));
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param array $args
+	 * @param ComponentContainer $container
+	 */
+	public function nickCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+	{
+		// TODO: Validate
+		Queue::fromContainer($container)->nick($args[0]);
 	}
 }
