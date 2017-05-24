@@ -196,6 +196,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	new \WildPHP\Core\Security\PermissionCommands($componentContainer);
 	new \WildPHP\Core\Management\ManagementCommands($componentContainer);
 	new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
+	new \WildPHP\Core\Users\BotStateManager($componentContainer);
 
 	try
 	{
