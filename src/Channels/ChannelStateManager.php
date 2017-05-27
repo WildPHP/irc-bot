@@ -111,8 +111,9 @@ class ChannelStateManager
 
 	/**
 	 * @param PART $ircMessage
+	 * @param Queue $queue
 	 */
-	public function processUserPart(PART $ircMessage)
+	public function processUserPart(PART $ircMessage, Queue $queue)
 	{
 		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
@@ -134,6 +135,9 @@ class ChannelStateManager
 				return $channelObject === $channel;
 			});
 
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('user.part', [$userObject, $channel, $queue]);
+
 		if ($removed && $removedChannel)
 			Logger::fromContainer($this->getContainer())
 				->debug('Removed user from channel',
@@ -146,8 +150,9 @@ class ChannelStateManager
 
 	/**
 	 * @param KICK $ircMessage
+	 * @param Queue $queue
 	 */
-	public function processUserKick(KICK $ircMessage)
+	public function processUserKick(KICK $ircMessage, Queue $queue)
 	{
 		/** @var Channel $channel */
 		$channel = ChannelCollection::fromContainer($this->getContainer())
@@ -167,6 +172,9 @@ class ChannelStateManager
 			{
 				return $channelObject === $channel;
 			});
+
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('user.kick', [$userObject, $channel, $queue]);
 
 		if ($removed && $removedChannel)
 			Logger::fromContainer($this->getContainer())
@@ -317,8 +325,12 @@ class ChannelStateManager
 		$channel = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($channel);
 
-		if ($channel)
-			$channel->setTopic($ircMessage->getMessage());
+		if (!$channel)
+			return;
+
+		$channel->setTopic($ircMessage->getMessage());
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('channel.topic', [$channel, $ircMessage->getMessage()]);
 	}
 
 	/**
