@@ -19,6 +19,7 @@
 
 namespace WildPHP\Core\Users;
 
+use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
@@ -33,8 +34,42 @@ class BotStateManager
 
 	public function __construct(ComponentContainer $container)
 	{
-		EventEmitter::fromContainer($container)->on('user.nick', [$this, 'monitorOwnNickname']);
+		EventEmitter::fromContainer($container)
+			->on('user.nick', [$this, 'monitorOwnNickname']);
+		EventEmitter::fromContainer($container)
+			->on('user.part', [$this, 'cleanupChannel']);
 		$this->setContainer($container);
+	}
+
+	public function cleanupChannel(User $user, Channel $channel)
+	{
+		$botUserObject = UserCollection::fromContainer($this->getContainer())->getSelf();
+
+		if ($user !== $botUserObject)
+			return;
+
+		Logger::fromContainer($this->getContainer())->debug('Cleaning up channel', [
+			'channel' => $channel->getName()
+		]);
+
+		$users = UserCollection::fromContainer($this->getContainer())->toArray();
+
+		/** @var User $user */
+		foreach ($users as $user)
+		{
+			$channelCollection = $user->getChannelCollection();
+			$result = $channelCollection->remove(function (Channel $userChannel) use ($channel)
+			{
+				return $channel === $userChannel;
+			});
+
+			if ($result)
+				Logger::fromContainer($this->getContainer())->debug('Removed channel for user', [
+					'reason' => 'botParted',
+					'nickname' => $user->getNickname(),
+					'channel' => $channel->getName()
+				]);
+		}
 	}
 
 	public function monitorOwnNickname(User $user, string $oldNickname, string $newNickname, Queue $queue)
