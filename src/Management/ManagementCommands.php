@@ -27,7 +27,6 @@ use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
 
 use WildPHP\Core\Users\User;
