@@ -20,12 +20,11 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\Dns\Resolver\Factory as ResolverFactory;
-use React\Dns\Resolver\Resolver;
 use React\EventLoop\LoopInterface;
-use React\SocketClient\Connector;
-use React\SocketClient\ConnectorInterface;
-use React\SocketClient\SecureConnector;
+use React\Socket\Connection;
+use React\Socket\Connector;
+use React\Socket\ConnectorInterface;
+use React\Socket\SecureConnector;
 
 class ConnectorFactory
 {
@@ -33,6 +32,33 @@ class ConnectorFactory
 	 * @var LoopInterface
 	 */
 	protected $loop = null;
+
+	/**
+	 * ConnectorFactory constructor.
+	 *
+	 * @param LoopInterface $loop
+	 */
+	public function __construct(LoopInterface $loop)
+	{
+		$this->setLoop($loop);
+	}
+
+	/**
+	 * @return ConnectorInterface
+	 */
+	public function createSecure(): ConnectorInterface
+	{
+		$connector = $this->create();
+		return new SecureConnector($connector, $this->getLoop());
+	}
+
+	/**
+	 * @return ConnectorInterface
+	 */
+	public function create(): ConnectorInterface
+	{
+		return new Connector($this->getLoop());
+	}
 
 	/**
 	 * @return LoopInterface
@@ -48,59 +74,5 @@ class ConnectorFactory
 	public function setLoop($loop)
 	{
 		$this->loop = $loop;
-	}
-
-	/**
-	 * @return Resolver
-	 */
-	public function getResolver()
-	{
-		return $this->resolver;
-	}
-
-	/**
-	 * @param Resolver $resolver
-	 */
-	public function setResolver($resolver)
-	{
-		$this->resolver = $resolver;
-	}
-
-	/**
-	 * @var Resolver
-	 */
-	protected $resolver = null;
-
-	/**
-	 * ConnectorFactory constructor.
-	 *
-	 * @param LoopInterface $loop
-	 */
-	public function __construct(LoopInterface $loop)
-	{
-		$this->setLoop($loop);
-
-		$dnsResolverFactory = new ResolverFactory();
-		$this->setResolver($dnsResolverFactory->createCached('8.8.8.8', $this->getLoop()));
-	}
-
-	/**
-	 * @return ConnectorInterface
-	 */
-	public function createSecure(): ConnectorInterface
-	{
-		$connector = new Connector($this->getLoop(), $this->getResolver());
-
-		return new SecureConnector($connector, $this->getLoop());
-	}
-
-	/**
-	 * @return ConnectorInterface
-	 */
-	public function create(): ConnectorInterface
-	{
-		$connector = new Connector($this->getLoop(), $this->getResolver());
-
-		return $connector;
 	}
 }
