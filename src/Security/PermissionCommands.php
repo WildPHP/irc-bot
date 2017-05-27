@@ -267,7 +267,7 @@ class PermissionCommands
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
-		if (empty($userToAdd) || empty($userToAdd))
+		if (empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0']))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(),
