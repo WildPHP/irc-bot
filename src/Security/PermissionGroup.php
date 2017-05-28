@@ -21,6 +21,7 @@
 namespace WildPHP\Core\Security;
 
 use WildPHP\Core\DataStorage\DataStorage;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
 
 class PermissionGroup
@@ -291,8 +292,8 @@ class PermissionGroup
 	public function hasPermission(string $permission, string $channel = ''): bool
 	{
 		$hasPermission = $this->containsPermission($permission);
-		$isCorrectChannel = empty($this->listChannels()) ? true : !empty($channel) ? $this->containsChannel($channel) : false;
-
+		$hasNoChannels = empty($this->listChannels());
+		$isCorrectChannel = $hasNoChannels ? true : $this->containsChannel($channel);
 		return $hasPermission && $isCorrectChannel;
 	}
 
