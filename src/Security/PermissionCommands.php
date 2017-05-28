@@ -263,6 +263,14 @@ class PermissionCommands
 			return;
 		}
 
+		if (!$group->getCanHaveMembers())
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), $user->getNickname() . ': This group may not contain members.');
+
+			return;
+		}
+
 		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
@@ -351,11 +359,15 @@ class PermissionCommands
 	 */
 	public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		if (empty($args[1]) || ($valUser = UserCollection::fromContainer($container)
-				->findByNickname($args[1])) == false
-		)
-		{
+		if (empty($args[1]))
 			$valUser = $user;
+		elseif (($valUser = UserCollection::fromContainer($container)
+				->findByNickname($args[1])) == false)
+		{
+			Queue::fromContainer($container)
+				->privmsg($source->getName(), 'This user does not exist or is not online.');
+
+			return;
 		}
 
 		$perm = $args[0];
