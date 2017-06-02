@@ -26,7 +26,7 @@ use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\Parser;
 use WildPHP\Core\Connection\PingPongHandler;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\DataStorage\DataStorage;
+use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Security\PermissionGroup;
@@ -85,7 +85,7 @@ function setupPermissionGroupCollection()
 {
 	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
 
-	$dataStorage = new DataStorage('permissiongroups');
+	$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
 	$groupsToLoad = $dataStorage->getKeys();
 	foreach ($groupsToLoad as $group)
@@ -105,7 +105,7 @@ function setupPermissionGroupCollection()
 			$groupList[] = $group->getName();
 		}
 
-		$dataStorage = new DataStorage('permissiongrouplist');
+		$dataStorage = DataStorageFactory::getStorage('permissiongrouplist');
 		$dataStorage->set('groupstoload', $groupList);
 	});
 

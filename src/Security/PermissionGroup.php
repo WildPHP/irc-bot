@@ -20,8 +20,7 @@
 
 namespace WildPHP\Core\Security;
 
-use WildPHP\Core\DataStorage\DataStorage;
-use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\Users\User;
 
 class PermissionGroup
@@ -70,7 +69,7 @@ class PermissionGroup
 	 */
 	public function loadPermissionsFromStorage()
 	{
-		$dataStorage = new DataStorage('permissiongroups');
+		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
 		if (!in_array($this->getName(), $dataStorage->getKeys()))
 			return;
@@ -84,7 +83,7 @@ class PermissionGroup
 	 */
 	public function save()
 	{
-		$dataStorage = new DataStorage('permissiongroups');
+		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
 		$dataStorage->set($this->getName(), $this->toArray());
 	}

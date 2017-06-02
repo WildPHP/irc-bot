@@ -27,7 +27,7 @@ use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\DataStorage\DataStorage;
+use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
@@ -471,7 +471,7 @@ class PermissionCommands
 			return;
 		}
 
-		$storage = new DataStorage('permissiongroups');
+		$storage = DataStorageFactory::getStorage('permissiongroups');
 		$storage->delete($groupName);
 
 		Queue::fromContainer($container)
