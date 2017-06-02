@@ -3,6 +3,7 @@
   <component name="ProjectCodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
+        <option name="FORMATTER_TAGS_ENABLED" value="true" />
         <PHPCodeStyleSettings>
           <option name="PHPDOC_BLANK_LINES_AROUND_PARAMETERS" value="true" />
           <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
