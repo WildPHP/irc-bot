@@ -38,9 +38,9 @@ class HelpCommand
 	{
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Shows the help pages for a specific command. (use the lscommands command to list available commands) ' .
-			'Usage: help [command] [page]');
+			'Usage: cmdhelp [command] [page]');
 		CommandHandler::fromContainer($container)
-			->registerCommand('help', [$this, 'helpCommand'], $commandHelp, 0, 2);
+			->registerCommand('cmdhelp', [$this, 'helpCommand'], $commandHelp, 0, 2);
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->addPage('Shows the list of available commands. No arguments.');
