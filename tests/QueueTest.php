@@ -71,8 +71,10 @@ class QueueTest extends PHPUnit_Framework_TestCase
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         // If we insert 10 messages, the time the next message will be scheduled
-        // should be 2*5 = 10 seconds (at a rate of 2 messages per 2 seconds)
-        $expectedTime = time() + 10;
+        // should be 1*10 = 10 seconds (at a rate of 1 message per second)
+	    // However, the queue system allows bursting. So the first 5 messages get no timeout.
+	    // Therefore the calculation is 5*0 + 5*1 = 5 seconds for the next message.
+        $expectedTime = time() + 5;
 
         for ($i = 1; $i <= 10; $i++)
         {
