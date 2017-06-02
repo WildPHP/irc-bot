@@ -21,28 +21,17 @@
 namespace WildPHP\Core\DataStorage;
 
 
-use Flintstone\Exception;
 use Flintstone\Flintstone;
-use Flintstone\Formatter\JsonFormatter;
 
+/**
+ * This class exists solely so that if we ever decide to later on move
+ * to a different storage platform, it does not break all modules
+ * or require other radical changes.
+ */
 class DataStorage extends Flintstone
 {
-	/**
-	 * @var Flintstone
-	 */
-	protected $flintstone;
-
-	/**
-	 * DataStorage constructor.
-	 *
-	 * @param \Flintstone\Database|string $name
-	 */
-	public function __construct($name)
+	public function __construct(string $name, array $config)
 	{
-		$config = [
-			'dir' => WPHP_ROOT_DIR . '/storage',
-			'formatter' => new JsonFormatter()
-		];
 		parent::__construct($name, $config);
 	}
 }

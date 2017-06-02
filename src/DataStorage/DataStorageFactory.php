@@ -20,8 +20,7 @@
 
 namespace WildPHP\Core\DataStorage;
 
-
-use Flintstone\Flintstone;
+use Flintstone\Formatter\JsonFormatter;
 
 class DataStorageFactory
 {
@@ -46,10 +45,12 @@ class DataStorageFactory
 		if (array_key_exists($storage, self::$openStorages))
 			return self::$openStorages[$storage];
 
-		$options = array_merge($options, ['dir' => self::STORAGE_DIR]);
+		$options = array_merge($options, [
+			'formatter' => new JsonFormatter(),
+			'dir' => self::STORAGE_DIR
+		]);
 
-		$flintstone = new Flintstone($storage, $options);
-		$dataStorage = new DataStorage($flintstone);
+		$dataStorage = new DataStorage($storage, $options);
 		self::$openStorages[$storage] = $dataStorage;
 
 		return $dataStorage;
