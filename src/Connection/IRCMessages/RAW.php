@@ -47,7 +47,7 @@ class RAW implements ReceivableMessage, SendableMessage
 	/**
 	 * @param IncomingIrcMessage $incomingIrcMessage
 	 *
-	 * @return RAW
+	 * @return \self
 	 * @throws \ErrorException
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
