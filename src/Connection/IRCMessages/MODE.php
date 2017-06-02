@@ -35,10 +35,24 @@ class MODE implements ReceivableMessage, SendableMessage
 	use PrefixTrait;
 	use NicknameTrait;
 
+	/**
+	 * @var string
+	 */
 	protected static $verb = 'MODE';
 
+	/**
+	 * @var string
+	 */
 	protected $flags = '';
+
+	/**
+	 * @var string
+	 */
 	protected $target = '';
+
+	/**
+	 * @var array
+	 */
 	protected $arguments = [];
 
 	public function __construct(string $target, string $flags, array $arguments = [])
@@ -59,14 +73,7 @@ class MODE implements ReceivableMessage, SendableMessage
 		if ($incomingIrcMessage->getVerb() != self::$verb)
 			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
 
-		try
-		{
-			$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-		}
-		catch (\InvalidArgumentException $e)
-		{
-			$prefix = $incomingIrcMessage->getPrefix();
-		}
+		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 
 		$args = $incomingIrcMessage->getArgs();
 		$target = array_shift($args);
