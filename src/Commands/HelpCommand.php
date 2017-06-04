@@ -80,14 +80,14 @@ class HelpCommand
 	{
 		if (empty($args))
 		{
-			$args[0] = 'help';
+			$args[0] = 'cmdhelp';
 			$args[1] = '1';
 		}
 
-		if (count($args) == 1)
+		if (count($args) == 1 && is_numeric($args[0]))
 		{
 			$args[1] = $args[0];
-			$args[0] = 'help';
+			$args[0] = 'cmdhelp';
 		}
 
 		$command = $args[0];

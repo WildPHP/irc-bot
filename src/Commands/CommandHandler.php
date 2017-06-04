@@ -146,7 +146,7 @@ class CommandHandler
 				->get('prefix')
 				->getValue();
 			$queue->privmsg($source->getName(),
-				'Invalid arguments. Please check ' . $prefix . 'help ' . $command . ' for usage instructions.');
+				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions.');
 
 			return;
 		}
