@@ -39,6 +39,16 @@ class PRIVMSG implements ReceivableMessage, SendableMessage
 
 	protected static $verb = 'PRIVMSG';
 
+	/**
+	 * @var bool|string
+	 */
+	protected $ctcpVerb = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $isCtcp = false;
+
 	public function __construct(string $channel, string $message)
 	{
 		$this->setChannel($channel);
@@ -60,15 +70,66 @@ class PRIVMSG implements ReceivableMessage, SendableMessage
 		$channel = $incomingIrcMessage->getArgs()[0];
 		$message = $incomingIrcMessage->getArgs()[1];
 
+		$isCtcp = substr($message, 0, 1) == "\x01" && substr($message, -1, 1) == "\x01";
+		$ctcpVerb = false;
+
+		if ($isCtcp)
+		{
+			$message = trim(substr($message, 1, -1));
+			$message = explode(' ', $message, 2);
+			$ctcpVerb = array_shift($message);
+			$message = !empty($message) ? array_shift($message) : '';
+			var_dump($ctcpVerb, $message);
+		}
+
 		$object = new self($channel, $message);
 		$object->setPrefix($prefix);
+		$object->setIsCtcp($isCtcp);
+		$object->setCtcpVerb($ctcpVerb);
 		$object->setNickname($prefix->getNickname());
 
 		return $object;
 	}
 
+	/**
+	 * @return bool|string
+	 */
+	public function getCtcpVerb()
+	{
+		return $this->ctcpVerb;
+	}
+
+	/**
+	 * @param bool|string $ctcpVerb
+	 */
+	public function setCtcpVerb($ctcpVerb)
+	{
+		$this->ctcpVerb = $ctcpVerb;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCtcp(): bool
+	{
+		return $this->isCtcp;
+	}
+
+	/**
+	 * @param bool $isCtcp
+	 */
+	public function setIsCtcp(bool $isCtcp)
+	{
+		$this->isCtcp = $isCtcp;
+	}
+
 	public function __toString()
 	{
-		return 'PRIVMSG ' . $this->getChannel() . ' :' . $this->getMessage() . "\r\n";
+		if ($this->isCtcp())
+			$message = "\x01" . $this->getCtcpVerb() . ' ' . $this->getMessage() . "\x01";
+		else
+			$message = $this->getMessage();
+
+		return 'PRIVMSG ' . $this->getChannel() . ' :' . $message . "\r\n";
 	}
 }
