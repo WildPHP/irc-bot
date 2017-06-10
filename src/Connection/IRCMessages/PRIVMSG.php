@@ -79,7 +79,6 @@ class PRIVMSG implements ReceivableMessage, SendableMessage
 			$message = explode(' ', $message, 2);
 			$ctcpVerb = array_shift($message);
 			$message = !empty($message) ? array_shift($message) : '';
-			var_dump($ctcpVerb, $message);
 		}
 
 		$object = new self($channel, $message);
