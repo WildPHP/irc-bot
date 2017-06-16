@@ -55,7 +55,7 @@ class TaskController
 	 */
 	public function addTask(Task $task): bool
 	{
-		if (self::taskExists($task))
+		if ($this->taskExists($task))
 			return false;
 
 		$this->tasks[] = $task;
@@ -70,7 +70,7 @@ class TaskController
 	 */
 	public function removeTask(Task $task): bool
 	{
-		if (!self::taskExists($task))
+		if (!$this->taskExists($task))
 			return false;
 
 		unset($this->tasks[array_search($task, $this->tasks)]);
@@ -106,7 +106,7 @@ class TaskController
 				return;
 			}
 
-			self::removeTask($task);
+			$this->removeTask($task);
 		}
 	}
 }
