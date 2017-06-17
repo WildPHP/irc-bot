@@ -89,8 +89,3 @@ class ConfigurationStorage
 		return $this->config;
 	}
 }
-
-class ConfigurationItemNotFoundException extends \Exception
-{
-
-}

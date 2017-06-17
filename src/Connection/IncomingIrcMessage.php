@@ -137,7 +137,3 @@ class IncomingIrcMessage
 		$this->args = $args;
 	}
 }
-
-class MessageNotImplementedException extends \ErrorException
-{
-}
