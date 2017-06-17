@@ -157,7 +157,7 @@ class CommandHandler
 			return;
 		}
 
-		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer());
+		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer(), $command);
 	}
 
 	/**
