@@ -36,7 +36,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
 		$name = '#someChannel';
 		$channel->setName($name);
 
-		$this->assertEquals($name, $channel->getName());
+		static::assertEquals($name, $channel->getName());
 	}
 
 	public function testGetSetChannelTopic()
@@ -48,7 +48,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
 		$topic = 'This is a test topic';
 		$channel->setTopic($topic);
 
-		$this->assertEquals($topic, $channel->getTopic());
+		static::assertEquals($topic, $channel->getTopic());
 	}
 
 	public function testGetSetChannelDescription()
@@ -60,6 +60,6 @@ class ChannelTest extends PHPUnit_Framework_TestCase
 		$topic = 'This is a test topic';
 		$channel->setTopic($topic);
 
-		$this->assertEquals($topic, $channel->getTopic());
+		static::assertEquals($topic, $channel->getTopic());
 	}
 }

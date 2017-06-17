@@ -29,7 +29,7 @@ class TextFormatterTest extends TestCase
 
         $actual = TextFormatter::bold($string);
 
-        $this->assertSame($expectedString, $actual);
+        static::assertSame($expectedString, $actual);
     }
 
     public function testUnderline()
@@ -39,7 +39,7 @@ class TextFormatterTest extends TestCase
 
         $actual = TextFormatter::underline($string);
 
-        $this->assertSame($expectedString, $actual);
+        static::assertSame($expectedString, $actual);
     }
 
     public function testItalic()
@@ -49,7 +49,7 @@ class TextFormatterTest extends TestCase
 
         $actual = TextFormatter::italic($string);
 
-        $this->assertSame($expectedString, $actual);
+        static::assertSame($expectedString, $actual);
     }
 
     public function testColor()
@@ -60,7 +60,7 @@ class TextFormatterTest extends TestCase
         $actual = TextFormatter::color($string, 'purple', 'red');
         $actualNumeric = TextFormatter::color($string, '06', '04');
 
-        $this->assertSame($expectedString, $actual);
-        $this->assertSame($expectedString, $actualNumeric);
+        static::assertSame($expectedString, $actual);
+        static::assertSame($expectedString, $actualNumeric);
     }
 }

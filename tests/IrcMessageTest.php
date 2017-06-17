@@ -47,10 +47,10 @@ class IrcMessageTest extends TestCase
 	{
 		$authenticate = new AUTHENTICATE('+');
 
-		$this->assertEquals('+', $authenticate->getResponse());
+		static::assertEquals('+', $authenticate->getResponse());
 
 		$expected = 'AUTHENTICATE +' . "\r\n";
-		$this->assertEquals($expected, $authenticate->__toString());
+		static::assertEquals($expected, $authenticate->__toString());
 	}
 
 	public function testAuthenticateReceive()
@@ -59,17 +59,17 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$authenticate = AUTHENTICATE::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('+', $authenticate->getResponse());
+		static::assertEquals('+', $authenticate->getResponse());
 	}
 
 	public function testAwayCreate()
 	{
 		$away = new AWAY('A sample message');
 
-		$this->assertEquals('A sample message', $away->getMessage());
+		static::assertEquals('A sample message', $away->getMessage());
 
 		$expected = 'AWAY :A sample message' . "\r\n";
-		$this->assertEquals($expected, $away->__toString());
+		static::assertEquals($expected, $away->__toString());
 	}
 
 	public function testAwayReceive()
@@ -78,19 +78,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$away = AWAY::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $away->getNickname());
-		$this->assertEquals('A sample message', $away->getMessage());
+		static::assertEquals('nickname', $away->getNickname());
+		static::assertEquals('A sample message', $away->getMessage());
 	}
 
 	public function testCapCreate()
     {
         $cap = new CAP('REQ', ['cap1', 'cap2']);
 
-        $this->assertEquals('REQ', $cap->getCommand());
-        $this->assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
+        static::assertEquals('REQ', $cap->getCommand());
+        static::assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
 
         $expected = 'CAP REQ :cap1 cap2' . "\r\n";
-        $this->assertEquals($expected, $cap->__toString());
+        static::assertEquals($expected, $cap->__toString());
     }
 
     public function testCapReceive()
@@ -99,9 +99,9 @@ class IrcMessageTest extends TestCase
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $cap = CAP::fromIncomingIrcMessage($incoming);
 
-        $this->assertEquals('LS', $cap->getCommand());
-        $this->assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
-        $this->assertEquals('*', $cap->getNickname());
+        static::assertEquals('LS', $cap->getCommand());
+        static::assertEquals(['cap1', 'cap2'], $cap->getCapabilities());
+        static::assertEquals('*', $cap->getNickname());
     }
 
 	public function testErrorReceive()
@@ -110,18 +110,18 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$error = ERROR::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('A sample message', $error->getMessage());
+		static::assertEquals('A sample message', $error->getMessage());
 	}
 
 	public function testJoinCreate()
 	{
 		$join = new JOIN(['#channel1', '#channel2'], ['key1', 'key2']);
 
-		$this->assertEquals(['#channel1', '#channel2'], $join->getChannels());
-		$this->assertEquals(['key1', 'key2'], $join->getKeys());
+		static::assertEquals(['#channel1', '#channel2'], $join->getChannels());
+		static::assertEquals(['key1', 'key2'], $join->getKeys());
 
 		$expected = 'JOIN #channel1,#channel2 key1,key2' . "\r\n";
-		$this->assertEquals($expected, $join->__toString());
+		static::assertEquals($expected, $join->__toString());
 	}
 
 	public function testJoinCreateKeyMismatch()
@@ -137,10 +137,10 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $join->getNickname());
-		$this->assertEquals(['#channel'], $join->getChannels());
-		$this->assertEquals('ircAccountName', $join->getIrcAccount());
-		$this->assertEquals('realname', $join->getRealname());
+		static::assertEquals('nickname', $join->getNickname());
+		static::assertEquals(['#channel'], $join->getChannels());
+		static::assertEquals('ircAccountName', $join->getIrcAccount());
+		static::assertEquals('realname', $join->getRealname());
 	}
 
 	public function testJoinReceiveRegular()
@@ -149,22 +149,22 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $join->getNickname());
-		$this->assertEquals(['#channel'], $join->getChannels());
-		$this->assertEquals('', $join->getIrcAccount());
-		$this->assertEquals('', $join->getRealname());
+		static::assertEquals('nickname', $join->getNickname());
+		static::assertEquals(['#channel'], $join->getChannels());
+		static::assertEquals('', $join->getIrcAccount());
+		static::assertEquals('', $join->getRealname());
 	}
 
 	public function testKickCreate()
 	{
 		$kick = new KICK('#channel', 'nickname', 'Bleep you!');
 
-		$this->assertEquals('#channel', $kick->getChannel());
-		$this->assertEquals('nickname', $kick->getTarget());
-		$this->assertEquals('Bleep you!', $kick->getMessage());
+		static::assertEquals('#channel', $kick->getChannel());
+		static::assertEquals('nickname', $kick->getTarget());
+		static::assertEquals('Bleep you!', $kick->getMessage());
 
 		$expected = 'KICK #channel nickname :Bleep you!' . "\r\n";
-		$this->assertEquals($expected, $kick->__toString());
+		static::assertEquals($expected, $kick->__toString());
 	}
 
 	public function testKickReceive()
@@ -173,22 +173,22 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$kick = KICK::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $kick->getNickname());
-		$this->assertEquals('othernickname', $kick->getTarget());
-		$this->assertEquals('#somechannel', $kick->getChannel());
-		$this->assertEquals('You deserved it!', $kick->getMessage());
+		static::assertEquals('nickname', $kick->getNickname());
+		static::assertEquals('othernickname', $kick->getTarget());
+		static::assertEquals('#somechannel', $kick->getChannel());
+		static::assertEquals('You deserved it!', $kick->getMessage());
 	}
 
 	public function testModeCreate()
 	{
 		$mode = new MODE('target', '-o+b', ['arg1', 'arg2']);
 
-		$this->assertEquals('target', $mode->getTarget());
-		$this->assertEquals('-o+b', $mode->getFlags());
-		$this->assertEquals(['arg1', 'arg2'], $mode->getArguments());
+		static::assertEquals('target', $mode->getTarget());
+		static::assertEquals('-o+b', $mode->getFlags());
+		static::assertEquals(['arg1', 'arg2'], $mode->getArguments());
 
 		$expected = 'MODE target -o+b arg1 arg2' . "\r\n";
-		$this->assertEquals($expected, $mode->__toString());
+		static::assertEquals($expected, $mode->__toString());
 	}
 
 	public function testModeReceiveChannel()
@@ -197,10 +197,10 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('#channel', $mode->getTarget());
-		$this->assertEquals('nickname', $mode->getNickname());
-		$this->assertEquals('-o+b', $mode->getFlags());
-		$this->assertEquals(['arg1', 'arg2'], $mode->getArguments());
+		static::assertEquals('#channel', $mode->getTarget());
+		static::assertEquals('nickname', $mode->getNickname());
+		static::assertEquals('-o+b', $mode->getFlags());
+		static::assertEquals(['arg1', 'arg2'], $mode->getArguments());
 	}
 
 	public function testModeReceiveUser()
@@ -209,10 +209,10 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('user', $mode->getTarget());
-		$this->assertEquals('nickname', $mode->getNickname());
-		$this->assertEquals('-o+b', $mode->getFlags());
-		$this->assertEquals([], $mode->getArguments());
+		static::assertEquals('user', $mode->getTarget());
+		static::assertEquals('nickname', $mode->getNickname());
+		static::assertEquals('-o+b', $mode->getFlags());
+		static::assertEquals([], $mode->getArguments());
 	}
 
 	public function testModeReceiveInitial()
@@ -221,20 +221,20 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $mode->getTarget());
-		$this->assertEquals('nickname', $mode->getNickname());
-		$this->assertEquals('-o+b', $mode->getFlags());
-		$this->assertEquals([], $mode->getArguments());
+		static::assertEquals('nickname', $mode->getTarget());
+		static::assertEquals('nickname', $mode->getNickname());
+		static::assertEquals('-o+b', $mode->getFlags());
+		static::assertEquals([], $mode->getArguments());
 	}
 
 	public function testNickCreate()
 	{
 		$nick = new NICK('newnickname');
 
-		$this->assertEquals('newnickname', $nick->getNewNickname());
+		static::assertEquals('newnickname', $nick->getNewNickname());
 
 		$expected = 'NICK newnickname' . "\r\n";
-		$this->assertEquals($expected, $nick->__toString());
+		static::assertEquals($expected, $nick->__toString());
 	}
 
 	public function testNickReceive()
@@ -243,19 +243,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$nick = NICK::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $nick->getNickname());
-		$this->assertEquals('newnickname', $nick->getNewNickname());
+		static::assertEquals('nickname', $nick->getNickname());
+		static::assertEquals('newnickname', $nick->getNewNickname());
 	}
 
 	public function testNoticeCreate()
 	{
 		$notice = new NOTICE('#somechannel', 'This is a test message');
 
-		$this->assertEquals('#somechannel', $notice->getChannel());
-		$this->assertEquals('This is a test message', $notice->getMessage());
+		static::assertEquals('#somechannel', $notice->getChannel());
+		static::assertEquals('This is a test message', $notice->getMessage());
 
 		$expected = 'NOTICE #somechannel :This is a test message' . "\r\n";
-		$this->assertEquals($expected, $notice->__toString());
+		static::assertEquals($expected, $notice->__toString());
 	}
 
 	public function testNoticeReceive()
@@ -264,19 +264,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$notice = NOTICE::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('#somechannel', $notice->getChannel());
-		$this->assertEquals('This is a test message', $notice->getMessage());
+		static::assertEquals('#somechannel', $notice->getChannel());
+		static::assertEquals('This is a test message', $notice->getMessage());
 	}
 
 	public function testPartCreate()
 	{
 		$part = new PART(['#channel1', '#channel2'], 'I am out');
 
-		$this->assertEquals(['#channel1', '#channel2'], $part->getChannels());
-		$this->assertEquals('I am out', $part->getMessage());
+		static::assertEquals(['#channel1', '#channel2'], $part->getChannels());
+		static::assertEquals('I am out', $part->getMessage());
 
 		$expected = 'PART #channel1,#channel2 :I am out' . "\r\n";
-		$this->assertEquals($expected, $part->__toString());
+		static::assertEquals($expected, $part->__toString());
 	}
 
 	public function testPartReceive()
@@ -285,19 +285,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$part = PART::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $part->getNickname());
-		$this->assertEquals(['#channel'], $part->getChannels());
-		$this->assertEquals('I have a valid reason', $part->getMessage());
+		static::assertEquals('nickname', $part->getNickname());
+		static::assertEquals(['#channel'], $part->getChannels());
+		static::assertEquals('I have a valid reason', $part->getMessage());
 	}
 
 	public function testPassCreate()
     {
         $pass = new PASS('myseekritpassw0rd');
 
-        $this->assertEquals('myseekritpassw0rd', $pass->getPassword());
+        static::assertEquals('myseekritpassw0rd', $pass->getPassword());
 
         $expected = 'PASS :myseekritpassw0rd' . "\r\n";
-        $this->assertEquals($expected, $pass->__toString());
+        static::assertEquals($expected, $pass->__toString());
     }
 
     public function testPassReceive()
@@ -306,18 +306,18 @@ class IrcMessageTest extends TestCase
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $pass = PASS::fromIncomingIrcMessage($incoming);
 
-        $this->assertEquals('myseekritpassw0rd', $pass->getPassword());
+        static::assertEquals('myseekritpassw0rd', $pass->getPassword());
     }
 
 	public function testPingCreate()
 	{
 		$ping = new PING('testserver1', 'testserver2');
 
-		$this->assertEquals('testserver1', $ping->getServer1());
-		$this->assertEquals('testserver2', $ping->getServer2());
+		static::assertEquals('testserver1', $ping->getServer1());
+		static::assertEquals('testserver2', $ping->getServer2());
 
 		$expected = 'PING testserver1 testserver2' . "\r\n";
-		$this->assertEquals($expected, $ping->__toString());
+		static::assertEquals($expected, $ping->__toString());
 	}
 
 	public function testPingReceive()
@@ -326,19 +326,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$ping = PING::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('testserver1', $ping->getServer1());
-		$this->assertEquals('testserver2', $ping->getServer2());
+		static::assertEquals('testserver1', $ping->getServer1());
+		static::assertEquals('testserver2', $ping->getServer2());
 	}
 
 	public function testPongCreate()
 	{
 		$pong = new PONG('testserver1', 'testserver2');
 
-		$this->assertEquals('testserver1', $pong->getServer1());
-		$this->assertEquals('testserver2', $pong->getServer2());
+		static::assertEquals('testserver1', $pong->getServer1());
+		static::assertEquals('testserver2', $pong->getServer2());
 
 		$expected = 'PONG testserver1 testserver2' . "\r\n";
-		$this->assertEquals($expected, $pong->__toString());
+		static::assertEquals($expected, $pong->__toString());
 	}
 
 	public function testPongReceive()
@@ -347,19 +347,19 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$pong = PONG::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('testserver1', $pong->getServer1());
-		$this->assertEquals('testserver2', $pong->getServer2());
+		static::assertEquals('testserver1', $pong->getServer1());
+		static::assertEquals('testserver2', $pong->getServer2());
 	}
 
 	public function testPrivmsgCreate()
 	{
 		$privmsg = new PRIVMSG('#somechannel', 'This is a test message');
 
-		$this->assertEquals('#somechannel', $privmsg->getChannel());
-		$this->assertEquals('This is a test message', $privmsg->getMessage());
+		static::assertEquals('#somechannel', $privmsg->getChannel());
+		static::assertEquals('This is a test message', $privmsg->getMessage());
 
 		$expected = 'PRIVMSG #somechannel :This is a test message' . "\r\n";
-		$this->assertEquals($expected, $privmsg->__toString());
+		static::assertEquals($expected, $privmsg->__toString());
 	}
 
 	public function testPrivmsgReceive()
@@ -368,18 +368,18 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$privmsg = PRIVMSG::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('#somechannel', $privmsg->getChannel());
-		$this->assertEquals('This is a test message', $privmsg->getMessage());
+		static::assertEquals('#somechannel', $privmsg->getChannel());
+		static::assertEquals('This is a test message', $privmsg->getMessage());
 	}
 
 	public function testQuitCreate()
 	{
 		$quit = new QUIT('A sample message');
 
-		$this->assertEquals('A sample message', $quit->getMessage());
+		static::assertEquals('A sample message', $quit->getMessage());
 
 		$expected = 'QUIT :A sample message' . "\r\n";
-		$this->assertEquals($expected, $quit->__toString());
+		static::assertEquals($expected, $quit->__toString());
 	}
 
 	public function testQuitReceive()
@@ -388,29 +388,29 @@ class IrcMessageTest extends TestCase
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$quit = QUIT::fromIncomingIrcMessage($incoming);
 
-		$this->assertEquals('nickname', $quit->getNickname());
-		$this->assertEquals('A sample message', $quit->getMessage());
+		static::assertEquals('nickname', $quit->getNickname());
+		static::assertEquals('A sample message', $quit->getMessage());
 	}
 
 	public function testRawCreate()
     {
         $raw = new RAW('a command');
 
-        $this->assertEquals('a command', $raw->getCommand());
+        static::assertEquals('a command', $raw->getCommand());
 
         $expected = 'a command' . "\r\n";
-        $this->assertEquals($expected, $raw->__toString());
+        static::assertEquals($expected, $raw->__toString());
     }
 
 	public function testTopicCreate()
     {
         $topic = new TOPIC('#someChannel', 'Test message');
 
-        $this->assertEquals('#someChannel', $topic->getChannel());
-        $this->assertEquals('Test message', $topic->getMessage());
+        static::assertEquals('#someChannel', $topic->getChannel());
+        static::assertEquals('Test message', $topic->getMessage());
 
         $expected = 'TOPIC #someChannel :Test message' . "\r\n";
-        $this->assertEquals($expected, $topic->__toString());
+        static::assertEquals($expected, $topic->__toString());
     }
 
     public function testTopicReceive()
@@ -419,21 +419,21 @@ class IrcMessageTest extends TestCase
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $topic = TOPIC::fromIncomingIrcMessage($incoming);
 
-        $this->assertEquals('#someChannel', $topic->getChannel());
-        $this->assertEquals('This is a new topic', $topic->getMessage());
+        static::assertEquals('#someChannel', $topic->getChannel());
+        static::assertEquals('This is a new topic', $topic->getMessage());
     }
 
     public function testUserCreate()
     {
         $user = new USER('myusername', 'localhost', 'someserver', 'arealname');
 
-        $this->assertEquals('myusername', $user->getUsername());
-        $this->assertEquals('localhost', $user->getHostname());
-        $this->assertEquals('someserver', $user->getServername());
-        $this->assertEquals('arealname', $user->getRealname());
+        static::assertEquals('myusername', $user->getUsername());
+        static::assertEquals('localhost', $user->getHostname());
+        static::assertEquals('someserver', $user->getServername());
+        static::assertEquals('arealname', $user->getRealname());
 
         $expected = 'USER myusername localhost someserver arealname' . "\r\n";
-        $this->assertEquals($expected, $user->__toString());
+        static::assertEquals($expected, $user->__toString());
     }
 
     public function testUserReceive()
@@ -442,21 +442,21 @@ class IrcMessageTest extends TestCase
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $user = USER::fromIncomingIrcMessage($incoming);
 
-        $this->assertEquals('myusername', $user->getUsername());
-        $this->assertEquals('localhost', $user->getHostname());
-        $this->assertEquals('someserver', $user->getServername());
-        $this->assertEquals('arealname', $user->getRealname());
+        static::assertEquals('myusername', $user->getUsername());
+        static::assertEquals('localhost', $user->getHostname());
+        static::assertEquals('someserver', $user->getServername());
+        static::assertEquals('arealname', $user->getRealname());
     }
 
 	public function testWhoCreate()
     {
         $who = new WHO('#someChannel', '%nuhaf');
 
-        $this->assertEquals('#someChannel', $who->getChannel());
-        $this->assertEquals('%nuhaf', $who->getOptions());
+        static::assertEquals('#someChannel', $who->getChannel());
+        static::assertEquals('%nuhaf', $who->getOptions());
 
         $expected = 'WHO #someChannel %nuhaf' . "\r\n";
-        $this->assertEquals($expected, $who->__toString());
+        static::assertEquals($expected, $who->__toString());
     }
 
     public function testWhoReceive()
@@ -465,7 +465,7 @@ class IrcMessageTest extends TestCase
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $who = WHO::fromIncomingIrcMessage($incoming);
 
-        $this->assertEquals('#someChannel', $who->getChannel());
-        $this->assertEquals('%nuhaf', $who->getOptions());
+        static::assertEquals('#someChannel', $who->getChannel());
+        static::assertEquals('%nuhaf', $who->getOptions());
     }
 }
