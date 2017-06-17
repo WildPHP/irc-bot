@@ -177,11 +177,14 @@ class ManagementCommands
 
 		$hostname = $userObject->getHostname();
 		$username = $userObject->getUsername();
+
+		/** @var Channel[] $channels */
 		$channels = $userObject->getChannelCollection()->toArray();
 		foreach ($channels as $key => $channel)
 		{
 			$channels[$key] = $channel->getName();
 		}
+
 		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ': username: ' . $username);
 		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ': hostname: ' . $hostname);
 		Queue::fromContainer($container)->privmsg($user->getNickname(), $wantedNickname . ' is on channels ' . implode(', ', $channels));

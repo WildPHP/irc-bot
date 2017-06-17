@@ -1,2 +1,2 @@
-op={"canHaveMembers":0,"members":[],"allowedPermissions":[],"linkedChannels":[]}
+op={"canHaveMembers":0,"members":[],"allowedPermissions":["test"],"linkedChannels":[]}
 voice={"canHaveMembers":0,"members":[],"allowedPermissions":[],"linkedChannels":[]}

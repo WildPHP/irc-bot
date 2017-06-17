@@ -210,6 +210,10 @@ class Queue implements QueueInterface
 		$this->insertMessage($privmsg);
 	}
 
+	/**
+	 * @param string $channel
+	 * @param string $message
+	 */
 	public function notice(string $channel, string $message)
 	{
 		$notice = new NOTICE($channel, $message);

@@ -167,6 +167,11 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 	return $ircConnection;
 }
 
+/**
+ * @param \React\EventLoop\LoopInterface $loop
+ * @param Configuration $configuration
+ * @param array $connectionDetails
+ */
 function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, array $connectionDetails)
 {
 	$componentContainer = new \WildPHP\Core\ComponentContainer();

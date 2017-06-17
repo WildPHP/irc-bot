@@ -21,7 +21,6 @@
 namespace WildPHP\Core\Connection;
 
 use React\EventLoop\LoopInterface;
-use React\Socket\Connection;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
 use React\Socket\SecureConnector;

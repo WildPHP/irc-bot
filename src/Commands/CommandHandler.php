@@ -88,7 +88,13 @@ class CommandHandler
 		return true;
 	}
 
-	public function alias(string $originalCommand, string $alias)
+	/**
+	 * @param string $originalCommand
+	 * @param string $alias
+	 *
+	 * @return bool
+	 */
+	public function alias(string $originalCommand, string $alias): bool
 	{
 		if (!$this->getCommandDictionary()->keyExists($originalCommand) || $this->getCommandDictionary()->keyExists($alias))
 			return false;

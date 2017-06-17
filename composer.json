@@ -17,7 +17,7 @@
         "fabpot/goutte": "^3",
         "guzzlehttp/guzzle": "^6",
 
-        "react/http": "dev-master#3b2743d2bc5880b98b8cd4474172b4bab5d23f5d"
+        "react/http": "^0.7"
 
     },
     "autoload": {

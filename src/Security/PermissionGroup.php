@@ -334,6 +334,9 @@ class PermissionGroup
 		return $this->allowedPermissions;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function toArray(): array
 	{
 		return [
@@ -344,6 +347,9 @@ class PermissionGroup
 		];
 	}
 
+	/**
+	 * @param array $data
+	 */
 	public function fromArray(array $data)
 	{
 		$this->setCanHaveMembers((bool) $data['canHaveMembers']);

@@ -52,6 +52,14 @@ class USER implements ReceivableMessage, SendableMessage
 	 */
 	protected $realname = '';
 
+	/**
+	 * USER constructor.
+	 *
+	 * @param string $username
+	 * @param string $hostname
+	 * @param string $servername
+	 * @param string $realname
+	 */
 	public function __construct(string $username, string $hostname, string $servername, string $realname)
 	{
 		$this->setUsername($username);
@@ -82,6 +90,9 @@ class USER implements ReceivableMessage, SendableMessage
 		return $object;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$username = $this->getUsername();

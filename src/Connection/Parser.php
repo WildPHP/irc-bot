@@ -61,6 +61,10 @@ class Parser
 		$this->setContainer($container);
 	}
 
+	/**
+	 * @param PRIVMSG $incoming
+	 * @param Queue $queue
+	 */
 	public function prettifyPrivmsg(PRIVMSG $incoming, Queue $queue)
 	{
 		$nickname = $incoming->getNickname();
@@ -73,9 +77,14 @@ class Parser
 			->info($toLog);
 	}
 
+	/**
+	 * @param QueueItem $message
+	 * @param ComponentContainer $container
+	 */
 	public function prettifyOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
 	{
 		$message = $message->getCommandObject();
+
 		if (!($message instanceof PRIVMSG))
 			return;
 

@@ -32,6 +32,11 @@ class BotStateManager
 {
 	use ContainerTrait;
 
+	/**
+	 * BotStateManager constructor.
+	 *
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
@@ -41,6 +46,10 @@ class BotStateManager
 		$this->setContainer($container);
 	}
 
+	/**
+	 * @param User $user
+	 * @param Channel $channel
+	 */
 	public function cleanupChannel(User $user, Channel $channel)
 	{
 		$botUserObject = UserCollection::fromContainer($this->getContainer())->getSelf();
@@ -72,6 +81,12 @@ class BotStateManager
 		}
 	}
 
+	/**
+	 * @param User $user
+	 * @param string $oldNickname
+	 * @param string $newNickname
+	 * @param Queue $queue
+	 */
 	public function monitorOwnNickname(User $user, string $oldNickname, string $newNickname, Queue $queue)
 	{
 		if ($user != UserCollection::fromContainer($this->getContainer())->getSelf())
