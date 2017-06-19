@@ -3,6 +3,7 @@
     "version": "3.0.0",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
+    "license": "MIT",
     "require": {
         "php": ">=7.1.0",
         "nette/neon": "^2",
@@ -17,8 +18,14 @@
             "WildPHP\\Core\\": "src/"
         }
     },
-	"license": "GPL-3.0",
-    "authors": [],
+    "authors": [
+        {
+            "name": "Yoshi2889",
+            "email": "rick.2889@gmail.com",
+            "homepage": "https://nanosector.nl",
+            "role": "Lead Developer"
+        }
+    ],
     "require-dev": {
         "phpunit/phpunit": "^5.2"
     }
