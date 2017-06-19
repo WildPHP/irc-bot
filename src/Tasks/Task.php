@@ -90,6 +90,12 @@ class Task
 		$this->repeatInterval = $repeatInterval;
 	}
 
+	public function cancel()
+	{
+		$this->setRepeatInterval(0);
+		$this->setExpiryTime(time());
+	}
+
 	/**
 	 * @return int
 	 */
@@ -121,4 +127,6 @@ class Task
 	{
 		$this->storedArguments = $storedArguments;
 	}
+
+
 }
