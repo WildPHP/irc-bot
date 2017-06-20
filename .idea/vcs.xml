@@ -2,5 +2,12 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-aggregator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-autorejoin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-factoids" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-linksniffer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-russianroulette" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-tgrelay" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-uno" vcs="Git" />
   </component>
 </project>
