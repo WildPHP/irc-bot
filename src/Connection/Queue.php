@@ -155,6 +155,11 @@ class Queue implements QueueInterface
 		return count($this->messageQueue);
 	}
 
+	public function clear()
+	{
+		$this->messageQueue = [];
+	}
+
 	/**
 	 * @return QueueItem[]
 	 */

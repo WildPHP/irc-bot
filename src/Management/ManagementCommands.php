@@ -57,6 +57,11 @@ class ManagementCommands
 		CommandHandler::fromContainer($container)
 			->registerCommand('nick', [$this, 'nickCommand'], $commandHelp, 0, 1, 'nick');
 
+		$commandHelp = new CommandHelp();
+		$commandHelp->addPage('Clears the send queue.');
+		CommandHandler::fromContainer($container)
+			->registerCommand('clearqueue', [$this, 'clearQueueCommand'], $commandHelp, 0, 1, 'clearqueue');
+
 		$this->setContainer($container);
 	}
 
@@ -189,5 +194,17 @@ class ManagementCommands
 	{
 		// TODO: Validate
 		Queue::fromContainer($container)->nick($args[0]);
+	}
+
+	/**
+	 * @param Channel $source
+	 * @param User $user
+	 * @param array $args
+	 * @param ComponentContainer $container
+	 */
+	public function clearQueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+	{
+		Queue::fromContainer($container)->clear();
+		Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': Message queue cleared.');
 	}
 }
