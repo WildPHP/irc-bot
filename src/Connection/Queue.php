@@ -15,6 +15,30 @@ use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 
+/**
+ * Class Queue
+ * @package WildPHP\Core\Connection
+ *
+ * @method void authenticate(string $response)
+ * @method void away(string $message)
+ * @method void cap(string $command, array $capabilities = [])
+ * @method void join(mixed $channels, array $keys = [])
+ * @method void kick(string $channel, string $nickname, string $message)
+ * @method void mode(string $target, string $flags, array $arguments = [])
+ * @method void nick(string $newNickname)
+ * @method void notice(string $channel, string $message)
+ * @method void part(mixed $channels, $message = '')
+ * @method void pass(string $password)
+ * @method void ping(string $server1, string $server2 = '')
+ * @method void pong(string $server1, string $server2 = '')
+ * @method void privmsg(string $channel, string $message)
+ * @method void quit(string $message)
+ * @method void raw(string $command)
+ * @method void remove(string $channel, string $nickname, string $message)
+ * @method void topic(string $channelName, string $message)
+ * @method void user(string $username, string $hostname, string $servername, string $realname)
+ * @method void who(string $channel, string $options = '')
+ */
 class Queue implements QueueInterface
 {
 	use ComponentTrait;
