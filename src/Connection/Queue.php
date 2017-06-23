@@ -11,24 +11,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
-use WildPHP\Core\Connection\IRCMessages\NOTICE;
-use WildPHP\Core\Connection\IRCMessages\REMOVE;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
-use WildPHP\Core\Connection\IRCMessages\CAP;
-use WildPHP\Core\Connection\IRCMessages\JOIN;
-use WildPHP\Core\Connection\IRCMessages\KICK;
-use WildPHP\Core\Connection\IRCMessages\MODE;
-use WildPHP\Core\Connection\IRCMessages\NICK;
-use WildPHP\Core\Connection\IRCMessages\PART;
-use WildPHP\Core\Connection\IRCMessages\PASS;
-use WildPHP\Core\Connection\IRCMessages\PING;
-use WildPHP\Core\Connection\IRCMessages\PONG;
-use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
-use WildPHP\Core\Connection\IRCMessages\QUIT;
-use WildPHP\Core\Connection\IRCMessages\RAW;
-use WildPHP\Core\Connection\IRCMessages\TOPIC;
-use WildPHP\Core\Connection\IRCMessages\USER;
-use WildPHP\Core\Connection\IRCMessages\WHO;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 
