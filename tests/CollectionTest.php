@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-	public function testValidateValue()
+	public function testAppendInvalidValue()
 	{
 		$collection = new Collection('string');
 
@@ -24,6 +24,43 @@ class CollectionTest extends TestCase
 		$this->expectException(InvalidArgumentException::class);
 		// 4.2 is a float/double, not a string.
 		$collection->append(4.2);
+
+		$this->expectException(InvalidArgumentException::class);
+		// is an array, not a string.
+		$collection->append([1, 2]);
+
+		$this->expectException(InvalidArgumentException::class);
+		// is an object, not a string.
+		$collection->append($collection);
+
+		$this->expectException(InvalidArgumentException::class);
+		// is a callable or an array, not a string.
+		$collection->append([$collection, 'append']);
+	}
+
+	public function testValidateValue()
+	{
+		$types = [
+			'string' => 'Test string',
+			'int' => 10,
+			'float' => 4.2,
+			'array' => [1,2],
+			'object' => new Collection('string'),
+			'callable' => 'is_callable'
+		];
+
+		foreach (array_keys($types) as $type)
+		{
+			$collection = new Collection($type);
+
+			foreach ($types as $typeToTest => $sample)
+			{
+				if ($collection->getExpectedValueType() == $typeToTest || ($type == 'string' && $typeToTest == 'callable'))
+					static::assertTrue($collection->validateType($sample));
+				else
+					static::assertFalse($collection->validateType($sample));
+			}
+		}
 	}
 
 	public function testRemove()
