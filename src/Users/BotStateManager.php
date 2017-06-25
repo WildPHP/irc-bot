@@ -32,6 +32,8 @@ class BotStateManager
 			->on('user.nick', [$this, 'monitorOwnNickname']);
 		EventEmitter::fromContainer($container)
 			->on('user.part', [$this, 'cleanupChannel']);
+		EventEmitter::fromContainer($container)
+			->on('user.kick', [$this, 'cleanupChannel']);
 		$this->setContainer($container);
 	}
 
