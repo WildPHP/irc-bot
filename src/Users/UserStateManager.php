@@ -122,10 +122,7 @@ class UserStateManager
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.quit', [$userObject, $queue]);
 		UserCollection::fromContainer($this->getContainer())
-			->remove(function (User $user) use ($userObject)
-			{
-				return $user === $userObject;
-			});
+			->remove($userObject);
 	}
 
 	/**

@@ -9,10 +9,9 @@
 
 namespace WildPHP\Core\Commands;
 
-
-use Collections\Dictionary;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -30,19 +29,19 @@ class CommandHandler
 	use ContainerTrait;
 
 	/**
-	 * @var Dictionary
+	 * @var Collection
 	 */
-	protected $commandDictionary = null;
+	protected $commandCollection = null;
 
 	/**
 	 * CommandHandler constructor.
 	 *
 	 * @param ComponentContainer $container
-	 * @param Dictionary $commandDictionary
+	 * @param Collection $commandCollection
 	 */
-	public function __construct(ComponentContainer $container, Dictionary $commandDictionary)
+	public function __construct(ComponentContainer $container, Collection $commandCollection)
 	{
-		$this->setCommandDictionary($commandDictionary);
+		$this->setCommandCollection($commandCollection);
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
@@ -66,13 +65,13 @@ class CommandHandler
 	                                int $maxarguments = -1,
 	                                string $requiredPermission = '')
 	{
-		if ($this->getCommandDictionary()
-			->keyExists($command)
+		if ($this->getCommandCollection()
+			->offsetExists($command)
 		)
 			return false;
 
 		$commandObject = CommandFactory::create($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
-		$this->getCommandDictionary()[$command] = $commandObject;
+		$this->getCommandCollection()->offsetSet($command, $commandObject);
 
 		return true;
 	}
@@ -85,11 +84,11 @@ class CommandHandler
 	 */
 	public function alias(string $originalCommand, string $alias): bool
 	{
-		if (!$this->getCommandDictionary()->keyExists($originalCommand) || $this->getCommandDictionary()->keyExists($alias))
+		if (!$this->getCommandCollection()->offsetExists($originalCommand) || $this->getCommandCollection()->offsetExists($alias))
 			return false;
 
-		$commandObject = $this->getCommandDictionary()[$originalCommand];
-		$this->getCommandDictionary()[$alias] = $commandObject;
+		$commandObject = $this->getCommandCollection()[$originalCommand];
+		$this->getCommandCollection()->offsetSet($alias, $commandObject);
 		return true;
 	}
 
@@ -117,9 +116,9 @@ class CommandHandler
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
 
-		$dictionary = $this->getCommandDictionary();
+		$dictionary = $this->getCommandCollection();
 
-		if (!$dictionary->keyExists($command))
+		if (!$dictionary->offsetExists($command))
 			return;
 
 		$commandObject = $dictionary[$command];
@@ -178,18 +177,18 @@ class CommandHandler
 	}
 
 	/**
-	 * @return Dictionary
+	 * @return Collection
 	 */
-	public function getCommandDictionary(): Dictionary
+	public function getCommandCollection(): Collection
 	{
-		return $this->commandDictionary;
+		return $this->commandCollection;
 	}
 
 	/**
-	 * @param Dictionary $commandDictionary
+	 * @param Collection $commandCollection
 	 */
-	public function setCommandDictionary(Dictionary $commandDictionary)
+	public function setCommandCollection(Collection $commandCollection)
 	{
-		$this->commandDictionary = $commandDictionary;
+		$this->commandCollection = $commandCollection;
 	}
 }

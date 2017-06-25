@@ -46,8 +46,8 @@ class HelpCommand
 	public function lscommandsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$commands = array_keys(CommandHandler::fromContainer($container)
-			->getCommandDictionary()
-			->toArray());
+			->getCommandCollection()
+			->keys());
 
 		$commands = array_chunk($commands, 10);
 

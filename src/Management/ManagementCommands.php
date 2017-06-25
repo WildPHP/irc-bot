@@ -173,7 +173,7 @@ class ManagementCommands
 		$username = $userObject->getUsername();
 
 		/** @var Channel[] $channels */
-		$channels = $userObject->getChannelCollection()->toArray();
+		$channels = $userObject->getChannelCollection()->getArrayCopy();
 		foreach ($channels as $key => $channel)
 		{
 			$channels[$key] = $channel->getName();

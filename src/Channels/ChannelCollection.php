@@ -9,7 +9,7 @@
 
 namespace WildPHP\Core\Channels;
 
-use Collections\Collection;
+use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -49,11 +49,11 @@ class ChannelCollection extends Collection
 		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($user->getNickname());
 		$channel->getUserCollection()
-			->add($user);
+			->append($user);
 		$channel->getUserCollection()
-			->add(UserCollection::fromContainer($this->getContainer())
+			->append(UserCollection::fromContainer($this->getContainer())
 				->getSelf());
-		$this->add($channel);
+		$this->append($channel);
 
 		if ($sendWhox)
 			Queue::fromContainer($this->getContainer())
@@ -90,7 +90,7 @@ class ChannelCollection extends Collection
 		$channelModes = new ChannelModes($this->getContainer());
 		$channel = new Channel($userCollection, $channelModes);
 		$channel->setName($name);
-		$this->add($channel);
+		$this->append($channel);
 
 		return $channel;
 	}
@@ -112,9 +112,11 @@ class ChannelCollection extends Collection
 	 */
 	public function findByChannelName(string $name)
 	{
-		return $this->find(function (Channel $channel) use ($name)
-		{
-			return $channel->getName() == $name;
-		});
+		/** @var Channel $value */
+		foreach ($this->values() as $value)
+			if ($value->getName() == $name)
+				return $value;
+
+		return false;
 	}
 }

@@ -80,13 +80,13 @@ function setupPermissionGroupCollection()
 	foreach ($groupsToLoad as $group)
 	{
 		$pGroup = new PermissionGroup($group, true);
-		$globalPermissionGroup->add($pGroup);
+		$globalPermissionGroup->append($pGroup);
 	}
 
 	register_shutdown_function(function () use ($globalPermissionGroup)
 	{
 		/** @var PermissionGroup[] $groups */
-		$groups = $globalPermissionGroup->toArray();
+		$groups = $globalPermissionGroup->values();
 		$groupList = [];
 
 		foreach ($groups as $group)
@@ -175,7 +175,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->store($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 	$capabilityHandler->setSasl($sasl);
-	$componentContainer->store(new CommandHandler($componentContainer, new \Collections\Dictionary()));
+	$componentContainer->store(new CommandHandler($componentContainer, new \WildPHP\Core\Collection(\WildPHP\Core\Commands\Command::class)));
 	$componentContainer->store(new TaskController($componentContainer));
 
 	$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));

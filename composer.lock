@@ -4,44 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "71db02cbf6d02e4d5f8a3946ef290564",
+    "content-hash": "fe5eeaa53adc3a5a8b7edcef5f3c5d1a",
     "packages": [
-        {
-            "name": "danielgsims/php-collections",
-            "version": "1.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/danielgsims/php-collections.git",
-                "reference": "8e9b4ea57f01175acc21f68745cf5a577de9048b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/danielgsims/php-collections/zipball/8e9b4ea57f01175acc21f68745cf5a577de9048b",
-                "reference": "8e9b4ea57f01175acc21f68745cf5a577de9048b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Collections\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel G Sims",
-                    "email": "danielgarthsims@gmail.com"
-                }
-            ],
-            "description": "Collection classes for PHP",
-            "time": "2016-06-25T23:35:59+00:00"
-        },
         {
             "name": "evenement/evenement",
             "version": "v2.0.0",
@@ -1155,16 +1119,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.20",
+            "version": "5.7.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3cb94a5f8c07a03c8b7527ed7468a2926203f58b"
+                "reference": "3b91adfb64264ddec5a2dee9851f354aa66327db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3cb94a5f8c07a03c8b7527ed7468a2926203f58b",
-                "reference": "3cb94a5f8c07a03c8b7527ed7468a2926203f58b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3b91adfb64264ddec5a2dee9851f354aa66327db",
+                "reference": "3b91adfb64264ddec5a2dee9851f354aa66327db",
                 "shasum": ""
             },
             "require": {
@@ -1233,7 +1197,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-05-22T07:42:55+00:00"
+            "time": "2017-06-21T08:11:54+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

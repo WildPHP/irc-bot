@@ -111,7 +111,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -146,7 +147,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -180,7 +182,8 @@ class PermissionCommands
 	{
 		$groupName = $args[0];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -206,7 +209,8 @@ class PermissionCommands
 	{
 		$groupName = $args[0];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -242,7 +246,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -295,7 +300,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -398,7 +404,7 @@ class PermissionCommands
 	public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$groupName = $args[0];
-		$groups = $this->findGroupByName($groupName);
+		$groups = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (!empty($groups))
 		{
@@ -434,13 +440,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group = PermissionGroupCollection::fromContainer($this->getContainer())
-			->remove(function (PermissionGroup $item) use ($groupName)
-			{
-				return $item->getName() == $groupName;
-			});
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': A group with this name does not exist.');
@@ -466,7 +466,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$channel = $args[1] ?? $source->getName();
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -501,7 +502,8 @@ class PermissionCommands
 		$groupName = $args[0];
 		$channel = $args[1] ?? $source->getName();
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -535,7 +537,8 @@ class PermissionCommands
 	{
 		$groupName = $args[0];
 
-		$group = $this->findGroupByName($groupName);
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)->findGroupByName($groupName);
 
 		if (empty($group))
 		{
@@ -561,19 +564,5 @@ class PermissionCommands
 		foreach ($lines as $line)
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $line);
-	}
-
-	/**
-	 * @param string $groupName
-	 *
-	 * @return bool|PermissionGroup
-	 */
-	protected function findGroupByName(string $groupName)
-	{
-		return PermissionGroupCollection::fromContainer($this->getContainer())
-			->find(function (PermissionGroup $item) use ($groupName)
-			{
-				return $item->getName() == $groupName;
-			});
 	}
 }

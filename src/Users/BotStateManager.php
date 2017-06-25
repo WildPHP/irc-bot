@@ -43,30 +43,30 @@ class BotStateManager
 	{
 		$botUserObject = UserCollection::fromContainer($this->getContainer())->getSelf();
 
-		if ($user !== $botUserObject)
+		if ($user != $botUserObject)
 			return;
 
 		Logger::fromContainer($this->getContainer())->debug('Cleaning up channel', [
 			'channel' => $channel->getName()
 		]);
 
-		$users = UserCollection::fromContainer($this->getContainer())->toArray();
+		$users = UserCollection::fromContainer($this->getContainer())->values();
 
 		/** @var User $user */
 		foreach ($users as $user)
 		{
 			$channelCollection = $user->getChannelCollection();
-			$result = $channelCollection->remove(function (Channel $userChannel) use ($channel)
-			{
-				return $channel === $userChannel;
-			});
 
-			if ($result)
-				Logger::fromContainer($this->getContainer())->debug('Removed channel for user', [
-					'reason' => 'botParted',
-					'nickname' => $user->getNickname(),
-					'channel' => $channel->getName()
-				]);
+			if (!$channelCollection->contains($channel))
+				continue;
+
+			$channelCollection->remove($channel);
+
+			Logger::fromContainer($this->getContainer())->debug('Removed channel for user', [
+				'reason' => 'botParted',
+				'nickname' => $user->getNickname(),
+				'channel' => $channel->getName()
+			]);
 		}
 	}
 

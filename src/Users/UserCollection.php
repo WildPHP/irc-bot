@@ -9,7 +9,7 @@
 
 namespace WildPHP\Core\Users;
 
-use Collections\Collection;
+use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -48,10 +48,12 @@ class UserCollection extends Collection
 	 */
 	public function findByNickname(string $nickname)
 	{
-		return $this->find(function (User $user) use ($nickname)
-		{
-			return $user->getNickname() == $nickname;
-		});
+		/** @var User $value */
+		foreach ($this->values() as $value)
+			if ($value->getNickname() == $nickname)
+				return $value;
+
+		return false;
 	}
 
 	/**
@@ -60,7 +62,7 @@ class UserCollection extends Collection
 	public function getAllNicknames(): array
 	{
 		/** @var User[] $array */
-		$array = $this->toArray();
+		$array = $this->values();
 
 		$nicknames = [];
 		foreach ($array as $user)
@@ -95,7 +97,7 @@ class UserCollection extends Collection
 
 		$user = new User($this->getContainer());
 		$user->setNickname($nickname);
-		$this->add($user);
+		$this->append($user);
 
 		return $user;
 	}

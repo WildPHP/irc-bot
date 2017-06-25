@@ -9,8 +9,7 @@
 
 namespace WildPHP\Core\Security;
 
-
-use Collections\Collection;
+use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentTrait;
 
 class PermissionGroupCollection extends Collection
@@ -28,14 +27,16 @@ class PermissionGroupCollection extends Collection
 	/**
 	 * @param string $name
 	 *
-	 * @return bool|mixed
+	 * @return false|PermissionGroup
 	 */
 	public function findGroupByName(string $name)
 	{
-		return $this->find(function (PermissionGroup $group) use ($name)
-		{
-			return $group->getName() == $name;
-		});
+		/** @var PermissionGroup $value */
+		foreach ($this->values() as $value)
+			if ($value->getName() == $name)
+				return $value;
+
+		return false;
 	}
 
 	/**
@@ -45,9 +46,13 @@ class PermissionGroupCollection extends Collection
 	 */
 	public function findAllGroupsForIrcAccount(string $ircAccount)
 	{
-		return $this->findAll(function (PermissionGroup $group) use ($ircAccount)
-		{
-			return $group->isMemberByIrcAccount($ircAccount);
-		});
+		$groups = [];
+
+		/** @var PermissionGroup $value */
+		foreach ($this->values() as $value)
+			if ($value->getUserCollection()->contains($ircAccount))
+				$groups[] = $value;
+
+		return new Collection(PermissionGroup::class, $groups);
 	}
 }

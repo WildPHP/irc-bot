@@ -9,8 +9,8 @@
 
 namespace WildPHP\Core\Security;
 
-use Collections\Collection;
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -111,7 +111,7 @@ class Validator
 				return $item->getUserCollection()->contains($user);
 			});
 
-		foreach ($groups->toArray() as $group)
+		foreach ($groups->values() as $group)
 		{
 			/** @var PermissionGroup $group */
 			if ($group->hasPermission($permissionName, $channelName))
