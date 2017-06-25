@@ -174,7 +174,7 @@ class ChannelStateManager
 		/** @var Channel $channel */
 		foreach ($channels as $channel)
 		{
-			if (!$channel->getUserCollection()->contains($userObject))
+			if (!$channel->getUserCollection()->contains($userObject) || !$userObject->getChannelCollection()->contains($channel))
 				continue;
 
 			$channel->getUserCollection()->remove($userObject);
