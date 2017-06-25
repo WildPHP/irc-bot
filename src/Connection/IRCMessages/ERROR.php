@@ -16,7 +16,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: ERROR :message
  */
-class ERROR implements ReceivableMessage
+class ERROR extends BaseIRCMessage implements ReceivableMessage
 {
 	use MessageTrait;
 
@@ -30,8 +30,8 @@ class ERROR implements ReceivableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$message = $incomingIrcMessage->getArgs()[0];
 		$object = new self();

@@ -14,5 +14,10 @@ interface SendableMessage
 	/**
 	 * @return string
 	 */
-	public function __toString();
+	public function __toString(): string;
+
+	/**
+	 * @return string
+	 */
+	public static function getVerb(): string;
 }

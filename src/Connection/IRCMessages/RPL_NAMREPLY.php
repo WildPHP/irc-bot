@@ -16,7 +16,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: :server 353 nickname visibility channel :nicknames
  */
-class RPL_NAMREPLY implements ReceivableMessage
+class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ChannelTrait;
@@ -33,8 +33,8 @@ class RPL_NAMREPLY implements ReceivableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);

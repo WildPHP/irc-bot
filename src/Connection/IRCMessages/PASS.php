@@ -17,7 +17,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: PASS password
  */
-class PASS implements ReceivableMessage, SendableMessage
+class PASS extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'PASS';
 
@@ -36,8 +36,8 @@ class PASS implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$password = $incomingIrcMessage->getArgs()[0];
 

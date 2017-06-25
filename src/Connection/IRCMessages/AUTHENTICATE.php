@@ -18,7 +18,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  * Syntax: AUTHENTICATE response
  * @TODO look into the documentation
  */
-class AUTHENTICATE implements ReceivableMessage, SendableMessage
+class AUTHENTICATE extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'AUTHENTICATE';
 
@@ -40,8 +40,8 @@ class AUTHENTICATE implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 		$response = $incomingIrcMessage->getArgs()[0];
 
 		$object = new self($response);

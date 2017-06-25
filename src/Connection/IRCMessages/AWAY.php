@@ -17,7 +17,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix AWAY :message
  */
-class AWAY implements ReceivableMessage, SendableMessage
+class AWAY extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use MessageTrait;
@@ -38,8 +38,8 @@ class AWAY implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 

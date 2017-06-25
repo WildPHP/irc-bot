@@ -18,7 +18,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix TOPIC channel :topic
  */
-class TOPIC implements ReceivableMessage, SendableMessage
+class TOPIC extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'TOPIC';
 
@@ -44,8 +44,8 @@ class TOPIC implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$args = $incomingIrcMessage->getArgs();

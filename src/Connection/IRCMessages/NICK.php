@@ -19,7 +19,7 @@ use WildPHP\Core\Connection\UserPrefix;
  *
  * Syntax: prefix NICK newnickname
  */
-class NICK implements ReceivableMessage, SendableMessage
+class NICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;
@@ -44,8 +44,8 @@ class NICK implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$nickname = $prefix->getNickname();

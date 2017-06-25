@@ -16,7 +16,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax (as used by WildPHP): :server 354 ownnickname username hostname nickname status accountname
  */
-class RPL_WHOSPCRPL
+class RPL_WHOSPCRPL extends BaseIRCMessage implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ChannelTrait;
@@ -57,8 +57,8 @@ class RPL_WHOSPCRPL
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$args = $incomingIrcMessage->getArgs();
 		$ownNickname = array_shift($args);

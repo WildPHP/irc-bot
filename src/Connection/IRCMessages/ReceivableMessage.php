@@ -26,4 +26,9 @@ interface ReceivableMessage
 	 * @return mixed
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
+
+	/**
+	 * @return string
+	 */
+	public static function getVerb(): string;
 }

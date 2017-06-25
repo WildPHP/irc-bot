@@ -21,7 +21,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax (regular): prefix JOIN #channel
  * Syntax (sender): JOIN #channels [keys]
  */
-class JOIN implements ReceivableMessage, SendableMessage
+class JOIN extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	use ChannelsTrait;
 	use NicknameTrait;
@@ -76,8 +76,8 @@ class JOIN implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$args = $incomingIrcMessage->getArgs();

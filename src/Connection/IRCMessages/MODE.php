@@ -19,7 +19,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax (user): prefix MODE nickname flags
  * Syntax (channel): prefix MODE #channel flags [arguments]
  */
-class MODE implements ReceivableMessage, SendableMessage
+class MODE extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	use PrefixTrait;
 	use NicknameTrait;
@@ -59,8 +59,8 @@ class MODE implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 

@@ -16,7 +16,7 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  *
  * Syntax: PING server1 [server2]
  */
-class PING implements ReceivableMessage, SendableMessage
+class PING extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'PING';
 
@@ -38,8 +38,8 @@ class PING implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$args = $incomingIrcMessage->getArgs();
 		$server1 = $args[0];

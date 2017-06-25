@@ -20,7 +20,7 @@ use WildPHP\Core\Connection\UserPrefix;
  * Syntax: prefix PART #channel [:message]
  * Syntax (sender): PART #channels [:message]
  */
-class PART implements ReceivableMessage, SendableMessage
+class PART extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	/**
 	 * @var string
@@ -49,8 +49,8 @@ class PART implements ReceivableMessage, SendableMessage
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		if ($incomingIrcMessage->getVerb() != self::$verb)
-			throw new \InvalidArgumentException('Expected incoming ' . self::$verb . '; got ' . $incomingIrcMessage->getVerb());
+		if ($incomingIrcMessage->getVerb() != self::getVerb())
+			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
 		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$args = $incomingIrcMessage->getArgs();
