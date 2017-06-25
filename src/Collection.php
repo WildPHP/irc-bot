@@ -61,6 +61,14 @@ class Collection extends \ArrayIterator
 	}
 
 	/**
+	 * @return array
+	 */
+	public function keys(): array
+	{
+		return array_keys((array) $this);
+	}
+
+	/**
 	 * @inheritdoc
 	 */
 	public function offsetSet($offset, $value)
@@ -115,6 +123,14 @@ class Collection extends \ArrayIterator
 			default:
 				return ($value instanceof $expectedValueType);
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function values(): array
+	{
+		return array_values((array) $this);
 	}
 
 	/**
