@@ -1,6 +1,5 @@
 {
     "name": "wildphp/wild-irc-bot",
-    "version": "3.0.0",
     "description": "A modular IRC bot written in PHP",
     "type": "project",
     "license": "MIT",
