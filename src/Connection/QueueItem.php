@@ -24,6 +24,11 @@ class QueueItem
 	protected $time;
 
 	/**
+	 * @var bool
+	 */
+	protected $cancelled = false;
+
+	/**
 	 * QueueItem constructor.
 	 *
 	 * @param SendableMessage $command
@@ -73,5 +78,21 @@ class QueueItem
 	public function itemShouldBeTriggered(): bool
 	{
 		return time() >= $this->getTime();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCancelled(): bool
+	{
+		return $this->cancelled;
+	}
+
+	/**
+	 * @param bool $cancelled
+	 */
+	public function setCancelled(bool $cancelled)
+	{
+		$this->cancelled = $cancelled;
 	}
 }
