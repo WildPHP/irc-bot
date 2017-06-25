@@ -21,6 +21,6 @@ abstract class BaseIRCMessage
 	 */
 	public static function getVerb(): string
 	{
-		return self::$verb;
+		return static::$verb;
 	}
 }
