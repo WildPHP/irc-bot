@@ -65,9 +65,14 @@ class PermissionGroup
 	 */
 	public function hasPermission(string $permission, string $channel = ''): bool
 	{
-		$hasPermission = $this->getAllowedPermissions()->contains($permission);
-		$hasNoChannels = !$this->getChannelCollection()->valid();
-		$isCorrectChannel = $hasNoChannels ? true : $this->getChannelCollection()->contains($channel);
+		$hasPermission = $this->getAllowedPermissions()
+			->contains($permission);
+
+		$hasNoChannels = empty($this->getChannelCollection()->values());
+
+		$isCorrectChannel = $hasNoChannels ? true : $this->getChannelCollection()
+			->contains($channel);
+
 		return $hasPermission && $isCorrectChannel;
 	}
 
@@ -176,9 +181,12 @@ class PermissionGroup
 	{
 		return [
 			'canHaveMembers' => (int) $this->getCanHaveMembers(),
-			'userCollection' => $this->getUserCollection()->serialize(),
-			'allowedPermissions' => $this->getAllowedPermissions()->serialize(),
-			'channelCollection' => $this->getChannelCollection()->serialize(),
+			'userCollection' => $this->getUserCollection()
+				->serialize(),
+			'allowedPermissions' => $this->getAllowedPermissions()
+				->serialize(),
+			'channelCollection' => $this->getChannelCollection()
+				->serialize(),
 		];
 	}
 
@@ -199,6 +207,7 @@ class PermissionGroup
 			$allowedPermissions = new Collection('string', $data['allowedPermissions']);
 			$this->setAllowedPermissions($allowedPermissions);
 			$this->save();
+
 			return;
 		}
 
