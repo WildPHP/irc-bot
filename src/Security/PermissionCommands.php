@@ -121,7 +121,7 @@ class PermissionCommands
 			return;
 		}
 
-		if ($group->containsPermission($permission))
+		if ($group->getAllowedPermissions()->contains($permission))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is already allowed to do that.');
@@ -129,7 +129,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group->addPermission($permission);
+		$group->getAllowedPermissions()->append($permission);
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
@@ -156,7 +156,7 @@ class PermissionCommands
 			return;
 		}
 
-		if (!$group->containsPermission($permission))
+		if (!$group->getAllowedPermissions()->contains($permission))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is not allowed to do that.');
@@ -164,7 +164,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group->removePermission($permission);
+		$group->getAllowedPermissions()->remove($permission);
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
@@ -190,7 +190,7 @@ class PermissionCommands
 			return;
 		}
 
-		$perms = $group->listPermissions();
+		$perms = $group->getAllowedPermissions()->values();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
 				$user->getNickname() . ': The following permissions are set for this group: ' . implode(', ', $perms));
@@ -224,7 +224,7 @@ class PermissionCommands
 			return;
 		}
 
-		$members = $group->getUserCollection();
+		$members = $group->getUserCollection()->values();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), sprintf('%s: The following members are in this group: %s',
 				$user->getNickname(),
@@ -273,7 +273,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group->addMember($userToAdd);
+		$group->getUserCollection()->append($userToAdd->getIrcAccount());
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
@@ -309,27 +309,15 @@ class PermissionCommands
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
-		if (empty($userToAdd) && !$group->isMemberByIrcAccount($nickname))
+		if (empty($userToAdd) || !$group->getUserCollection()->contains($userToAdd->getIrcAccount()))
 		{
 			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This user is not in the group.');
-
-			return;
-		}
-		elseif ($group->isMemberByIrcAccount($nickname))
-		{
-			$group->removeMemberByIrcAccount($nickname);
-			Queue::fromContainer($container)
-				->privmsg($source->getName(),
-					$user->getNickname() . ': User ' . $nickname . ' has been removed from the permission group "' . $groupName . '"');
+				->privmsg($source->getName(), $user->getNickname() . ': This user is not in the group or not online.');
 
 			return;
 		}
 
-		if (!$userToAdd)
-			return;
-
-		$group->removeMember($userToAdd);
+		$group->getUserCollection()->remove($userToAdd->getIrcAccount());
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
@@ -488,7 +476,7 @@ class PermissionCommands
 			return;
 		}
 
-		if ($group->containsChannel($channel))
+		if ($group->getChannelCollection()->contains($channel))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is already linked to this channel.');
@@ -496,7 +484,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group->addChannel($channel);
+		$group->getChannelCollection()->append($channel);
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel . '"');
@@ -523,7 +511,7 @@ class PermissionCommands
 			return;
 		}
 
-		if (!$group->containsChannel($channel))
+		if (!$group->getChannelCollection()->contains($channel))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': The group is not linked to this channel.');
@@ -531,7 +519,7 @@ class PermissionCommands
 			return;
 		}
 
-		$group->removeChannel($channel);
+		$group->getChannelCollection()->remove($channel);
 		$group->save();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel . '"');
@@ -557,9 +545,9 @@ class PermissionCommands
 			return;
 		}
 
-		$channels = implode(', ', $group->listChannels());
-		$members = implode(', ', $group->getUserCollection());
-		$permissions = implode(', ', $group->listPermissions());
+		$channels = implode(', ', $group->getChannelCollection()->values());
+		$members = implode(', ', $group->getUserCollection()->values());
+		$permissions = implode(', ', $group->getAllowedPermissions()->values());
 
 		$lines = [
 			'This group is linked to the following channels:',

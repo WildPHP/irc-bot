@@ -108,7 +108,7 @@ class Validator
 				if (!$item->getCanHaveMembers())
 					return false;
 
-				return $item->isMember($user);
+				return $item->getUserCollection()->contains($user);
 			});
 
 		foreach ($groups->toArray() as $group)

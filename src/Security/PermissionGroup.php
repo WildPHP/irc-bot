@@ -9,30 +9,30 @@
 
 namespace WildPHP\Core\Security;
 
+use WildPHP\Core\Collection;
 use WildPHP\Core\DataStorage\DataStorageFactory;
-use WildPHP\Core\Users\User;
 
 class PermissionGroup
 {
 	/**
-	 * @var string[]
+	 * @var Collection
 	 */
-	protected $userCollection = [];
+	protected $userCollection;
 
 	/**
-	 * @var string[]
+	 * @var Collection
 	 */
-	protected $allowedPermissions = [];
+	protected $allowedPermissions;
+
+	/**
+	 * @var Collection
+	 */
+	protected $channelCollection;
 
 	/**
 	 * @var bool
 	 */
 	protected $canHaveMembers = true;
-
-	/**
-	 * @var string[]
-	 */
-	protected $channels = [];
 
 	/**
 	 * @var string
@@ -47,6 +47,10 @@ class PermissionGroup
 	 */
 	public function __construct(string $name, $load = false)
 	{
+		$this->setAllowedPermissions(new Collection('string'));
+		$this->setChannelCollection(new Collection('string'));
+		$this->setUserCollection(new Collection('string'));
+
 		$this->setName($name);
 
 		if ($load)
@@ -54,8 +58,19 @@ class PermissionGroup
 	}
 
 	/**
+	 * @param string $permission
+	 * @param string $channel
 	 *
+	 * @return bool
 	 */
+	public function hasPermission(string $permission, string $channel = ''): bool
+	{
+		$hasPermission = $this->getAllowedPermissions()->contains($permission);
+		$hasNoChannels = !$this->getChannelCollection()->valid();
+		$isCorrectChannel = $hasNoChannels ? true : $this->getChannelCollection()->contains($channel);
+		return $hasPermission && $isCorrectChannel;
+	}
+
 	public function loadPermissionsFromStorage()
 	{
 		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
@@ -67,9 +82,6 @@ class PermissionGroup
 		$this->fromArray($data);
 	}
 
-	/**
-	 *
-	 */
 	public function save()
 	{
 		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
@@ -78,153 +90,17 @@ class PermissionGroup
 	}
 
 	/**
-	 * @param string $ircAccount
-	 *
-	 * @return bool
+	 * @return Collection
 	 */
-	public function isMemberByIrcAccount(string $ircAccount)
-	{
-		return in_array($ircAccount, $this->userCollection);
-	}
-
-	/**
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function isMember(User $user)
-	{
-		return in_array($user->getIrcAccount(), $this->userCollection);
-	}
-
-	/**
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function addMember(User $user)
-	{
-		$ircAccount = $user->getIrcAccount();
-		if (empty($ircAccount))
-			return false;
-
-		if ($this->isMemberByIrcAccount($ircAccount))
-			return true;
-
-		$this->userCollection[] = $ircAccount;
-
-		return true;
-	}
-
-	/**
-	 * @param string $ircAccount
-	 *
-	 * @return bool
-	 */
-	public function addMemberByIrcAccount(string $ircAccount)
-	{
-		if ($this->isMemberByIrcAccount($ircAccount))
-			return true;
-
-		$this->userCollection[] = $ircAccount;
-
-		return true;
-	}
-
-	/**
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function removeMember(User $user)
-	{
-		$ircAccount = $user->getIrcAccount();
-		if (empty($ircAccount))
-			return false;
-
-		if (!$this->isMemberByIrcAccount($ircAccount))
-			return true;
-
-		unset($this->userCollection[array_search($ircAccount, $this->userCollection)]);
-
-		return true;
-	}
-
-	/**
-	 * @param string $ircAccount
-	 *
-	 * @return bool
-	 */
-	public function removeMemberByIrcAccount(string $ircAccount)
-	{
-		if (!$this->isMemberByIrcAccount($ircAccount))
-			return true;
-
-		unset($this->userCollection[array_search($ircAccount, $this->userCollection)]);
-
-		return true;
-	}
-
-	/**
-	 * @param string $channelName
-	 *
-	 * @return bool
-	 */
-	public function containsChannel(string $channelName): bool
-	{
-		return in_array($channelName, $this->channels);
-	}
-
-	/**
-	 * @param string $channelName
-	 *
-	 * @return bool
-	 */
-	public function addChannel(string $channelName): bool
-	{
-		if ($this->containsChannel($channelName))
-			return false;
-
-		$this->channels[] = $channelName;
-
-		return true;
-	}
-
-	/**
-	 * @param string $channelName
-	 *
-	 * @return bool
-	 */
-	public function removeChannel(string $channelName): bool
-	{
-		if (!$this->containsChannel($channelName))
-			return false;
-
-		unset($this->channels[array_search($channelName, $this->channels)]);
-
-		return true;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function listChannels(): array
-	{
-		return $this->channels;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getUserCollection(): array
+	public function getUserCollection(): Collection
 	{
 		return $this->userCollection;
 	}
 
 	/**
-	 * @param array $members
+	 * @param Collection $members
 	 */
-	protected function setUserCollection(array $members)
+	protected function setUserCollection(Collection $members)
 	{
 		$this->userCollection = $members;
 	}
@@ -262,65 +138,35 @@ class PermissionGroup
 	}
 
 	/**
-	 * @param string $permission
-	 *
-	 * @return bool
+	 * @return Collection
 	 */
-	public function containsPermission(string $permission): bool
-	{
-		return in_array($permission, $this->allowedPermissions);
-	}
-
-	/**
-	 * @param string $permission
-	 * @param string $channel
-	 *
-	 * @return bool
-	 */
-	public function hasPermission(string $permission, string $channel = ''): bool
-	{
-		$hasPermission = $this->containsPermission($permission);
-		$hasNoChannels = empty($this->listChannels());
-		$isCorrectChannel = $hasNoChannels ? true : $this->containsChannel($channel);
-		return $hasPermission && $isCorrectChannel;
-	}
-
-	/**
-	 * @param string $permission
-	 *
-	 * @return bool
-	 */
-	public function addPermission(string $permission): bool
-	{
-		if ($this->containsPermission($permission))
-			return false;
-
-		$this->allowedPermissions[] = $permission;
-
-		return true;
-	}
-
-	/**
-	 * @param string $permission
-	 *
-	 * @return bool
-	 */
-	public function removePermission(string $permission): bool
-	{
-		if (!$this->containsPermission($permission))
-			return false;
-
-		unset($this->allowedPermissions[array_search($permission, $this->allowedPermissions)]);
-
-		return true;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function listPermissions(): array
+	public function getAllowedPermissions(): Collection
 	{
 		return $this->allowedPermissions;
+	}
+
+	/**
+	 * @param Collection $allowedPermissions
+	 */
+	public function setAllowedPermissions(Collection $allowedPermissions)
+	{
+		$this->allowedPermissions = $allowedPermissions;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getChannelCollection(): Collection
+	{
+		return $this->channelCollection;
+	}
+
+	/**
+	 * @param Collection $channelCollection
+	 */
+	public function setChannelCollection(Collection $channelCollection)
+	{
+		$this->channelCollection = $channelCollection;
 	}
 
 	/**
@@ -330,9 +176,9 @@ class PermissionGroup
 	{
 		return [
 			'canHaveMembers' => (int) $this->getCanHaveMembers(),
-			'members' => $this->getUserCollection(),
-			'allowedPermissions' => $this->listPermissions(),
-			'linkedChannels' => $this->listChannels(),
+			'userCollection' => $this->getUserCollection()->serialize(),
+			'allowedPermissions' => $this->getAllowedPermissions()->serialize(),
+			'channelCollection' => $this->getChannelCollection()->serialize(),
 		];
 	}
 
@@ -341,19 +187,33 @@ class PermissionGroup
 	 */
 	public function fromArray(array $data)
 	{
+		// Gracefully migrate between data types.
+		if (array_key_exists('members', $data))
+		{
+			$userCollection = new Collection('string', $data['members']);
+			$this->setUserCollection($userCollection);
+
+			$channelCollection = new Collection('string', $data['linkedChannels']);
+			$this->setChannelCollection($channelCollection);
+
+			$allowedPermissions = new Collection('string', $data['allowedPermissions']);
+			$this->setAllowedPermissions($allowedPermissions);
+			$this->save();
+			return;
+		}
+
 		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
-		$this->setUserCollection((array) $data['members']);
 
-		$permissions = $data['allowedPermissions'];
-		foreach ($permissions as $permission)
-		{
-			$this->addPermission($permission);
-		}
+		$userCollection = new Collection('string');
+		$userCollection->unserialize($data['userCollection']);
+		$this->setUserCollection($userCollection);
 
-		$channels = $data['linkedChannels'];
-		foreach ($channels as $channel)
-		{
-			$this->addChannel($channel);
-		}
+		$channelCollection = new Collection('string');
+		$channelCollection->unserialize($data['channelCollection']);
+		$this->setChannelCollection($channelCollection);
+
+		$allowedPermissions = new Collection('string');
+		$allowedPermissions->unserialize($data['allowedPermissions']);
+		$this->setAllowedPermissions($allowedPermissions);
 	}
 }
