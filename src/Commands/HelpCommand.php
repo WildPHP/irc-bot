@@ -83,8 +83,8 @@ class HelpCommand
 		$page = !empty($args[1]) ? $args[1] : 1; // Take into account arrays starting at position 0.
 
 		if (!CommandHandler::fromContainer($container)
-			->getCommandDictionary()
-			->keyExists($command)
+			->getCommandCollection()
+			->offsetExists($command)
 		)
 		{
 			Queue::fromContainer($container)
