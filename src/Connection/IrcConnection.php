@@ -48,11 +48,19 @@ class IrcConnection
 			{
 				$queueItems = $queue->flush();
 
+				/** @var QueueItem $item */
 				foreach ($queueItems as $item)
 				{
+					$verb = strtolower($item->getCommandObject()::getVerb());
+
 					EventEmitter::fromContainer($this->getContainer())
 						->emit('irc.line.out', [$item, $this->getContainer()]);
-					$this->write($item->getCommandObject());
+
+					EventEmitter::fromContainer($this->getContainer())
+						->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
+
+					if (!$item->isCancelled());
+						$this->write($item->getCommandObject());
 				}
 			});
 	}
