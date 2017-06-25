@@ -9,7 +9,6 @@
 namespace WildPHP\Core;
 
 use React\EventLoop\LoopInterface;
-use WildPHP\Core\Logger\Logger;
 
 class ComponentContainer
 {
