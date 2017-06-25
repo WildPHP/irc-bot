@@ -43,6 +43,7 @@ class BotStateManager
 	 */
 	public function cleanupChannel(User $user, Channel $channel)
 	{
+		/** @var User $botUserObject */
 		$botUserObject = UserCollection::fromContainer($this->getContainer())->getSelf();
 
 		if ($user != $botUserObject)
@@ -70,6 +71,9 @@ class BotStateManager
 				'channel' => $channel->getName()
 			]);
 		}
+
+		if ($botUserObject->getChannelCollection()->contains($channel))
+			$botUserObject->getChannelCollection()->remove($channel);
 	}
 
 	/**
