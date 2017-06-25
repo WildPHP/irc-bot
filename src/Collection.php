@@ -8,7 +8,7 @@
 
 namespace WildPHP\Core;
 
-class Collection extends \ArrayIterator
+class Collection extends \ArrayObject
 {
 	/**
 	 * @var string
