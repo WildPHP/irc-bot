@@ -112,46 +112,36 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 	$loop = $container->getLoop();
 	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
+	$server = $connectionDetails['server'];
+	$port = $connectionDetails['port'];
+
+	$connectionDetailsObject = new \WildPHP\Core\Connection\ConnectionDetails();
+	$connectionDetailsObject->setUsername($connectionDetails['user']);
+	$connectionDetailsObject->setHostname(gethostname());
+	$connectionDetailsObject->setAddress($server);
+	$connectionDetailsObject->setRealname($connectionDetails['realname']);
+	$connectionDetailsObject->setPassword($connectionDetails['password'] ?? '');
+	$connectionDetailsObject->setPort($port);
+	$connectionDetailsObject->setWantedNickname($connectionDetails['nick']);
+
 	if ($connectionDetails['secure'])
 		$connector = $connectorFactory->createSecure();
 	else
 		$connector = $connectorFactory->create();
 
-	$ircConnection = new IrcConnection($container);
+	$ircConnection = new IrcConnection($container, $connectionDetailsObject);
+
 	$queue = new Queue($container);
 	$container->store($queue);
-	$ircConnection->registerQueueFlusher($loop, $queue);
+
 	new Parser($container);
 	$pingPongHandler = new PingPongHandler($container);
 	$pingPongHandler->registerPingLoop($loop, $queue);
 
-	$username = $connectionDetails['user'];
-	$hostname = gethostname();
-	$server = $connectionDetails['server'];
-	$port = $connectionDetails['port'];
-	$realname = $connectionDetails['realname'];
-	$nickname = $connectionDetails['nick'];
-	$password = $connectionDetails['password'] ?? '';
+	EventEmitter::fromContainer($container)
+		->on('stream.closed', [$loop, 'stop']);
 
 	$ircConnection->createFromConnector($connector, $server, $port);
-
-	EventEmitter::fromContainer($container)
-		->on('stream.created',
-			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname, $password)
-			{
-				$queue->user($username, $hostname, $server, $realname);
-				$queue->nick($nickname);
-
-				if (!empty($password))
-					$queue->pass($password);
-			});
-
-	EventEmitter::fromContainer($container)
-		->on('stream.closed',
-			function () use ($loop)
-			{
-				$loop->stop();
-			});
 
 	return $ircConnection;
 }
