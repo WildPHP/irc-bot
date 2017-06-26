@@ -9,7 +9,7 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use React\Stream\DuplexStreamInterface;
@@ -28,7 +28,7 @@ class IrcConnection
 	use ContainerTrait;
 
 	/**
-	 * @var Promise
+	 * @var PromiseInterface
 	 */
 	protected $connectorPromise;
 
@@ -73,7 +73,6 @@ class IrcConnection
 	 */
 	public function sendInitialRegistrationData(Queue $queue)
 	{
-		echo 'PRE_USER' . PHP_EOL;
 		$username = $this->getConnectionDetails()->getUsername();
 		$hostname = $this->getConnectionDetails()->getHostname();
 		$server = $this->getConnectionDetails()->getAddress();
@@ -81,14 +80,12 @@ class IrcConnection
 		$nickname = $this->getConnectionDetails()->getWantedNickname();
 
 		$queue->user($username, $hostname, $server, $realname);
-		echo 'POST_USER PRE_NICK' . PHP_EOL;
 		$queue->nick($nickname);
-		echo 'POST_NICK' . PHP_EOL;
 
 		if (!empty($password))
 			$queue->pass($password);
 
-		Logger::fromContainer($this->getContainer())->debug('Sent initial details');
+		Logger::fromContainer($this->getContainer())->debug('Sent initial connection details');
 	}
 
 	/**
@@ -197,7 +194,7 @@ class IrcConnection
 	 */
 	public function catchError(\Exception $e)
 	{
-		Logger::fromContainer($this->getContainer())->error('An error occurred while setting up the IRC connection', [
+		Logger::fromContainer($this->getContainer())->error('An error occurred while maintaining the IRC connection', [
 			'message' => $e->getMessage()
 		]);
 		EventEmitter::fromContainer($this->getContainer())->emit('irc.connection.error', [$e]);
@@ -219,7 +216,7 @@ class IrcConnection
 			Logger::fromContainer($this->getContainer())
 				->debug('>> ' . $data);
 			$stream->write($data);
-		});
+		}, [$this, 'catchError']);
 	}
 
 	public function close()

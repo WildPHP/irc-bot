@@ -112,7 +112,7 @@ class Queue implements QueueInterface
 				->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
 
 			if (!$item->isCancelled());
-			IrcConnection::fromContainer($this->getContainer())->write($item->getCommandObject());
+				IrcConnection::fromContainer($this->getContainer())->write($item->getCommandObject());
 		}
 	}
 
@@ -232,14 +232,14 @@ class Queue implements QueueInterface
 	public function __call(string $name, array $arguments)
 	{
 		$class = '\WildPHP\Core\Connection\IrcMessages\\' . strtoupper($name);
-		if (!class_exists($class))
+		if (!class_exists($class, true))
 			throw new \ErrorException('Cannot send message of type ' . $class . '; no message of such type found.');
 
 		Logger::fromContainer($this->getContainer())->debug('Adding message to queue', [
 			'message' => $name
 		]);
 
-		//$object = new $class(...$arguments);
-		//$this->insertMessage($object);
+		$object = new $class(...$arguments);
+		$this->insertMessage($object);
 	}
 }
