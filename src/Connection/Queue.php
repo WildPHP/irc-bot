@@ -13,7 +13,6 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 
 /**
@@ -93,27 +92,6 @@ class Queue implements QueueInterface
 	public function __construct(ComponentContainer $container)
 	{
 		$this->setContainer($container);
-		$container->getLoop()->addPeriodicTimer(0.5, [$this, 'flushLoop']);
-	}
-
-	public function flushLoop()
-	{
-		$queueItems = $this->flush();
-
-		/** @var QueueItem $item */
-		foreach ($queueItems as $item)
-		{
-			$verb = strtolower($item->getCommandObject()::getVerb());
-
-			EventEmitter::fromContainer($this->getContainer())
-				->emit('irc.line.out', [$item, $this->getContainer()]);
-
-			EventEmitter::fromContainer($this->getContainer())
-				->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
-
-			if (!$item->isCancelled());
-				IrcConnection::fromContainer($this->getContainer())->write($item->getCommandObject());
-		}
 	}
 
 	/**
@@ -226,18 +204,12 @@ class Queue implements QueueInterface
 	/**
 	 * @param string $name
 	 * @param array $arguments
-	 *
-	 * @throws \ErrorException
 	 */
 	public function __call(string $name, array $arguments)
 	{
 		$class = '\WildPHP\Core\Connection\IrcMessages\\' . strtoupper($name);
-		if (!class_exists($class, true))
-			throw new \ErrorException('Cannot send message of type ' . $class . '; no message of such type found.');
-
-		Logger::fromContainer($this->getContainer())->debug('Adding message to queue', [
-			'message' => $name
-		]);
+		if (!class_exists($class))
+			throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
 
 		$object = new $class(...$arguments);
 		$this->insertMessage($object);

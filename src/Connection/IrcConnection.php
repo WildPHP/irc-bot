@@ -9,10 +9,10 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\Promise\PromiseInterface;
+use React\EventLoop\LoopInterface;
+use React\Promise\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
-use React\Stream\DuplexStreamInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -28,7 +28,7 @@ class IrcConnection
 	use ContainerTrait;
 
 	/**
-	 * @var PromiseInterface
+	 * @var Promise
 	 */
 	protected $connectorPromise;
 
@@ -38,21 +38,40 @@ class IrcConnection
 	protected $buffer = '';
 
 	/**
-	 * @var ConnectionDetails
+	 * @param LoopInterface $loop
+	 * @param QueueInterface $queue
 	 */
-	protected $connectionDetails;
+	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
+	{
+		$loop->addPeriodicTimer(0.5,
+			function () use ($queue)
+			{
+				$queueItems = $queue->flush();
+
+				/** @var QueueItem $item */
+				foreach ($queueItems as $item)
+				{
+					$verb = strtolower($item->getCommandObject()::getVerb());
+
+					EventEmitter::fromContainer($this->getContainer())
+						->emit('irc.line.out', [$item, $this->getContainer()]);
+
+					EventEmitter::fromContainer($this->getContainer())
+						->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
+
+					if (!$item->isCancelled());
+						$this->write($item->getCommandObject());
+				}
+			});
+	}
 
 	/**
 	 * IrcConnection constructor.
 	 *
 	 * @param ComponentContainer $container
-	 * @param ConnectionDetails $connectionDetails
 	 */
-	public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
+	public function __construct(ComponentContainer $container)
 	{
-		EventEmitter::fromContainer($container)
-			->on('stream.created', [$this, 'sendInitialRegistrationData']);
-
 		EventEmitter::fromContainer($container)
 			->on('stream.data.in', [$this, 'convertDataToLines']);
 
@@ -60,32 +79,20 @@ class IrcConnection
 			->on('irc.line.in.005', [$this, 'handleServerConfig']);
 
 		EventEmitter::fromContainer($container)
-			->on('irc.line.in.error', [$this, 'close']);
+			->on('irc.line.in.error',
+				function ()
+				{
+					$this->close();
+				});
 
 		EventEmitter::fromContainer($container)
-			->on('irc.force.close', [$this, 'close']);
+			->on('irc.force.close',
+				function ()
+				{
+					$this->close();
+				});
 
 		$this->setContainer($container);
-	}
-
-	/**
-	 * @param Queue $queue
-	 */
-	public function sendInitialRegistrationData(Queue $queue)
-	{
-		$username = $this->getConnectionDetails()->getUsername();
-		$hostname = $this->getConnectionDetails()->getHostname();
-		$server = $this->getConnectionDetails()->getAddress();
-		$realname = $this->getConnectionDetails()->getRealname();
-		$nickname = $this->getConnectionDetails()->getWantedNickname();
-
-		$queue->user($username, $hostname, $server, $realname);
-		$queue->nick($nickname);
-
-		if (!empty($password))
-			$queue->pass($password);
-
-		Logger::fromContainer($this->getContainer())->debug('Sent initial connection details');
 	}
 
 	/**
@@ -156,48 +163,25 @@ class IrcConnection
 	public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
 	{
 		$this->connectorPromise = $connectorInterface->connect($host . ':' . $port)
-			->then([$this, 'setupConnection'], [$this, 'catchError']);
-	}
-
-	/**
-	 * @param DuplexStreamInterface $connectionInterface
-	 *
-	 * @return DuplexStreamInterface
-	 */
-	public function setupConnection(DuplexStreamInterface $connectionInterface)
-	{
-		Logger::fromContainer($this->getContainer())->debug('Stream created');
-
-		EventEmitter::fromContainer($this->getContainer())
-			->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
-
-		$connectionInterface->on('error',
-			function ($error)
-			{
-				$host = $this->getConnectionDetails()->getAddress();
-				$port = $this->getConnectionDetails()->getPort();
-				throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
-			});
-
-		$connectionInterface->on('data',
-			function ($data)
+			->then(function (ConnectionInterface $connectionInterface) use ($host, $port, &$buffer)
 			{
 				EventEmitter::fromContainer($this->getContainer())
-					->emit('stream.data.in', [$data]);
+					->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
+				$connectionInterface->on('error',
+					function ($error) use ($host, $port)
+					{
+						throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+					});
+
+				$connectionInterface->on('data',
+					function ($data)
+					{
+						EventEmitter::fromContainer($this->getContainer())
+							->emit('stream.data.in', [$data]);
+					});
+
+				return $connectionInterface;
 			});
-
-		return $connectionInterface;
-	}
-
-	/**
-	 * @param \Exception $e
-	 */
-	public function catchError(\Exception $e)
-	{
-		Logger::fromContainer($this->getContainer())->error('An error occurred while maintaining the IRC connection', [
-			'message' => $e->getMessage()
-		]);
-		EventEmitter::fromContainer($this->getContainer())->emit('irc.connection.error', [$e]);
 	}
 
 	/**
@@ -205,9 +189,6 @@ class IrcConnection
 	 */
 	public function write(string $data)
 	{
-		Logger::fromContainer($this->getContainer())->debug('Writing data...', [
-			'string' => trim($data)
-		]);
 		$this->connectorPromise->then(function (ConnectionInterface $stream) use ($data)
 		{
 			EventEmitter::fromContainer($this->getContainer())
@@ -216,7 +197,7 @@ class IrcConnection
 			Logger::fromContainer($this->getContainer())
 				->debug('>> ' . $data);
 			$stream->write($data);
-		}, [$this, 'catchError']);
+		});
 	}
 
 	public function close()
@@ -245,21 +226,5 @@ class IrcConnection
 	public function setBuffer(string $buffer)
 	{
 		$this->buffer = $buffer;
-	}
-
-	/**
-	 * @return ConnectionDetails
-	 */
-	public function getConnectionDetails(): ConnectionDetails
-	{
-		return $this->connectionDetails;
-	}
-
-	/**
-	 * @param ConnectionDetails $connectionDetails
-	 */
-	public function setConnectionDetails(ConnectionDetails $connectionDetails)
-	{
-		$this->connectionDetails = $connectionDetails;
 	}
 }
