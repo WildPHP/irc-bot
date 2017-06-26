@@ -207,7 +207,7 @@ class Queue implements QueueInterface
 	 */
 	public function __call(string $name, array $arguments)
 	{
-		$class = '\WildPHP\Core\Connection\IrcMessages\\' . strtoupper($name);
+		$class = '\WildPHP\Core\Connection\IRCMessages\\' . strtoupper($name);
 		if (!class_exists($class))
 			throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
 
