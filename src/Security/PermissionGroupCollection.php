@@ -10,10 +10,10 @@
 namespace WildPHP\Core\Security;
 
 use ValidationClosures\Types;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\DataStorage\DataStorageFactory;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class PermissionGroupCollection extends Collection implements ComponentInterface
 {

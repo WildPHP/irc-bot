@@ -11,7 +11,6 @@ namespace WildPHP\Core\Channels;
 
 use ValidationClosures\Types;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
@@ -19,6 +18,7 @@ use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class ChannelCollection extends Collection implements ComponentInterface
 {

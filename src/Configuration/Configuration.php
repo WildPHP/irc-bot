@@ -9,8 +9,8 @@
 
 namespace WildPHP\Core\Configuration;
 
-use WildPHP\Core\ComponentTrait;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class Configuration implements ComponentInterface
 {

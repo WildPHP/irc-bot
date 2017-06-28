@@ -10,8 +10,8 @@
 namespace WildPHP\Core\Logger;
 
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\ComponentTrait;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class Logger implements LoggerInterface, ComponentInterface
 {

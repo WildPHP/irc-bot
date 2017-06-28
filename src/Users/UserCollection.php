@@ -11,11 +11,11 @@ namespace WildPHP\Core\Users;
 
 use ValidationClosures\Types;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class UserCollection extends Collection implements ComponentInterface
 {

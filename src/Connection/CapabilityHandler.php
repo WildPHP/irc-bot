@@ -10,12 +10,12 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class CapabilityHandler implements ComponentInterface
 {

@@ -12,7 +12,6 @@ namespace WildPHP\Core\Commands;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
@@ -23,6 +22,7 @@ use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class CommandHandler implements ComponentInterface
 {

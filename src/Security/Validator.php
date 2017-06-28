@@ -11,12 +11,12 @@ namespace WildPHP\Core\Security;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class Validator implements ComponentInterface
 {

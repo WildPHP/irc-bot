@@ -14,7 +14,6 @@ use React\Promise\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
@@ -22,6 +21,7 @@ use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 class IrcConnection implements ComponentInterface
 {

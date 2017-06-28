@@ -10,11 +10,11 @@
 namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
 use Yoshi2889\Container\ComponentInterface;
+use Yoshi2889\Container\ComponentTrait;
 
 /**
  * Class Queue
