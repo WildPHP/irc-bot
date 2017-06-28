@@ -6,4 +6,5 @@ php_errors
 /storage/*
 !/storage/.empty
 /modules/
+/tgstorage/
 cloverCoverage.xml
