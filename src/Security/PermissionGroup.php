@@ -9,11 +9,14 @@
 
 namespace WildPHP\Core\Security;
 
-use WildPHP\Core\Collection;
-use WildPHP\Core\DataStorage\DataStorageFactory;
+use Evenement\EventEmitterTrait;
+use ValidationClosures\Types;
+use Yoshi2889\Collections\Collection;
 
 class PermissionGroup
 {
+	use EventEmitterTrait;
+
 	/**
 	 * @var Collection
 	 */
@@ -35,26 +38,18 @@ class PermissionGroup
 	protected $canHaveMembers = true;
 
 	/**
-	 * @var string
-	 */
-	protected $name = '';
-
-	/**
 	 * PermissionGroup constructor.
 	 *
-	 * @param string $name
-	 * @param bool $load
+	 * @param array $previousState
 	 */
-	public function __construct(string $name, $load = false)
+	public function __construct(array $previousState = [])
 	{
-		$this->setAllowedPermissions(new Collection('string'));
-		$this->setChannelCollection(new Collection('string'));
-		$this->setUserCollection(new Collection('string'));
+		$this->setAllowedPermissions(new Collection(Types::string()));
+		$this->setChannelCollection(new Collection(Types::string()));
+		$this->setUserCollection(new Collection(Types::string()));
 
-		$this->setName($name);
-
-		if ($load)
-			$this->loadPermissionsFromStorage();
+		if (!empty($previousState))
+			$this->fromArray($previousState);
 	}
 
 	/**
@@ -68,30 +63,13 @@ class PermissionGroup
 		$hasPermission = $this->getAllowedPermissions()
 			->contains($permission);
 
-		$hasNoChannels = empty($this->getChannelCollection()->values());
+		$hasNoChannels = empty($this->getChannelCollection()
+			->values());
 
 		$isCorrectChannel = $hasNoChannels ? true : $this->getChannelCollection()
 			->contains($channel);
 
 		return $hasPermission && $isCorrectChannel;
-	}
-
-	public function loadPermissionsFromStorage()
-	{
-		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
-
-		if (!in_array($this->getName(), $dataStorage->getKeys()))
-			return;
-
-		$data = $dataStorage->get($this->getName());
-		$this->fromArray($data);
-	}
-
-	public function save()
-	{
-		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
-
-		$dataStorage->set($this->getName(), $this->toArray());
 	}
 
 	/**
@@ -107,23 +85,11 @@ class PermissionGroup
 	 */
 	protected function setUserCollection(Collection $members)
 	{
+		$members->on('changed', function ()
+		{
+			$this->emit('changed');
+		});
 		$this->userCollection = $members;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name)
-	{
-		$this->name = $name;
 	}
 
 	/**
@@ -137,7 +103,7 @@ class PermissionGroup
 	/**
 	 * @param bool $canHaveMembers
 	 */
-	public function setCanHaveMembers(bool $canHaveMembers)
+	protected function setCanHaveMembers(bool $canHaveMembers)
 	{
 		$this->canHaveMembers = $canHaveMembers;
 	}
@@ -153,8 +119,12 @@ class PermissionGroup
 	/**
 	 * @param Collection $allowedPermissions
 	 */
-	public function setAllowedPermissions(Collection $allowedPermissions)
+	protected function setAllowedPermissions(Collection $allowedPermissions)
 	{
+		$allowedPermissions->on('changed', function ()
+		{
+			$this->emit('changed');
+		});
 		$this->allowedPermissions = $allowedPermissions;
 	}
 
@@ -169,8 +139,12 @@ class PermissionGroup
 	/**
 	 * @param Collection $channelCollection
 	 */
-	public function setChannelCollection(Collection $channelCollection)
+	protected function setChannelCollection(Collection $channelCollection)
 	{
+		$channelCollection->on('changed', function ()
+		{
+			$this->emit('changed');
+		});
 		$this->channelCollection = $channelCollection;
 	}
 
@@ -198,30 +172,29 @@ class PermissionGroup
 		// Gracefully migrate between data types.
 		if (array_key_exists('members', $data))
 		{
-			$userCollection = new Collection('string', $data['members']);
+			$userCollection = new Collection(Types::string(), $data['members']);
 			$this->setUserCollection($userCollection);
 
-			$channelCollection = new Collection('string', $data['linkedChannels']);
+			$channelCollection = new Collection(Types::string(), $data['linkedChannels']);
 			$this->setChannelCollection($channelCollection);
 
-			$allowedPermissions = new Collection('string', $data['allowedPermissions']);
+			$allowedPermissions = new Collection(Types::string(), $data['allowedPermissions']);
 			$this->setAllowedPermissions($allowedPermissions);
-			$this->save();
 
 			return;
 		}
 
 		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
 
-		$userCollection = new Collection('string');
+		$userCollection = new Collection(Types::string());
 		$userCollection->unserialize($data['userCollection']);
 		$this->setUserCollection($userCollection);
 
-		$channelCollection = new Collection('string');
+		$channelCollection = new Collection(Types::string());
 		$channelCollection->unserialize($data['channelCollection']);
 		$this->setChannelCollection($channelCollection);
 
-		$allowedPermissions = new Collection('string');
+		$allowedPermissions = new Collection(Types::string());
 		$allowedPermissions->unserialize($data['allowedPermissions']);
 		$this->setAllowedPermissions($allowedPermissions);
 	}

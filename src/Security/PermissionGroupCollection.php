@@ -9,8 +9,10 @@
 
 namespace WildPHP\Core\Security;
 
-use WildPHP\Core\Collection;
+use ValidationClosures\Types;
 use WildPHP\Core\ComponentTrait;
+use WildPHP\Core\DataStorage\DataStorageFactory;
+use Yoshi2889\Collections\Collection;
 
 class PermissionGroupCollection extends Collection
 {
@@ -21,22 +23,30 @@ class PermissionGroupCollection extends Collection
 	 */
 	public function __construct()
 	{
-		parent::__construct(PermissionGroup::class);
+		parent::__construct(Types::instanceof(PermissionGroup::class));
 	}
 
 	/**
-	 * @param string $name
-	 *
-	 * @return false|PermissionGroup
+	 * @inheritdoc
 	 */
-	public function findGroupByName(string $name)
+	public function offsetSet($offset, $value)
 	{
 		/** @var PermissionGroup $value */
-		foreach ($this->values() as $value)
-			if ($value->getName() == $name)
-				return $value;
+		parent::offsetSet($offset, $value);
+		$value->on('changed', function () use ($offset, $value)
+		{
+			$this->saveGroupData($offset, $value);
+		});
+	}
 
-		return false;
+	/**
+	 * @param string $groupName
+	 * @param PermissionGroup $group
+	 */
+	public function saveGroupData(string $groupName, PermissionGroup $group)
+	{
+		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
+		$dataStorage->set($groupName, $group->toArray());
 	}
 
 	/**
@@ -46,13 +56,9 @@ class PermissionGroupCollection extends Collection
 	 */
 	public function findAllGroupsForIrcAccount(string $ircAccount)
 	{
-		$groups = [];
-
-		/** @var PermissionGroup $value */
-		foreach ($this->values() as $value)
-			if ($value->getUserCollection()->contains($ircAccount))
-				$groups[] = $value;
-
-		return new Collection(PermissionGroup::class, $groups);
+		return $this->filter(function (PermissionGroup $group) use ($ircAccount)
+		{
+			return $group->getUserCollection()->contains($ircAccount);
+		});
 	}
 }
