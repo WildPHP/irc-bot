@@ -210,7 +210,8 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 				$logger->error('Could not properly load module; stability not guaranteed!',
 					[
 						'class' => $module,
-						'message' => $e->getMessage()
+						'exception' => get_class($e),
+						'message' => $e->getMessage(),
 					]);
 			}
 
