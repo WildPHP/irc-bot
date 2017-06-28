@@ -8,6 +8,7 @@
 
 namespace WildPHP\Core;
 
+use Yoshi2889\Container\ComponentContainer;
 
 trait ContainerTrait
 {
