@@ -95,7 +95,7 @@ class HelpCommand
 
 		/** @var Command $commandObject */
 		$commandObject = CommandHandler::fromContainer($container)
-			->getCommandDictionary()[$command];
+			->getCommandCollection()[$command];
 
 		$helpObject = $commandObject->getHelp();
 		if ($helpObject == null || !($helpObject instanceof CommandHelp))

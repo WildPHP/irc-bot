@@ -9,7 +9,15 @@
         "react/event-loop": "^0.4",
         "react/socket": "^0.8",
         "katzgrau/klogger": "^1.2",
-        "fire015/flintstone": "^2.1"
+        "fire015/flintstone": "^2.1",
+        "wildphp/module-aggregator": "dev-master",
+        "wildphp/module-autorejoin": "dev-master",
+        "wildphp/module-factoids": "dev-master",
+        "wildphp/module-linksniffer": "dev-master",
+        "wildphp/module-russianroulette": "dev-master",
+        "wildphp/module-tgrelay": "dev-master",
+        "wildphp/module-uno": "dev-master",
+        "yoshi2889/wphp-module-lisp": "dev-master"
     },
     "autoload": {
         "psr-4": {
