@@ -115,8 +115,8 @@ class ChannelStateManager
 		if (!$channel->getUserCollection()->contains($userObject))
 			return;
 
-		$channel->getUserCollection()->remove($userObject);
-		$userObject->getChannelCollection()->remove($channel);
+		$channel->getUserCollection()->removeAll($userObject);
+		$userObject->getChannelCollection()->removeAll($channel);
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.part', [$userObject, $channel, $queue]);
@@ -147,8 +147,8 @@ class ChannelStateManager
 		if (!$channel->getUserCollection()->contains($userObject))
 			return;
 
-		$channel->getUserCollection()->remove($userObject);
-		$userObject->getChannelCollection()->remove($channel);
+		$channel->getUserCollection()->removeAll($userObject);
+		$userObject->getChannelCollection()->removeAll($channel);
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.kick', [$userObject, $channel, $queue]);
@@ -177,8 +177,8 @@ class ChannelStateManager
 			if (!$channel->getUserCollection()->contains($userObject) || !$userObject->getChannelCollection()->contains($channel))
 				continue;
 
-			$channel->getUserCollection()->remove($userObject);
-			$userObject->getChannelCollection()->remove($channel);
+			$channel->getUserCollection()->removeAll($userObject);
+			$userObject->getChannelCollection()->removeAll($channel);
 
 			Logger::fromContainer($this->getContainer())
 				->debug('Removed user from channel',

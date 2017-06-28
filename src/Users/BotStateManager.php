@@ -63,7 +63,7 @@ class BotStateManager
 			if (!$channelCollection->contains($channel))
 				continue;
 
-			$channelCollection->remove($channel);
+			$channelCollection->removeAll($channel);
 
 			Logger::fromContainer($this->getContainer())->debug('Removed channel for user', [
 				'reason' => 'botParted',
@@ -73,7 +73,7 @@ class BotStateManager
 		}
 
 		if ($botUserObject->getChannelCollection()->contains($channel))
-			$botUserObject->getChannelCollection()->remove($channel);
+			$botUserObject->getChannelCollection()->removeAll($channel);
 	}
 
 	/**
