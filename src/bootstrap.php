@@ -77,27 +77,12 @@ function setupPermissionGroupCollection()
 
 	$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
-	$groupsToLoad = $dataStorage->getKeys();
-	foreach ($groupsToLoad as $group)
+	$groupsToLoad = $dataStorage->getAll();
+	foreach ($groupsToLoad as $name => $groupState)
 	{
-		$pGroup = new PermissionGroup($group, true);
-		$globalPermissionGroup->append($pGroup);
+		$pGroup = new PermissionGroup($groupState);
+		$globalPermissionGroup->offsetSet($name, $pGroup);
 	}
-
-	register_shutdown_function(function () use ($globalPermissionGroup)
-	{
-		/** @var PermissionGroup[] $groups */
-		$groups = $globalPermissionGroup->values();
-		$groupList = [];
-
-		foreach ($groups as $group)
-		{
-			$groupList[] = $group->getName();
-		}
-
-		$dataStorage = DataStorageFactory::getStorage('permissiongrouplist');
-		$dataStorage->set('groupstoload', $groupList);
-	});
 
 	return $globalPermissionGroup;
 }
