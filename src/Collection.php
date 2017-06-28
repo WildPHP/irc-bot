@@ -120,6 +120,9 @@ class Collection extends \ArrayObject
 			case 'callable':
 				return is_callable($value);
 
+			case 'mixed':
+				return true;
+
 			default:
 				return ($value instanceof $expectedValueType);
 		}
@@ -146,7 +149,7 @@ class Collection extends \ArrayObject
 	 */
 	public function setExpectedValueType(string $expectedValueType)
 	{
-		if (in_array(strtolower($expectedValueType), ['string', 'int', 'integer', 'float', 'double', 'bool', 'boolean', 'array', 'object', 'callable']))
+		if (in_array(strtolower($expectedValueType), ['string', 'int', 'integer', 'float', 'double', 'bool', 'boolean', 'array', 'object', 'callable', 'mixed']))
 			$expectedValueType = strtolower($expectedValueType);
 
 		$this->expectedValueType = $expectedValueType;
