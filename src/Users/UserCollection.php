@@ -9,11 +9,12 @@
 
 namespace WildPHP\Core\Users;
 
-use WildPHP\Core\Collection;
+use ValidationClosures\Types;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
+use Yoshi2889\Collections\Collection;
 
 class UserCollection extends Collection
 {
@@ -27,7 +28,7 @@ class UserCollection extends Collection
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		parent::__construct(User::class);
+		parent::__construct(Types::instanceof(User::class));
 		$this->setContainer($container);
 	}
 

@@ -9,7 +9,7 @@
 
 namespace WildPHP\Core\Channels;
 
-use WildPHP\Core\Collection;
+use ValidationClosures\Types;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -17,6 +17,7 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
+use Yoshi2889\Collections\Collection;
 
 class ChannelCollection extends Collection
 {
@@ -30,7 +31,7 @@ class ChannelCollection extends Collection
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		parent::__construct(Channel::class);
+		parent::__construct(Types::instanceof(Channel::class));
 		$this->setContainer($container);
 	}
 
