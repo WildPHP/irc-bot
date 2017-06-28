@@ -111,17 +111,18 @@ class PermissionCommands
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		if ($group->getAllowedPermissions()
 			->contains($permission)
@@ -150,17 +151,18 @@ class PermissionCommands
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		if (!$group->getAllowedPermissions()
 			->contains($permission)
@@ -188,17 +190,18 @@ class PermissionCommands
 	{
 		$groupName = $args[0];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		$perms = $group->getAllowedPermissions()
 			->values();
@@ -217,17 +220,18 @@ class PermissionCommands
 	{
 		$groupName = $args[0];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		if (!$group->getCanHaveMembers())
 		{
@@ -256,17 +260,18 @@ class PermissionCommands
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		if (!$group->getCanHaveMembers())
 		{
@@ -312,17 +317,18 @@ class PermissionCommands
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
@@ -340,6 +346,7 @@ class PermissionCommands
 
 		$group->getUserCollection()
 			->removeAll($userToAdd->getIrcAccount());
+
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
 				sprintf('%s: User %s (identified by %s) has been removed from the permission group "%s"',
@@ -415,10 +422,9 @@ class PermissionCommands
 	public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$groupName = $args[0];
-		$groups = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
 
-		if (!empty($groups))
+		if (PermissionGroupCollection::fromContainer($container)
+			->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': A group with this name already exists.');
@@ -426,9 +432,9 @@ class PermissionCommands
 			return;
 		}
 
-		$groupObj = new PermissionGroup($groupName);
+		$groupObj = new PermissionGroup();
 		PermissionGroupCollection::fromContainer($this->getContainer())
-			->add($groupObj);
+			->offsetSet($groupName, $groupObj);
 
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully created.');
@@ -464,6 +470,9 @@ class PermissionCommands
 
 		$storage = DataStorageFactory::getStorage('permissiongroups');
 		$storage->delete($groupName);
+
+		PermissionGroupCollection::fromContainer($container)
+			->offsetUnset($groupName);
 
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully deleted.');
