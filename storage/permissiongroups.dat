@@ -1,2 +1,2 @@
-op={"canHaveMembers":1,"userCollection":"x:i:0;a:0:{};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}","allowedPermissions":"x:i:0;a:1:{i:0;s:4:\"test\";};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}","channelCollection":"x:i:0;a:0:{};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}"}
-voice={"canHaveMembers":1,"userCollection":"x:i:0;a:0:{};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}","allowedPermissions":"x:i:0;a:0:{};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}","channelCollection":"x:i:0;a:0:{};m:a:1:{s:20:\"\u0000*\u0000expectedValueType\";s:6:\"string\";}"}
+op={"canHaveMembers":0,"userCollection":[],"allowedPermissions":[],"channelCollection":[]}
+voice={"canHaveMembers":0,"userCollection":[],"allowedPermissions":[],"channelCollection":[]}

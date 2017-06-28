@@ -41,6 +41,32 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
 	}
 
 	/**
+	 * @inheritdoc
+	 */
+	public function offsetUnset($index)
+	{
+		if ($this->offsetExists($index))
+			$this[$index]->removeAllListeners('changed');
+
+		parent::offsetUnset($index);
+	}
+
+	/**
+	 * @param string $groupName
+	 *
+	 * @return PermissionGroup
+	 */
+	public function loadOrCreateGroup(string $groupName): PermissionGroup
+	{
+		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
+
+		if (!in_array($groupName, $dataStorage->getKeys()))
+			return new PermissionGroup();
+
+		return new PermissionGroup($dataStorage->get($groupName));
+	}
+
+	/**
 	 * @param string $groupName
 	 * @param PermissionGroup $group
 	 */

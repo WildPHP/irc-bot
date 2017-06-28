@@ -156,11 +156,11 @@ class PermissionGroup
 		return [
 			'canHaveMembers' => (int) $this->getCanHaveMembers(),
 			'userCollection' => $this->getUserCollection()
-				->serialize(),
+				->values(),
 			'allowedPermissions' => $this->getAllowedPermissions()
-				->serialize(),
+				->values(),
 			'channelCollection' => $this->getChannelCollection()
-				->serialize(),
+				->values(),
 		];
 	}
 
@@ -180,22 +180,36 @@ class PermissionGroup
 
 			$allowedPermissions = new Collection(Types::string(), $data['allowedPermissions']);
 			$this->setAllowedPermissions($allowedPermissions);
-
 			return;
 		}
 
 		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
 
-		$userCollection = new Collection(Types::string());
-		$userCollection->unserialize($data['userCollection']);
-		$this->setUserCollection($userCollection);
+		if (($state = @unserialize($data['userCollection'])))
+		{
+			$userCollection = new Collection(Types::string());
+			$userCollection->unserialize($data['userCollection']);
+			$this->setUserCollection($userCollection);
+		}
+		else
+			$this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
 
-		$channelCollection = new Collection(Types::string());
-		$channelCollection->unserialize($data['channelCollection']);
-		$this->setChannelCollection($channelCollection);
+		if (($state = @unserialize($data['allowedPermissions'])))
+		{
+			$allowedPermissions = new Collection(Types::string());
+			$allowedPermissions->unserialize($data['allowedPermissions']);
+			$this->setAllowedPermissions($allowedPermissions);
+		}
+		else
+			$this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
 
-		$allowedPermissions = new Collection(Types::string());
-		$allowedPermissions->unserialize($data['allowedPermissions']);
-		$this->setAllowedPermissions($allowedPermissions);
+		if (($state = @unserialize($data['channelCollection'])))
+		{
+			$channelCollection = new Collection(Types::string());
+			$channelCollection->unserialize($data['channelCollection']);
+			$this->setChannelCollection($channelCollection);
+		}
+		else
+			$this->setChannelCollection(new Collection(Types::string(), $data['channelCollection']));
 	}
 }
