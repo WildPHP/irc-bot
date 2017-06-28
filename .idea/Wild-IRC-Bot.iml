@@ -11,6 +11,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/nette/neon" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phar-io/manifest" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phar-io/version" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
@@ -38,10 +40,11 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/object-reflector" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/version" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
@@ -49,16 +52,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="PHARS">
-        <CLASSES>
-          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.0.phar/" />
-        </CLASSES>
-        <SOURCES>
-          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.0.phar/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="module-library">
       <library name="PHP" type="php">
         <CLASSES>
@@ -69,6 +62,8 @@
           <root url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
           <root url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
           <root url="file://$MODULE_DIR$/vendor/nette/neon" />
+          <root url="file://$MODULE_DIR$/vendor/phar-io/manifest" />
+          <root url="file://$MODULE_DIR$/vendor/phar-io/version" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
@@ -96,10 +91,11 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/object-reflector" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
-          <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
           <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
           <root url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
           <root url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
@@ -113,6 +109,8 @@
           <root url="file://$MODULE_DIR$/vendor/katzgrau/klogger" />
           <root url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
           <root url="file://$MODULE_DIR$/vendor/nette/neon" />
+          <root url="file://$MODULE_DIR$/vendor/phar-io/manifest" />
+          <root url="file://$MODULE_DIR$/vendor/phar-io/version" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-common" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/reflection-docblock" />
           <root url="file://$MODULE_DIR$/vendor/phpdocumentor/type-resolver" />
@@ -140,14 +138,25 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+          <root url="file://$MODULE_DIR$/vendor/sebastian/object-reflector" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
-          <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
           <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
           <root url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
           <root url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
           <root url="file://$MODULE_DIR$/vendor/yoshi2889/validation-closures" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="PHARS">
+        <CLASSES>
+          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.1.phar/" />
+        </CLASSES>
+        <SOURCES>
+          <root url="phar://$MODULE_DIR$/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.1.phar/" />
         </SOURCES>
       </library>
     </orderEntry>
