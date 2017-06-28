@@ -10,14 +10,15 @@
 namespace WildPHP\Core\Security;
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Users\User;
+use Yoshi2889\Collections\Collection;
+use Yoshi2889\Container\ComponentInterface;
 
-class Validator
+class Validator implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;
@@ -82,7 +83,7 @@ class Validator
 		{
 			/** @var PermissionGroup $opGroup */
 			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
-				->findGroupByName('op');
+				->offsetGet('op');
 
 			if ($opGroup->hasPermission($permissionName))
 				return 'op';
@@ -92,7 +93,7 @@ class Validator
 		{
 			/** @var PermissionGroup $voiceGroup */
 			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
-				->findGroupByName('voice');
+				->offsetGet('voice');
 
 			if ($voiceGroup->hasPermission($permissionName))
 				return 'voice';
@@ -102,7 +103,7 @@ class Validator
 
 		/** @var Collection $groups */
 		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
-			->findAll(function ($item) use ($user)
+			->filter(function ($item) use ($user)
 			{
 				/** @var PermissionGroup $item */
 				if (!$item->getCanHaveMembers())
@@ -111,11 +112,11 @@ class Validator
 				return $item->getUserCollection()->contains($user);
 			});
 
-		foreach ($groups->values() as $group)
+		foreach ((array) $groups as $name => $group)
 		{
 			/** @var PermissionGroup $group */
 			if ($group->hasPermission($permissionName, $channelName))
-				return $group->getName();
+				return $name;
 		}
 
 		return false;

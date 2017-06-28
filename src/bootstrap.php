@@ -20,6 +20,7 @@ use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Security\PermissionGroup;
 use WildPHP\Core\Tasks\TaskController;
+use Yoshi2889\Collections\Collection;
 
 /**
  * @param Configuration $configuration
@@ -119,7 +120,7 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 
 	$ircConnection = new IrcConnection($container);
 	$queue = new Queue($container);
-	$container->store($queue);
+	$container->add($queue);
 	$ircConnection->registerQueueFlusher($loop, $queue);
 	new Parser($container);
 	$pingPongHandler = new PingPongHandler($container);
@@ -165,24 +166,24 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 {
 	$componentContainer = new \WildPHP\Core\ComponentContainer();
 	$componentContainer->setLoop($loop);
-	$componentContainer->store(setupEventEmitter());
+	$componentContainer->add(setupEventEmitter());
 	$logger = setupLogger($configuration);
-	$componentContainer->store($logger);
-	$componentContainer->store($configuration);
+	$componentContainer->add($logger);
+	$componentContainer->add($configuration);
 	$logger->info('WildPHP initializing');
 
 	$capabilityHandler = new CapabilityHandler($componentContainer);
-	$componentContainer->store($capabilityHandler);
+	$componentContainer->add($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 	$capabilityHandler->setSasl($sasl);
-	$componentContainer->store(new CommandHandler($componentContainer, new \WildPHP\Core\Collection(\WildPHP\Core\Commands\Command::class)));
-	$componentContainer->store(new TaskController($componentContainer));
+	$componentContainer->add(new CommandHandler($componentContainer, new Collection(\WildPHP\Core\Commands\Command::class)));
+	$componentContainer->add(new TaskController($componentContainer));
 
-	$componentContainer->store(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
-	$componentContainer->store(new \WildPHP\Core\Users\UserCollection($componentContainer));
-	$componentContainer->store(setupPermissionGroupCollection());
-	$componentContainer->store(setupIrcConnection($componentContainer, $connectionDetails));
-	$componentContainer->store(new \WildPHP\Core\Security\Validator($componentContainer));
+	$componentContainer->add(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
+	$componentContainer->add(new \WildPHP\Core\Users\UserCollection($componentContainer));
+	$componentContainer->add(setupPermissionGroupCollection());
+	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
+	$componentContainer->add(new \WildPHP\Core\Security\Validator($componentContainer));
 
 	new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
 	new \WildPHP\Core\Users\UserStateManager($componentContainer);

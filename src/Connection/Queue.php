@@ -14,6 +14,7 @@ use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Logger\Logger;
+use Yoshi2889\Container\ComponentInterface;
 
 /**
  * Class Queue
@@ -39,7 +40,7 @@ use WildPHP\Core\Logger\Logger;
  * @method void user(string $username, string $hostname, string $servername, string $realname)
  * @method void who(string $channel, string $options = '')
  */
-class Queue implements QueueInterface
+class Queue implements QueueInterface, ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;

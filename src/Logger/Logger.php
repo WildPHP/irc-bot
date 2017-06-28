@@ -11,8 +11,9 @@ namespace WildPHP\Core\Logger;
 
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\ComponentTrait;
+use Yoshi2889\Container\ComponentInterface;
 
-class Logger implements LoggerInterface
+class Logger implements LoggerInterface, ComponentInterface
 {
 	use ComponentTrait;
 

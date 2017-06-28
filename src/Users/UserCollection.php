@@ -15,8 +15,9 @@ use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
 use Yoshi2889\Collections\Collection;
+use Yoshi2889\Container\ComponentInterface;
 
-class UserCollection extends Collection
+class UserCollection extends Collection implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;

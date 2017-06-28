@@ -15,8 +15,9 @@ use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use Yoshi2889\Container\ComponentInterface;
 
-class CapabilityHandler
+class CapabilityHandler implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;

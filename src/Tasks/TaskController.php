@@ -11,8 +11,9 @@ namespace WildPHP\Core\Tasks;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
+use Yoshi2889\Container\ComponentInterface;
 
-class TaskController
+class TaskController implements ComponentInterface
 {
 	use ComponentTrait;
 

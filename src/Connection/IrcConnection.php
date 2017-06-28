@@ -21,8 +21,9 @@ use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use Yoshi2889\Container\ComponentInterface;
 
-class IrcConnection
+class IrcConnection implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;

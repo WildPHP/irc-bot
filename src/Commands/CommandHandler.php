@@ -11,7 +11,6 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
-use WildPHP\Core\Collection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\ComponentTrait;
 use WildPHP\Core\Configuration\Configuration;
@@ -22,8 +21,10 @@ use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
+use Yoshi2889\Collections\Collection;
+use Yoshi2889\Container\ComponentInterface;
 
-class CommandHandler
+class CommandHandler implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;

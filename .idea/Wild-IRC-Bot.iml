@@ -22,6 +22,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/react/cache" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/react/dns" />
@@ -42,6 +43,16 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/version" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-aggregator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-autorejoin" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-factoids" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-linksniffer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-russianroulette" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-tgrelay" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/module-uno" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/validation-closures" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -76,6 +87,7 @@
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/vendor/psr/container" />
           <root url="file://$MODULE_DIR$/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/vendor/react/cache" />
           <root url="file://$MODULE_DIR$/vendor/react/dns" />
@@ -96,6 +108,16 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
           <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-aggregator" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-autorejoin" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-factoids" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-linksniffer" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-russianroulette" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-tgrelay" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-uno" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/validation-closures" />
         </CLASSES>
         <SOURCES>
           <root url="file://$MODULE_DIR$/vendor/composer" />
@@ -116,6 +138,7 @@
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/vendor/psr/container" />
           <root url="file://$MODULE_DIR$/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/vendor/react/cache" />
           <root url="file://$MODULE_DIR$/vendor/react/dns" />
@@ -136,6 +159,16 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
           <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-aggregator" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-autorejoin" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-factoids" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-linksniffer" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-russianroulette" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-tgrelay" />
+          <root url="file://$MODULE_DIR$/vendor/wildphp/module-uno" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/container" />
+          <root url="file://$MODULE_DIR$/vendor/yoshi2889/validation-closures" />
         </SOURCES>
       </library>
     </orderEntry>
