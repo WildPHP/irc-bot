@@ -7,6 +7,7 @@
  */
 
 use React\EventLoop\Factory as LoopFactory;
+use ValidationClosures\Types;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
@@ -161,7 +162,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 	$capabilityHandler->setSasl($sasl);
-	$componentContainer->add(new CommandHandler($componentContainer, new Collection(\WildPHP\Core\Commands\Command::class)));
+	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
 	$componentContainer->add(new TaskController($componentContainer));
 
 	$componentContainer->add(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
