@@ -28,7 +28,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
 	{
 		$this->container = new \WildPHP\Core\ComponentContainer();
 		$klogger = new Katzgrau\KLogger\Logger('php://stdout');
-		$this->container->store(new \WildPHP\Core\Logger\Logger($klogger));
+		$this->container->add(new \WildPHP\Core\Logger\Logger($klogger));
 	}
 
 	public function testQueueAddItem()
