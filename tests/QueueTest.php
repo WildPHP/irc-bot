@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use PHPUnit\Framework\TestCase;
 use WildPHP\Core\Connection\Queue;
 
-class QueueTest extends PHPUnit_Framework_TestCase
+class QueueTest extends TestCase
 {
 	protected $container;
 

@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use PHPUnit\Framework\TestCase;
 use WildPHP\Core\Channels\Channel;
 
-class ChannelTest extends PHPUnit_Framework_TestCase
+class ChannelTest extends TestCase
 {
 	protected $container;
 	public function setUp()
