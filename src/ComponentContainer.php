@@ -10,38 +10,12 @@ namespace WildPHP\Core;
 
 use React\EventLoop\LoopInterface;
 
-class ComponentContainer
+class ComponentContainer extends \Yoshi2889\Container\ComponentContainer
 {
 	/**
 	 * @var LoopInterface
 	 **/
 	protected $loop = null;
-
-	/**
-	 * @var object[]
-	 */
-	protected $storedComponents = [];
-
-	/**
-	 * @param $object
-	 */
-	public function store($object)
-	{
-		$this->storedComponents[get_class($object)] = $object;
-	}
-
-	/**
-	 * @param string $className
-	 *
-	 * @return object
-	 */
-	public function retrieve(string $className)
-	{
-		if (!array_key_exists($className, $this->storedComponents))
-			throw new \InvalidArgumentException('Could not retrieve object from container: ' . $className);
-
-		return $this->storedComponents[$className];
-	}
 
 	/**
 	 * @return LoopInterface
