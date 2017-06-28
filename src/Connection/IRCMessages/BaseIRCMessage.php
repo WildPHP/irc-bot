@@ -17,10 +17,32 @@ abstract class BaseIRCMessage
 	protected static $verb;
 
 	/**
+	 * Additional data to be sent with the message.
+	 * @var array
+	 */
+	protected $messageParameters = [];
+
+	/**
 	 * @return string
 	 */
 	public static function getVerb(): string
 	{
 		return static::$verb;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMessageParameters(): array
+	{
+		return $this->messageParameters;
+	}
+
+	/**
+	 * @param array $messageParameters
+	 */
+	public function setMessageParameters(array $messageParameters)
+	{
+		$this->messageParameters = $messageParameters;
 	}
 }
