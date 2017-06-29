@@ -109,7 +109,7 @@ class Validator implements ComponentInterface
 				if (!$item->getCanHaveMembers())
 					return false;
 
-				return $item->getUserCollection()->contains($user);
+				return $item->getUserCollection()->contains($user->getIrcAccount());
 			});
 
 		foreach ((array) $groups as $name => $group)
