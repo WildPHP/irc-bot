@@ -596,6 +596,9 @@ class PermissionCommands
 			$permissions
 		];
 
+		// Avoid sending empty lines.
+		$lines = array_filter($lines);
+
 		foreach ($lines as $line)
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $line);
