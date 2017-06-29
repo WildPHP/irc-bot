@@ -11,7 +11,7 @@
         "katzgrau/klogger": "^1.2",
         "fire015/flintstone": "^2.1",
         "evenement/evenement": "^2.0",
-        "yoshi2889/collections": "dev-master",
+        "yoshi2889/collections": "^0.1.0",
         "yoshi2889/container": "^0.1.0",
         "yoshi2889/validation-closures": "^0.1.0"
     },
