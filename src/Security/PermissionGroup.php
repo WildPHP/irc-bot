@@ -185,7 +185,7 @@ class PermissionGroup
 
 		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
 
-		if (($state = @unserialize($data['userCollection'])))
+		if ((@unserialize($data['userCollection'])))
 		{
 			$userCollection = new Collection(Types::string());
 			$userCollection->unserialize($data['userCollection']);
@@ -194,7 +194,7 @@ class PermissionGroup
 		else
 			$this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
 
-		if (($state = @unserialize($data['allowedPermissions'])))
+		if ((@unserialize($data['allowedPermissions'])))
 		{
 			$allowedPermissions = new Collection(Types::string());
 			$allowedPermissions->unserialize($data['allowedPermissions']);
@@ -203,7 +203,7 @@ class PermissionGroup
 		else
 			$this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
 
-		if (($state = @unserialize($data['channelCollection'])))
+		if ((@unserialize($data['channelCollection'])))
 		{
 			$channelCollection = new Collection(Types::string());
 			$channelCollection->unserialize($data['channelCollection']);
