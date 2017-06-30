@@ -224,15 +224,4 @@ foreach ($connections as $connection)
 	createNewInstance($loop, $configuration, $logger, $connectionDetails);
 }
 
-try
-{
-	$loop->run();
-}
-catch (\Error $exception)
-{
-	$logger->error('PHP error: ' . $exception->getMessage(), [
-		'file' => $exception->getFile(),
-		'line' => $exception->getLine(),
-		'trace' => $exception->getTrace()
-	]);
-}
+$loop->run();
