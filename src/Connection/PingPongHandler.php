@@ -9,7 +9,6 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\EventLoop\LoopInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IRCMessages\PING;
@@ -56,13 +55,21 @@ class PingPongHandler
 			->on('irc.line.in', [$this, 'updateLastMessageReceived']);
 
 		EventEmitter::fromContainer($container)
-			->on('irc.line.in.ping',
-				function (PING $pingMessage, Queue $queue)
-				{
-					$queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
-				});
+			->on('irc.line.in.ping', [$this, 'sendPong']);
+
 		$this->updateLastMessageReceived();
 		$this->setContainer($container);
+
+		$this->registerPingLoop();
+	}
+
+	/**
+	 * @param PING $pingMessage
+	 * @param Queue $queue
+	 */
+	public function sendPong(PING $pingMessage, Queue $queue)
+	{
+		$queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
 	}
 
 	public function updateLastMessageReceived()
@@ -70,14 +77,10 @@ class PingPongHandler
 		$this->lastMessageReceived = time();
 	}
 
-	/**
-	 * @param LoopInterface $loop
-	 * @param Queue $queue
-	 */
-	public function registerPingLoop(LoopInterface $loop, Queue $queue)
+	protected function registerPingLoop()
 	{
-		$loop->addPeriodicTimer($this->loopInterval,
-			function () use ($queue)
+		$this->getContainer()->getLoop()->addPeriodicTimer($this->loopInterval,
+			function ()
 			{
 				$currentTime = time();
 
@@ -85,45 +88,47 @@ class PingPongHandler
 				$shouldDisconnect = $currentTime >= $disconnectTime;
 
 				if ($shouldDisconnect)
-					return $this->forceDisconnect($queue);
+					return $this->forceDisconnect();
 
 				$scheduledPingTime = $this->lastMessageReceived + $this->pingInterval;
 				$shouldSendPing = $currentTime >= $scheduledPingTime;
 
 				if ($shouldSendPing)
-					return $this->sendPing($queue);
+					return $this->sendPing();
 
 				return true;
 			});
 	}
 
 	/**
-	 * @param Queue $queue
-	 *
 	 * @return bool
 	 */
-	public function sendPing(Queue $queue)
+	protected function sendPing()
 	{
 		Logger::fromContainer($this->getContainer())
 			->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
+
 		$server = Configuration::fromContainer($this->getContainer())
 			->get('serverConfig.hostname')
 			->getValue();
-		$queue->ping($server);
+
+		Queue::fromContainer($this->getContainer())
+			->ping($server);
 
 		return true;
 	}
 
 	/**
-	 * @param Queue $queue
-	 *
 	 * @return bool
 	 */
-	public function forceDisconnect(Queue $queue)
+	protected function forceDisconnect()
 	{
 		Logger::fromContainer($this->getContainer())
 			->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
-		$queue->quit('No vital signs detected, closing link...');
+
+		Queue::fromContainer($this->getContainer())
+			->quit('No vital signs detected, closing link...');
+
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.force.close');
 

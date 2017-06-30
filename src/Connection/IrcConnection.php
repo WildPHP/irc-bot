@@ -9,7 +9,6 @@
 
 namespace WildPHP\Core\Connection;
 
-use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
@@ -39,40 +38,19 @@ class IrcConnection implements ComponentInterface
 	protected $buffer = '';
 
 	/**
-	 * @param LoopInterface $loop
-	 * @param QueueInterface $queue
+	 * @var ConnectionDetails
 	 */
-	public function registerQueueFlusher(LoopInterface $loop, QueueInterface $queue)
-	{
-		$loop->addPeriodicTimer(0.5,
-			function () use ($queue)
-			{
-				$queueItems = $queue->flush();
-
-				/** @var QueueItem $item */
-				foreach ($queueItems as $item)
-				{
-					$verb = strtolower($item->getCommandObject()::getVerb());
-
-					EventEmitter::fromContainer($this->getContainer())
-						->emit('irc.line.out', [$item, $this->getContainer()]);
-
-					EventEmitter::fromContainer($this->getContainer())
-						->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
-
-					if (!$item->isCancelled());
-						$this->write($item->getCommandObject());
-				}
-			});
-	}
+	protected $connectionDetails;
 
 	/**
-	 * IrcConnection constructor.
-	 *
 	 * @param ComponentContainer $container
+	 * @param ConnectionDetails $connectionDetails
 	 */
-	public function __construct(ComponentContainer $container)
+	public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
 	{
+		$container->getLoop()
+			->addPeriodicTimer(0.5, [$this, 'flushQueue']);
+
 		EventEmitter::fromContainer($container)
 			->on('stream.data.in', [$this, 'convertDataToLines']);
 
@@ -80,20 +58,54 @@ class IrcConnection implements ComponentInterface
 			->on('irc.line.in.005', [$this, 'handleServerConfig']);
 
 		EventEmitter::fromContainer($container)
-			->on('irc.line.in.error',
-				function ()
-				{
-					$this->close();
-				});
+			->on('irc.line.in.error', [$this, 'close']);
 
 		EventEmitter::fromContainer($container)
-			->on('irc.force.close',
-				function ()
-				{
-					$this->close();
-				});
+			->on('irc.force.close', [$this, 'close']);
+
+		EventEmitter::fromContainer($container)
+			->on('stream.created', [$this, 'sendInitialConnectionDetails']);
 
 		$this->setContainer($container);
+		$this->setConnectionDetails($connectionDetails);
+	}
+
+	/**
+	 * @param Queue $queue
+	 */
+	public function sendInitialConnectionDetails(Queue $queue)
+	{
+		$connectionDetails = $this->getConnectionDetails();
+		$queue->user(
+			$connectionDetails->getUsername(),
+			$connectionDetails->getHostname(),
+			$connectionDetails->getAddress(),
+			$connectionDetails->getRealname()
+		);
+		$queue->nick($connectionDetails->getWantedNickname());
+
+		if (!empty($connectionDetails->getPassword()))
+			$queue->pass($connectionDetails->getPassword());
+	}
+
+	public function flushQueue()
+	{
+		$queueItems = Queue::fromContainer($this->getContainer())->flush();
+
+		/** @var QueueItem $item */
+		foreach ($queueItems as $item)
+		{
+			$verb = strtolower($item->getCommandObject()::getVerb());
+
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('irc.line.out', [$item, $this->getContainer()]);
+
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
+
+			if (!$item->isCancelled());
+			$this->write($item->getCommandObject());
+		}
 	}
 
 	/**
@@ -158,20 +170,22 @@ class IrcConnection implements ComponentInterface
 
 	/**
 	 * @param ConnectorInterface $connectorInterface
-	 * @param string $host
-	 * @param int $port
+	 *
+	 * @return Promise|\React\Promise\PromiseInterface
 	 */
-	public function createFromConnector(ConnectorInterface $connectorInterface, string $host, int $port)
+	public function connect(ConnectorInterface $connectorInterface)
 	{
-		$this->connectorPromise = $connectorInterface->connect($host . ':' . $port)
-			->then(function (ConnectionInterface $connectionInterface) use ($host, $port, &$buffer)
+		$connectionString = $this->getConnectionDetails()->getHostname() . ':' . $this->getConnectionDetails()->getPort();
+		$promise = $connectorInterface->connect($connectionString)
+			->then(function (ConnectionInterface $connectionInterface) use (&$buffer, $connectionString)
 			{
 				EventEmitter::fromContainer($this->getContainer())
 					->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
+
 				$connectionInterface->on('error',
-					function ($error) use ($host, $port)
+					function ($error) use ($connectionString)
 					{
-						throw new ConnectionException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+						throw new ConnectionException('Connection to ' . $connectionString . ' failed: ' . $error);
 					});
 
 				$connectionInterface->on('data',
@@ -186,6 +200,9 @@ class IrcConnection implements ComponentInterface
 			{
 				throw new ConnectionException('An error occurred while connecting to the specified server', 0, $e);
 			});
+
+		$this->connectorPromise = $promise;
+		return $promise;
 	}
 
 	/**
@@ -236,5 +253,21 @@ class IrcConnection implements ComponentInterface
 	public function setBuffer(string $buffer)
 	{
 		$this->buffer = $buffer;
+	}
+
+	/**
+	 * @return ConnectionDetails
+	 */
+	public function getConnectionDetails(): ConnectionDetails
+	{
+		return $this->connectionDetails;
+	}
+
+	/**
+	 * @param ConnectionDetails $connectionDetails
+	 */
+	public function setConnectionDetails(ConnectionDetails $connectionDetails)
+	{
+		$this->connectionDetails = $connectionDetails;
 	}
 }

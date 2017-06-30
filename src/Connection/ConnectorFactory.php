@@ -17,50 +17,18 @@ use React\Socket\SecureConnector;
 class ConnectorFactory
 {
 	/**
-	 * @var LoopInterface
-	 */
-	protected $loop = null;
-
-	/**
-	 * ConnectorFactory constructor.
+	 * @param LoopInterface $loop
+	 * @param bool $secure
 	 *
-	 * @param LoopInterface $loop
-	 */
-	public function __construct(LoopInterface $loop)
-	{
-		$this->setLoop($loop);
-	}
-
-	/**
 	 * @return ConnectorInterface
 	 */
-	public function createSecure(): ConnectorInterface
+	public static function create(LoopInterface $loop, bool $secure = false): ConnectorInterface
 	{
-		$connector = $this->create();
-		return new SecureConnector($connector, $this->getLoop());
-	}
+		$connector = new Connector($loop);
 
-	/**
-	 * @return ConnectorInterface
-	 */
-	public function create(): ConnectorInterface
-	{
-		return new Connector($this->getLoop());
-	}
+		if ($secure)
+			return new SecureConnector($connector, $loop);
 
-	/**
-	 * @return LoopInterface
-	 */
-	public function getLoop()
-	{
-		return $this->loop;
-	}
-
-	/**
-	 * @param LoopInterface $loop
-	 */
-	public function setLoop($loop)
-	{
-		$this->loop = $loop;
+		return $connector;
 	}
 }

@@ -8,19 +8,23 @@
 
 use React\EventLoop\Factory as LoopFactory;
 use ValidationClosures\Types;
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\CommandHandler;
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
+use WildPHP\Core\Connection\ConnectionDetails;
+use WildPHP\Core\Connection\ConnectorFactory;
 use WildPHP\Core\Connection\IrcConnection;
-use WildPHP\Core\Connection\Parser;
-use WildPHP\Core\Connection\PingPongHandler;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Security\PermissionGroup;
+use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Tasks\TaskController;
+use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 
 /**
@@ -89,56 +93,24 @@ function setupPermissionGroupCollection()
 }
 
 /**
- * @param \WildPHP\Core\ComponentContainer $container
- * @param array $connectionDetails
+ * @param ComponentContainer $container
+ * @param ConnectionDetails $connectionDetails
  *
  * @return IrcConnection
  */
-function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $connectionDetails)
+function setupIrcConnection(ComponentContainer $container, ConnectionDetails $connectionDetails)
 {
 	$loop = $container->getLoop();
-	$connectorFactory = new \WildPHP\Core\Connection\ConnectorFactory($loop);
 
-	if ($connectionDetails['secure'])
-		$connector = $connectorFactory->createSecure();
-	else
-		$connector = $connectorFactory->create();
+	$ircConnection = new IrcConnection($container, $connectionDetails);
+	$promise = $ircConnection->connect(ConnectorFactory::create($container->getLoop(), $connectionDetails->getSecure()));
 
-	$ircConnection = new IrcConnection($container);
-	$queue = new Queue($container);
-	$container->add($queue);
-	$ircConnection->registerQueueFlusher($loop, $queue);
-	new Parser($container);
-	$pingPongHandler = new PingPongHandler($container);
-	$pingPongHandler->registerPingLoop($loop, $queue);
+	$promise->otherwise(function (\Exception $e){
 
-	$username = $connectionDetails['user'];
-	$hostname = gethostname();
-	$server = $connectionDetails['server'];
-	$port = $connectionDetails['port'];
-	$realname = $connectionDetails['realname'];
-	$nickname = $connectionDetails['nick'];
-	$password = $connectionDetails['password'] ?? '';
-
-	$ircConnection->createFromConnector($connector, $server, $port);
+	});
 
 	EventEmitter::fromContainer($container)
-		->on('stream.created',
-			function (Queue $queue) use ($username, $hostname, $server, $realname, $nickname, $password)
-			{
-				$queue->user($username, $hostname, $server, $realname);
-				$queue->nick($nickname);
-
-				if (!empty($password))
-					$queue->pass($password);
-			});
-
-	EventEmitter::fromContainer($container)
-		->on('stream.closed',
-			function () use ($loop)
-			{
-				$loop->stop();
-			});
+		->on('stream.closed', [$loop, 'stop']);
 
 	return $ircConnection;
 }
@@ -146,86 +118,119 @@ function setupIrcConnection(\WildPHP\Core\ComponentContainer $container, array $
 /**
  * @param \React\EventLoop\LoopInterface $loop
  * @param Configuration $configuration
- * @param array $connectionDetails
+ * @param Logger $logger
+ * @param ConnectionDetails $connectionDetails
  */
-function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, array $connectionDetails)
+function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, Logger $logger, ConnectionDetails $connectionDetails)
 {
-	$componentContainer = new \WildPHP\Core\ComponentContainer();
+	$componentContainer = new ComponentContainer();
 	$componentContainer->setLoop($loop);
 	$componentContainer->add(setupEventEmitter());
-	$logger = setupLogger($configuration);
 	$componentContainer->add($logger);
 	$componentContainer->add($configuration);
-	$logger->info('WildPHP initializing');
+	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
 
 	$capabilityHandler = new CapabilityHandler($componentContainer);
 	$componentContainer->add($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 	$capabilityHandler->setSasl($sasl);
-	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
+	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types:: instanceof (\WildPHP\Core\Commands\Command::class))));
 	$componentContainer->add(new TaskController($componentContainer));
 
-	$componentContainer->add(new \WildPHP\Core\Channels\ChannelCollection($componentContainer));
-	$componentContainer->add(new \WildPHP\Core\Users\UserCollection($componentContainer));
+	$componentContainer->add(new Queue($componentContainer));
+	$componentContainer->add(new ChannelCollection($componentContainer));
+	$componentContainer->add(new UserCollection($componentContainer));
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
-	$componentContainer->add(new \WildPHP\Core\Security\Validator($componentContainer));
-
-	new \WildPHP\Core\Channels\ChannelStateManager($componentContainer);
-	new \WildPHP\Core\Users\UserStateManager($componentContainer);
-	new \WildPHP\Core\Commands\HelpCommand($componentContainer);
-	new \WildPHP\Core\Security\PermissionCommands($componentContainer);
-	new \WildPHP\Core\Management\ManagementCommands($componentContainer);
-	new WildPHP\Core\Moderation\ModerationCommands($componentContainer);
-	new \WildPHP\Core\Users\BotStateManager($componentContainer);
+	$componentContainer->add(new Validator($componentContainer));
 
 	try
 	{
 		$modules = Configuration::fromContainer($componentContainer)
 			->get('modules')
 			->getValue();
-
-		foreach ($modules as $module)
-		{
-			try
-			{
-				new $module($componentContainer);
-				$logger->info('Loaded module with class ' . $module);
-			}
-			catch (\Exception $e)
-			{
-				$logger->error('Could not properly load module; stability not guaranteed!',
-					[
-						'class' => $module,
-						'exception' => get_class($e),
-						'message' => $e->getMessage(),
-					]);
-			}
-
-		}
 	}
 	catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
 	{
-		echo $e->getMessage();
 	}
 
-	EventEmitter::fromContainer($componentContainer)->emit('wildphp.init-modules.after');
+	if (empty($modules) || !is_array($modules))
+		$modules = [];
 
-	$logger->info('A connection has been set up successfully and will be started. This may take a while.', [
-		'server' => $connectionDetails['server'] . ':' . $connectionDetails['port'],
-		'wantedNickname' => $connectionDetails['nick']
+	$modules = array_merge($modules, [
+		\WildPHP\Core\Connection\Parser::class,
+		\WildPHP\Core\Connection\PingPongHandler::class,
+		\WildPHP\Core\Channels\ChannelStateManager::class,
+		\WildPHP\Core\Users\UserStateManager::class,
+		\WildPHP\Core\Commands\HelpCommand::class,
+		\WildPHP\Core\Security\PermissionCommands::class,
+		\WildPHP\Core\Management\ManagementCommands::class,
+		\WildPHP\Core\Moderation\ModerationCommands::class,
+		\WildPHP\Core\Users\BotStateManager::class
+	]);
+
+	foreach ($modules as $module)
+	{
+		try
+		{
+			new $module($componentContainer);
+			Logger::fromContainer($componentContainer)->info('Loaded module with class ' . $module);
+		}
+		catch (\Exception $e)
+		{
+			Logger::fromContainer($componentContainer)->error('Could not properly load module; stability not guaranteed!',
+				[
+					'class' => $module,
+					'exception' => get_class($e),
+					'message' => $e->getMessage(),
+				]);
+		}
+
+	}
+
+	EventEmitter::fromContainer($componentContainer)
+		->emit('wildphp.init-modules.after');
+
+	Logger::fromContainer($componentContainer)->info('A connection has been set up successfully and will be started. This may take a while.', [
+		'server' => $connectionDetails->getAddress() . ':' . $connectionDetails->getPort(),
+		'wantedNickname' => $connectionDetails->getWantedNickname()
 	]);
 }
 
 $loop = LoopFactory::create();
 $configuration = setupConfiguration();
+$logger = setupLogger($configuration);
 
 $connections = $configuration->get('connections')
 	->getValue();
 
 foreach ($connections as $connection)
 {
-	createNewInstance($loop, $configuration, $connection);
+	$connectionDetails = new ConnectionDetails();
+	$connectionDetails->setHostname(gethostname());
+	$connectionDetails->setAddress($connection['server']);
+	$connectionDetails->setPort($connection['port']);
+	$connectionDetails->setUsername($connection['user']);
+	$connectionDetails->setRealname($connection['realname']);
+	$connectionDetails->setWantedNickname($connection['nick']);
+	$connectionDetails->setPassword($connection['password'] ?? '');
+	$connectionDetails->setSecure($connection['secure']);
+	createNewInstance($loop, $configuration, $logger, $connectionDetails);
 }
 
-$loop->run();
+try
+{
+	$loop->run();
+}
+catch (\WildPHP\Core\Connection\ConnectionException $exception)
+{
+	$loop->stop();
+}
+catch (\Error $exception)
+{
+	$logger->error('PHP error: ' . $exception->getMessage(), [
+		'file' => $exception->getFile(),
+		'line' => $exception->getLine(),
+		'trace' => $exception->getTrace()
+	]);
+}
