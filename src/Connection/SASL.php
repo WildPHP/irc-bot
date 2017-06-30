@@ -62,11 +62,15 @@ class SASL
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		if (!Configuration::fromContainer($container)->offsetExists('sasl') || empty(Configuration::fromContainer($container)['sasl']['username']) || empty(Configuration::fromContainer($container)['sasl']['password']))
+		if (!Configuration::fromContainer($container)->offsetExists('sasl') ||
+			empty(Configuration::fromContainer($container)['sasl']['username']) ||
+			empty(Configuration::fromContainer($container)['sasl']['password'])
+		)
 		{
 			Logger::fromContainer($container)
 				->info('[SASL] Not initialized because no credentials were provided.');
 			$this->setHasCompleted(true);
+
 			return;
 		}
 
