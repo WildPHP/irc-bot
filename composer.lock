@@ -4,8 +4,85 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc062034d739e81fe1b85d2834e032ad",
+    "content-hash": "ceeca037583c286beaea6f60389a4c14",
     "packages": [
+        {
+            "name": "archer70/desmond",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Archer70/desmond.git",
+                "reference": "6b2646e5e9b63952f9bd1e200e419a4cd6cdbe45"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Archer70/desmond/zipball/6b2646e5e9b63952f9bd1e200e419a4cd6cdbe45",
+                "reference": "6b2646e5e9b63952f9bd1e200e419a4cd6cdbe45",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/php-code-coverage": "^5.2",
+                "phpunit/phpunit": "^6.1"
+            },
+            "bin": [
+                "bin/desmond"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Desmond\\": "src/",
+                    "Desmond\\test\\": "test/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Archer70",
+                    "email": "code.archer70@gmail.com"
+                }
+            ],
+            "description": "A LISP interpreter for PHP, with interop and awareness of its host environment.",
+            "time": "2017-06-15T21:11:30+00:00"
+        },
+        {
+            "name": "danielgsims/php-collections",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielgsims/php-collections.git",
+                "reference": "8e9b4ea57f01175acc21f68745cf5a577de9048b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielgsims/php-collections/zipball/8e9b4ea57f01175acc21f68745cf5a577de9048b",
+                "reference": "8e9b4ea57f01175acc21f68745cf5a577de9048b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Collections\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel G Sims",
+                    "email": "danielgarthsims@gmail.com"
+                }
+            ],
+            "description": "Collection classes for PHP",
+            "time": "2016-06-25T23:35:59+00:00"
+        },
         {
             "name": "evenement/evenement",
             "version": "v2.0.0",
@@ -53,6 +130,55 @@
             "time": "2012-11-02T14:49:47+00:00"
         },
         {
+            "name": "fabpot/goutte",
+            "version": "v3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FriendsOfPHP/Goutte.git",
+                "reference": "db5c28f4a010b4161d507d5304e28a7ebf211638"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FriendsOfPHP/Goutte/zipball/db5c28f4a010b4161d507d5304e28a7ebf211638",
+                "reference": "db5c28f4a010b4161d507d5304e28a7ebf211638",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0",
+                "php": ">=5.5.0",
+                "symfony/browser-kit": "~2.1|~3.0",
+                "symfony/css-selector": "~2.1|~3.0",
+                "symfony/dom-crawler": "~2.1|~3.0"
+            },
+            "type": "application",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Goutte\\": "Goutte"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "A simple PHP Web Scraper",
+            "homepage": "https://github.com/FriendsOfPHP/Goutte",
+            "keywords": [
+                "scraper"
+            ],
+            "time": "2017-01-03T13:21:43+00:00"
+        },
+        {
             "name": "fire015/flintstone",
             "version": "v2.1.1",
             "source": {
@@ -98,6 +224,187 @@
                 "memory"
             ],
             "time": "2017-06-09T15:19:42+00:00"
+        },
+        {
+            "name": "guzzlehttp/guzzle",
+            "version": "6.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f4db5a78a5ea468d4831de7f0bf9d9415e348699",
+                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/promises": "^1.0",
+                "guzzlehttp/psr7": "^1.4",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "^4.0 || ^5.0",
+                "psr/log": "^1.0"
+            },
+            "suggest": {
+                "psr/log": "Required for using the Log middleware"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "6.2-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/functions_include.php"
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle is a PHP HTTP client library",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "client",
+                "curl",
+                "framework",
+                "http",
+                "http client",
+                "rest",
+                "web service"
+            ],
+            "time": "2017-06-22T18:50:49+00:00"
+        },
+        {
+            "name": "guzzlehttp/promises",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/promises.git",
+                "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+                "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle promises library",
+            "keywords": [
+                "promise"
+            ],
+            "time": "2016-12-20T10:07:11+00:00"
+        },
+        {
+            "name": "guzzlehttp/psr7",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/psr7.git",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "psr/http-message": "~1.0"
+            },
+            "provide": {
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Psr7\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                },
+                {
+                    "name": "Tobias Schultze",
+                    "homepage": "https://github.com/Tobion"
+                }
+            ],
+            "description": "PSR-7 message implementation that also provides common utility methods",
+            "keywords": [
+                "http",
+                "message",
+                "request",
+                "response",
+                "stream",
+                "uri",
+                "url"
+            ],
+            "time": "2017-03-20T17:10:46+00:00"
         },
         {
             "name": "katzgrau/klogger",
@@ -251,6 +558,56 @@
                 "psr"
             ],
             "time": "2017-02-14T16:28:37+00:00"
+        },
+        {
+            "name": "psr/http-message",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "psr/log",
@@ -416,6 +773,55 @@
                 "event-loop"
             ],
             "time": "2017-04-27T10:56:23+00:00"
+        },
+        {
+            "name": "react/http",
+            "version": "v0.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/http.git",
+                "reference": "0be1fc8b03d3305e18950071a088b55c4418f4df"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/http/zipball/0be1fc8b03d3305e18950071a088b55c4418f4df",
+                "reference": "0be1fc8b03d3305e18950071a088b55c4418f4df",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "^2.0 || ^1.0",
+                "php": ">=5.3.0",
+                "react/promise": "^2.1 || ^1.2.1",
+                "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5",
+                "react/stream": "^1.0 || ^0.7 || ^0.6 || ^0.5 || ^0.4.6",
+                "ringcentral/psr7": "^1.2"
+            },
+            "require-dev": {
+                "clue/block-react": "^1.1",
+                "phpunit/phpunit": "^4.8.10||^5.0",
+                "react/promise-stream": "^0.1.1",
+                "react/socket": "^1.0 || ^0.8 || ^0.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\Http\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Event-driven, streaming plaintext HTTP and secure HTTPS server for ReactPHP",
+            "keywords": [
+                "event-driven",
+                "http",
+                "https",
+                "reactphp",
+                "server",
+                "streaming"
+            ],
+            "time": "2017-06-17T15:49:32+00:00"
         },
         {
             "name": "react/promise",
@@ -611,17 +1017,607 @@
             "time": "2017-06-15T20:26:53+00:00"
         },
         {
-            "name": "yoshi2889/collections",
-            "version": "dev-master",
+            "name": "ringcentral/psr7",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Yoshi2889/collections.git",
-                "reference": "e4da6481eba5a60ed5dc6e8ea4cfc3457bad96ec"
+                "url": "https://github.com/ringcentral/psr7.git",
+                "reference": "2594fb47cdc659f3fcf0aa1559b7355460555303"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoshi2889/collections/zipball/e4da6481eba5a60ed5dc6e8ea4cfc3457bad96ec",
-                "reference": "e4da6481eba5a60ed5dc6e8ea4cfc3457bad96ec",
+                "url": "https://api.github.com/repos/ringcentral/psr7/zipball/2594fb47cdc659f3fcf0aa1559b7355460555303",
+                "reference": "2594fb47cdc659f3fcf0aa1559b7355460555303",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "psr/http-message": "~1.0"
+            },
+            "provide": {
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RingCentral\\Psr7\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "PSR-7 message implementation",
+            "keywords": [
+                "http",
+                "message",
+                "stream",
+                "uri"
+            ],
+            "time": "2016-03-25T17:36:49+00:00"
+        },
+        {
+            "name": "symfony/browser-kit",
+            "version": "v3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/browser-kit.git",
+                "reference": "c2c8ceb1aa9dab9eae54e9150e6a588ce3e53be1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/c2c8ceb1aa9dab9eae54e9150e6a588ce3e53be1",
+                "reference": "c2c8ceb1aa9dab9eae54e9150e6a588ce3e53be1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "symfony/dom-crawler": "~2.8|~3.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "~2.8|~3.0",
+                "symfony/process": "~2.8|~3.0"
+            },
+            "suggest": {
+                "symfony/process": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\BrowserKit\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony BrowserKit Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-04-12T14:14:56+00:00"
+        },
+        {
+            "name": "symfony/css-selector",
+            "version": "v3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "4d882dced7b995d5274293039370148e291808f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/4d882dced7b995d5274293039370148e291808f2",
+                "reference": "4d882dced7b995d5274293039370148e291808f2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\CssSelector\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jean-François Simon",
+                    "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony CssSelector Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-05-01T15:01:29+00:00"
+        },
+        {
+            "name": "symfony/dom-crawler",
+            "version": "v3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "fc2c588ce376e9fe04a7b8c79e3ec62fe32d95b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/fc2c588ce376e9fe04a7b8c79e3ec62fe32d95b1",
+                "reference": "fc2c588ce376e9fe04a7b8c79e3ec62fe32d95b1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "symfony/polyfill-mbstring": "~1.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "~2.8|~3.0"
+            },
+            "suggest": {
+                "symfony/css-selector": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\DomCrawler\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony DomCrawler Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-05-25T23:10:31+00:00"
+        },
+        {
+            "name": "symfony/polyfill-mbstring",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "f29dca382a6485c3cbe6379f0c61230167681937"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/f29dca382a6485c3cbe6379f0c61230167681937",
+                "reference": "f29dca382a6485c3cbe6379f0c61230167681937",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "time": "2017-06-09T14:24:12+00:00"
+        },
+        {
+            "name": "unreal4u/telegram-api",
+            "version": "v2.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unreal4u/telegram-api.git",
+                "reference": "2eee413986b93f63c1f681a7f2332f8427d55cf9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unreal4u/telegram-api/zipball/2eee413986b93f63c1f681a7f2332f8427d55cf9",
+                "reference": "2eee413986b93f63c1f681a7f2332f8427d55cf9",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "php": ">=7.0.0",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "monolog/monolog": "~1.17",
+                "phpunit/php-code-coverage": "~5.0",
+                "phpunit/phpunit": ">=6.0",
+                "squizlabs/php_codesniffer": "~2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "unreal4u\\TelegramAPI\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Camilo Sperberg",
+                    "email": "me@unreal4u.com",
+                    "homepage": "https://github.com/unreal4u/telegram-api/graphs/contributors"
+                }
+            ],
+            "description": "A complete Telegram bot API implementation written in PHP, with support for inline bots!",
+            "keywords": [
+                "api",
+                "telegram",
+                "telegram bot"
+            ],
+            "time": "2017-06-25T16:59:04+00:00"
+        },
+        {
+            "name": "wildphp/module-aggregator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-aggregator.git",
+                "reference": "4dabb1d185db4212ec20588ab66129186c0c9772"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-aggregator/zipball/4dabb1d185db4212ec20588ab66129186c0c9772",
+                "reference": "4dabb1d185db4212ec20588ab66129186c0c9772",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2",
+                "yoshi2889/collections": "^0.1",
+                "yoshi2889/container": "^0.1",
+                "yoshi2889/validation-closures": "^0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\Aggregator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Aggregator module for WildPHP",
+            "time": "2017-06-29T19:24:35+00:00"
+        },
+        {
+            "name": "wildphp/module-autorejoin",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-autorejoin.git",
+                "reference": "0f74322c77bfccacaeed5120d79461b14bed37cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-autorejoin/zipball/0f74322c77bfccacaeed5120d79461b14bed37cf",
+                "reference": "0f74322c77bfccacaeed5120d79461b14bed37cf",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\AutoRejoin\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Automatically rejoin channels on kick",
+            "time": "2017-06-28T23:53:05+00:00"
+        },
+        {
+            "name": "wildphp/module-factoids",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-factoids.git",
+                "reference": "777adb86a3d04c129b2d4e601cd963b1596c4dcf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-factoids/zipball/777adb86a3d04c129b2d4e601cd963b1596c4dcf",
+                "reference": "777adb86a3d04c129b2d4e601cd963b1596c4dcf",
+                "shasum": ""
+            },
+            "require": {
+                "yoshi2889/collections": "^0.1",
+                "yoshi2889/container": "^0.1",
+                "yoshi2889/validation-closures": "^0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\Factoids\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Factoids module for WildPHP",
+            "time": "2017-06-29T19:24:34+00:00"
+        },
+        {
+            "name": "wildphp/module-linksniffer",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-linksniffer.git",
+                "reference": "b5cbe1b674f39b954b25f4b649df50fd11c70497"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-linksniffer/zipball/b5cbe1b674f39b954b25f4b649df50fd11c70497",
+                "reference": "b5cbe1b674f39b954b25f4b649df50fd11c70497",
+                "shasum": ""
+            },
+            "require": {
+                "fabpot/goutte": "^v3.2",
+                "guzzlehttp/guzzle": "^6.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\LinkSniffer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Shows information about a link when it is posted in a channel",
+            "time": "2017-06-19T18:11:48+00:00"
+        },
+        {
+            "name": "wildphp/module-russianroulette",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-russianroulette.git",
+                "reference": "b995b2306812a0e0eef8171d4380fc39ceb81d53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-russianroulette/zipball/b995b2306812a0e0eef8171d4380fc39ceb81d53",
+                "reference": "b995b2306812a0e0eef8171d4380fc39ceb81d53",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\RussianRoulette\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Russian Roulette game module for WildPHP",
+            "time": "2017-06-28T23:57:58+00:00"
+        },
+        {
+            "name": "wildphp/module-tgrelay",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-tgrelay.git",
+                "reference": "1f58dcbdb93610d60bb7fa3a480dc0421505656f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-tgrelay/zipball/1f58dcbdb93610d60bb7fa3a480dc0421505656f",
+                "reference": "1f58dcbdb93610d60bb7fa3a480dc0421505656f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "react/http": "^0.7",
+                "unreal4u/telegram-api": "~2.4",
+                "yoshi2889/collections": "^0.1",
+                "yoshi2889/container": "^0.1",
+                "yoshi2889/validation-closures": "^0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\TGRelay\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Telegram relay module for WildPHP",
+            "time": "2017-06-29T19:24:34+00:00"
+        },
+        {
+            "name": "wildphp/module-uno",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/module-uno.git",
+                "reference": "2d0a390a80823890df915208e805eeaa29e57da1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/module-uno/zipball/2d0a390a80823890df915208e805eeaa29e57da1",
+                "reference": "2d0a390a80823890df915208e805eeaa29e57da1",
+                "shasum": ""
+            },
+            "require": {
+                "danielgsims/php-collections": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Modules\\Uno\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "UNO game module for WildPHP",
+            "time": "2017-06-29T00:07:14+00:00"
+        },
+        {
+            "name": "yoshi2889/collections",
+            "version": "v0.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Yoshi2889/collections.git",
+                "reference": "d059646b020deb72c1c0ccd4eac817bf62499079"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Yoshi2889/collections/zipball/d059646b020deb72c1c0ccd4eac817bf62499079",
+                "reference": "d059646b020deb72c1c0ccd4eac817bf62499079",
                 "shasum": ""
             },
             "require": {
@@ -653,7 +1649,7 @@
                 }
             ],
             "description": "Simple Collection class allowing storage of specific data.",
-            "time": "2017-06-28T22:24:16+00:00"
+            "time": "2017-06-29T19:51:25+00:00"
         },
         {
             "name": "yoshi2889/container",
@@ -700,16 +1696,16 @@
         },
         {
             "name": "yoshi2889/validation-closures",
-            "version": "v0.1",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoshi2889/validation-closures.git",
-                "reference": "2ad6b72b1da05e97c1f4fb445efcf0a8c87fbd44"
+                "reference": "185f1f5171f443c1f76da9728ddcc06784e7ddd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoshi2889/validation-closures/zipball/2ad6b72b1da05e97c1f4fb445efcf0a8c87fbd44",
-                "reference": "2ad6b72b1da05e97c1f4fb445efcf0a8c87fbd44",
+                "url": "https://api.github.com/repos/Yoshi2889/validation-closures/zipball/185f1f5171f443c1f76da9728ddcc06784e7ddd0",
+                "reference": "185f1f5171f443c1f76da9728ddcc06784e7ddd0",
                 "shasum": ""
             },
             "require": {
@@ -737,7 +1733,43 @@
                 }
             ],
             "description": "Closures useful for validating data. Provides type validation amongst other filters.",
-            "time": "2017-06-28T21:18:18+00:00"
+            "time": "2017-06-29T19:50:25+00:00"
+        },
+        {
+            "name": "yoshi2889/wphp-module-lisp",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Yoshi2889/wphp-module-lisp.git",
+                "reference": "5575ea761da5418a226944f2976efe6325b4519f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Yoshi2889/wphp-module-lisp/zipball/5575ea761da5418a226944f2976efe6325b4519f",
+                "reference": "5575ea761da5418a226944f2976efe6325b4519f",
+                "shasum": ""
+            },
+            "require": {
+                "archer70/desmond": "^0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yoshi2889\\WPHPModules\\Lisp\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Yoshi2889",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "LISP interpreter module for WildPHP",
+            "time": "2017-06-11T18:59:57+00:00"
         }
     ],
     "packages-dev": [
@@ -2194,7 +3226,14 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "yoshi2889/collections": 20
+        "wildphp/module-aggregator": 20,
+        "wildphp/module-autorejoin": 20,
+        "wildphp/module-factoids": 20,
+        "wildphp/module-linksniffer": 20,
+        "wildphp/module-russianroulette": 20,
+        "wildphp/module-tgrelay": 20,
+        "wildphp/module-uno": 20,
+        "yoshi2889/wphp-module-lisp": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

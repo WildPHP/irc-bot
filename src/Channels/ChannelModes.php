@@ -114,7 +114,7 @@ class ChannelModes
 
 	/**
 	 * @param string $mode
-	 * @param User[] ...$users
+	 * @param User[] $users
 	 *
 	 * @return void
 	 */
@@ -133,7 +133,7 @@ class ChannelModes
 
 	/**
 	 * @param string $mode
-	 * @param User[] ...$users
+	 * @param User[] $users
 	 *
 	 * @internal param User $user
 	 *
