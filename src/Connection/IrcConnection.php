@@ -175,7 +175,7 @@ class IrcConnection implements ComponentInterface
 	 */
 	public function connect(ConnectorInterface $connectorInterface)
 	{
-		$connectionString = $this->getConnectionDetails()->getHostname() . ':' . $this->getConnectionDetails()->getPort();
+		$connectionString = $this->getConnectionDetails()->getAddress() . ':' . $this->getConnectionDetails()->getPort();
 		$promise = $connectorInterface->connect($connectionString)
 			->then(function (ConnectionInterface $connectionInterface) use (&$buffer, $connectionString)
 			{
