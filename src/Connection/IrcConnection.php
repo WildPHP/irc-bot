@@ -171,7 +171,7 @@ class IrcConnection implements ComponentInterface
 				$connectionInterface->on('error',
 					function ($error) use ($host, $port)
 					{
-						throw new \ErrorException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
+						throw new ConnectionException('Connection to host ' . $host . ':' . $port . ' failed: ' . $error);
 					});
 
 				$connectionInterface->on('data',
@@ -182,6 +182,9 @@ class IrcConnection implements ComponentInterface
 					});
 
 				return $connectionInterface;
+			}, function (\Exception $e)
+			{
+				throw new ConnectionException('An error occurred while connecting to the specified server', 0, $e);
 			});
 	}
 
@@ -198,6 +201,9 @@ class IrcConnection implements ComponentInterface
 			Logger::fromContainer($this->getContainer())
 				->debug('>> ' . $data);
 			$stream->write($data);
+		}, function (\Exception $e)
+		{
+			throw new ConnectionException('An error occurred while writing data to the connection', 0, $e);
 		});
 	}
 
@@ -210,6 +216,9 @@ class IrcConnection implements ComponentInterface
 			$stream->close();
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.closed');
+		}, function (\Exception $e)
+		{
+			throw new ConnectionException('An error occurred while closing the connection', 0, $e);
 		});
 	}
 
