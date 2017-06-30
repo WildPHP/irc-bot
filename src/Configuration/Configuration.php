@@ -9,10 +9,13 @@
 
 namespace WildPHP\Core\Configuration;
 
+use ValidationClosures\Types;
+use ValidationClosures\Utils;
+use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
-class Configuration implements ComponentInterface
+class Configuration extends Collection implements ComponentInterface
 {
 	use ComponentTrait;
 
@@ -20,11 +23,6 @@ class Configuration implements ComponentInterface
 	 * @var ConfigurationBackendInterface
 	 */
 	protected $backend = null;
-
-	/**
-	 * @var ConfigurationStorage
-	 */
-	protected $storage = null;
 
 	/**
 	 * Configuration constructor.
@@ -35,7 +33,8 @@ class Configuration implements ComponentInterface
 	{
 		$this->setBackend($configurationBackend);
 
-		$this->setStorage(new ConfigurationStorage($configurationBackend->getAllEntries()));
+		// Accept any type, except objects.
+		parent::__construct(Utils::invert(Types::object()), $configurationBackend->getAllEntries());
 	}
 
 	/**
@@ -46,8 +45,24 @@ class Configuration implements ComponentInterface
 	 */
 	public function get(string $key)
 	{
-		return $this->getStorage()
-			->getItem($key);
+		trigger_error('Configuration can now be handled like a Collection.', E_USER_DEPRECATED);
+		$pieces = explode('.', $key);
+
+		$lastPiece = $this->getArrayCopy();
+		foreach ($pieces as $piece)
+		{
+			if (empty($lastPiece))
+				throw new ConfigurationItemNotFoundException();
+
+			if (array_key_exists($piece, $lastPiece))
+				$lastPiece = $lastPiece[$piece];
+			else
+				throw new ConfigurationItemNotFoundException();
+		}
+
+		$configurationItem = new ConfigurationItem($key, $lastPiece);
+
+		return $configurationItem;
 	}
 
 	/**
@@ -55,8 +70,19 @@ class Configuration implements ComponentInterface
 	 */
 	public function set(ConfigurationItem $configurationItem)
 	{
-		$this->getStorage()
-			->setItem($configurationItem);
+		trigger_error('Configuration can now be handled like a Collection.', E_USER_DEPRECATED);
+		$key = $configurationItem->getKey();
+		$value = $configurationItem->getValue();
+		$pieces = explode('.', $key);
+
+		$array = $this->getArrayCopy();
+		$lastPiece = &$array;
+		foreach ($pieces as $piece)
+		{
+			$lastPiece = &$lastPiece[$piece];
+		}
+		$lastPiece = $value;
+		$this->exchangeArray($array);
 	}
 
 	/**
@@ -73,21 +99,5 @@ class Configuration implements ComponentInterface
 	public function setBackend(ConfigurationBackendInterface $backend)
 	{
 		$this->backend = $backend;
-	}
-
-	/**
-	 * @return ConfigurationStorage
-	 */
-	public function getStorage(): ConfigurationStorage
-	{
-		return $this->storage;
-	}
-
-	/**
-	 * @param ConfigurationStorage $storage
-	 */
-	public function setStorage(ConfigurationStorage $storage)
-	{
-		$this->storage = $storage;
 	}
 }

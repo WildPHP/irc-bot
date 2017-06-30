@@ -9,12 +9,12 @@
 
 namespace WildPHP\Core\Configuration;
 
-class ConfigurationStorage
+use ValidationClosures\Types;
+use ValidationClosures\Utils;
+use Yoshi2889\Collections\Collection;
+
+class ConfigurationStorage extends Collection
 {
-	/**
-	 * @var array
-	 */
-	private $config = [];
 
 	/**
 	 * Creates a storage for the following array.
@@ -23,7 +23,8 @@ class ConfigurationStorage
 	 */
 	public function __construct(array $config)
 	{
-		$this->config = $config;
+		// Accept any type, except objects.
+		parent::__construct(Utils::invert(Types::object()), $config);
 	}
 
 	/**
@@ -34,9 +35,10 @@ class ConfigurationStorage
 	 */
 	public function getItem(string $key): ConfigurationItem
 	{
+		trigger_error('Configuration can now be handled like a Collection.', E_USER_DEPRECATED);
 		$pieces = explode('.', $key);
 
-		$lastPiece = $this->config;
+		$lastPiece = $this->getArrayCopy();
 		foreach ($pieces as $piece)
 		{
 			if (empty($lastPiece))
@@ -58,23 +60,18 @@ class ConfigurationStorage
 	 */
 	public function setItem(ConfigurationItem $configurationItem)
 	{
+		trigger_error('Configuration can now be handled like a Collection.', E_USER_DEPRECATED);
 		$key = $configurationItem->getKey();
 		$value = $configurationItem->getValue();
 		$pieces = explode('.', $key);
 
-		$lastPiece = &$this->config;
+		$array = $this->getArrayCopy();
+		$lastPiece = &$array;
 		foreach ($pieces as $piece)
 		{
 			$lastPiece = &$lastPiece[$piece];
 		}
 		$lastPiece = $value;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getAllEntries(): array
-	{
-		return $this->config;
+		$this->exchangeArray($array);
 	}
 }
