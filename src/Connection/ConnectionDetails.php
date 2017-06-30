@@ -47,7 +47,7 @@ class ConnectionDetails
 	protected $wantedNickname;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $secure = false;
 
@@ -164,17 +164,17 @@ class ConnectionDetails
 	}
 
 	/**
-	 * @return mixed
+	 * @return bool
 	 */
-	public function getSecure()
+	public function getSecure(): bool
 	{
 		return $this->secure;
 	}
 
 	/**
-	 * @param mixed $secure
+	 * @param bool $secure
 	 */
-	public function setSecure($secure)
+	public function setSecure(bool $secure)
 	{
 		$this->secure = $secure;
 	}
