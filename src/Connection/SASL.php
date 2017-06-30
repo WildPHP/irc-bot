@@ -16,7 +16,6 @@ use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
-use Yoshi2889\Container\NotFoundException;
 
 class SASL
 {
@@ -63,35 +62,30 @@ class SASL
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		try
-		{
-			Configuration::fromContainer($container)['sasl'];
-			Configuration::fromContainer($container)['sasl']['username'];
-			Configuration::fromContainer($container)['sasl']['password'];
-
-			EventEmitter::fromContainer($container)
-				->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
-			EventEmitter::fromContainer($container)
-				->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
-			EventEmitter::fromContainer($container)
-				->on('irc.cap.ls', [$this, 'requestCapability']);
-
-			// Map all numeric SASL responses to either the success or error handler:
-			EventEmitter::fromContainer($container)
-				->on('irc.line.in', [$this, 'handlePositiveResponse']);
-			EventEmitter::fromContainer($container)
-				->on('irc.line.in', [$this, 'handleNegativeResponse']);
-
-			Logger::fromContainer($container)
-				->debug('[SASL] Initialized, awaiting server response.');
-			$this->setContainer($container);
-		}
-		catch (NotFoundException $e)
+		if (!Configuration::fromContainer($container)->offsetExists('sasl') || empty(Configuration::fromContainer($container)['sasl']['username']) || empty(Configuration::fromContainer($container)['sasl']['password']))
 		{
 			Logger::fromContainer($container)
-				->info('SASL not initialized because no credentials were provided.');
+				->info('[SASL] Not initialized because no credentials were provided.');
 			$this->setHasCompleted(true);
+			return;
 		}
+
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.ls', [$this, 'requestCapability']);
+
+		// Map all numeric SASL responses to either the success or error handler:
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in', [$this, 'handlePositiveResponse']);
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in', [$this, 'handleNegativeResponse']);
+
+		Logger::fromContainer($container)
+			->debug('[SASL] Initialized, awaiting server response.');
+		$this->setContainer($container);
 	}
 
 	public function requestCapability()
