@@ -105,8 +105,14 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
 	$ircConnection = new IrcConnection($container, $connectionDetails);
 	$promise = $ircConnection->connect(ConnectorFactory::create($container->getLoop(), $connectionDetails->getSecure()));
 
-	$promise->otherwise(function (\Exception $e){
-
+	$promise->otherwise(function (\Exception $e) use ($container, $loop)
+	{
+		Logger::fromContainer($container)->error('An error occurred in the IRC connection:', [
+			'message' => $e->getMessage(),
+			'file' => $e->getFile(),
+			'line' => $e->getLine()
+		]);
+		$loop->stop();
 	});
 
 	EventEmitter::fromContainer($container)
@@ -221,10 +227,6 @@ foreach ($connections as $connection)
 try
 {
 	$loop->run();
-}
-catch (\WildPHP\Core\Connection\ConnectionException $exception)
-{
-	$loop->stop();
 }
 catch (\Error $exception)
 {

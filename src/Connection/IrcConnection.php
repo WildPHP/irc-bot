@@ -196,9 +196,6 @@ class IrcConnection implements ComponentInterface
 					});
 
 				return $connectionInterface;
-			}, function (\Exception $e)
-			{
-				throw new ConnectionException('An error occurred while connecting to the specified server', 0, $e);
 			});
 
 		$this->connectorPromise = $promise;
@@ -207,10 +204,12 @@ class IrcConnection implements ComponentInterface
 
 	/**
 	 * @param string $data
+	 *
+	 * @return \React\Promise\PromiseInterface
 	 */
 	public function write(string $data)
 	{
-		$this->connectorPromise->then(function (ConnectionInterface $stream) use ($data)
+		$promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data)
 		{
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.data.out', [$data]);
@@ -218,25 +217,26 @@ class IrcConnection implements ComponentInterface
 			Logger::fromContainer($this->getContainer())
 				->debug('>> ' . $data);
 			$stream->write($data);
-		}, function (\Exception $e)
-		{
-			throw new ConnectionException('An error occurred while writing data to the connection', 0, $e);
 		});
+
+		return $promise;
 	}
 
+	/**
+	 * @return \React\Promise\PromiseInterface
+	 */
 	public function close()
 	{
-		$this->connectorPromise->then(function (ConnectionInterface $stream)
+		$promise = $this->connectorPromise->then(function (ConnectionInterface $stream)
 		{
 			Logger::fromContainer($this->getContainer())
 				->warning('Closing connection...');
 			$stream->close();
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('stream.closed');
-		}, function (\Exception $e)
-		{
-			throw new ConnectionException('An error occurred while closing the connection', 0, $e);
 		});
+
+		return $promise;
 	}
 
 	/**
