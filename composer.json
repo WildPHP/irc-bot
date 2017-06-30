@@ -13,15 +13,7 @@
         "evenement/evenement": "^2.0",
         "yoshi2889/collections": "^0.1",
         "yoshi2889/container": "^0.1",
-        "yoshi2889/validation-closures": "^0.1",
-        "wildphp/module-aggregator": "dev-master",
-        "wildphp/module-autorejoin": "dev-master",
-        "wildphp/module-factoids": "dev-master",
-        "wildphp/module-linksniffer": "dev-master",
-        "wildphp/module-russianroulette": "dev-master",
-        "wildphp/module-tgrelay": "dev-master",
-        "wildphp/module-uno": "dev-master",
-        "yoshi2889/wphp-module-lisp": "dev-master"
+        "yoshi2889/validation-closures": "^0.1"
     },
     "autoload": {
         "psr-4": {
