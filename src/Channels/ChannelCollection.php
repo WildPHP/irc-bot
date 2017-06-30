@@ -75,9 +75,7 @@ class ChannelCollection extends Collection implements ComponentInterface
 	 */
 	public function requestByChannelName(string $name, User $user = null): Channel
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())
-			->get('currentNickname')
-			->getValue();
+		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
 
 		$conversationChannel = $user && $ownNickname == $name;
 		$channelName = $conversationChannel ? $user->getNickname() : $name;

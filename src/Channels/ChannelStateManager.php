@@ -302,9 +302,7 @@ class ChannelStateManager
 	 */
 	public function joinInitialChannels(RPL_WELCOME $incomingIrcMessage, Queue $queue)
 	{
-		$channels = Configuration::fromContainer($this->getContainer())
-			->get('channels')
-			->getValue();
+		$channels = Configuration::fromContainer($this->getContainer())['channels'];
 
 		if (empty($channels))
 			return;

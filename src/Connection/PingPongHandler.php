@@ -108,9 +108,7 @@ class PingPongHandler
 		Logger::fromContainer($this->getContainer())
 			->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
 
-		$server = Configuration::fromContainer($this->getContainer())
-			->get('serverConfig.hostname')
-			->getValue();
+		$server = Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'];
 
 		Queue::fromContainer($this->getContainer())
 			->ping($server);

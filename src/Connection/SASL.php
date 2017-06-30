@@ -12,11 +12,11 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Configuration\ConfigurationItemNotFoundException;
 use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use Yoshi2889\Container\NotFoundException;
 
 class SASL
 {
@@ -65,12 +65,9 @@ class SASL
 	{
 		try
 		{
-			Configuration::fromContainer($container)
-				->get('sasl');
-			Configuration::fromContainer($container)
-				->get('sasl.username');
-			Configuration::fromContainer($container)
-				->get('sasl.password');
+			Configuration::fromContainer($container)['sasl'];
+			Configuration::fromContainer($container)['sasl']['username'];
+			Configuration::fromContainer($container)['sasl']['password'];
 
 			EventEmitter::fromContainer($container)
 				->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
@@ -89,7 +86,7 @@ class SASL
 				->debug('[SASL] Initialized, awaiting server response.');
 			$this->setContainer($container);
 		}
-		catch (ConfigurationItemNotFoundException $e)
+		catch (NotFoundException $e)
 		{
 			Logger::fromContainer($container)
 				->info('SASL not initialized because no credentials were provided.');
@@ -137,12 +134,8 @@ class SASL
 		if ($message->getResponse() != '+')
 			return;
 
-		$username = Configuration::fromContainer($this->getContainer())
-			->get('sasl.username')
-			->getValue();
-		$password = Configuration::fromContainer($this->getContainer())
-			->get('sasl.password')
-			->getValue();
+		$username = Configuration::fromContainer($this->getContainer())['sasl']['username'];
+		$password = Configuration::fromContainer($this->getContainer())['sasl']['password'];
 		$credentials = $this->generateCredentialString($username, $password);
 		$queue->insertMessage(new AUTHENTICATE($credentials));
 		Logger::fromContainer($this->getContainer())

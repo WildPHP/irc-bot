@@ -11,7 +11,6 @@ namespace WildPHP\Core\Users;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -87,8 +86,7 @@ class BotStateManager
 		if ($user != UserCollection::fromContainer($this->getContainer())->getSelf())
 			return;
 
-		$configurationItem = new ConfigurationItem('currentNickname', $newNickname);
-		Configuration::fromContainer($this->getContainer())->set($configurationItem);
+		Configuration::fromContainer($this->getContainer())['currentNickname'] = $newNickname;
 
 		Logger::fromContainer($this->getContainer())->debug('Updated current nickname for bot', [
 			'oldNickname' => $oldNickname,

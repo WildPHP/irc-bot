@@ -45,6 +45,7 @@ class HelpCommand
 	 */
 	public function lscommandsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
+		trigger_error('Test', E_USER_WARNING);
 		$commands = CommandHandler::fromContainer($container)
 			->getCommandCollection()
 			->keys();

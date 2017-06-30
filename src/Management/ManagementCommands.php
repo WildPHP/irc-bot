@@ -17,7 +17,6 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
-
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
@@ -90,9 +89,8 @@ class ManagementCommands
 	protected function validateChannels(array $channels): array
 	{
 		$validChannels = [];
-		$serverChannelPrefix = Configuration::fromContainer($this->getContainer())
-			->get('serverConfig.chantypes')
-			->getValue();
+		$serverChannelPrefix = Configuration::fromContainer($this->getContainer())['serverConfig']['chantypes'];
+
 		foreach ($channels as $channel)
 		{
 			if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix)

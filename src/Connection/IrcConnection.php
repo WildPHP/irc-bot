@@ -14,7 +14,6 @@ use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -114,13 +113,11 @@ class IrcConnection implements ComponentInterface
 	public function handleServerConfig(RPL_ISUPPORT $incomingIrcMessage)
 	{
 		$hostname = $incomingIrcMessage->getServer();
-		Configuration::fromContainer($this->getContainer())
-			->set(new ConfigurationItem('serverConfig.hostname', $hostname));
+		Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'] = $hostname;
 
 		// The first argument is the nickname set.
 		$currentNickname = $incomingIrcMessage->getNickname();
-		Configuration::fromContainer($this->getContainer())
-			->set(new ConfigurationItem('currentNickname', $currentNickname));
+		Configuration::fromContainer($this->getContainer())['currentNickname'] = $currentNickname;
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
@@ -130,18 +127,14 @@ class IrcConnection implements ComponentInterface
 		foreach ($variables as $value)
 		{
 			$parts = explode('=', $value);
-			$key = 'serverConfig.' . strtolower($parts[0]);
+			$key = strtolower($parts[0]);
 			$value = !empty($parts[1]) ? $parts[1] : true;
-
-			$configItem = new ConfigurationItem($key, $value);
-			Configuration::fromContainer($this->getContainer())
-				->set($configItem);
+			Configuration::fromContainer($this->getContainer())['serverConfig'][$key] = $value;
 		}
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Set new server configuration to configuration serverConfig.',
-				[Configuration::fromContainer($this->getContainer())
-					->get('serverConfig')]);
+				[Configuration::fromContainer($this->getContainer())['serverConfig']]);
 	}
 
 	/**

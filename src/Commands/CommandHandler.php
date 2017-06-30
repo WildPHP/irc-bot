@@ -137,9 +137,7 @@ class CommandHandler implements ComponentInterface
 		$maximumArguments = $commandObject->getMaximumArguments();
 		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
 		{
-			$prefix = Configuration::fromContainer($this->getContainer())
-				->get('prefix')
-				->getValue();
+			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 			$queue->privmsg($source->getName(),
 				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions.');
 
@@ -159,9 +157,7 @@ class CommandHandler implements ComponentInterface
 	{
 		$messageParts = explode(' ', trim($message));
 		$firstPart = array_shift($messageParts);
-		$prefix = Configuration::fromContainer($this->getContainer())
-			->get('prefix')
-			->getValue();
+		$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 
 		if (strlen($firstPart) == strlen($prefix))
 			return false;

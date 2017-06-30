@@ -80,10 +80,7 @@ class UserCollection extends Collection implements ComponentInterface
 	 */
 	public function getSelf()
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())
-			->get('currentNickname')
-			->getValue();
-
+		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
 		return $this->findOrCreateByNickname($ownNickname);
 	}
 

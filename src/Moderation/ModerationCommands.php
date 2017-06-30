@@ -84,10 +84,7 @@ class ModerationCommands
 		$userObj = $source->getUserCollection()
 			->findByNickname($nickname);
 
-		if ($nickname == Configuration::fromContainer($container)
-				->get('currentNickname')
-				->getValue()
-		)
+		if ($nickname == Configuration::fromContainer($container)['currentNickname'])
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
@@ -120,10 +117,7 @@ class ModerationCommands
 		$userObj = $source->getUserCollection()
 			->findByNickname($nickname);
 
-		if ($nickname == Configuration::fromContainer($container)
-				->get('currentNickname')
-				->getValue()
-		)
+		if ($nickname == Configuration::fromContainer($container)['currentNickname'])
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'What? I can\'t leave...!');
@@ -153,11 +147,7 @@ class ModerationCommands
 	{
 		$channelName = $source->getName();
 
-		if (Channel::isValidName($args[0],
-			Configuration::fromContainer($container)
-				->get('prefix')
-				->getValue())
-		)
+		if (Channel::isValidName($args[0], Configuration::fromContainer($container)['prefix']))
 			$channelName = array_shift($args);
 
 		$message = implode(' ', $args);
@@ -176,18 +166,12 @@ class ModerationCommands
 	{
 		$nickname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0],
-			Configuration::fromContainer($container)
-				->get('prefix')
-				->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)['prefix']) ? array_shift($args) : '';
 		$message = !empty($args) ? implode(' ', $args) : $nickname;
 		$userObj = $source->getUserCollection()
 			->findByNickname($nickname);
 
-		if ($nickname == Configuration::fromContainer($container)
-				->get('currentNickname')
-				->getValue()
-		)
+		if ($nickname == Configuration::fromContainer($container)['currentNickname'])
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
@@ -220,17 +204,11 @@ class ModerationCommands
 	{
 		$nickname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0],
-			Configuration::fromContainer($container)
-				->get('prefix')
-				->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)['prefix']) ? array_shift($args) : '';
 		$userObj = $source->getUserCollection()
 			->findByNickname($nickname);
 
-		if ($nickname == Configuration::fromContainer($container)
-				->get('currentNickname')
-				->getValue()
-		)
+		if ($nickname == Configuration::fromContainer($container)['currentNickname'])
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'I refuse to hurt myself!');
@@ -260,10 +238,7 @@ class ModerationCommands
 	{
 		$hostname = array_shift($args);
 		$minutes = array_shift($args);
-		$redirect = !empty($args) && Channel::isValidName($args[0],
-			Configuration::fromContainer($container)
-				->get('prefix')
-				->getValue()) ? array_shift($args) : '';
+		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)['prefix']) ? array_shift($args) : '';
 		$time = time() + 60 * $minutes;
 		$this->banUser($source, $hostname, $container, $time, $redirect);
 

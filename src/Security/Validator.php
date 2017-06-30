@@ -73,10 +73,7 @@ class Validator implements ComponentInterface
 		// 1. User OP in channel
 		// 2. User Voice in channel
 		// 3. User in other group with permission
-		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())
-				->get('owner')
-				->getValue()
-		)
+		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())['owner'])
 			return 'owner';
 
 		if (!empty($channel) && $this->isUserOPInChannel($channel, $user))

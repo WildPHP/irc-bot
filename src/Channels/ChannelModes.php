@@ -40,9 +40,7 @@ class ChannelModes
 
 	public function fetchModeDefinitions()
 	{
-		$availablemodes = Configuration::fromContainer($this->getContainer())
-			->get('serverConfig.prefix')
-			->getValue();
+		$availablemodes = Configuration::fromContainer($this->getContainer())['serverConfig']['prefix'];
 
 		preg_match('/\((.+)\)(.+)/', $availablemodes, $out);
 

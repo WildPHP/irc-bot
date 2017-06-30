@@ -12,7 +12,6 @@ use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Configuration\ConfigurationItem;
 use WildPHP\Core\Connection\CapabilityHandler;
 use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\ConnectorFactory;
@@ -36,8 +35,7 @@ function setupLogger(Configuration $configuration): Logger
 {
 	try
 	{
-		$logLevel = $configuration->get('loglevel')
-			->getValue();
+		$logLevel = $configuration['loglevel'];
 
 		if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
 			$logLevel = 'info';
@@ -60,7 +58,7 @@ function setupConfiguration()
 
 	$configuration = new Configuration($neonBackend);
 	$rootdir = dirname(dirname(__FILE__));
-	$configuration->set(new ConfigurationItem('rootdir', $rootdir));
+	$configuration['rootdir'] = $rootdir;
 
 	return $configuration;
 }
@@ -152,12 +150,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 
 	try
 	{
-		$modules = Configuration::fromContainer($componentContainer)
-			->get('modules')
-			->getValue();
+		$modules = Configuration::fromContainer($componentContainer)['modules'];
 	}
-	catch (\WildPHP\Core\Configuration\ConfigurationItemNotFoundException $e)
+	catch (\Yoshi2889\Container\NotFoundException $e)
 	{
+		// Left empty because we should gracefully fail with an empty module list.
 	}
 
 	if (empty($modules) || !is_array($modules))
@@ -207,8 +204,7 @@ $loop = LoopFactory::create();
 $configuration = setupConfiguration();
 $logger = setupLogger($configuration);
 
-$connections = $configuration->get('connections')
-	->getValue();
+$connections = $configuration['connections'];
 
 foreach ($connections as $connection)
 {
