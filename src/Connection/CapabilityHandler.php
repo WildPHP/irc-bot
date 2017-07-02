@@ -110,7 +110,7 @@ class CapabilityHandler implements ComponentInterface
 	 */
 	public function tryEndNegotiation(): bool
 	{
-		if (!self::canEndNegotiation())
+		if (!$this->canEndNegotiation())
 			return false;
 
 		Logger::fromContainer($this->getContainer())
@@ -130,7 +130,7 @@ class CapabilityHandler implements ComponentInterface
 	 */
 	public function requestCapability(string $capability)
 	{
-		if (!self::isCapabilityAvailable($capability))
+		if (!$this->isCapabilityAvailable($capability))
 		{
 			Logger::fromContainer($this->getContainer())
 				->warning('Capability was requested, but is not available on the server.',
@@ -142,7 +142,7 @@ class CapabilityHandler implements ComponentInterface
 			return false;
 		}
 
-		if (self::isCapabilityAcknowledged($capability))
+		if ($this->isCapabilityAcknowledged($capability))
 			return true;
 
 		if (in_array($capability, $this->getCapabilitiesToRequest()))

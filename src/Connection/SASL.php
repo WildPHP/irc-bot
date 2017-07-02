@@ -107,7 +107,7 @@ class SASL
 		if (!in_array('sasl', $acknowledgedCapabilities))
 			return;
 
-		$queue->insertMessage(new AUTHENTICATE('PLAIN'));
+		$queue->authenticate('PLAIN');
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Authentication mechanism requested, awaiting server response.');
 	}
@@ -135,7 +135,7 @@ class SASL
 		$username = Configuration::fromContainer($this->getContainer())['sasl']['username'];
 		$password = Configuration::fromContainer($this->getContainer())['sasl']['password'];
 		$credentials = $this->generateCredentialString($username, $password);
-		$queue->insertMessage(new AUTHENTICATE($credentials));
+		$queue->authenticate($credentials);
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
