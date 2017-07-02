@@ -1301,16 +1301,16 @@
         },
         {
             "name": "unreal4u/telegram-api",
-            "version": "v2.4.4",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/unreal4u/telegram-api.git",
-                "reference": "2eee413986b93f63c1f681a7f2332f8427d55cf9"
+                "reference": "838e786abdc0ca75c6006055fc60129d6d203a33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/unreal4u/telegram-api/zipball/2eee413986b93f63c1f681a7f2332f8427d55cf9",
-                "reference": "2eee413986b93f63c1f681a7f2332f8427d55cf9",
+                "url": "https://api.github.com/repos/unreal4u/telegram-api/zipball/838e786abdc0ca75c6006055fc60129d6d203a33",
+                "reference": "838e786abdc0ca75c6006055fc60129d6d203a33",
                 "shasum": ""
             },
             "require": {
@@ -1347,7 +1347,7 @@
                 "telegram",
                 "telegram bot"
             ],
-            "time": "2017-06-25T16:59:04+00:00"
+            "time": "2017-06-30T14:07:21+00:00"
         },
         {
             "name": "wildphp/module-aggregator",
@@ -1355,12 +1355,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-aggregator.git",
-                "reference": "4dabb1d185db4212ec20588ab66129186c0c9772"
+                "reference": "57357e7025dfd6f33971735327f2132711a9fd7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-aggregator/zipball/4dabb1d185db4212ec20588ab66129186c0c9772",
-                "reference": "4dabb1d185db4212ec20588ab66129186c0c9772",
+                "url": "https://api.github.com/repos/WildPHP/module-aggregator/zipball/57357e7025dfd6f33971735327f2132711a9fd7a",
+                "reference": "57357e7025dfd6f33971735327f2132711a9fd7a",
                 "shasum": ""
             },
             "require": {
@@ -1386,7 +1386,7 @@
                 }
             ],
             "description": "Aggregator module for WildPHP",
-            "time": "2017-06-29T19:24:35+00:00"
+            "time": "2017-06-30T17:14:21+00:00"
         },
         {
             "name": "wildphp/module-autorejoin",
@@ -1394,12 +1394,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-autorejoin.git",
-                "reference": "0f74322c77bfccacaeed5120d79461b14bed37cf"
+                "reference": "a9ee590825e9d975dbbdf773407f9395faf4c390"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-autorejoin/zipball/0f74322c77bfccacaeed5120d79461b14bed37cf",
-                "reference": "0f74322c77bfccacaeed5120d79461b14bed37cf",
+                "url": "https://api.github.com/repos/WildPHP/module-autorejoin/zipball/a9ee590825e9d975dbbdf773407f9395faf4c390",
+                "reference": "a9ee590825e9d975dbbdf773407f9395faf4c390",
                 "shasum": ""
             },
             "type": "library",
@@ -1419,7 +1419,7 @@
                 }
             ],
             "description": "Automatically rejoin channels on kick",
-            "time": "2017-06-28T23:53:05+00:00"
+            "time": "2017-06-30T17:14:20+00:00"
         },
         {
             "name": "wildphp/module-factoids",
@@ -1427,12 +1427,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-factoids.git",
-                "reference": "777adb86a3d04c129b2d4e601cd963b1596c4dcf"
+                "reference": "edd641498fbb363b91fd6f76d5411257b8900904"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-factoids/zipball/777adb86a3d04c129b2d4e601cd963b1596c4dcf",
-                "reference": "777adb86a3d04c129b2d4e601cd963b1596c4dcf",
+                "url": "https://api.github.com/repos/WildPHP/module-factoids/zipball/edd641498fbb363b91fd6f76d5411257b8900904",
+                "reference": "edd641498fbb363b91fd6f76d5411257b8900904",
                 "shasum": ""
             },
             "require": {
@@ -1457,7 +1457,7 @@
                 }
             ],
             "description": "Factoids module for WildPHP",
-            "time": "2017-06-29T19:24:34+00:00"
+            "time": "2017-06-30T17:14:20+00:00"
         },
         {
             "name": "wildphp/module-linksniffer",
@@ -1465,12 +1465,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-linksniffer.git",
-                "reference": "b5cbe1b674f39b954b25f4b649df50fd11c70497"
+                "reference": "fdf2f29ef07837915e2b982c34b879d7a9c145f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-linksniffer/zipball/b5cbe1b674f39b954b25f4b649df50fd11c70497",
-                "reference": "b5cbe1b674f39b954b25f4b649df50fd11c70497",
+                "url": "https://api.github.com/repos/WildPHP/module-linksniffer/zipball/fdf2f29ef07837915e2b982c34b879d7a9c145f4",
+                "reference": "fdf2f29ef07837915e2b982c34b879d7a9c145f4",
                 "shasum": ""
             },
             "require": {
@@ -1494,7 +1494,7 @@
                 }
             ],
             "description": "Shows information about a link when it is posted in a channel",
-            "time": "2017-06-19T18:11:48+00:00"
+            "time": "2017-06-30T17:23:46+00:00"
         },
         {
             "name": "wildphp/module-russianroulette",
@@ -1535,12 +1535,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-tgrelay.git",
-                "reference": "1f58dcbdb93610d60bb7fa3a480dc0421505656f"
+                "reference": "fca83b3c65b7eef75217d2ac334c718fbb9cf4ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-tgrelay/zipball/1f58dcbdb93610d60bb7fa3a480dc0421505656f",
-                "reference": "1f58dcbdb93610d60bb7fa3a480dc0421505656f",
+                "url": "https://api.github.com/repos/WildPHP/module-tgrelay/zipball/fca83b3c65b7eef75217d2ac334c718fbb9cf4ae",
+                "reference": "fca83b3c65b7eef75217d2ac334c718fbb9cf4ae",
                 "shasum": ""
             },
             "require": {
@@ -1568,7 +1568,7 @@
                 }
             ],
             "description": "Telegram relay module for WildPHP",
-            "time": "2017-06-29T19:24:34+00:00"
+            "time": "2017-06-30T17:14:20+00:00"
         },
         {
             "name": "wildphp/module-uno",
@@ -1576,12 +1576,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/module-uno.git",
-                "reference": "2d0a390a80823890df915208e805eeaa29e57da1"
+                "reference": "c9f4a68a55cf8f42cf1c3abc51b2ac9cd23bff42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/module-uno/zipball/2d0a390a80823890df915208e805eeaa29e57da1",
-                "reference": "2d0a390a80823890df915208e805eeaa29e57da1",
+                "url": "https://api.github.com/repos/WildPHP/module-uno/zipball/c9f4a68a55cf8f42cf1c3abc51b2ac9cd23bff42",
+                "reference": "c9f4a68a55cf8f42cf1c3abc51b2ac9cd23bff42",
                 "shasum": ""
             },
             "require": {
@@ -1604,7 +1604,7 @@
                 }
             ],
             "description": "UNO game module for WildPHP",
-            "time": "2017-06-29T00:07:14+00:00"
+            "time": "2017-06-30T17:14:19+00:00"
         },
         {
             "name": "yoshi2889/collections",
@@ -1696,16 +1696,16 @@
         },
         {
             "name": "yoshi2889/validation-closures",
-            "version": "v0.1.1",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoshi2889/validation-closures.git",
-                "reference": "185f1f5171f443c1f76da9728ddcc06784e7ddd0"
+                "reference": "f4290d1e0993df857a50c3672f5b1dd1bbee0d77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoshi2889/validation-closures/zipball/185f1f5171f443c1f76da9728ddcc06784e7ddd0",
-                "reference": "185f1f5171f443c1f76da9728ddcc06784e7ddd0",
+                "url": "https://api.github.com/repos/Yoshi2889/validation-closures/zipball/f4290d1e0993df857a50c3672f5b1dd1bbee0d77",
+                "reference": "f4290d1e0993df857a50c3672f5b1dd1bbee0d77",
                 "shasum": ""
             },
             "require": {
@@ -1733,7 +1733,7 @@
                 }
             ],
             "description": "Closures useful for validating data. Provides type validation amongst other filters.",
-            "time": "2017-06-29T19:50:25+00:00"
+            "time": "2017-06-30T13:10:32+00:00"
         },
         {
             "name": "yoshi2889/wphp-module-lisp",
@@ -2516,16 +2516,16 @@
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "4.0.1",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "eabce450df194817a7d7e27e19013569a903a2bf"
+                "reference": "d8833b396dce9162bb2eb5d59aee5a3ab3cfa5b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/eabce450df194817a7d7e27e19013569a903a2bf",
-                "reference": "eabce450df194817a7d7e27e19013569a903a2bf",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/d8833b396dce9162bb2eb5d59aee5a3ab3cfa5b4",
+                "reference": "d8833b396dce9162bb2eb5d59aee5a3ab3cfa5b4",
                 "shasum": ""
             },
             "require": {
@@ -2571,7 +2571,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2017-03-03T06:30:20+00:00"
+            "time": "2017-06-30T08:15:21+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2736,16 +2736,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "3.0.4",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "74776f8dbc081cab9287c2a601c0c1d842568744"
+                "reference": "cd0871b3975fb7fc44d11314fd1ee20925fce4f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/74776f8dbc081cab9287c2a601c0c1d842568744",
-                "reference": "74776f8dbc081cab9287c2a601c0c1d842568744",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/cd0871b3975fb7fc44d11314fd1ee20925fce4f5",
+                "reference": "cd0871b3975fb7fc44d11314fd1ee20925fce4f5",
                 "shasum": ""
             },
             "require": {
@@ -2757,7 +2757,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0.x-dev"
+                    "dev-master": "3.1.x-dev"
                 }
             },
             "autoload": {
@@ -2782,7 +2782,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2017-06-20T16:25:05+00:00"
+            "time": "2017-07-01T08:51:00+00:00"
         },
         {
             "name": "sebastian/exporter",
