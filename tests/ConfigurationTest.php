@@ -19,34 +19,39 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Configuration\ConfigurationItem;
-use WildPHP\Core\Configuration\ConfigurationStorage;
+use WildPHP\Core\Configuration\Configuration;
 
 class ConfigurationTest extends TestCase
 {
+	public function testNeonBackend()
+	{
+		$path = dirname(__FILE__) . '/testconfig.neon';
+		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend($path);
+		static::assertEquals($path, $neonBackend->getConfigFile());
+
+		$allEntries = $neonBackend->getAllEntries();
+		static::assertEquals(['test' => ['ing' => 'data', 'array' => ['test', 'ing']]], $allEntries);
+
+	}
 	public function testConfigurationStorage()
 	{
-		$configurationStorage = new ConfigurationStorage([
-			'test' => [
-				'ing' => 'data'
-			]
-		]);
+		$configurationStorage = new Configuration(new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon'));
 
-		$configurationItem = $configurationStorage->getItem('test.ing');
-		$expectedConfigurationItem = new ConfigurationItem('test.ing', 'data');
+		$configurationItem = $configurationStorage['test']['ing'];
+		$expected = 'data';
 
-		static::assertEquals($expectedConfigurationItem, $configurationItem);
+		static::assertEquals($expected, $configurationItem);
 	}
 
 	public function testPutConfigurationStorage()
 	{
-		$configurationStorage = new ConfigurationStorage([]);
+		$configurationStorage = new Configuration(new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon'));
 
-		$newConfigurationitem = new ConfigurationItem('test.ing', 'data');
-		$configurationStorage->setItem($newConfigurationitem);
+		$configurationStorage['testmore'] = 'Test';
+		$expected = 'Test';
 
-		$configurationItem = $configurationStorage->getItem('test.ing');
+		$configurationItem = $configurationStorage['testmore'];
 
-		static::assertEquals($newConfigurationitem, $configurationItem);
+		static::assertEquals($expected, $configurationItem);
 	}
 }
