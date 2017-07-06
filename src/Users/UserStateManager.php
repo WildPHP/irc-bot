@@ -22,8 +22,9 @@ use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 
-class UserStateManager
+class UserStateManager extends BaseModule
 {
 	use ContainerTrait;
 

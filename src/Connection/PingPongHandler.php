@@ -15,8 +15,9 @@ use WildPHP\Core\Connection\IRCMessages\PING;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 
-class PingPongHandler
+class PingPongHandler extends BaseModule
 {
 	use ContainerTrait;
 

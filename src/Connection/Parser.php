@@ -15,8 +15,9 @@ use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 
-class Parser
+class Parser extends BaseModule
 {
 	use ContainerTrait;
 

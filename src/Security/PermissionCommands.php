@@ -17,10 +17,11 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\DataStorage\DataStorageFactory;
+use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
-class PermissionCommands
+class PermissionCommands extends BaseModule
 {
 	use ContainerTrait;
 

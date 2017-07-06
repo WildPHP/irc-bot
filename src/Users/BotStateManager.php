@@ -15,8 +15,9 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 
-class BotStateManager
+class BotStateManager extends BaseModule
 {
 	use ContainerTrait;
 

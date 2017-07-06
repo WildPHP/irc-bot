@@ -20,10 +20,11 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
-class ChannelStateManager
+class ChannelStateManager extends BaseModule
 {
 	use ContainerTrait;
 

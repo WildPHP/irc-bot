@@ -20,6 +20,7 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Security\PermissionGroup;
 use WildPHP\Core\Security\Validator;
 use WildPHP\Core\Tasks\TaskController;
@@ -40,7 +41,7 @@ function setupLogger(Configuration $configuration): Logger
 		if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
 			$logLevel = 'info';
 	}
-	catch (\Exception $e)
+	catch (\Throwable $e)
 	{
 		$logLevel = 'info';
 	}
@@ -61,14 +62,6 @@ function setupConfiguration()
 	$configuration['rootdir'] = $rootdir;
 
 	return $configuration;
-}
-
-/**
- * @return EventEmitter
- */
-function setupEventEmitter()
-{
-	return new EventEmitter();
 }
 
 /**
@@ -103,7 +96,7 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
 	$ircConnection = new IrcConnection($container, $connectionDetails);
 	$promise = $ircConnection->connect(ConnectorFactory::create($container->getLoop(), $connectionDetails->getSecure()));
 
-	$promise->otherwise(function (\Exception $e) use ($container, $loop)
+	$promise->otherwise(function (\Throwable $e) use ($container, $loop)
 	{
 		Logger::fromContainer($container)->error('An error occurred in the IRC connection:', [
 			'message' => $e->getMessage(),
@@ -129,7 +122,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 {
 	$componentContainer = new ComponentContainer();
 	$componentContainer->setLoop($loop);
-	$componentContainer->add(setupEventEmitter());
+	$componentContainer->add(new EventEmitter());
 	$componentContainer->add($logger);
 	$componentContainer->add($configuration);
 	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
@@ -148,14 +141,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
 	$componentContainer->add(new Validator($componentContainer));
 
-	try
-	{
+	$moduleFactory = new ModuleFactory($componentContainer);
+	$componentContainer->add($moduleFactory);
+
+	if (Configuration::fromContainer($componentContainer)->offsetExists('modules'))
 		$modules = Configuration::fromContainer($componentContainer)['modules'];
-	}
-	catch (\Yoshi2889\Container\NotFoundException $e)
-	{
-		// Left empty because we should gracefully fail with an empty module list.
-	}
 
 	if (empty($modules) || !is_array($modules))
 		$modules = [];
@@ -172,24 +162,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Users\BotStateManager::class
 	]);
 
-	foreach ($modules as $module)
-	{
-		try
-		{
-			new $module($componentContainer);
-			Logger::fromContainer($componentContainer)->info('Loaded module with class ' . $module);
-		}
-		catch (\Exception $e)
-		{
-			Logger::fromContainer($componentContainer)->error('Could not properly load module; stability not guaranteed!',
-				[
-					'class' => $module,
-					'exception' => get_class($e),
-					'message' => $e->getMessage(),
-				]);
-		}
-
-	}
+	$moduleFactory->initializeModules($modules);
 
 	EventEmitter::fromContainer($componentContainer)
 		->emit('wildphp.init-modules.after');

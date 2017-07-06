@@ -16,11 +16,12 @@ use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Tasks\Task;
 use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\User;
 
-class ModerationCommands
+class ModerationCommands extends BaseModule
 {
 	/**
 	 * ModerationCommands constructor.

@@ -14,9 +14,10 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
-class HelpCommand
+class HelpCommand extends BaseModule
 {
 	/**
 	 * HelpCommand constructor.
