@@ -129,6 +129,10 @@ class TextFormatter
 	 */
 	public static function consistentStringColor(string $stringToColor, string $background = ''): string
 	{
+		// Don't even bother.
+		if (empty($stringToColor))
+			return '';
+
 		$color = self::calculateStringColor($stringToColor);
 		return self::color($stringToColor, $color, $background);
 	}
