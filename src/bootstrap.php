@@ -21,8 +21,8 @@ use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleFactory;
-use WildPHP\Core\Security\PermissionGroup;
-use WildPHP\Core\Security\Validator;
+use WildPHP\Core\Permissions\PermissionGroup;
+use WildPHP\Core\Permissions\Validator;
 use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
@@ -65,11 +65,11 @@ function setupConfiguration()
 }
 
 /**
- * @return \WildPHP\Core\Security\PermissionGroupCollection
+ * @return \WildPHP\Core\Permissions\PermissionGroupCollection
  */
 function setupPermissionGroupCollection()
 {
-	$globalPermissionGroup = new \WildPHP\Core\Security\PermissionGroupCollection();
+	$globalPermissionGroup = new \WildPHP\Core\Permissions\PermissionGroupCollection();
 
 	$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
@@ -156,7 +156,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Channels\ChannelStateManager::class,
 		\WildPHP\Core\Users\UserStateManager::class,
 		\WildPHP\Core\Commands\HelpCommand::class,
-		\WildPHP\Core\Security\PermissionCommands::class,
+		\WildPHP\Core\Permissions\PermissionCommands::class,
 		\WildPHP\Core\Management\ManagementCommands::class,
 		\WildPHP\Core\Moderation\ModerationCommands::class,
 		\WildPHP\Core\Users\BotStateManager::class

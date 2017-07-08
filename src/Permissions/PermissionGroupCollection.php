@@ -7,7 +7,7 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Security;
+namespace WildPHP\Core\Permissions;
 
 use ValidationClosures\Types;
 use WildPHP\Core\DataStorage\DataStorageFactory;

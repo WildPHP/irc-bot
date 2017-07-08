@@ -17,7 +17,7 @@ use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Security\Validator;
+use WildPHP\Core\Permissions\Validator;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;

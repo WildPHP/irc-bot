@@ -7,7 +7,7 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Security;
+namespace WildPHP\Core\Permissions;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;

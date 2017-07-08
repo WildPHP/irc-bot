@@ -7,7 +7,7 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Security;
+namespace WildPHP\Core\Permissions;
 
 use Evenement\EventEmitterTrait;
 use ValidationClosures\Types;
