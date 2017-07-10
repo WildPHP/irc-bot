@@ -267,23 +267,7 @@ class ModerationCommands extends BaseModule
 	public function modeCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$modes = array_shift($args);
-		$nickname = array_shift($args);
-
-		$target = [];
-		if (!empty($nickname))
-		{
-			$userObj = $source->getUserCollection()
-				->findByNickname($nickname);
-
-			if (!$userObj)
-			{
-				Queue::fromContainer($container)
-					->privmsg($source->getName(), $user->getNickname() . ': This user is currently not in the channel.');
-
-				return;
-			}
-			$target = [$nickname];
-		}
+		$target = array_shift($args);
 
 		Queue::fromContainer($container)
 			->mode($source->getName(), $modes, $target);
