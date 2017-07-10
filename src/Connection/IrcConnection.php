@@ -124,11 +124,8 @@ class IrcConnection implements ComponentInterface
 
 		$variables = $incomingIrcMessage->getVariables();
 
-		foreach ($variables as $value)
+		foreach ($variables as $key => $value)
 		{
-			$parts = explode('=', $value);
-			$key = strtolower($parts[0]);
-			$value = !empty($parts[1]) ? $parts[1] : true;
 			Configuration::fromContainer($this->getContainer())['serverConfig'][$key] = $value;
 		}
 
