@@ -18,7 +18,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	use ComponentTrait;
 
 	/**
-	 * @var \Katzgrau\KLogger\Logger
+	 * @var LoggerInterface
 	 */
 	protected $logger = null;
 
@@ -30,20 +30,20 @@ class Logger implements LoggerInterface, ComponentInterface
 	/**
 	 * Logger constructor.
 	 *
-	 * @param \Katzgrau\KLogger\Logger $logger
+	 * @param LoggerInterface $logger
 	 */
-	public function __construct(\Katzgrau\KLogger\Logger $logger)
+	public function __construct(LoggerInterface $logger)
 	{
-		$this->setLogger($logger);
+		$this->logger = $logger;
 	}
 
 	/**
-	 * KLogger does not natively support writing to stdout. This function works around that.
+	 * The logger does not natively support writing to stdout. This function works around that.
+	 *
+	 * @param string $lastline
 	 */
-	public function echoLastLine()
+	public function echoLastLine(string $lastline)
 	{
-		$lastline = $this->getLogger()
-			->getLastLogLine();
 		if ($lastline == $this->lastLine || empty($lastline))
 			return;
 
@@ -59,7 +59,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->emergency($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->alert($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->critical($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->error($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->warning($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -114,7 +114,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->notice($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->info($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Logger implements LoggerInterface, ComponentInterface
 	{
 		$this->getLogger()
 			->debug($message, $context);
-		$this->echoLastLine();
+		$this->echoLastLine($message);
 	}
 
 	/**
@@ -151,18 +151,10 @@ class Logger implements LoggerInterface, ComponentInterface
 	}
 
 	/**
-	 * @return \Katzgrau\KLogger\Logger
+	 * @return LoggerInterface
 	 */
-	public function getLogger(): \Katzgrau\KLogger\Logger
+	public function getLogger(): LoggerInterface
 	{
 		return $this->logger;
-	}
-
-	/**
-	 * @param \Katzgrau\KLogger\Logger $logger
-	 */
-	public function setLogger(\Katzgrau\KLogger\Logger $logger)
-	{
-		$this->logger = $logger;
 	}
 }
