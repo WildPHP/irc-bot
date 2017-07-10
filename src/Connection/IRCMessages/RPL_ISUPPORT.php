@@ -41,10 +41,19 @@ class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 		$nickname = array_shift($args);
 		$server = $incomingIrcMessage->getPrefix();
 
+		$variables = [];
+		foreach ($args as $arrayKey => $value)
+		{
+			$parts = explode('=', $value);
+			$key = strtolower($parts[0]);
+			$value = !empty($parts[1]) ? $parts[1] : true;
+			$variables[$key] = $value;
+		}
+
 		$object = new self();
 		$object->setNickname($nickname);
 		$object->setServer($server);
-		$object->setVariables($args);
+		$object->setVariables($variables);
 
 		return $object;
 	}
