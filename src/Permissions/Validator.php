@@ -69,37 +69,13 @@ class Validator implements ComponentInterface
 	}
 
 	/**
-	 * @param Channel $channel
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function isUserOPInChannel(Channel $channel, User $user)
-	{
-		return $channel->getChannelModes()
-			->isUserInMode('o', $user);
-	}
-
-	/**
-	 * @param Channel $channel
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function isUserVoicedInChannel(Channel $channel, User $user)
-	{
-		return $channel->getChannelModes()
-			->isUserInMode('v', $user);
-	}
-
-	/**
 	 * @param string $permissionName
 	 * @param User $user
 	 * @param Channel|null $channel
 	 *
 	 * @return string|false String with reason on success; boolean false otherwise.
 	 */
-	public function isAllowedTo(string $permissionName, User $user, Channel $channel = null)
+	public function isAllowedTo(string $permissionName, User $user, ?Channel $channel = null)
 	{
 		// The order to check in:
 		// 0. Is bot owner (has all perms)
