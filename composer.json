@@ -13,11 +13,13 @@
         "evenement/evenement": "^2.0",
         "yoshi2889/collections": "^0.1",
         "yoshi2889/container": "^0.1",
-        "yoshi2889/validation-closures": "^0.1"
+        "yoshi2889/validation-closures": "^0.1",
+        "yoshi2889/tasks": "^0.1"
     },
     "autoload": {
         "psr-4": {
-            "WildPHP\\Core\\": "src/"
+            "WildPHP\\Core\\": "src/",
+            "WildPHP\\Modules\\": "modules/"
         }
     },
     "authors": [
