@@ -131,8 +131,8 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
 	$capabilityHandler->setSasl($sasl);
-	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types:: instanceof (\WildPHP\Core\Commands\Command::class))));
-	$componentContainer->add(new TaskController($componentContainer));
+	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
+	$componentContainer->add(new TaskController($componentContainer->getLoop()));
 
 	$componentContainer->add(new Queue($componentContainer));
 	$componentContainer->add(new ChannelCollection($componentContainer));

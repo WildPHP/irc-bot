@@ -17,9 +17,9 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Tasks\Task;
 use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\User;
+use Yoshi2889\Tasks\CallbackTask;
 
 class ModerationCommands extends BaseModule
 {
@@ -240,7 +240,7 @@ class ModerationCommands extends BaseModule
 		$hostname = array_shift($args);
 		$minutes = array_shift($args);
 		$redirect = !empty($args) && Channel::isValidName($args[0], Configuration::fromContainer($container)['prefix']) ? array_shift($args) : '';
-		$time = time() + 60 * $minutes;
+		$time = 60 * $minutes;
 		$this->banUser($source, $hostname, $container, $time, $redirect);
 
 		if (!empty($redirect))
@@ -249,7 +249,7 @@ class ModerationCommands extends BaseModule
 		if ($time != 0)
 		{
 			$args = [$source, $hostname, $container];
-			$task = new Task([$this, 'removeBan'], $time, $args);
+			$task = new CallbackTask([$this, 'removeBan'], $time, $args);
 			TaskController::fromContainer($container)
 				->addTask($task);
 		}
@@ -277,10 +277,10 @@ class ModerationCommands extends BaseModule
 	 * @param Channel $source
 	 * @param User $userObj
 	 * @param ComponentContainer $container
-	 * @param int $until
+	 * @param int $offset
 	 * @param string $redirect
 	 */
-	protected function banUser(Channel $source, User $userObj, ComponentContainer $container, int $until, string $redirect = '')
+	protected function banUser(Channel $source, User $userObj, ComponentContainer $container, int $offset, string $redirect = '')
 	{
 		$hostname = $userObj->getHostname();
 		$username = $userObj->getUsername();
@@ -289,10 +289,10 @@ class ModerationCommands extends BaseModule
 		if (!empty($redirect))
 			$ban .= '$' . $redirect;
 
-		if ($until != 0)
+		if ($offset != 0)
 		{
 			$args = [$source, $ban, $container];
-			$task = new Task([$this, 'removeBan'], $until, $args);
+			$task = new CallbackTask([$this, 'removeBan'], $offset, $args);
 			TaskController::fromContainer($container)
 				->addTask($task);
 		}
@@ -302,12 +302,11 @@ class ModerationCommands extends BaseModule
 	}
 
 	/**
-	 * @param Task $task
 	 * @param Channel $source
 	 * @param string $banmask
 	 * @param ComponentContainer $container
 	 */
-	public function removeBan(Task $task, Channel $source, string $banmask, ComponentContainer $container)
+	public function removeBan(Channel $source, string $banmask, ComponentContainer $container)
 	{
 		Queue::fromContainer($container)
 			->mode($source->getName(), '-b', [$banmask]);
