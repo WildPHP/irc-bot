@@ -54,16 +54,16 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
 	/**
 	 * @param string $groupName
 	 *
-	 * @return PermissionGroup
+	 * @return array
 	 */
-	public function loadOrCreateGroup(string $groupName): PermissionGroup
+	public function getStoredGroupData(string $groupName): ?array
 	{
 		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
 		if (!in_array($groupName, $dataStorage->getKeys()))
-			return new PermissionGroup();
+			return null;
 
-		return new PermissionGroup($dataStorage->get($groupName));
+		return $dataStorage->get($groupName);
 	}
 
 	/**

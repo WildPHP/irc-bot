@@ -12,7 +12,10 @@ namespace WildPHP\Core\Permissions;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Users\User;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
@@ -24,6 +27,11 @@ class Validator implements ComponentInterface
 	use ContainerTrait;
 
 	/**
+	 * @var array
+	 */
+	protected $modes = [];
+
+	/**
 	 * Validator constructor.
 	 *
 	 * @param ComponentContainer $container
@@ -32,7 +40,32 @@ class Validator implements ComponentInterface
 	{
 		$this->setContainer($container);
 
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.005', [$this, 'createModeGroups']);
+	}
 
+	/**
+	 * @param RPL_ISUPPORT $ircMessage
+	 * @param Queue $queue
+	 */
+	public function createModeGroups(RPL_ISUPPORT $ircMessage, Queue $queue)
+	{
+		$variables = $ircMessage->getVariables();
+
+		if (!array_key_exists('PREFIX', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['PREFIX'], $out))
+			return;
+
+		$modes = str_split($out[1]);
+		$this->modes = $modes;
+
+		foreach ($modes as $mode)
+		{
+			$groupState = PermissionGroupCollection::fromContainer($this->getContainer())->getStoredGroupData($mode);
+
+			$permGroup = new PermissionGroup($groupState ?? []);
+			$permGroup->setModeGroup(true);
+			PermissionGroupCollection::fromContainer($this->getContainer())->append($permGroup);
+		}
 	}
 
 	/**
@@ -66,7 +99,7 @@ class Validator implements ComponentInterface
 	 *
 	 * @return string|false String with reason on success; boolean false otherwise.
 	 */
-	public function isAllowedTo(string $permissionName = '', User $user, Channel $channel = null)
+	public function isAllowedTo(string $permissionName, User $user, Channel $channel = null)
 	{
 		// The order to check in:
 		// 0. Is bot owner (has all perms)
@@ -76,24 +109,20 @@ class Validator implements ComponentInterface
 		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())['owner'])
 			return 'owner';
 
-		if (!empty($channel) && $this->isUserOPInChannel($channel, $user))
+		if (!empty($channel))
 		{
-			/** @var PermissionGroup $opGroup */
-			$opGroup = PermissionGroupCollection::fromContainer($this->getContainer())
-				->offsetGet('op');
+			foreach ($this->modes as $mode)
+			{
+				if (!$channel->getChannelModes()->isUserInMode($mode, $user))
+					continue;
 
-			if ($opGroup->hasPermission($permissionName))
-				return 'op';
-		}
+				/** @var PermissionGroup $permGroup */
+				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
+					->offsetGet($mode);
 
-		if (!empty($channel) && $this->isUserVoicedInChannel($channel, $user))
-		{
-			/** @var PermissionGroup $voiceGroup */
-			$voiceGroup = PermissionGroupCollection::fromContainer($this->getContainer())
-				->offsetGet('voice');
-
-			if ($voiceGroup->hasPermission($permissionName))
-				return 'voice';
+				if ($permGroup->hasPermission($permissionName))
+					return $mode;
+			}
 		}
 
 		$channelName = !empty($channel) ? $channel->getName() : '';
@@ -103,7 +132,7 @@ class Validator implements ComponentInterface
 			->filter(function ($item) use ($user)
 			{
 				/** @var PermissionGroup $item */
-				if (!$item->getCanHaveMembers())
+				if ($item->isModeGroup())
 					return false;
 
 				return $item->getUserCollection()->contains($user->getIrcAccount());

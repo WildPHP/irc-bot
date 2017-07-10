@@ -35,7 +35,7 @@ class PermissionGroup
 	/**
 	 * @var bool
 	 */
-	protected $canHaveMembers = true;
+	protected $modeGroup = false;
 
 	/**
 	 * PermissionGroup constructor.
@@ -95,17 +95,17 @@ class PermissionGroup
 	/**
 	 * @return bool
 	 */
-	public function getCanHaveMembers(): bool
+	public function isModeGroup(): bool
 	{
-		return $this->canHaveMembers;
+		return $this->modeGroup;
 	}
 
 	/**
-	 * @param bool $canHaveMembers
+	 * @param bool $modeGroup
 	 */
-	protected function setCanHaveMembers(bool $canHaveMembers)
+	public function setModeGroup(bool $modeGroup)
 	{
-		$this->canHaveMembers = $canHaveMembers;
+		$this->modeGroup = $modeGroup;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class PermissionGroup
 	public function toArray(): array
 	{
 		return [
-			'canHaveMembers' => (int) $this->getCanHaveMembers(),
+			'modeGroup' => (int) $this->isModeGroup(),
 			'userCollection' => $this->getUserCollection()
 				->values(),
 			'allowedPermissions' => $this->getAllowedPermissions()
@@ -183,7 +183,7 @@ class PermissionGroup
 			return;
 		}
 
-		$this->setCanHaveMembers((bool) $data['canHaveMembers']);
+		$this->setModeGroup((bool) $data['modeGroup']);
 
 		if ((@unserialize($data['userCollection'])))
 		{

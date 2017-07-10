@@ -112,28 +112,17 @@ class PermissionCommands extends BaseModule
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
 
-		if ($group->getAllowedPermissions()
-			->contains($permission)
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': The group is already allowed to do that.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group is already allowed to do that.' => $group ? $group->getAllowedPermissions()->contains($permission) : false
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$group->getAllowedPermissions()
 			->append($permission);
@@ -152,28 +141,17 @@ class PermissionCommands extends BaseModule
 		$groupName = $args[0];
 		$permission = $args[1];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
 
-		if (!$group->getAllowedPermissions()
-			->contains($permission)
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': The group is not allowed to do that.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group is not allowed to do that.' => $group ? !$group->getAllowedPermissions()->contains($permission) : false
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$group->getAllowedPermissions()
 			->removeAll($permission);
@@ -191,14 +169,13 @@ class PermissionCommands extends BaseModule
 	{
 		$groupName = $args[0];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+		$checks = [
+			'This group does not exist.' => !PermissionGroupCollection::fromContainer($container)
+				->offsetExists($groupName)
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -221,26 +198,17 @@ class PermissionCommands extends BaseModule
 	{
 		$groupName = $args[0];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
 
-		if (!$group->getCanHaveMembers())
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group cannot contain members.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group may not contain members.' => $group ? $group->isModeGroup() : false
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$members = $group->getUserCollection()
 			->values();
@@ -261,39 +229,22 @@ class PermissionCommands extends BaseModule
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
-
-		if (!$group->getCanHaveMembers())
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group may not contain members.');
-
-			return;
-		}
 
 		/** @var User $userToAdd */
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
-		if (empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0']))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(),
-					$user->getNickname() . ': This user is not in my current database or is not logged in to services.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group may not contain members.' => $group ? $group->isModeGroup() : false,
+			'This user is not in my current database or is not logged in to services.' => empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$group->getUserCollection()
 			->append($userToAdd->getIrcAccount());
@@ -318,15 +269,6 @@ class PermissionCommands extends BaseModule
 		$groupName = $args[0];
 		$nickname = $args[1];
 
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
@@ -335,15 +277,14 @@ class PermissionCommands extends BaseModule
 		$userToAdd = UserCollection::fromContainer($container)
 			->findByNickname($nickname);
 
-		if (empty($userToAdd) || !$group->getUserCollection()
-				->contains($userToAdd->getIrcAccount())
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This user is not in the group or not online.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This user is not in the group or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
+						->contains($userToAdd->getIrcAccount()))
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$group->getUserCollection()
 			->removeAll($userToAdd->getIrcAccount());
@@ -424,14 +365,12 @@ class PermissionCommands extends BaseModule
 	{
 		$groupName = $args[0];
 
-		if (PermissionGroupCollection::fromContainer($container)
-			->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': A group with this name already exists.');
+		$checks = [
+			'A group with this name already exists.' => PermissionGroupCollection::fromContainer($container)->offsetExists($groupName)
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
 
 		$groupObj = new PermissionGroup();
 		PermissionGroupCollection::fromContainer($this->getContainer())
@@ -451,23 +390,17 @@ class PermissionCommands extends BaseModule
 	{
 		$groupName = $args[0];
 
-		if ($groupName == 'op' || $groupName == 'voice')
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group may not be removed.');
+		/** @var PermissionGroup|false $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group may not be removed.' => $group ? $group->isModeGroup() : false
+		];
+
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
-
-		if (!PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName)
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': A group with this name does not exist.');
-
-			return;
-		}
 
 		$storage = DataStorageFactory::getStorage('permissiongroups');
 		$storage->delete($groupName);
@@ -494,23 +427,14 @@ class PermissionCommands extends BaseModule
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
 
-		if (empty($group))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
+			'The group is already linked to this channel.' => $group ? $group->getChannelCollection()->contains($channel) : false
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
-
-		if ($group->getChannelCollection()
-			->contains($channel)
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': The group is already linked to this channel.');
-
-			return;
-		}
 
 		$group->getChannelCollection()
 			->append($channel);
@@ -534,23 +458,14 @@ class PermissionCommands extends BaseModule
 		$group = PermissionGroupCollection::fromContainer($container)
 			->offsetGet($groupName);
 
-		if (empty($group))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
+		$checks = [
+			'This group does not exist.' => empty($group),
+			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
+			'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel) : false
+		];
 
+		if (!$this->doChecks($checks, $source, $user))
 			return;
-		}
-
-		if (!$group->getChannelCollection()
-			->contains($channel)
-		)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': The group is not linked to this channel.');
-
-			return;
-		}
 
 		$group->getChannelCollection()
 			->removeAll($channel);
@@ -603,5 +518,28 @@ class PermissionCommands extends BaseModule
 		foreach ($lines as $line)
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $line);
+	}
+
+	/**
+	 * @param array $checks
+	 * @param Channel $source
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
+	protected function doChecks(array $checks, Channel $source, User $user)
+	{
+		foreach ($checks as $string => $check)
+		{
+			if (!$check)
+				continue;
+
+			Queue::fromContainer($this->getContainer())
+				->privmsg($source->getName(), $user->getNickname() . ': ' . $string);
+
+			return false;
+		}
+
+		return true;
 	}
 }
