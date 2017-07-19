@@ -17,9 +17,12 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\ModuleInterface;
+use Yoshi2889\Container\ComponentTrait;
 
-class ChannelStateManager
+class ChannelStateManager implements ModuleInterface
 {
+	use ComponentTrait;
 	use ContainerTrait;
 
 	/**
