@@ -11,6 +11,7 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IRCMessages\ReceivableMessage;
+use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 
 class IncomingIrcMessage
@@ -71,10 +72,14 @@ class IncomingIrcMessage
 		$expectedClass = '\WildPHP\Core\Connection\IRCMessages\\' . $verb;
 
 		if (!class_exists($expectedClass))
-		{
 			return $this;
-		}
 
+		$reflection = new \ReflectionClass($expectedClass);
+
+		if (!$reflection->implementsInterface(ReceivableMessage::class) && !$reflection->implementsInterface(SendableMessage::class))
+			return $this;
+
+		/** @var ReceivableMessage|SendableMessage $expectedClass */
 		return $expectedClass::fromIncomingIrcMessage($this);
 	}
 

@@ -79,9 +79,9 @@ class Parser extends BaseModule
 			return;
 
 		$channel = $message->getChannel();
-		$message = $message->getMessage();
+		$msg = $message->getMessage();
 
-		$toLog = 'OUT: [' . $channel . '] ' . $message;
+		$toLog = 'OUT: [' . $channel . '] ' . $msg;
 		Logger::fromContainer($container)
 			->info($toLog);
 	}
