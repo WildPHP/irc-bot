@@ -51,9 +51,9 @@ class CapabilityHandler implements ComponentInterface
 	 * CapabilityHandler constructor.
 	 *
 	 * @param ComponentContainer $container
+	 * @param SASL $SASL
 	 */
-
-	public function __construct(ComponentContainer $container)
+	public function __construct(ComponentContainer $container, SASL $SASL)
 	{
 		$eventEmitter = EventEmitter::fromContainer($container);
 		$eventEmitter->on('stream.created', [$this, 'initNegotiation']);
@@ -65,6 +65,8 @@ class CapabilityHandler implements ComponentInterface
 		$eventEmitter->on('irc.sasl.complete', [$this, 'tryEndNegotiation']);
 		$eventEmitter->on('irc.sasl.error', [$this, 'tryEndNegotiation']);
 		$this->setContainer($container);
+
+		$this->setSasl($SASL);
 	}
 
 	/**

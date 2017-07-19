@@ -51,11 +51,13 @@ class Channel
 	/**
 	 * Channel constructor.
 	 *
+	 * @param string $name
 	 * @param UserCollection $userCollection
 	 * @param ChannelModes $channelModes
 	 */
-	public function __construct(UserCollection $userCollection, ChannelModes $channelModes)
+	public function __construct(string $name, UserCollection $userCollection, ChannelModes $channelModes)
 	{
+		$this->name = $name;
 		$this->setUserCollection($userCollection);
 		$this->setChannelModes($channelModes);
 	}
@@ -98,14 +100,6 @@ class Channel
 	public function getName(): string
 	{
 		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name)
-	{
-		$this->name = $name;
 	}
 
 	/**

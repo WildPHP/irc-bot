@@ -40,15 +40,15 @@ class Command
 	 * Command constructor.
 	 *
 	 * @param callable $callback
+	 * @param null|CommandHelp $commandHelp
 	 * @param int $minimumArguments
 	 * @param int $maximumArguments
-	 * @param null|CommandHelp $commandHelp
 	 * @param string $requiredPermission
 	 */
 	public function __construct(callable $callback,
+	                            ?CommandHelp $commandHelp,
 	                            int $minimumArguments = -1,
 	                            int $maximumArguments = -1,
-	                            ?CommandHelp $commandHelp,
 	                            string $requiredPermission)
 	{
 		$this->setCallback($callback);

@@ -18,8 +18,6 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
@@ -99,13 +97,18 @@ class CommandHandler implements ComponentInterface
 	 */
 	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
 	{
-		/** @var User $user */
-		$user = UserCollection::fromContainer($this->getContainer())
-			->findOrCreateByNickname($privmsg->getNickname());
-
 		/** @var Channel $source */
 		$source = ChannelCollection::fromContainer($this->getContainer())
-			->requestByChannelName($privmsg->getChannel(), $user);
+			->findByChannelName($privmsg->getChannel());
+
+		if (!$source)
+			return;
+
+		$user = $source->getUserCollection()->findByNickname($privmsg->getNickname());
+
+		if (!$user)
+			return;
+
 		$message = $privmsg->getMessage();
 
 		$args = [];

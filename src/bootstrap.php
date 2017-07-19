@@ -23,7 +23,6 @@ use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Permissions\PermissionGroup;
 use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 
 /**
@@ -114,15 +113,12 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add($configuration);
 	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
 
-	$capabilityHandler = new CapabilityHandler($componentContainer);
-	$componentContainer->add($capabilityHandler);
 	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
-	$capabilityHandler->setSasl($sasl);
+	$componentContainer->add(new CapabilityHandler($componentContainer, $sasl));
 	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
 
 	$componentContainer->add(new Queue($componentContainer));
 	$componentContainer->add(new ChannelCollection($componentContainer));
-	$componentContainer->add(new UserCollection($componentContainer));
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
 	$componentContainer->add(new Validator($componentContainer));
@@ -139,7 +135,6 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$modules = array_merge($modules, [
 		\WildPHP\Core\Connection\Parser::class,
 		\WildPHP\Core\Connection\PingPongHandler::class,
-		\WildPHP\Core\Channels\ChannelStateManager::class,
 		\WildPHP\Core\Users\UserStateManager::class,
 		\WildPHP\Core\Commands\HelpCommand::class,
 		\WildPHP\Core\Permissions\PermissionCommands::class,

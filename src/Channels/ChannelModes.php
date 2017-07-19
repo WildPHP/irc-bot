@@ -8,12 +8,8 @@
 
 namespace WildPHP\Core\Channels;
 
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 class ChannelModes
 {
@@ -31,33 +27,25 @@ class ChannelModes
 	/**
 	 * ChannelModes constructor.
 	 *
-	 * @param ComponentContainer $container
+	 * @param string $modeDefinitions
 	 */
-	public function __construct(ComponentContainer $container)
+	public function __construct(string $modeDefinitions)
 	{
-		$this->setContainer($container);
-	}
-
-	public function fetchModeDefinitions()
-	{
-		$availablemodes = Configuration::fromContainer($this->getContainer())['serverConfig']['prefix'];
-
-		preg_match('/\((.+)\)(.+)/', $availablemodes, $out);
-
-		$modes = str_split($out[1]);
-		$prefixes = str_split($out[2]);
-		$this->definitions = array_combine($prefixes, $modes);
-
-		Logger::fromContainer($this->getContainer())
-			->debug('Set new mode map', ['map' => $this->definitions]);
+		$this->definitions = $this->parseDefinitions($modeDefinitions);
 	}
 
 	/**
-	 * @param array $modemap
+	 * @param string $definitions
+	 *
+	 * @return array
 	 */
-	public function setModeDefinitions(array $modemap)
+	protected function parseDefinitions(string $definitions): array
 	{
-		$this->definitions = $modemap;
+		preg_match('/\((.+)\)(.+)/', $definitions, $out);
+
+		$modes = str_split($out[1]);
+		$prefixes = str_split($out[2]);
+		return array_combine($prefixes, $modes);
 	}
 
 	/**
@@ -65,9 +53,6 @@ class ChannelModes
 	 */
 	public function getModeDefinitions(): array
 	{
-		if (empty($this->definitions))
-			$this->fetchModeDefinitions();
-
 		return $this->definitions;
 	}
 
@@ -91,22 +76,6 @@ class ChannelModes
 			return false;
 
 		return in_array($user, $this->modeMap[$mode]);
-	}
-
-	/**
-	 * @param string $mode
-	 *
-	 * @return bool
-	 */
-	public function isBotInMode(string $mode): bool
-	{
-		if (!array_key_exists($mode, $this->modeMap))
-			return false;
-
-		$user = UserCollection::fromContainer($this->getContainer())
-			->getSelf();
-
-		return $user ? $this->isUserInMode($mode, $user) : false;
 	}
 
 
@@ -188,6 +157,18 @@ class ChannelModes
 			return [];
 
 		return $this->modeMap[$mode];
+	}
+
+	/**
+	 * @param array $modes
+	 * @param User $user
+	 */
+	public function addUserToModes(array $modes, User $user)
+	{
+		foreach ($modes as $mode)
+		{
+			$this->addUserToMode($mode, $user);
+		}
 	}
 
 	/**

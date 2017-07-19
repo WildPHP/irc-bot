@@ -20,6 +20,7 @@ use Yoshi2889\Container\ComponentTrait;
  * Class Queue
  * @package WildPHP\Core\Connection
  *
+ * Magic methods below
  * @method void authenticate(string $response)
  * @method void away(string $message)
  * @method void cap(string $command, array $capabilities = [])

@@ -19,7 +19,6 @@ use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 class PermissionCommands extends BaseModule
 {
@@ -234,13 +233,12 @@ class PermissionCommands extends BaseModule
 			->offsetGet($groupName);
 
 		/** @var User $userToAdd */
-		$userToAdd = UserCollection::fromContainer($container)
-			->findByNickname($nickname);
+		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
 
 		$checks = [
 			'This group does not exist.' => empty($group),
 			'This group may not contain members.' => $group ? $group->isModeGroup() : false,
-			'This user is not in my current database or is not logged in to services.' => empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
+			'This user is not in my current database, in this channel, or is not logged in to services.' => empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
 		];
 
 		if (!$this->doChecks($checks, $source, $user))
@@ -274,12 +272,11 @@ class PermissionCommands extends BaseModule
 			->offsetGet($groupName);
 
 		/** @var User $userToAdd */
-		$userToAdd = UserCollection::fromContainer($container)
-			->findByNickname($nickname);
+		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
 
 		$checks = [
 			'This group does not exist.' => empty($group),
-			'This user is not in the group or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
+			'This user is not in the group, in this channel, or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
 						->contains($userToAdd->getIrcAccount()))
 		];
 
@@ -308,7 +305,7 @@ class PermissionCommands extends BaseModule
 	{
 		if (empty($args[1]))
 			$valUser = $user;
-		elseif (($valUser = UserCollection::fromContainer($container)
+		elseif (($valUser = $source->getUserCollection()
 				->findByNickname($args[1])) == false
 		)
 		{

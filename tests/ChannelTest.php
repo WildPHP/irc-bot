@@ -32,10 +32,9 @@ class ChannelTest extends TestCase
 	{
 		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
 		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
-		$channel = new Channel($userCollection, $channelModes);
 
 		$name = '#someChannel';
-		$channel->setName($name);
+		$channel = new Channel($name, $userCollection, $channelModes);
 
 		static::assertEquals($name, $channel->getName());
 	}
@@ -44,7 +43,7 @@ class ChannelTest extends TestCase
 	{
 		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
 		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
-		$channel = new Channel($userCollection, $channelModes);
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
 
 		$topic = 'This is a test topic';
 		$channel->setTopic($topic);
@@ -56,7 +55,7 @@ class ChannelTest extends TestCase
 	{
 		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
 		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
-		$channel = new Channel($userCollection, $channelModes);
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
 
 		$topic = 'This is a test topic';
 		$channel->setTopic($topic);

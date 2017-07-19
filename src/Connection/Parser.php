@@ -50,7 +50,7 @@ class Parser extends BaseModule
 	public function parseIncomingIrcLine(string $line)
 	{
 		$parsedLine = static::parseLine($line);
-		$ircMessage = new IncomingIrcMessage($parsedLine, $this->getContainer());
+		$ircMessage = new IncomingIrcMessage($parsedLine);
 
 		$verb = strtolower($ircMessage->getVerb());
 		EventEmitter::fromContainer($this->getContainer())
