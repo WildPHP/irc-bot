@@ -17,7 +17,7 @@ class Command
 	protected $callback;
 
 	/**
-	 * @var CommandHelp
+	 * @var CommandHelp|null
 	 */
 	protected $help = null;
 
@@ -35,6 +35,28 @@ class Command
 	 * @var string
 	 */
 	protected $requiredPermission = '';
+
+	/**
+	 * Command constructor.
+	 *
+	 * @param callable $callback
+	 * @param int $minimumArguments
+	 * @param int $maximumArguments
+	 * @param null|CommandHelp $commandHelp
+	 * @param string $requiredPermission
+	 */
+	public function __construct(callable $callback,
+	                            int $minimumArguments = -1,
+	                            int $maximumArguments = -1,
+	                            ?CommandHelp $commandHelp,
+	                            string $requiredPermission)
+	{
+		$this->setCallback($callback);
+		$this->setMinimumArguments($minimumArguments);
+		$this->setMaximumArguments($maximumArguments);
+		$this->setHelp($commandHelp);
+		$this->setRequiredPermission($requiredPermission);
+	}
 
 	/**
 	 * @return callable
@@ -61,9 +83,9 @@ class Command
 	}
 
 	/**
-	 * @param CommandHelp $help
+	 * @param null|CommandHelp $help
 	 */
-	public function setHelp(CommandHelp $help)
+	public function setHelp(?CommandHelp $help)
 	{
 		$this->help = $help;
 	}

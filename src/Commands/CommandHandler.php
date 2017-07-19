@@ -61,7 +61,7 @@ class CommandHandler implements ComponentInterface
 	 */
 	public function registerCommand(string $command,
 	                                callable $callback,
-	                                CommandHelp $commandHelp = null,
+	                                ?CommandHelp $commandHelp = null,
 	                                int $minarguments = -1,
 	                                int $maxarguments = -1,
 	                                string $requiredPermission = '')
