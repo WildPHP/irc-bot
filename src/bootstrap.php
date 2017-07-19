@@ -23,31 +23,18 @@ use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Permissions\PermissionGroup;
 use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Tasks\TaskController;
 use WildPHP\Core\Users\UserCollection;
 use Yoshi2889\Collections\Collection;
 
 /**
- * @param Configuration $configuration
- *
  * @return Logger
  */
-function setupLogger(Configuration $configuration): Logger
+function setupLogger(): Logger
 {
-	try
-	{
-		$logLevel = $configuration['loglevel'];
-
-		if (!in_array($logLevel, ['debug', 'info', 'warning', 'error']))
-			$logLevel = 'info';
-	}
-	catch (\Throwable $e)
-	{
-		$logLevel = 'info';
-	}
-	$klogger = new \Katzgrau\KLogger\Logger(WPHP_ROOT_DIR . '/logs', $logLevel);
-
-	return new Logger($klogger);
+	$logger = new Logger('wildphp');
+	$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout'));
+	$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log'));
+	return $logger;
 }
 
 /**
@@ -173,7 +160,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 
 $loop = LoopFactory::create();
 $configuration = setupConfiguration();
-$logger = setupLogger($configuration);
+$logger = setupLogger();
 
 $connections = $configuration['connections'];
 
