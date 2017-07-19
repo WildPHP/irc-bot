@@ -13,7 +13,6 @@ use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\MODE;
@@ -24,7 +23,6 @@ use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
 use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
 use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\UserPrefix;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
@@ -42,8 +40,6 @@ class UserStateManager extends BaseModule
 	public function __construct(ComponentContainer $container)
 	{
 		$events = [
-			'irc.cap.ls' => 'requestChghost',
-
 			// 366: RPL_ENDOFNAMES
 			'irc.line.in.366' => 'sendInitialWhoxMessage',
 
@@ -58,10 +54,7 @@ class UserStateManager extends BaseModule
 			'irc.line.in.nick' => 'processUserNicknameChange',
 			'irc.line.in.mode' => 'processUserModeChange',
 			'irc.line.in.part' => 'processUserPart',
-			'irc.line.in.kick' => 'processUserKick',
-
-			// Requires the chghost extension. Freenode doesn't have it.
-			'irc.line.in.chghost' => 'processUserHostnameChange',
+			'irc.line.in.kick' => 'processUserKick'
 		];
 
 		foreach ($events as $event => $callback)
@@ -281,33 +274,6 @@ class UserStateManager extends BaseModule
 
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('user.mode.channel', [$channel, $add, $mode, $user, $queue]);
-		}
-	}
-
-	/**
-	 * @param IncomingIrcMessage $ircMessage
-	 * @param Queue $queue
-	 */
-	public function processUserHostnameChange(IncomingIrcMessage $ircMessage, Queue $queue)
-	{
-		$args = $ircMessage->getArgs();
-		$newUsername = $args[0];
-		$newHostname = $args[1];
-		$userPrefix = UserPrefix::fromIncomingIrcMessage($ircMessage);
-
-		/** @var Channel $channel */
-		foreach (ChannelCollection::fromContainer($this->getContainer()) as $channel)
-		{
-			if (!($user = $channel->getUserCollection()
-				->findByNickname($userPrefix->getNickname()))
-			)
-				continue;
-
-			$user->setHostname($newHostname);
-			$user->setUsername($newUsername);
-
-			EventEmitter::fromContainer($this->getContainer())
-				->emit('user.host', [$channel, $user, $newUsername, $newHostname, $queue]);
 		}
 	}
 }
