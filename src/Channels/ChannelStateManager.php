@@ -30,32 +30,11 @@ class ChannelStateManager
 	public function __construct(ComponentContainer $container)
 	{
 		$events = [
-			'irc.cap.ls' => 'requestChghost',
-
 			// 001: RPL_WELCOME
 			'irc.line.in.001' => 'joinInitialChannels',
 
-			// 366: RPL_ENDOFNAMES
-			'irc.line.in.366' => 'sendInitialWhoxMessage',
-
-			// 354: RPL_WHOSPCRPL
-			'irc.line.in.354' => 'processWhoxReply',
-
-			// 353: RPL_NAMREPLY
-			'irc.line.in.353' => 'processNamesReply',
-
 			// 332: RPL_TOPIC
 			'irc.line.in.332' => 'processChannelTopicChange',
-
-			'irc.line.in.join' => 'processUserJoin',
-			'irc.line.in.quit' => 'processUserQuit',
-			'irc.line.in.nick' => 'processUserNicknameChange',
-			'irc.line.in.mode' => 'processUserModeChange',
-			'irc.line.in.part' => 'processUserPart',
-			'irc.line.in.kick' => 'processUserKick',
-
-			// Requires the chghost extension. Freenode doesn't have it.
-			'irc.line.in.chghost' => 'processUserHostnameChange',
 		];
 
 		foreach ($events as $event => $callback)
