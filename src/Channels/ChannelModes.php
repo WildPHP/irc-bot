@@ -41,7 +41,8 @@ class ChannelModes
 	 */
 	protected function parseDefinitions(string $definitions): array
 	{
-		preg_match('/\((.+)\)(.+)/', $definitions, $out);
+		if (!preg_match('/\((.+)\)(.+)/', $definitions, $out))
+			return [];
 
 		$modes = str_split($out[1]);
 		$prefixes = str_split($out[2]);

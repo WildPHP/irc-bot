@@ -22,16 +22,11 @@ use WildPHP\Core\Channels\Channel;
 
 class ChannelTest extends TestCase
 {
-	protected $container;
-	public function setUp()
-	{
-		$this->container = new \WildPHP\Core\ComponentContainer();
-	}
 
 	public function testGetSetChannelName()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
 
 		$name = '#someChannel';
 		$channel = new Channel($name, $userCollection, $channelModes);
@@ -41,8 +36,8 @@ class ChannelTest extends TestCase
 
 	public function testGetSetChannelTopic()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
 		$channel = new Channel('#someChannel', $userCollection, $channelModes);
 
 		$topic = 'This is a test topic';
@@ -53,8 +48,8 @@ class ChannelTest extends TestCase
 
 	public function testGetSetChannelDescription()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection($this->container);
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($this->container);
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
 		$channel = new Channel('#someChannel', $userCollection, $channelModes);
 
 		$topic = 'This is a test topic';
