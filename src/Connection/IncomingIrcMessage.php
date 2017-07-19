@@ -9,24 +9,9 @@
 namespace WildPHP\Core\Connection;
 
 
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\ReceivableMessage;
-use WildPHP\Core\Connection\IRCMessages\SendableMessage;
-use WildPHP\Core\ContainerTrait;
-
 class IncomingIrcMessage
 {
-	use ContainerTrait;
-
-	// This is necessary because PHP doesn't allow classes with numeric names.
-	protected static $numbers = [
-		'001' => 'RPL_WELCOME',
-		'005' => 'RPL_ISUPPORT',
-		'332' => 'RPL_TOPIC',
-		'353' => 'RPL_NAMREPLY',
-		'354' => 'RPL_WHOSPCRPL',
-		'366' => 'RPL_ENDOFNAMES',
-	];
+	//use ContainerTrait;
 
 	/**
 	 * @var string
@@ -36,6 +21,7 @@ class IncomingIrcMessage
 	 * @var string
 	 */
 	protected $verb = '';
+
 	/**
 	 * @var array
 	 */
@@ -44,10 +30,9 @@ class IncomingIrcMessage
 	/**
 	 * IncomingIrcMessage constructor.
 	 *
-	 * @param ParsedIrcMessageLine $line
-	 * @param ComponentContainer $container
+	 * @param ParsedIrcMessage $line
 	 */
-	public function __construct(ParsedIrcMessageLine $line, ComponentContainer $container)
+	public function __construct(ParsedIrcMessage $line)
 	{
 		$this->setPrefix($line->prefix);
 		$this->setVerb($line->verb);
@@ -56,31 +41,6 @@ class IncomingIrcMessage
 		$args = $line->args;
 		unset($args[0]);
 		$this->setArgs(array_values($args));
-		$this->setContainer($container);
-	}
-
-	/**
-	 * @return ReceivableMessage|IncomingIrcMessage
-	 */
-	public function specialize()
-	{
-		$verb = $this->getVerb();
-
-		if (is_numeric($verb))
-			$verb = array_key_exists($verb, self::$numbers) ? self::$numbers[$verb] : $verb;
-
-		$expectedClass = '\WildPHP\Core\Connection\IRCMessages\\' . $verb;
-
-		if (!class_exists($expectedClass))
-			return $this;
-
-		$reflection = new \ReflectionClass($expectedClass);
-
-		if (!$reflection->implementsInterface(ReceivableMessage::class) && !$reflection->implementsInterface(SendableMessage::class))
-			return $this;
-
-		/** @var ReceivableMessage|SendableMessage $expectedClass */
-		return $expectedClass::fromIncomingIrcMessage($this);
 	}
 
 	/**

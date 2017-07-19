@@ -23,6 +23,8 @@ class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 
 	protected static $verb = '353';
 
+	protected $visibility = '';
+
 	protected $nicknames = [];
 
 	/**
@@ -44,10 +46,27 @@ class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 
 		$object = new self();
 		$object->setNickname($nickname);
+		$object->setVisibility($visibility);
 		$object->setChannel($channel);
 		$object->setNicknames($nicknames);
 
 		return $object;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVisibility(): string
+	{
+		return $this->visibility;
+	}
+
+	/**
+	 * @param string $visibility
+	 */
+	public function setVisibility(string $visibility)
+	{
+		$this->visibility = $visibility;
 	}
 
 	/**

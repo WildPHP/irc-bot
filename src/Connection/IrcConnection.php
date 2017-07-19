@@ -14,6 +14,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -64,6 +65,12 @@ class IrcConnection implements ComponentInterface
 
 		EventEmitter::fromContainer($container)
 			->on('stream.created', [$this, 'sendInitialConnectionDetails']);
+
+		EventEmitter::fromContainer($container)
+			->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
+
+		EventEmitter::fromContainer($container)
+			->on('irc.line.out', [$this, 'logOutgoingPrivmsg']);
 
 		$this->setContainer($container);
 		$this->setConnectionDetails($connectionDetails);
@@ -227,6 +234,41 @@ class IrcConnection implements ComponentInterface
 		});
 
 		return $promise;
+	}
+
+	/**
+	 * @param PRIVMSG $incoming
+	 * @param Queue $queue
+	 */
+	public function logIncomingPrivmsg(PRIVMSG $incoming, Queue $queue)
+	{
+		$nickname = $incoming->getNickname();
+		$channel = $incoming->getChannel();
+		$message = $incoming->getMessage();
+
+		$toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
+
+		Logger::fromContainer($this->getContainer())
+			->info($toLog);
+	}
+
+	/**
+	 * @param QueueItem $message
+	 * @param ComponentContainer $container
+	 */
+	public function logOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
+	{
+		$message = $message->getCommandObject();
+
+		if (!($message instanceof PRIVMSG))
+			return;
+
+		$channel = $message->getChannel();
+		$msg = $message->getMessage();
+
+		$toLog = 'OUT: [' . $channel . '] ' . $msg;
+		Logger::fromContainer($container)
+			->info($toLog);
 	}
 
 	/**

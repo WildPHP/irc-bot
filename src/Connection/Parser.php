@@ -11,15 +11,25 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
+use WildPHP\Core\Connection\IRCMessages\ReceivableMessage;
+use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 
 class Parser extends BaseModule
 {
 	use ContainerTrait;
+
+	// This is necessary because PHP doesn't allow classes with numeric names.
+	protected static $numericMessageList = [
+		'001' => 'RPL_WELCOME',
+		'005' => 'RPL_ISUPPORT',
+		'332' => 'RPL_TOPIC',
+		'353' => 'RPL_NAMREPLY',
+		'354' => 'RPL_WHOSPCRPL',
+		'366' => 'RPL_ENDOFNAMES',
+	];
 
 	/**
 	 * Parser constructor.
@@ -29,72 +39,150 @@ class Parser extends BaseModule
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
-			->on('stream.line.in',
-				function ($line) use ($container)
-				{
-					$parsedLine = self::parseLine($line);
-					$ircMessage = new IncomingIrcMessage($parsedLine, $container);
+			->on('stream.line.in', [$this, 'parseIncomingIrcLine']);
 
-					$verb = strtolower($ircMessage->getVerb());
-					EventEmitter::fromContainer($container)
-						->emit('irc.line.in', [$ircMessage, Queue::fromContainer($container)]);
-
-					$ircMessage = $ircMessage->specialize();
-					EventEmitter::fromContainer($container)
-						->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($container)]);
-				});
-
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in.privmsg', [$this, 'prettifyPrivmsg']);
-		EventEmitter::fromContainer($container)
-			->on('irc.line.out', [$this, 'prettifyOutgoingPrivmsg']);
 		$this->setContainer($container);
 	}
 
 	/**
-	 * @param PRIVMSG $incoming
-	 * @param Queue $queue
+	 * @param string $line
 	 */
-	public function prettifyPrivmsg(PRIVMSG $incoming, Queue $queue)
+	public function parseIncomingIrcLine(string $line)
 	{
-		$nickname = $incoming->getNickname();
-		$channel = $incoming->getChannel();
-		$message = $incoming->getMessage();
+		$parsedLine = static::parseLine($line);
+		$ircMessage = new IncomingIrcMessage($parsedLine, $this->getContainer());
 
-		$toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
+		$verb = strtolower($ircMessage->getVerb());
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.line.in', [$ircMessage, Queue::fromContainer($this->getContainer())]);
 
-		Logger::fromContainer($this->getContainer())
-			->info($toLog);
+		$ircMessage = $this->specializeIrcMessage($ircMessage);
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($this->getContainer())]);
 	}
 
 	/**
-	 * @param QueueItem $message
-	 * @param ComponentContainer $container
+	 * @param IncomingIrcMessage $incomingIrcMessage
+	 *
+	 * @return IncomingIrcMessage|ReceivableMessage
 	 */
-	public function prettifyOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
+	public function specializeIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
-		$message = $message->getCommandObject();
+		$verb = $incomingIrcMessage->getVerb();
 
-		if (!($message instanceof PRIVMSG))
-			return;
+		if (is_numeric($verb))
+			$verb = array_key_exists($verb, self::$numericMessageList) ? self::$numericMessageList[$verb] : $verb;
 
-		$channel = $message->getChannel();
-		$msg = $message->getMessage();
+		$expectedClass = '\WildPHP\Core\Connection\IRCMessages\\' . $verb;
 
-		$toLog = 'OUT: [' . $channel . '] ' . $msg;
-		Logger::fromContainer($container)
-			->info($toLog);
+		if (!class_exists($expectedClass))
+			return $incomingIrcMessage;
+
+		$reflection = new \ReflectionClass($expectedClass);
+
+		if (!$reflection->implementsInterface(ReceivableMessage::class) && !$reflection->implementsInterface(SendableMessage::class))
+			return $incomingIrcMessage;
+
+		/** @var ReceivableMessage|SendableMessage $expectedClass */
+		return $expectedClass::fromIncomingIrcMessage($incomingIrcMessage);
 	}
 
 	/**
 	 * @param string $line
 	 *
-	 * @return ParsedIrcMessageLine
+	 * @return array
 	 */
-	public static function parseLine(string $line): ParsedIrcMessageLine
+	public static function split(string $line): array
 	{
-		$parsed = ParsedIrcMessageLine::parse($line);
+		$line = rtrim($line, "\r\n");
+		$line = explode(' ', $line);
+		$index = 0;
+		$arv_count = count($line);
+		$parv = [];
 
-		return $parsed;
+		while ($index < $arv_count && $line[$index] === '')
+		{
+			$index++;
+		}
+
+		if ($index < $arv_count && $line[$index][0] == '@')
+		{
+			$parv[] = $line[$index];
+			$index++;
+			while ($index < $arv_count && $line[$index] === '')
+			{
+				$index++;
+			}
+		}
+
+		if ($index < $arv_count && $line[$index][0] == ':')
+		{
+			$parv[] = $line[$index];
+			$index++;
+			while ($index < $arv_count && $line[$index] === '')
+			{
+				$index++;
+			}
+		}
+
+		while ($index < $arv_count)
+		{
+			if ($line[$index] === '')
+				;
+			elseif ($line[$index][0] === ':')
+				break;
+			else
+				$parv[] = $line[$index];
+			$index++;
+		}
+
+		if ($index < $arv_count)
+		{
+			$trailing = implode(' ', array_slice($line, $index));
+			$parv[] = _substr($trailing, 1);
+		}
+
+		return $parv;
+	}
+
+	/**
+	 * @param string $line
+	 *
+	 * @return ParsedIrcMessage
+	 */
+	public static function parseLine(string $line): ParsedIrcMessage
+	{
+		$parv = self::split($line);
+		$index = 0;
+		$parv_count = count($parv);
+		$self = new ParsedIrcMessage();
+
+		if ($index < $parv_count && $parv[$index][0] === '@')
+		{
+			$tags = _substr($parv[$index], 1);
+			$index++;
+			foreach (explode(';', $tags) as $item)
+			{
+				list($k, $v) = explode('=', $item, 2);
+				if ($v === null)
+					$self->tags[$k] = true;
+				else
+					$self->tags[$k] = $v;
+			}
+		}
+
+		if ($index < $parv_count && $parv[$index][0] === ':')
+		{
+			$self->prefix = _substr($parv[$index], 1);
+			$index++;
+		}
+
+		if ($index < $parv_count)
+		{
+			$self->verb = strtoupper($parv[$index]);
+			$self->args = array_slice($parv, $index);
+		}
+
+		return $self;
 	}
 }
