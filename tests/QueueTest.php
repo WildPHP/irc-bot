@@ -28,8 +28,8 @@ class QueueTest extends TestCase
 	public function setUp()
 	{
 		$this->container = new \WildPHP\Core\ComponentContainer();
-		$klogger = new Katzgrau\KLogger\Logger('php://stdout');
-		$this->container->add(new \WildPHP\Core\Logger\Logger($klogger));
+		$logger = new \WildPHP\Core\Logger\Logger('wildphp');
+		$this->container->add($logger);
 	}
 
 	public function testQueueAddItem()
