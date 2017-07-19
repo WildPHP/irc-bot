@@ -110,12 +110,13 @@ class UserStateManager extends BaseModule
 	}
 
 	/**
-	 * @param PART $ircMessage
+	 * @param PART|KICK $ircMessage
+	 * @param string $channel
 	 */
-	public function processUserPart(PART $ircMessage)
+	public function processUserPartOrKick($ircMessage, string $channel)
 	{
 		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
-		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($ircMessage->getChannels()[0]);
+		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channel);
 
 		if (!$channel)
 			return;
@@ -135,28 +136,21 @@ class UserStateManager extends BaseModule
 	}
 
 	/**
+	 * @param PART $ircMessage
+	 */
+	public function processUserPart(PART $ircMessage)
+	{
+		$channel = $ircMessage->getChannels()[0];
+		$this->processUserPartOrKick($ircMessage, $channel);
+	}
+
+	/**
 	 * @param KICK $ircMessage
 	 */
 	public function processUserKick(KICK $ircMessage)
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
-		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($ircMessage->getChannel());
-
-		if (!$channel)
-			return;
-
-		$user = $channel->getUserCollection()->findByNickname($ircMessage->getNickname());
-
-		if (!$user)
-			return;
-
-		if ($user->getNickname() == $ownNickname)
-		{
-			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
-			return;
-		}
-
-		$channel->getUserCollection()->removeAll($user);
+		$channel = $ircMessage->getChannel();
+		$this->processUserPartOrKick($ircMessage, $channel);
 	}
 
 	/**
@@ -327,31 +321,20 @@ class UserStateManager extends BaseModule
 		$mode = $ircMessage->getFlags();
 		$target = $ircMessage->getArguments()[0] ?? '';
 
-		if (empty($ircMessage->getTarget()))
-			return;
-
 		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($ircMessage->getTarget());
-
 		if (!$channel)
 			return;
 
 		$user = $channel->getUserCollection()->findByNickname($target);
-
 		if (!$user)
 			return;
 
 		$modeCollection = $channel->getChannelModes();
 
 		$chars = str_split($mode);
-		$add = false;
+		$add = array_shift($chars) == '+';
 		foreach ($chars as $char)
 		{
-			if ($char == '+' || $char == '-')
-			{
-				$add = $char == '+';
-				continue;
-			}
-
 			if ($add)
 				$modeCollection->addUserToMode($char, $user);
 			else
