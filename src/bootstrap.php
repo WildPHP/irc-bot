@@ -136,6 +136,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Connection\Parser::class,
 		\WildPHP\Core\Connection\PingPongHandler::class,
 		\WildPHP\Core\Users\UserStateManager::class,
+		\WildPHP\Core\Channels\ChannelStateManager::class,
 		\WildPHP\Core\Commands\HelpCommand::class,
 		\WildPHP\Core\Permissions\PermissionCommands::class,
 		\WildPHP\Core\Management\ManagementCommands::class,
