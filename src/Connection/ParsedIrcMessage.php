@@ -28,16 +28,3 @@ class ParsedIrcMessage
 	 */
 	public $args = [];
 }
-
-/**
- * @param $str
- * @param $start
- *
- * @return bool|string
- */
-function _substr($str, $start)
-{
-	$ret = substr($str, $start);
-
-	return $ret === false ? '' : $ret;
-}

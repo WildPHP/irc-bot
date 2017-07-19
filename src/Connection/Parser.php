@@ -186,3 +186,16 @@ class Parser extends BaseModule
 		return $self;
 	}
 }
+
+/**
+ * @param $str
+ * @param $start
+ *
+ * @return bool|string
+ */
+function _substr($str, $start)
+{
+	$ret = substr($str, $start);
+
+	return $ret === false ? '' : $ret;
+}
