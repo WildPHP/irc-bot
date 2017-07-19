@@ -81,4 +81,27 @@ class ModuleFactory implements ComponentInterface
 		$this->loadedModules->add($object);
 		return $object;
 	}
+
+	/**
+	 * @param string $class
+	 *
+	 * @return bool
+	 */
+	public function isModuleLoaded(string $class): bool
+	{
+		return $this->loadedModules->has($class);
+	}
+
+	/**
+	 * @param string $class
+	 *
+	 * @return bool|mixed|object
+	 */
+	public function getModuleInstance(string $class)
+	{
+		if (!$this->isModuleLoaded($class))
+			return false;
+
+		return $this->loadedModules->get($class);
+	}
 }
