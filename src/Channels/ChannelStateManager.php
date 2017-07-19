@@ -11,8 +11,8 @@ namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\RPL_TOPIC;
+use WildPHP\Core\Connection\IRCMessages\RPL_WELCOME;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -50,10 +50,10 @@ class ChannelStateManager implements ModuleInterface
 	}
 
 	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
+	 * @param RPL_WELCOME $incomingIrcMessage
 	 * @param Queue $queue
 	 */
-	public function joinInitialChannels(IncomingIrcMessage $incomingIrcMessage, Queue $queue)
+	public function joinInitialChannels(RPL_WELCOME $incomingIrcMessage, Queue $queue)
 	{
 		$channels = Configuration::fromContainer($this->getContainer())['channels'];
 
