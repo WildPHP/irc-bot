@@ -370,6 +370,7 @@ class PermissionCommands extends BaseModule
 			return;
 
 		$groupObj = new PermissionGroup();
+		$groupObj->setModeGroup(count(explode('@', $groupName)) == 2);
 		PermissionGroupCollection::fromContainer($this->getContainer())
 			->offsetSet($groupName, $groupObj);
 
