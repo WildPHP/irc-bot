@@ -130,11 +130,8 @@ class IrcConnection implements ComponentInterface
 			->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
 
 		$variables = $incomingIrcMessage->getVariables();
-
-		foreach ($variables as $key => $value)
-		{
-			Configuration::fromContainer($this->getContainer())['serverConfig'][$key] = $value;
-		}
+		$currentSettings = Configuration::fromContainer($this->getContainer())['serverConfig'] ?? [];
+		Configuration::fromContainer($this->getContainer())['serverConfig'] = array_merge($currentSettings, $variables);
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Set new server configuration to configuration serverConfig.',
