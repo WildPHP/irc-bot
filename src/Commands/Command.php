@@ -49,7 +49,7 @@ class Command
 	                            ?CommandHelp $commandHelp,
 	                            int $minimumArguments = -1,
 	                            int $maximumArguments = -1,
-	                            string $requiredPermission)
+	                            string $requiredPermission = '')
 	{
 		$this->setCallback($callback);
 		$this->setMinimumArguments($minimumArguments);
