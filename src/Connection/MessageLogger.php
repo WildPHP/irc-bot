@@ -14,10 +14,13 @@ use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\ModuleInterface;
+use Yoshi2889\Container\ComponentTrait;
 
-class MessageLogger
+class MessageLogger implements ModuleInterface
 {
 	use ContainerTrait;
+	use ComponentTrait;
 
 	/**
 	 * @param ComponentContainer $container
