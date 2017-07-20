@@ -52,7 +52,7 @@ class Validator implements ComponentInterface
 	{
 		$variables = $ircMessage->getVariables();
 
-		if (!array_key_exists('PREFIX', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['PREFIX'], $out))
+		if (!array_key_exists('prefix', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['prefix'], $out))
 			return;
 
 		$modes = str_split($out[1]);
