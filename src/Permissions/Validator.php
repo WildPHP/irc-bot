@@ -60,11 +60,12 @@ class Validator implements ComponentInterface
 
 		foreach ($modes as $mode)
 		{
-			$groupState = PermissionGroupCollection::fromContainer($this->getContainer())->getStoredGroupData($mode);
+			if (PermissionGroupCollection::fromContainer($this->getContainer())->offsetExists($mode))
+				continue;
 
-			$permGroup = new PermissionGroup($groupState ?? []);
+			$permGroup = new PermissionGroup();
 			$permGroup->setModeGroup(true);
-			PermissionGroupCollection::fromContainer($this->getContainer())->append($permGroup);
+			PermissionGroupCollection::fromContainer($this->getContainer())->offsetSet($mode, $permGroup);
 		}
 	}
 
@@ -87,6 +88,7 @@ class Validator implements ComponentInterface
 
 		if (!empty($channel))
 		{
+			var_dump($this->modes);
 			foreach ($this->modes as $mode)
 			{
 				if (!$channel->getChannelModes()->isUserInMode($mode, $user))
