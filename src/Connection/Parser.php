@@ -15,6 +15,7 @@ use WildPHP\Core\Connection\IRCMessages\ReceivableMessage;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 
 class Parser extends BaseModule
@@ -32,6 +33,11 @@ class Parser extends BaseModule
 	];
 
 	/**
+	 * @var string
+	 */
+	protected $buffer = '';
+
+	/**
 	 * Parser constructor.
 	 *
 	 * @param ComponentContainer $container
@@ -41,7 +47,34 @@ class Parser extends BaseModule
 		EventEmitter::fromContainer($container)
 			->on('stream.line.in', [$this, 'parseIncomingIrcLine']);
 
+		EventEmitter::fromContainer($container)
+			->on('stream.data.in', [$this, 'convertDataToLines']);
+
 		$this->setContainer($container);
+	}
+
+	/**
+	 * @param string $data
+	 */
+	public function convertDataToLines(string $data)
+	{
+		// Prepend the buffer, first.
+		$data = $this->getBuffer() . $data;
+
+		// Try to split by any combination of \r\n, \r, \n
+		$lines = preg_split("/\\r\\n|\\r|\\n/", $data);
+
+		// The last element of this array is always residue.
+		$residue = array_pop($lines);
+		$this->setBuffer($residue);
+
+		foreach ($lines as $line)
+		{
+			Logger::fromContainer($this->getContainer())
+				->debug('<< ' . $line);
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('stream.line.in', [$line]);
+		}
 	}
 
 	/**
@@ -184,6 +217,22 @@ class Parser extends BaseModule
 		}
 
 		return $self;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBuffer(): string
+	{
+		return $this->buffer;
+	}
+
+	/**
+	 * @param string $buffer
+	 */
+	public function setBuffer(string $buffer)
+	{
+		$this->buffer = $buffer;
 	}
 }
 

@@ -14,7 +14,6 @@ use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
@@ -33,11 +32,6 @@ class IrcConnection implements ComponentInterface
 	protected $connectorPromise;
 
 	/**
-	 * @var string
-	 */
-	protected $buffer = '';
-
-	/**
 	 * @var ConnectionDetails
 	 */
 	protected $connectionDetails;
@@ -49,10 +43,7 @@ class IrcConnection implements ComponentInterface
 	public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
 	{
 		$container->getLoop()
-			->addPeriodicTimer(0.5, [$this, 'flushQueue']);
-
-		EventEmitter::fromContainer($container)
-			->on('stream.data.in', [$this, 'convertDataToLines']);
+			->addPeriodicTimer(1, [$this, 'flushQueue']);
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.005', [$this, 'handleServerConfig']);
@@ -65,12 +56,6 @@ class IrcConnection implements ComponentInterface
 
 		EventEmitter::fromContainer($container)
 			->on('stream.created', [$this, 'sendInitialConnectionDetails']);
-
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
-
-		EventEmitter::fromContainer($container)
-			->on('irc.line.out', [$this, 'logOutgoingPrivmsg']);
 
 		$this->setContainer($container);
 		$this->setConnectionDetails($connectionDetails);
@@ -136,30 +121,6 @@ class IrcConnection implements ComponentInterface
 		Logger::fromContainer($this->getContainer())
 			->debug('Set new server configuration to configuration serverConfig.',
 				[Configuration::fromContainer($this->getContainer())['serverConfig']]);
-	}
-
-	/**
-	 * @param string $data
-	 */
-	public function convertDataToLines(string $data)
-	{
-		// Prepend the buffer, first.
-		$data = $this->getBuffer() . $data;
-
-		// Try to split by any combination of \r\n, \r, \n
-		$lines = preg_split("/\\r\\n|\\r|\\n/", $data);
-
-		// The last element of this array is always residue.
-		$residue = array_pop($lines);
-		$this->setBuffer($residue);
-
-		foreach ($lines as $line)
-		{
-			Logger::fromContainer($this->getContainer())
-				->debug('<< ' . $line);
-			EventEmitter::fromContainer($this->getContainer())
-				->emit('stream.line.in', [$line]);
-		}
 	}
 
 	/**
@@ -231,57 +192,6 @@ class IrcConnection implements ComponentInterface
 		});
 
 		return $promise;
-	}
-
-	/**
-	 * @param PRIVMSG $incoming
-	 * @param Queue $queue
-	 */
-	public function logIncomingPrivmsg(PRIVMSG $incoming, Queue $queue)
-	{
-		$nickname = $incoming->getNickname();
-		$channel = $incoming->getChannel();
-		$message = $incoming->getMessage();
-
-		$toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
-
-		Logger::fromContainer($this->getContainer())
-			->info($toLog);
-	}
-
-	/**
-	 * @param QueueItem $message
-	 * @param ComponentContainer $container
-	 */
-	public function logOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
-	{
-		$message = $message->getCommandObject();
-
-		if (!($message instanceof PRIVMSG))
-			return;
-
-		$channel = $message->getChannel();
-		$msg = $message->getMessage();
-
-		$toLog = 'OUT: [' . $channel . '] ' . $msg;
-		Logger::fromContainer($container)
-			->info($toLog);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getBuffer(): string
-	{
-		return $this->buffer;
-	}
-
-	/**
-	 * @param string $buffer
-	 */
-	public function setBuffer(string $buffer)
-	{
-		$this->buffer = $buffer;
 	}
 
 	/**
