@@ -92,6 +92,13 @@ class Validator implements ComponentInterface
 				if (!$channel->getChannelModes()->isUserInMode($mode, $user))
 					continue;
 
+				if (PermissionGroupCollection::fromContainer($this->getContainer())
+						->offsetExists($mode . '@' . $channel->getName()) &&
+					PermissionGroupCollection::fromContainer($this->getContainer())
+						->offsetGet($mode . '@' . $channel->getName())
+						->hasPermission($permissionName))
+					return $mode . '@' . $channel->getName();
+
 				/** @var PermissionGroup $permGroup */
 				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 					->offsetGet($mode);
