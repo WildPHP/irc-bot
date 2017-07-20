@@ -169,9 +169,47 @@ class PermissionGroup
 	 */
 	public function fromArray(array $data)
 	{
+		// Gracefully migrate between data types.
+		if (array_key_exists('members', $data))
+		{
+			$userCollection = new Collection(Types::string(), $data['members']);
+			$this->setUserCollection($userCollection);
+
+			$channelCollection = new Collection(Types::string(), $data['linkedChannels']);
+			$this->setChannelCollection($channelCollection);
+
+			$allowedPermissions = new Collection(Types::string(), $data['allowedPermissions']);
+			$this->setAllowedPermissions($allowedPermissions);
+			return;
+		}
+
 		$this->setModeGroup((bool) $data['modeGroup']);
-		$this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
-		$this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
-		$this->setChannelCollection(new Collection(Types::string(), $data['channelCollection']));
+
+		if ((@unserialize($data['userCollection'])))
+		{
+			$userCollection = new Collection(Types::string());
+			$userCollection->unserialize($data['userCollection']);
+			$this->setUserCollection($userCollection);
+		}
+		else
+			$this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
+
+		if ((@unserialize($data['allowedPermissions'])))
+		{
+			$allowedPermissions = new Collection(Types::string());
+			$allowedPermissions->unserialize($data['allowedPermissions']);
+			$this->setAllowedPermissions($allowedPermissions);
+		}
+		else
+			$this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
+
+		if ((@unserialize($data['channelCollection'])))
+		{
+			$channelCollection = new Collection(Types::string());
+			$channelCollection->unserialize($data['channelCollection']);
+			$this->setChannelCollection($channelCollection);
+		}
+		else
+			$this->setChannelCollection(new Collection(Types::string(), $data['channelCollection']));
 	}
 }

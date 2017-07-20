@@ -52,7 +52,7 @@ class Validator implements ComponentInterface
 	{
 		$variables = $ircMessage->getVariables();
 
-		if (!array_key_exists('prefix', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['prefix'], $out))
+		if (!array_key_exists('PREFIX', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['PREFIX'], $out))
 			return;
 
 		$modes = str_split($out[1]);
@@ -60,12 +60,11 @@ class Validator implements ComponentInterface
 
 		foreach ($modes as $mode)
 		{
-			if (PermissionGroupCollection::fromContainer($this->getContainer())->offsetExists($mode))
-				continue;
+			$groupState = PermissionGroupCollection::fromContainer($this->getContainer())->getStoredGroupData($mode);
 
-			$permGroup = new PermissionGroup();
+			$permGroup = new PermissionGroup($groupState ?? []);
 			$permGroup->setModeGroup(true);
-			PermissionGroupCollection::fromContainer($this->getContainer())->offsetSet($mode, $permGroup);
+			PermissionGroupCollection::fromContainer($this->getContainer())->append($permGroup);
 		}
 	}
 
@@ -88,18 +87,10 @@ class Validator implements ComponentInterface
 
 		if (!empty($channel))
 		{
-			var_dump($this->modes);
 			foreach ($this->modes as $mode)
 			{
 				if (!$channel->getChannelModes()->isUserInMode($mode, $user))
 					continue;
-
-				if (PermissionGroupCollection::fromContainer($this->getContainer())
-						->offsetExists($mode . '@' . $channel->getName()) &&
-					PermissionGroupCollection::fromContainer($this->getContainer())
-						->offsetGet($mode . '@' . $channel->getName())
-						->hasPermission($permissionName))
-					return $mode . '@' . $channel->getName();
 
 				/** @var PermissionGroup $permGroup */
 				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
