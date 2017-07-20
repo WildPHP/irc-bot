@@ -141,7 +141,8 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Permissions\PermissionCommands::class,
 		\WildPHP\Core\Management\ManagementCommands::class,
 		\WildPHP\Core\Users\BotStateManager::class,
-		\WildPHP\Core\Connection\NicknameHandler::class
+		\WildPHP\Core\Connection\NicknameHandler::class,
+		\WildPHP\Core\Connection\MessageLogger::class
 	]);
 
 	$moduleFactory->initializeModules($modules);
