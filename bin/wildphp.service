@@ -1,0 +1,25 @@
+[Unit]
+# Drop this file in /etc/systemd/system (may depend on your distro), edit it according to the notes below,
+# then start and optionally enable it like any other systemd units (systemctl (start|enable) wildphp.service)
+
+Description=WildPHP IRC Bot
+
+# Only start this after networking is up.
+After=networking.target
+
+[Service]
+# Change this to point to your wildphp.php, absolute paths!
+ExecStart=/usr/bin/php /path/to/WildPHP/wildphp.php
+
+# Change this to point to the directory your wildphp.php is in. Absolute paths!
+WorkingDirectory=/path/to/WildPHP
+
+# Change this to the user with which WildPHP should run; must be someone with write access to the directory and its contents,
+# and preferably should be as unprivileged as possible.
+User=osmc
+
+# Restart the bot on failure; change to always if you want to restart the bot with the !quit command.
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
