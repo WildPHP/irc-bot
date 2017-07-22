@@ -9,15 +9,13 @@
 
 namespace WildPHP\Core\Connection\IRCMessages;
 
-use WildPHP\Core\Connection\IncomingIrcMessage;
-
 /**
  * Class PASS
  * @package WildPHP\Core\Connection\IRCMessages
  *
  * Syntax: PASS password
  */
-class PASS extends BaseIRCMessage implements ReceivableMessage, SendableMessage
+class PASS extends BaseIRCMessage implements SendableMessage
 {
 	protected static $verb = 'PASS';
 
@@ -26,24 +24,6 @@ class PASS extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	public function __construct(string $password)
 	{
 		$this->setPassword($password);
-	}
-
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
-
-		$password = $incomingIrcMessage->getArgs()[0];
-
-		$object = new self($password);
-
-		return $object;
 	}
 
 	/**
