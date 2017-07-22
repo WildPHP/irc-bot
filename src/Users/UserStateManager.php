@@ -18,6 +18,7 @@ use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\MODE;
 use WildPHP\Core\Connection\IRCMessages\NICK;
 use WildPHP\Core\Connection\IRCMessages\PART;
+use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\IRCMessages\QUIT;
 use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
 use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
@@ -62,6 +63,8 @@ class UserStateManager extends BaseModule
 			EventEmitter::fromContainer($container)
 				->on($event, [$this, $callback]);
 		}
+
+		EventEmitter::fromContainer($container)->first('irc.line.in.privmsg', [$this, 'processConversation']);
 
 		$this->setContainer($container);
 	}
@@ -129,6 +132,9 @@ class UserStateManager extends BaseModule
 			ChannelCollection::fromContainer($this->getContainer())
 				->append($channel);
 		}
+
+		if ($channel->getUserCollection()->findByNickname($ircMessage->getNickname()))
+			return;
 
 		$prefix = $ircMessage->getPrefix();
 		$userObject = new User($ircMessage->getNickname(), $prefix->getHostname(), $prefix->getUsername(), $ircMessage->getIrcAccount());
@@ -235,6 +241,12 @@ class UserStateManager extends BaseModule
 		/** @var Channel $channel */
 		foreach (ChannelCollection::fromContainer($this->getContainer()) as $channel)
 		{
+			if ($channel->getName() == $oldNickname)
+			{
+				ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
+				continue;
+			}
+
 			if (!($user = $channel->getUserCollection()->findByNickname($oldNickname)))
 				continue;
 
@@ -276,6 +288,34 @@ class UserStateManager extends BaseModule
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('user.mode.channel', [$channel, $add, $mode, $user, $queue]);
 		}
+	}
+
+	/**
+	 * @param PRIVMSG $ircMessage
+	 * @param Queue $queue
+	 */
+	public function processConversation(PRIVMSG $ircMessage, Queue $queue)
+	{
+		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
+		$channelName = $ircMessage->getNickname();
+
+		if (!($channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channelName)))
+		{
+			$channel = new Channel($channelName, new UserCollection(), new ChannelModes(''));
+			$channel->getUserCollection()
+				->append(new User($ownNickname));
+			ChannelCollection::fromContainer($this->getContainer())
+				->append($channel);
+		}
+
+		if ($channel->getUserCollection()->findByNickname($ircMessage->getNickname()))
+			return;
+
+		$prefix = $ircMessage->getPrefix();
+		$userObject = new User($ircMessage->getNickname(), $prefix->getHostname(), $prefix->getUsername());
+		$channel->getUserCollection()->append($userObject);
+
+		$queue->who($ircMessage->getNickname(), '%nuhaf');
 	}
 
 	/**
