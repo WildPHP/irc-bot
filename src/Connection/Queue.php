@@ -117,20 +117,29 @@ class Queue implements QueueInterface, ComponentInterface
 
 	/**
 	 * @param SendableMessage $command
+	 *
+	 * @return bool
 	 */
 	public function removeMessage(SendableMessage $command)
 	{
-		if (in_array($command, $this->messageQueue))
-			$this->removeMessageByIndex(array_search($command, $this->messageQueue));
+		if (!in_array($command, $this->messageQueue))
+			return false;
+
+		return $this->removeMessageByIndex(array_search($command, $this->messageQueue));
 	}
 
 	/**
 	 * @param int $index
+	 *
+	 * @return bool
 	 */
 	public function removeMessageByIndex(int $index)
 	{
-		if (array_key_exists($index, $this->messageQueue))
-			unset($this->messageQueue[$index]);
+		if (!array_key_exists($index, $this->messageQueue))
+			return false;
+
+		unset($this->messageQueue[$index]);
+		return true;
 	}
 
 	/**
