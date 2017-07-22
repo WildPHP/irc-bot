@@ -98,8 +98,10 @@ class CommandHandler implements ComponentInterface
 	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
 	{
 		/** @var Channel $source */
+		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
+		$channel = $privmsg->getChannel() == $ownNickname ? $privmsg->getNickname() : $privmsg->getChannel();
 		$source = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($privmsg->getChannel());
+			->findByChannelName($channel);
 
 		if (!$source)
 			return;
