@@ -40,6 +40,9 @@ class CAP extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	 */
 	public function __construct(string $command, array $capabilities = [])
 	{
+		if (!in_array($command, ['LS', 'LIST', 'REQ', 'ACK', 'NAK', 'END']))
+			throw new \InvalidArgumentException('CAP subcommand not valid');
+
 		$this->setCommand($command);
 		$this->setCapabilities($capabilities);
 	}
