@@ -69,8 +69,9 @@ class UserStateManager extends BaseModule
 	/**
 	 * @param PART|KICK $ircMessage
 	 * @param string $channel
+	 * @param string $target
 	 */
-	public function processUserPartOrKick($ircMessage, string $channel)
+	public function processUserPartOrKick($ircMessage, string $channel, string $target)
 	{
 		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
 		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channel);
@@ -83,7 +84,7 @@ class UserStateManager extends BaseModule
 		if (!$user)
 			return;
 
-		if ($ircMessage->getTarget() == $ownNickname)
+		if ($target == $ownNickname)
 		{
 			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
 			return;
@@ -98,7 +99,7 @@ class UserStateManager extends BaseModule
 	public function processUserPart(PART $ircMessage)
 	{
 		$channel = $ircMessage->getChannels()[0];
-		$this->processUserPartOrKick($ircMessage, $channel);
+		$this->processUserPartOrKick($ircMessage, $channel, $ircMessage->getNickname());
 	}
 
 	/**
@@ -107,7 +108,7 @@ class UserStateManager extends BaseModule
 	public function processUserKick(KICK $ircMessage)
 	{
 		$channel = $ircMessage->getChannel();
-		$this->processUserPartOrKick($ircMessage, $channel);
+		$this->processUserPartOrKick($ircMessage, $channel, $ircMessage->getTarget());
 	}
 
 	/**
