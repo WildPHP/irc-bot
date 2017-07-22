@@ -300,15 +300,6 @@ class IrcMessageTest extends TestCase
         static::assertEquals($expected, $pass->__toString());
     }
 
-    public function testPassReceive()
-    {
-        $line = Parser::parseLine('PASS myseekritpassw0rd' . "\r\n");
-        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
-        $pass = PASS::fromIncomingIrcMessage($incoming);
-
-        static::assertEquals('myseekritpassw0rd', $pass->getPassword());
-    }
-
 	public function testPingCreate()
 	{
 		$ping = new PING('testserver1', 'testserver2');
