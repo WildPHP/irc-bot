@@ -95,7 +95,7 @@ class IrcConnection implements ComponentInterface
 				->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
 
 			if (!$item->isCancelled());
-			$this->write($item->getCommandObject());
+				$this->write($item->getCommandObject());
 		}
 	}
 
