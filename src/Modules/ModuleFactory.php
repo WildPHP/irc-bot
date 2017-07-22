@@ -8,6 +8,7 @@
 
 namespace WildPHP\Core\Modules;
 
+use Composer\Semver\Semver;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Logger\Logger;
 use Yoshi2889\Container\ComponentInterface;
@@ -64,6 +65,9 @@ class ModuleFactory implements ComponentInterface
 
 		if (!$reflection->implementsInterface(ModuleInterface::class))
 			throw new ModuleInitializationException('The given class is not a (valid) WildPHP module!');
+
+		if (!Semver::satisfies(WPHP_VERSION, $entryClassName::getSupportedVersionConstraint()))
+			throw new ModuleInitializationException('This module does not support this version of WildPHP');
 
 		try
 		{

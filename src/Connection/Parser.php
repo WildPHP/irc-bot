@@ -234,6 +234,14 @@ class Parser extends BaseModule
 	{
 		$this->buffer = $buffer;
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }
 
 /**

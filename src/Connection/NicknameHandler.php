@@ -85,4 +85,12 @@ class NicknameHandler implements ModuleInterface
 		$nickname = array_shift($this->nicknames);
 		$queue->nick($nickname);
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }

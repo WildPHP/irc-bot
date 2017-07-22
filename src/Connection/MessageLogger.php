@@ -69,4 +69,12 @@ class MessageLogger implements ModuleInterface
 		Logger::fromContainer($container)
 			->info($toLog);
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }

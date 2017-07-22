@@ -17,12 +17,10 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\ModuleInterface;
-use Yoshi2889\Container\ComponentTrait;
+use WildPHP\Core\Modules\BaseModule;
 
-class ChannelStateManager implements ModuleInterface
+class ChannelStateManager extends BaseModule
 {
-	use ComponentTrait;
 	use ContainerTrait;
 
 	/**
@@ -93,5 +91,13 @@ class ChannelStateManager implements ModuleInterface
 		$channel->setTopic($ircMessage->getMessage());
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('channel.topic', [$channel, $ircMessage->getMessage()]);
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
 	}
 }

@@ -12,4 +12,8 @@ use Yoshi2889\Container\ComponentInterface;
 
 interface ModuleInterface extends ComponentInterface
 {
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string;
 }

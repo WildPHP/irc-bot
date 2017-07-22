@@ -539,4 +539,12 @@ class PermissionCommands extends BaseModule
 
 		return true;
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }

@@ -165,4 +165,12 @@ class ManagementCommands extends BaseModule
 		Queue::fromContainer($container)->clear();
 		Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': Message queue cleared.');
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return '^3.0.0';
+	}
 }

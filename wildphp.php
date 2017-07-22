@@ -29,5 +29,6 @@ if (version_compare(PHP_VERSION, '7.1.0', '<'))
 }
 require('vendor/autoload.php');
 define('WPHP_ROOT_DIR', __DIR__ . '/');
+define('WPHP_VERSION', '3.0.0');
 
 include(WPHP_ROOT_DIR . 'src/bootstrap.php');

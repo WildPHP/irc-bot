@@ -51,4 +51,12 @@ class BotStateManager extends BaseModule
 			'newNickname' => $newNickname
 		]);
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }

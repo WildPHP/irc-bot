@@ -276,4 +276,12 @@ class UserStateManager extends BaseModule
 				->emit('user.mode.channel', [$channel, $add, $mode, $user, $queue]);
 		}
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getSupportedVersionConstraint(): string
+	{
+		return WPHP_VERSION;
+	}
 }
