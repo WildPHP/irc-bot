@@ -39,6 +39,7 @@ use Yoshi2889\Container\ComponentTrait;
  * @method void remove(string $channel, string $nickname, string $message)
  * @method void topic(string $channelName, string $message)
  * @method void user(string $username, string $hostname, string $servername, string $realname)
+ * @method void version(string $server = '')
  * @method void who(string $channel, string $options = '')
  * @method void whois(string[]|string $nicknames, string $server = '')
  * @method void whowas(string[]|string $nicknames, int $count = 0, string $server = '')
