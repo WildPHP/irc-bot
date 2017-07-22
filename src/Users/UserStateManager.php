@@ -120,15 +120,12 @@ class UserStateManager extends BaseModule
 	 */
 	public function processUserJoin(JOIN $ircMessage, Queue $queue)
 	{
-		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
 		$availablemodes = Configuration::fromContainer($this->getContainer())['serverConfig']['prefix'];
 		$channelName = $ircMessage->getChannels()[0];
 
 		if (!($channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channelName)))
 		{
 			$channel = new Channel($channelName, new UserCollection(), new ChannelModes($availablemodes));
-			$channel->getUserCollection()
-				->append(new User($ownNickname));
 			ChannelCollection::fromContainer($this->getContainer())
 				->append($channel);
 		}
@@ -297,13 +294,14 @@ class UserStateManager extends BaseModule
 	public function processConversation(PRIVMSG $ircMessage, Queue $queue)
 	{
 		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
+		if ($ircMessage->getChannel() != $ownNickname)
+			return;
+
 		$channelName = $ircMessage->getNickname();
 
 		if (!($channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channelName)))
 		{
 			$channel = new Channel($channelName, new UserCollection(), new ChannelModes(''));
-			$channel->getUserCollection()
-				->append(new User($ownNickname));
 			ChannelCollection::fromContainer($this->getContainer())
 				->append($channel);
 		}
