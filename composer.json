@@ -13,7 +13,8 @@
         "yoshi2889/collections": "^0.1",
         "yoshi2889/container": "^0.1",
         "yoshi2889/validation-closures": "^0.1",
-        "monolog/monolog": "1.23.0"
+        "monolog/monolog": "^1.23.0",
+        "composer/semver": "^1.4"
     },
     "autoload": {
         "psr-4": {
