@@ -26,10 +26,7 @@ class WHOWAS extends BaseIRCMessage implements SendableMessage
 {
 	protected static $verb = 'WHOIS';
 
-	/**
-	 * @var string
-	 */
-	protected $server = '';
+	use ServerTrait;
 
 	/**
 	 * @var int
@@ -56,22 +53,6 @@ class WHOWAS extends BaseIRCMessage implements SendableMessage
 		$this->setNicknames($nicknames);
 		$this->setCount($count);
 		$this->setServer($server);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getServer(): string
-	{
-		return $this->server;
-	}
-
-	/**
-	 * @param string $server
-	 */
-	public function setServer(string $server)
-	{
-		$this->server = $server;
 	}
 
 	/**

@@ -19,10 +19,9 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
 class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 {
 	use NicknameTrait;
+	use ServerTrait;
 
 	protected static $verb = '005';
-
-	protected $server = '';
 
 	protected $variables = [];
 
@@ -56,22 +55,6 @@ class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 		$object->setVariables($variables);
 
 		return $object;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getServer(): string
-	{
-		return $this->server;
-	}
-
-	/**
-	 * @param string $server
-	 */
-	public function setServer(string $server)
-	{
-		$this->server = $server;
 	}
 
 	/**

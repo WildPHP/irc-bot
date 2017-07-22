@@ -18,10 +18,7 @@ class VERSION extends BaseIRCMessage implements SendableMessage
 {
 	protected static $verb = 'VERSION';
 
-	/**
-	 * @var string
-	 */
-	protected $server = '';
+	use ServerTrait;
 
 	/**
 	 * WHOIS constructor.
@@ -31,22 +28,6 @@ class VERSION extends BaseIRCMessage implements SendableMessage
 	public function __construct(string $server = '')
 	{
 		$this->setServer($server);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getServer(): string
-	{
-		return $this->server;
-	}
-
-	/**
-	 * @param string $server
-	 */
-	public function setServer(string $server)
-	{
-		$this->server = $server;
 	}
 
 	public function __toString()
