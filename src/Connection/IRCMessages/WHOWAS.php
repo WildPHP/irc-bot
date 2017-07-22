@@ -41,6 +41,13 @@ class WHOWAS extends BaseIRCMessage implements SendableMessage
 	 */
 	protected $nicknames = '';
 
+	/**
+	 * WHOWAS constructor.
+	 *
+	 * @param string[]|string $nicknames
+	 * @param int $count
+	 * @param string $server
+	 */
 	public function __construct($nicknames, int $count = 0, string $server = '')
 	{
 		if (is_string($nicknames))
