@@ -107,8 +107,9 @@ class ManagementCommands extends BaseModule
 	{
 		$validChannels = $this->validateChannels($channels);
 
-		Queue::fromContainer($container)
-			->join($validChannels);
+		if (!empty($validChannels))
+			Queue::fromContainer($container)
+				->join($validChannels);
 
 		$diff = array_diff($channels, $validChannels);
 
@@ -131,8 +132,9 @@ class ManagementCommands extends BaseModule
 
 		$validChannels = $this->validateChannels($channels);
 
-		Queue::fromContainer($container)
-			->part($validChannels);
+		if (!empty($validChannels))
+			Queue::fromContainer($container)
+				->part($validChannels);
 
 		$diff = array_diff($channels, $validChannels);
 
