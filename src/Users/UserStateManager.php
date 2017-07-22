@@ -83,7 +83,7 @@ class UserStateManager extends BaseModule
 		if (!$user)
 			return;
 
-		if ($user->getNickname() == $ownNickname)
+		if ($ircMessage->getTarget() == $ownNickname)
 		{
 			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
 			return;
