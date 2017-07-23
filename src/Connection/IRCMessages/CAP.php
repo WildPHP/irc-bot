@@ -9,6 +9,7 @@
 namespace WildPHP\Core\Connection\IRCMessages;
 
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\UserPrefix;
 
 /**
  * Class CAP
@@ -20,6 +21,7 @@ class CAP extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
 	protected static $verb = 'CAP';
 
+	use PrefixTrait;
 	use NicknameTrait;
 
 	/**
@@ -58,6 +60,7 @@ class CAP extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		if ($incomingIrcMessage->getVerb() != self::getVerb())
 			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
+		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);
 		$command = array_shift($args);
@@ -65,6 +68,8 @@ class CAP extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 
 		$object = new self($command, $capabilities);
 		$object->setNickname($nickname);
+		$object->setPrefix($prefix);
+		var_dump($prefix);
 
 		return $object;
 	}
