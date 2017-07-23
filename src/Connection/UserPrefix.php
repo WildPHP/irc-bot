@@ -15,7 +15,7 @@ class UserPrefix
 	/**
 	 * @var string
 	 */
-	public static $regex = '/^(?<nick>[^!]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x';
+	public static $regex = '/^(?<server>[^!@]+)?$|^(?<nick>[^!]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x';
 
 	/**
 	 * @var string
@@ -104,9 +104,9 @@ class UserPrefix
 		if (preg_match(self::$regex, $prefix, $matches) === false)
 			throw new \InvalidArgumentException('Got invalid prefix');
 
-		$nickname = $matches['nick'];
+		$nickname = $matches['nick'] ?? '';
 		$username = $matches['user'] ?? '';
-		$hostname = $matches['host'] ?? '';
+		$hostname = $matches['host'] ?? ($matches['server'] ?? '');
 
 		return new self($nickname, $username, $hostname);
 	}
