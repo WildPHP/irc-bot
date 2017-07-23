@@ -69,7 +69,6 @@ class CAP extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$object = new self($command, $capabilities);
 		$object->setNickname($nickname);
 		$object->setPrefix($prefix);
-		var_dump($prefix);
 
 		return $object;
 	}
