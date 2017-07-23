@@ -104,7 +104,7 @@ class CapabilityHandler implements ComponentInterface
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
-		$queue->cap('REQ :' . implode(' ', $this->getCapabilitiesToRequest()));
+		$queue->cap('REQ', $this->getCapabilitiesToRequest());
 	}
 
 	/**
