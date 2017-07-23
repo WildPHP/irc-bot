@@ -95,7 +95,7 @@ class IrcMessageTest extends TestCase
 
     public function testCapReceive()
     {
-        $line = Parser::parseLine('CAP * LS :cap1 cap2' . "\r\n");
+        $line = Parser::parseLine(':server CAP * LS :cap1 cap2' . "\r\n");
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $cap = CAP::fromIncomingIrcMessage($incoming);
 
@@ -217,7 +217,7 @@ class IrcMessageTest extends TestCase
 
 	public function testModeReceiveInitial()
 	{
-		$line = Parser::parseLine(':nickname MODE nickname -o+b' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname MODE nickname -o+b' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
