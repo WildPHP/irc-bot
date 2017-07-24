@@ -65,7 +65,7 @@ class Validator implements ComponentInterface
 
 			$permGroup = new PermissionGroup();
 			$permGroup->setModeGroup(true);
-			PermissionGroupCollection::fromContainer($this->getContainer())->append($permGroup);
+			PermissionGroupCollection::fromContainer($this->getContainer())->offsetSet($mode, $permGroup);
 		}
 	}
 
