@@ -97,7 +97,6 @@ class Validator implements ComponentInterface
 				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 					->offsetGet($mode);
 
-				var_dump($permGroup);
 				if ($permGroup->hasPermission($permissionName))
 					return $mode;
 			}
