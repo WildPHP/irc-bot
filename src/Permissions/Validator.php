@@ -52,7 +52,7 @@ class Validator implements ComponentInterface
 	{
 		$variables = $ircMessage->getVariables();
 
-		if (!array_key_exists('PREFIX', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['PREFIX'], $out))
+		if (!array_key_exists('prefix', $variables) || !preg_match('/\((.+)\)(.+)/', $variables['prefix'], $out))
 			return;
 
 		$modes = str_split($out[1]);
@@ -60,9 +60,10 @@ class Validator implements ComponentInterface
 
 		foreach ($modes as $mode)
 		{
-			$groupState = PermissionGroupCollection::fromContainer($this->getContainer())->getStoredGroupData($mode);
+			if (PermissionGroupCollection::fromContainer($this->getContainer())->offsetExists($mode))
+				continue;
 
-			$permGroup = new PermissionGroup($groupState ?? []);
+			$permGroup = new PermissionGroup();
 			$permGroup->setModeGroup(true);
 			PermissionGroupCollection::fromContainer($this->getContainer())->append($permGroup);
 		}
@@ -96,6 +97,7 @@ class Validator implements ComponentInterface
 				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
 					->offsetGet($mode);
 
+				var_dump($permGroup);
 				if ($permGroup->hasPermission($permissionName))
 					return $mode;
 			}
