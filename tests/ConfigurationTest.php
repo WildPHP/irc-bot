@@ -30,7 +30,7 @@ class ConfigurationTest extends TestCase
 		static::assertEquals($path, $neonBackend->getConfigFile());
 
 		$allEntries = $neonBackend->getAllEntries();
-		static::assertEquals(['test' => ['ing' => 'data', 'array' => ['test', 'ing']]], $allEntries);
+		static::assertEquals(['test' => ['ing' => 'data', 'array' => ['test', 'ing']], 'owner' => 'SomeUser'], $allEntries);
 
 	}
 	public function testConfigurationStorage()
