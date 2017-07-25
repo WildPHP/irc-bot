@@ -21,11 +21,6 @@ class Channel
 	/**
 	 * @var string
 	 */
-	protected $description = '';
-
-	/**
-	 * @var string
-	 */
 	protected $topic = '';
 
 	/**
@@ -151,22 +146,6 @@ class Channel
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getDescription(): string
-	{
-		return $this->description;
-	}
-
-	/**
-	 * @param string $description
-	 */
-	public function setDescription(string $description)
-	{
-		$this->description = $description;
-	}
-
-	/**
 	 * @param string $name
 	 * @param string $prefix
 	 *
@@ -176,6 +155,4 @@ class Channel
 	{
 		return substr($name, 0, strlen($prefix)) == $prefix;
 	}
-
-
 }
