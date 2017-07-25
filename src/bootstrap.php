@@ -121,7 +121,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add(new ChannelCollection($componentContainer));
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
-	$componentContainer->add(new Validator($componentContainer));
+	$componentContainer->add(
+		new Validator(EventEmitter::fromContainer($componentContainer),
+		\WildPHP\Core\Permissions\PermissionGroupCollection::fromContainer($componentContainer),
+		$configuration['owner'])
+	);
 
 	$moduleFactory = new ModuleFactory($componentContainer);
 	$componentContainer->add($moduleFactory);

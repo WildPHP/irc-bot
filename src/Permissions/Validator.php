@@ -10,11 +10,7 @@
 namespace WildPHP\Core\Permissions;
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Users\User;
 use Yoshi2889\Collections\Collection;
@@ -24,7 +20,6 @@ use Yoshi2889\Container\ComponentTrait;
 class Validator implements ComponentInterface
 {
 	use ComponentTrait;
-	use ContainerTrait;
 
 	/**
 	 * @var array
@@ -32,23 +27,34 @@ class Validator implements ComponentInterface
 	protected $modes = [];
 
 	/**
+	 * @var string
+	 */
+	protected $owner = '';
+
+	/**
+	 * @var PermissionGroupCollection
+	 */
+	protected $permissionGroupCollection;
+
+	/**
 	 * Validator constructor.
 	 *
-	 * @param ComponentContainer $container
+	 * @param EventEmitter $eventEmitter
+	 * @param PermissionGroupCollection $permissionGroupCollection
+	 * @param string $owner
 	 */
-	public function __construct(ComponentContainer $container)
+	public function __construct(EventEmitter $eventEmitter, PermissionGroupCollection $permissionGroupCollection, string $owner)
 	{
-		$this->setContainer($container);
+		$eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
 
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in.005', [$this, 'createModeGroups']);
+		$this->permissionGroupCollection = $permissionGroupCollection;
+		$this->setOwner($owner);
 	}
 
 	/**
 	 * @param RPL_ISUPPORT $ircMessage
-	 * @param Queue $queue
 	 */
-	public function createModeGroups(RPL_ISUPPORT $ircMessage, Queue $queue)
+	public function createModeGroups(RPL_ISUPPORT $ircMessage)
 	{
 		$variables = $ircMessage->getVariables();
 
@@ -60,12 +66,12 @@ class Validator implements ComponentInterface
 
 		foreach ($modes as $mode)
 		{
-			if (PermissionGroupCollection::fromContainer($this->getContainer())->offsetExists($mode))
+			if ($this->permissionGroupCollection->offsetExists($mode))
 				continue;
 
 			$permGroup = new PermissionGroup();
 			$permGroup->setModeGroup(true);
-			PermissionGroupCollection::fromContainer($this->getContainer())->offsetSet($mode, $permGroup);
+			$this->permissionGroupCollection->offsetSet($mode, $permGroup);
 		}
 	}
 
@@ -83,7 +89,7 @@ class Validator implements ComponentInterface
 		// 1. User OP in channel
 		// 2. User Voice in channel
 		// 3. User in other group with permission
-		if ($user->getIrcAccount() == Configuration::fromContainer($this->getContainer())['owner'])
+		if ($user->getIrcAccount() == $this->getOwner())
 			return 'owner';
 
 		if (!empty($channel))
@@ -94,7 +100,7 @@ class Validator implements ComponentInterface
 					continue;
 
 				/** @var PermissionGroup $permGroup */
-				$permGroup = PermissionGroupCollection::fromContainer($this->getContainer())
+				$permGroup = $this->permissionGroupCollection
 					->offsetGet($mode);
 
 				if ($permGroup->hasPermission($permissionName))
@@ -105,7 +111,7 @@ class Validator implements ComponentInterface
 		$channelName = !empty($channel) ? $channel->getName() : '';
 
 		/** @var Collection $groups */
-		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
+		$groups = $this->permissionGroupCollection
 			->filter(function ($item) use ($user)
 			{
 				/** @var PermissionGroup $item */
@@ -123,5 +129,45 @@ class Validator implements ComponentInterface
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return PermissionGroupCollection
+	 */
+	public function getPermissionGroupCollection(): PermissionGroupCollection
+	{
+		return $this->permissionGroupCollection;
+	}
+
+	/**
+	 * @param PermissionGroupCollection $permissionGroupCollection
+	 */
+	public function setPermissionGroupCollection(PermissionGroupCollection $permissionGroupCollection)
+	{
+		$this->permissionGroupCollection = $permissionGroupCollection;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getModes(): array
+	{
+		return $this->modes;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getOwner(): string
+	{
+		return $this->owner;
+	}
+
+	/**
+	 * @param string $owner
+	 */
+	public function setOwner(string $owner)
+	{
+		$this->owner = $owner;
 	}
 }
