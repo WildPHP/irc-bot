@@ -12,19 +12,25 @@ use WildPHP\Core\Modules\ModuleInitializationException;
 
 class ModuleFactoryTest extends TestCase
 {
-	public function init(): ModuleFactory
+	public function initContainer(): \WildPHP\Core\ComponentContainer
+	{
+		$componentContainer = new \WildPHP\Core\ComponentContainer();
+		$componentContainer->add(new \WildPHP\Core\Logger\Logger('wildphp'));
+		return $componentContainer;
+	}
+
+	public function init($componentContainer): ModuleFactory
 	{
 		if (!defined('WPHP_VERSION'))
 			define('WPHP_VERSION', '3.0.0');
 
-		$componentContainer = new \WildPHP\Core\ComponentContainer();
-		$componentContainer->add(new \WildPHP\Core\Logger\Logger('wildphp'));
+
 		return new ModuleFactory($componentContainer);
 	}
 
 	public function testNonExistingClass()
 	{
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 
 		$this->expectException(ModuleInitializationException::class);
 		$mf->initializeModule('tlskafjioweajklsjfiowlajkefolaskdfa');
@@ -32,7 +38,7 @@ class ModuleFactoryTest extends TestCase
 
 	public function testClassNotImplementingInterface()
 	{
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 
 		$this->expectException(ModuleInitializationException::class);
 		$mf->initializeModule(stdClass::class);
@@ -40,7 +46,7 @@ class ModuleFactoryTest extends TestCase
 
 	public function testClassNotMeetingVersionConstraint()
 	{
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 
 		$this->expectException(ModuleInitializationException::class);
 		$mf->initializeModule(ModuleNotMeetingVersionConstraint::class);
@@ -48,7 +54,7 @@ class ModuleFactoryTest extends TestCase
 
 	public function testValidModule()
 	{
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 
 		$mf->initializeModule(ValidModule::class);
 		self::assertTrue($mf->isModuleLoaded(ValidModule::class));
@@ -60,7 +66,7 @@ class ModuleFactoryTest extends TestCase
 
 	public function testModuleThrowsException()
 	{
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 
 		$this->expectException(ModuleInitializationException::class);
 		$mf->initializeModule(ModuleThrowsException::class);
@@ -73,10 +79,24 @@ class ModuleFactoryTest extends TestCase
 			ValidModule2::class
 		];
 
-		$mf = $this->init();
+		$mf = $this->init($this->initContainer());
 		$mf->initializeModules($modules);
 		self::assertTrue($mf->isModuleLoaded(ValidModule::class));
 		self::assertTrue($mf->isModuleLoaded(ValidModule2::class));
+	}
+
+	public function testGetInstance()
+	{
+		$container = $this->initContainer();
+		$mf = $this->init($container);
+
+		$mf->initializeModule(ValidModule::class);
+		self::assertTrue($mf->isModuleLoaded(ValidModule::class));
+
+		$validModule = new ValidModule($container);
+
+		self::assertEquals($validModule, $mf->getModuleInstance(ValidModule::class));
+		self::assertFalse($mf->getModuleInstance(ValidModule2::class));
 	}
 }
 
