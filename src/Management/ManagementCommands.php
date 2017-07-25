@@ -32,27 +32,27 @@ class ManagementCommands extends BaseModule
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
+		$commandHelp->append('Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
 		CommandHandler::fromContainer($container)
 			->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5, 'join');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Parts (leaves) the specified channel(s). Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
+		$commandHelp->append('Parts (leaves) the specified channel(s). Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
 		CommandHandler::fromContainer($container)
 			->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5, 'part');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Quits the IRC network. Usage: quit ([message])');
+		$commandHelp->append('Quits the IRC network. Usage: quit ([message])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('quit', [$this, 'quitCommand'], $commandHelp, 0, -1, 'quit');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Changes the nickname of the bot. Usage: nick [nickname]');
+		$commandHelp->append('Changes the nickname of the bot. Usage: nick [nickname]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('nick', [$this, 'nickCommand'], $commandHelp, 0, 1, 'nick');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Clears the send queue.');
+		$commandHelp->append('Clears the send queue.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('clearqueue', [$this, 'clearQueueCommand'], $commandHelp, 0, 1, 'clearqueue');
 

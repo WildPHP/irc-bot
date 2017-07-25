@@ -27,13 +27,13 @@ class HelpCommand extends BaseModule
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows the help pages for a specific command. (use the lscommands command to list available commands) ' .
+		$commandHelp->append('Shows the help pages for a specific command. (use the lscommands command to list available commands) ' .
 			'Usage: cmdhelp [command] [page]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('cmdhelp', [$this, 'helpCommand'], $commandHelp, 0, 2);
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows the list of available commands. No arguments.');
+		$commandHelp->append('Shows the list of available commands. No arguments.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lscommands', [$this, 'lscommandsCommand'], $commandHelp, 0, 0);
 	}
@@ -108,7 +108,7 @@ class HelpCommand extends BaseModule
 		}
 
 		$pageToGet = $page - 1;
-		if (!$helpObject->indexExists($pageToGet))
+		if (!$helpObject->offsetExists($pageToGet))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'That page does not exist for this command.');
@@ -122,8 +122,8 @@ class HelpCommand extends BaseModule
 			return;
 		}
 
-		$contents = $helpObject->getPageAt($pageToGet);
-		$pageCount = $helpObject->getPageCount();
+		$contents = $helpObject->offsetGet($pageToGet);
+		$pageCount = $helpObject->count();
 		Queue::fromContainer($container)
 			->privmsg($source->getName(), $command . ': ' . $contents . ' (page ' . $page . ' of ' . $pageCount . ')');
 	}

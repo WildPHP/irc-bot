@@ -27,7 +27,7 @@ class CommandFactory
 	                              string $requiredPermission = '')
 	{
 		if (!empty($requiredPermission) && !is_null($commandHelp))
-			$commandHelp->addPage('Required permission: ' . $requiredPermission);
+			$commandHelp->append('Required permission: ' . $requiredPermission);
 
 		$commandObject = new Command($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
 

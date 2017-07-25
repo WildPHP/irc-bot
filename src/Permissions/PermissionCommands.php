@@ -32,67 +32,67 @@ class PermissionCommands extends BaseModule
 	public function __construct(ComponentContainer $container)
 	{
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows the available groups. No arguments.');
+		$commandHelp->append('Shows the available groups. No arguments.');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lsgroups', [$this, 'lsgroupsCommand'], $commandHelp, 0, 0);
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows if validation passes for a certain permission. Usage: validate [permission] ([username])');
+		$commandHelp->append('Shows if validation passes for a certain permission. Usage: validate [permission] ([username])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('validate', [$this, 'validateCommand'], $commandHelp, 1, 2);
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Creates a permission group. Usage: creategroup [group name]');
+		$commandHelp->append('Creates a permission group. Usage: creategroup [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('creategroup', [$this, 'creategroupCommand'], $commandHelp, 1, 1, 'creategroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Deletes a permission group. Usage: delgroup [group name] yes');
+		$commandHelp->append('Deletes a permission group. Usage: delgroup [group name] yes');
 		CommandHandler::fromContainer($container)
 			->registerCommand('delgroup', [$this, 'delgroupCommand'], $commandHelp, 1, 2, 'delgroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]');
+		$commandHelp->append('Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('addmember', [$this, 'addmemberCommand'], $commandHelp, 2, 2, 'addmembertogroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]');
+		$commandHelp->append('Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('delmember', [$this, 'delmemberCommand'], $commandHelp, 2, 2, 'delmemberfromgroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Add a permission to a permission group. Usage: allow [group name] [permission]');
+		$commandHelp->append('Add a permission to a permission group. Usage: allow [group name] [permission]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('allow', [$this, 'allowCommand'], $commandHelp, 2, 2, 'allow');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Remove a permission from a permission group. Usage: deny [group name] [permission]');
+		$commandHelp->append('Remove a permission from a permission group. Usage: deny [group name] [permission]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('deny', [$this, 'denyCommand'], $commandHelp, 2, 2, 'deny');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('List all members in a permission group. Usage: lsmembers [group name]');
+		$commandHelp->append('List all members in a permission group. Usage: lsmembers [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lsmembers', [$this, 'lsmembersCommand'], $commandHelp, 1, 1, 'listgroupmembers');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('List permissions given to the specified group. Usage: lsperms [group name]');
+		$commandHelp->append('List permissions given to the specified group. Usage: lsperms [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('lsperms', [$this, 'lspermsCommand'], $commandHelp, 1, 1, 'listgrouppermissions');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])');
+		$commandHelp->append('Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('linkgroup', [$this, 'linkgroupCommand'], $commandHelp, 1, 2, 'linkgroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])');
+		$commandHelp->append('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('unlinkgroup', [$this, 'unlinkgroupCommand'], $commandHelp, 1, 2, 'unlinkgroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->addPage('Shows info about a group. Usage: groupinfo [group name]');
+		$commandHelp->append('Shows info about a group. Usage: groupinfo [group name]');
 		CommandHandler::fromContainer($container)
 			->registerCommand('groupinfo', [$this, 'groupinfoCommand'], $commandHelp, 1, 2, 'groupinfo');
 
