@@ -19,8 +19,5 @@ use Flintstone\Flintstone;
  */
 class DataStorage extends Flintstone
 {
-	public function __construct(string $name, array $config)
-	{
-		parent::__construct($name, $config);
-	}
+
 }
