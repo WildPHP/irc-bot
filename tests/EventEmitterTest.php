@@ -18,7 +18,9 @@ class EventEmitterTest extends \PHPUnit\Framework\TestCase
 		$eventEmitter->on('test', [$this, 'foo']);
 		$eventEmitter->first('test', [$this, 'bar']);
 
-		self::assertEquals([[$this, 'bar'], [$this, 'ing'], [$this, 'foo']], $eventEmitter->listeners('test'));
+		$listeners = $eventEmitter->listeners('test');
+		self::assertEquals([[$this, 'bar'], [$this, 'ing'], [$this, 'foo']], $listeners);
+		self::assertEquals([$this, 'bar'], array_shift($listeners));
 	}
 
 	public function ing()
