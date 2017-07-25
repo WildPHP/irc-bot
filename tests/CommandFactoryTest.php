@@ -16,6 +16,28 @@ class CommandFactoryTest extends TestCase
 		$expectedCommand = new \WildPHP\Core\Commands\Command([$this, 'command'], null);
 		$command = CommandFactory::create([$this, 'command']);
 
+		self::assertEquals([$this, 'command'], $command->getCallback());
+		self::assertEquals(null, $command->getHelp());
+		self::assertEquals(-1, $command->getMinimumArguments());
+		self::assertEquals(-1, $command->getMaximumArguments());
+		self::assertEquals('', $command->getRequiredPermission());
+
+		self::assertEquals($expectedCommand, $command);
+	}
+
+	public function testCommandCreateWithPermissionAndHelp()
+	{
+		$commandHelp = new \WildPHP\Core\Commands\CommandHelp(['Required permission: test']);
+		$expectedCommand = new \WildPHP\Core\Commands\Command([$this, 'command'], $commandHelp, -1, -1, 'test');
+
+		$commandHelp = new \WildPHP\Core\Commands\CommandHelp();
+		$command = CommandFactory::create([$this, 'command'], $commandHelp, -1, -1, 'test');
+
+		self::assertEquals([$this, 'command'], $command->getCallback());
+		self::assertEquals($commandHelp, $command->getHelp());
+		self::assertEquals(-1, $command->getMinimumArguments());
+		self::assertEquals(-1, $command->getMaximumArguments());
+		self::assertEquals('test', $command->getRequiredPermission());
 		self::assertEquals($expectedCommand, $command);
 	}
 
