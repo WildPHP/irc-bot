@@ -20,6 +20,7 @@
 use PHPUnit\Framework\TestCase;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessage;
+use WildPHP\Core\Connection\IRCMessages\ACCOUNT;
 use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\Connection\IRCMessages\AWAY;
 use WildPHP\Core\Connection\IRCMessages\CAP;
@@ -27,6 +28,7 @@ use WildPHP\Core\Connection\IRCMessages\ERROR;
 use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\MODE;
+use WildPHP\Core\Connection\IRCMessages\NAMES;
 use WildPHP\Core\Connection\IRCMessages\NICK;
 use WildPHP\Core\Connection\IRCMessages\NOTICE;
 use WildPHP\Core\Connection\IRCMessages\PART;
@@ -36,13 +38,40 @@ use WildPHP\Core\Connection\IRCMessages\PONG;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\IRCMessages\QUIT;
 use WildPHP\Core\Connection\IRCMessages\RAW;
+use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
+use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
+use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
+use WildPHP\Core\Connection\IRCMessages\RPL_TOPIC;
+use WildPHP\Core\Connection\IRCMessages\RPL_WELCOME;
+use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\IRCMessages\TOPIC;
 use WildPHP\Core\Connection\IRCMessages\USER;
+use WildPHP\Core\Connection\IRCMessages\VERSION;
 use WildPHP\Core\Connection\IRCMessages\WHO;
+use WildPHP\Core\Connection\IRCMessages\WHOIS;
 use WildPHP\Core\Connection\Parser;
+use WildPHP\Core\Connection\UserPrefix;
 
 class IrcMessageTest extends TestCase
 {
+	public function testAccountCreate()
+	{
+		$account = new ACCOUNT('ircAccount');
+
+		static::assertEquals('ircAccount', $account->getAccountName());
+	}
+
+	public function testAccountReceive()
+	{
+		$line = Parser::parseLine(':nickname!username@hostname ACCOUNT ircAccount' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$account = ACCOUNT::fromIncomingIrcMessage($incoming);
+
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $account->getPrefix());
+		static::assertEquals('ircAccount', $account->getAccountName());
+	}
+
 	public function testAuthenticateCreate()
 	{
 		$authenticate = new AUTHENTICATE('+');
@@ -74,7 +103,7 @@ class IrcMessageTest extends TestCase
 
 	public function testAwayReceive()
 	{
-		$line = Parser::parseLine(':nickname!host AWAY :A sample message' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname AWAY :A sample message' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$away = AWAY::fromIncomingIrcMessage($incoming);
 
@@ -133,7 +162,7 @@ class IrcMessageTest extends TestCase
 
 	public function testJoinReceiveExtended()
 	{
-		$line = Parser::parseLine(':nickname!host JOIN #channel ircAccountName :realname' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname JOIN #channel ircAccountName :realname' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
@@ -145,7 +174,7 @@ class IrcMessageTest extends TestCase
 
 	public function testJoinReceiveRegular()
 	{
-		$line = Parser::parseLine(':nickname!host JOIN #channel' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname JOIN #channel' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
@@ -169,10 +198,12 @@ class IrcMessageTest extends TestCase
 
 	public function testKickReceive()
 	{
-		$line = Parser::parseLine(':nickname!host KICK #somechannel othernickname :You deserved it!');
+		$line = Parser::parseLine(':nickname!username@hostname KICK #somechannel othernickname :You deserved it!');
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$kick = KICK::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $kick->getPrefix());
 		static::assertEquals('nickname', $kick->getNickname());
 		static::assertEquals('othernickname', $kick->getTarget());
 		static::assertEquals('#somechannel', $kick->getChannel());
@@ -193,10 +224,12 @@ class IrcMessageTest extends TestCase
 
 	public function testModeReceiveChannel()
 	{
-		$line = Parser::parseLine(':nickname!host MODE #channel -o+b arg1 arg2' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname MODE #channel -o+b arg1 arg2' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $mode->getPrefix());
 		static::assertEquals('#channel', $mode->getTarget());
 		static::assertEquals('nickname', $mode->getNickname());
 		static::assertEquals('-o+b', $mode->getFlags());
@@ -205,10 +238,12 @@ class IrcMessageTest extends TestCase
 
 	public function testModeReceiveUser()
 	{
-		$line = Parser::parseLine(':nickname!host MODE user -o+b' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname MODE user -o+b' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $mode->getPrefix());
 		static::assertEquals('user', $mode->getTarget());
 		static::assertEquals('nickname', $mode->getNickname());
 		static::assertEquals('-o+b', $mode->getFlags());
@@ -227,6 +262,17 @@ class IrcMessageTest extends TestCase
 		static::assertEquals([], $mode->getArguments());
 	}
 
+	public function testNamesCreate()
+	{
+		$names = new NAMES('#testChannel', 'testServer');
+
+		static::assertEquals(['#testChannel'], $names->getChannels());
+		static::assertEquals('testServer', $names->getServer());
+
+		$expected = 'NAMES #testChannel testServer';
+		static::assertEquals($expected, $names->__toString());
+	}
+
 	public function testNickCreate()
 	{
 		$nick = new NICK('newnickname');
@@ -239,10 +285,12 @@ class IrcMessageTest extends TestCase
 
 	public function testNickReceive()
 	{
-		$line = Parser::parseLine(':nickname!host NICK newnickname' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname NICK newnickname' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$nick = NICK::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $nick->getPrefix());
 		static::assertEquals('nickname', $nick->getNickname());
 		static::assertEquals('newnickname', $nick->getNewNickname());
 	}
@@ -260,10 +308,12 @@ class IrcMessageTest extends TestCase
 
 	public function testNoticeReceive()
 	{
-		$line = Parser::parseLine(':nickname!host NOTICE #somechannel :This is a test message' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname NOTICE #somechannel :This is a test message' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$notice = NOTICE::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $notice->getPrefix());
 		static::assertEquals('#somechannel', $notice->getChannel());
 		static::assertEquals('This is a test message', $notice->getMessage());
 	}
@@ -281,10 +331,12 @@ class IrcMessageTest extends TestCase
 
 	public function testPartReceive()
 	{
-		$line = Parser::parseLine(':nickname!host PART #channel :I have a valid reason' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname PART #channel :I have a valid reason' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$part = PART::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $part->getPrefix());
 		static::assertEquals('nickname', $part->getNickname());
 		static::assertEquals(['#channel'], $part->getChannels());
 		static::assertEquals('I have a valid reason', $part->getMessage());
@@ -355,10 +407,12 @@ class IrcMessageTest extends TestCase
 
 	public function testPrivmsgReceive()
 	{
-		$line = Parser::parseLine(':nickname!host PRIVMSG #somechannel :This is a test message' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname PRIVMSG #somechannel :This is a test message' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$privmsg = PRIVMSG::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $privmsg->getPrefix());
 		static::assertEquals('#somechannel', $privmsg->getChannel());
 		static::assertEquals('This is a test message', $privmsg->getMessage());
 	}
@@ -375,10 +429,12 @@ class IrcMessageTest extends TestCase
 
 	public function testQuitReceive()
 	{
-		$line = Parser::parseLine(':nickname!host QUIT :A sample message' . "\r\n");
+		$line = Parser::parseLine(':nickname!username@hostname QUIT :A sample message' . "\r\n");
 		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
 		$quit = QUIT::fromIncomingIrcMessage($incoming);
 
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $quit->getPrefix());
 		static::assertEquals('nickname', $quit->getNickname());
 		static::assertEquals('A sample message', $quit->getMessage());
 	}
@@ -393,23 +449,98 @@ class IrcMessageTest extends TestCase
         static::assertEquals($expected, $raw->__toString());
     }
 
+	public function testRplEndOfNamesReceive()
+	{
+		$line = Parser::parseLine(':server 366 nickname #channel :End of /NAMES list.' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_endofnames = RPL_ENDOFNAMES::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals('nickname', $rpl_endofnames->getNickname());
+		static::assertEquals('#channel', $rpl_endofnames->getChannel());
+		static::assertEquals('End of /NAMES list.', $rpl_endofnames->getMessage());
+    }
+
+	public function testRplIsupportReceive()
+	{
+		$line = Parser::parseLine(':server 005 nickname KEY1=value KEY2=value2 :are supported by this server' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_isupport = RPL_ISUPPORT::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals(['key1' => 'value', 'key2' => 'value2'], $rpl_isupport->getVariables());
+		static::assertEquals('server', $rpl_isupport->getServer());
+		static::assertEquals('nickname', $rpl_isupport->getNickname());
+		static::assertEquals('are supported by this server', $rpl_isupport->getMessage());
+    }
+
+	public function testRplNamReplyReceive()
+	{
+		$line = Parser::parseLine(':server 353 nickname + #channel :nickname1 nickname2 nickname3' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_namreply = RPL_NAMREPLY::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals('server', $rpl_namreply->getServer());
+		static::assertEquals('nickname', $rpl_namreply->getNickname());
+		static::assertEquals('+', $rpl_namreply->getVisibility());
+		static::assertEquals(['nickname1', 'nickname2', 'nickname3'], $rpl_namreply->getNicknames());
+    }
+
+	public function testRplTopicReceive()
+	{
+		$line = Parser::parseLine(':server 332 nickname #channel :A new topic message' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_topic = RPL_TOPIC::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals('server', $rpl_topic->getServer());
+		static::assertEquals('nickname', $rpl_topic->getNickname());
+		static::assertEquals('#channel', $rpl_topic->getChannel());
+		static::assertEquals('A new topic message', $rpl_topic->getMessage());
+    }
+
+	public function testRplWelcomeReceive()
+	{
+		$line = Parser::parseLine(':server 001 nickname :Welcome to server!' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_welcome = RPL_WELCOME::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals('server', $rpl_welcome->getServer());
+		static::assertEquals('nickname', $rpl_welcome->getNickname());
+		static::assertEquals('Welcome to server!', $rpl_welcome->getMessage());
+    }
+
+	public function testRplWhosPCRplReceive()
+	{
+		$line = Parser::parseLine(':server 354 ownnickname username hostname nickname status accountname' . "\r\n");
+		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$rpl_whospcrpl = RPL_WHOSPCRPL::fromIncomingIrcMessage($incoming);
+
+		static::assertEquals('server', $rpl_whospcrpl->getServer());
+		static::assertEquals('ownnickname', $rpl_whospcrpl->getOwnNickname());
+		static::assertEquals('username', $rpl_whospcrpl->getUsername());
+		static::assertEquals('hostname', $rpl_whospcrpl->getHostname());
+		static::assertEquals('nickname', $rpl_whospcrpl->getNickname());
+		static::assertEquals('status', $rpl_whospcrpl->getStatus());
+		static::assertEquals('accountname', $rpl_whospcrpl->getAccountname());
+    }
+
 	public function testTopicCreate()
     {
-        $topic = new TOPIC('#someChannel', 'Test message');
+        $topic = new TOPIC('#someChannel', 'DataStorageTest message');
 
         static::assertEquals('#someChannel', $topic->getChannel());
-        static::assertEquals('Test message', $topic->getMessage());
+        static::assertEquals('DataStorageTest message', $topic->getMessage());
 
-        $expected = 'TOPIC #someChannel :Test message' . "\r\n";
+        $expected = 'TOPIC #someChannel :DataStorageTest message' . "\r\n";
         static::assertEquals($expected, $topic->__toString());
     }
 
     public function testTopicReceive()
     {
-        $line = Parser::parseLine(':nickname!host TOPIC #someChannel :This is a new topic' . "\r\n");
+        $line = Parser::parseLine(':nickname!username@hostname TOPIC #someChannel :This is a new topic' . "\r\n");
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $topic = TOPIC::fromIncomingIrcMessage($incoming);
 
+	    $userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+	    static::assertEquals($userPrefix, $topic->getPrefix());
         static::assertEquals('#someChannel', $topic->getChannel());
         static::assertEquals('This is a new topic', $topic->getMessage());
     }
@@ -439,6 +570,19 @@ class IrcMessageTest extends TestCase
         static::assertEquals('arealname', $user->getRealname());
     }
 
+	public function testVersionCreate()
+	{
+		$version = new VERSION('server');
+		static::assertEquals('server', $version->getServer());
+
+		$expected = 'VERSION server';
+		static::assertEquals($expected, $version->__toString());
+
+		$version = new VERSION();
+		$expected = 'VERSION';
+		static::assertEquals($expected, $version->__toString());
+    }
+
 	public function testWhoCreate()
     {
         $who = new WHO('#someChannel', '%nuhaf');
@@ -452,11 +596,34 @@ class IrcMessageTest extends TestCase
 
     public function testWhoReceive()
     {
-        $line = Parser::parseLine(':nickname!host WHO #someChannel %nuhaf' . "\r\n");
+        $line = Parser::parseLine(':nickname!username@hostname WHO #someChannel %nuhaf' . "\r\n");
         $incoming = new IncomingIrcMessage($line, new ComponentContainer());
         $who = WHO::fromIncomingIrcMessage($incoming);
 
+	    $userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+	    static::assertEquals($userPrefix, $who->getPrefix());
         static::assertEquals('#someChannel', $who->getChannel());
         static::assertEquals('%nuhaf', $who->getOptions());
     }
+
+	public function testWhoisCreate()
+	{
+		$whois = new WHOIS(['nickname1', 'nickname2'], 'server');
+		static::assertEquals(['nickname1', 'nickname2'], $whois->getNicknames());
+		static::assertEquals('server', $whois->getServer());
+
+		$expected = 'WHOIS server nickname1,nickname2';
+		static::assertEquals($expected, $whois->__toString());
+    }
+
+	public function testWhoWasCreate()
+	{
+		$whowas = new \WildPHP\Core\Connection\IRCMessages\WHOWAS(['nickname1', 'nickname2'], 2, 'server');
+		static::assertEquals(['nickname1', 'nickname2'], $whowas->getNicknames());
+		static::assertEquals(2, $whowas->getCount());
+		static::assertEquals('server', $whowas->getServer());
+
+		$expected = 'WHOWAS nickname1,nickname2 2 server';
+		static::assertEquals($expected, $whowas->__toString());
+	}
 }
