@@ -39,6 +39,6 @@ class NAMES extends BaseIRCMessage implements SendableMessage
 	public function __toString()
 	{
 		$server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';
-		return 'WHOWAS ' .  implode(',', $this->getChannels()) . $server;
+		return 'NAMES ' .  implode(',', $this->getChannels()) . $server;
 	}
 }
