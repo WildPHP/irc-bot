@@ -21,6 +21,7 @@ class RPL_WHOSPCRPL extends BaseIRCMessage implements ReceivableMessage
 	use NicknameTrait;
 	use ChannelTrait;
 	use MessageTrait;
+	use ServerTrait;
 
 	protected static $verb = '354';
 
@@ -60,6 +61,7 @@ class RPL_WHOSPCRPL extends BaseIRCMessage implements ReceivableMessage
 		if ($incomingIrcMessage->getVerb() != self::getVerb())
 			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
+		$server = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$ownNickname = array_shift($args);
 		$username = array_shift($args);
@@ -75,6 +77,7 @@ class RPL_WHOSPCRPL extends BaseIRCMessage implements ReceivableMessage
 		$object->setNickname($nickname);
 		$object->setStatus($status);
 		$object->setAccountname($accountname);
+		$object->setServer($server);
 
 		return $object;
 	}

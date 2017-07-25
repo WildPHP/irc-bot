@@ -21,6 +21,7 @@ class RPL_TOPIC extends BaseIRCMessage implements ReceivableMessage
 	use NicknameTrait;
 	use ChannelTrait;
 	use MessageTrait;
+	use ServerTrait;
 
 	protected static $verb = '332';
 
@@ -35,6 +36,7 @@ class RPL_TOPIC extends BaseIRCMessage implements ReceivableMessage
 		if ($incomingIrcMessage->getVerb() != self::getVerb())
 			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
+		$server = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);
 		$channel = array_shift($args);
@@ -44,6 +46,7 @@ class RPL_TOPIC extends BaseIRCMessage implements ReceivableMessage
 		$object->setNickname($nickname);
 		$object->setChannel($channel);
 		$object->setMessage($message);
+		$object->setServer($server);
 
 		return $object;
 	}

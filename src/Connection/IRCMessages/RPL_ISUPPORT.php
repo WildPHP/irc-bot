@@ -20,6 +20,7 @@ class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ServerTrait;
+	use MessageTrait;
 
 	protected static $verb = '005';
 
@@ -39,6 +40,7 @@ class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);
 		$server = $incomingIrcMessage->getPrefix();
+		$message = array_pop($args);
 
 		$variables = [];
 		foreach ($args as $arrayKey => $value)
@@ -53,6 +55,7 @@ class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 		$object->setNickname($nickname);
 		$object->setServer($server);
 		$object->setVariables($variables);
+		$object->setMessage($message);
 
 		return $object;
 	}

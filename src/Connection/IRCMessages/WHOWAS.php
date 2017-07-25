@@ -20,7 +20,7 @@ namespace WildPHP\Core\Connection\IRCMessages;
  * Class WHOWAS
  * @package WildPHP\Core\Connection\IRCMessages
  *
- * Syntax: WHOIS [nickname](,[nickname],...) ([count] ([server]))
+ * Syntax: WHOIS nickname(,nickname,...) (count] (server))
  */
 class WHOWAS extends BaseIRCMessage implements SendableMessage
 {

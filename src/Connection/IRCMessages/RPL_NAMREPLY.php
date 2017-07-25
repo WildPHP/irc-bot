@@ -20,6 +20,7 @@ class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 {
 	use NicknameTrait;
 	use ChannelTrait;
+	use ServerTrait;
 
 	protected static $verb = '353';
 
@@ -38,6 +39,7 @@ class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 		if ($incomingIrcMessage->getVerb() != self::getVerb())
 			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
 
+		$server = $incomingIrcMessage->getPrefix();
 		$args = $incomingIrcMessage->getArgs();
 		$nickname = array_shift($args);
 		$visibility = array_shift($args);
@@ -49,6 +51,7 @@ class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 		$object->setVisibility($visibility);
 		$object->setChannel($channel);
 		$object->setNicknames($nicknames);
+		$object->setServer($server);
 
 		return $object;
 	}
