@@ -524,12 +524,12 @@ class IrcMessageTest extends TestCase
 
 	public function testTopicCreate()
     {
-        $topic = new TOPIC('#someChannel', 'DataStorageTest message');
+        $topic = new TOPIC('#someChannel', 'Test message');
 
         static::assertEquals('#someChannel', $topic->getChannel());
-        static::assertEquals('DataStorageTest message', $topic->getMessage());
+        static::assertEquals('Test message', $topic->getMessage());
 
-        $expected = 'TOPIC #someChannel :DataStorageTest message' . "\r\n";
+        $expected = 'TOPIC #someChannel :Test message' . "\r\n";
         static::assertEquals($expected, $topic->__toString());
     }
 

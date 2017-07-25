@@ -40,7 +40,7 @@ class ValidatorTest extends TestCase
 	public function testOwnerHasPermission()
 	{
 		$validator = $this->initValidator();
-		$user = new \WildPHP\Core\Users\User('Test', '', '', 'TestUser');
+		$user = new \WildPHP\Core\Users\User('nickname', '', '', 'TestUser');
 
 		self::assertEquals('owner', $validator->isAllowedTo('test', $user));
 	}
