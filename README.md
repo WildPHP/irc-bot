@@ -1,7 +1,8 @@
 # Wild IRC Bot
 ----------
-[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png?b=3.0)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png?b=3.0)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
+[![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/coverage.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/code-structure/master/code-coverage)
 [![Latest Stable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/stable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 [![Latest Unstable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/unstable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 [![Total Downloads](https://poser.pugx.org/wildphp/Wild-IRC-Bot/downloads)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
