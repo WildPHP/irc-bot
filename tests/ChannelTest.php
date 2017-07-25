@@ -57,4 +57,46 @@ class ChannelTest extends TestCase
 
 		static::assertEquals($topic, $channel->getTopic());
 	}
+
+	public function testGetSetCreatedBy()
+	{
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
+		
+		$createdBy = 'SomeUser';
+		$channel->setCreatedBy($createdBy);
+		
+		static::assertEquals($createdBy, $channel->getCreatedBy());
+	}
+
+	public function testGetSetCreatedTime()
+	{
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
+		
+		$createdTime = 100;
+		$channel->setCreatedTime($createdTime);
+		
+		static::assertEquals($createdTime, $channel->getCreatedTime());
+	}
+
+	public function testGetSetUserCollection()
+	{
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
+
+		static::assertSame($userCollection, $channel->getUserCollection());
+	}
+
+	public function testGetSetChannelModes()
+	{
+		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$channelModes = new \WildPHP\Core\Channels\ChannelModes('');
+		$channel = new Channel('#someChannel', $userCollection, $channelModes);
+
+		static::assertSame($channelModes, $channel->getChannelModes());
+	}
 }
