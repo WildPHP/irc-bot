@@ -15,7 +15,7 @@ class UserPrefix
 	/**
 	 * @var string
 	 */
-	public static $regex = '/^(?<server>[^!@]+)?$|^(?<nick>[^!]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x';
+	public static $regex = '/^(?<server>[^!@]+)?$|^(?<nick>[^!@]+) (?:!(?<user>[^@]+))? (?:@(?<host>.+))?$/x';
 
 	/**
 	 * @var string
