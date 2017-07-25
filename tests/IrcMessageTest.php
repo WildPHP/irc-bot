@@ -49,6 +49,7 @@ use WildPHP\Core\Connection\IRCMessages\USER;
 use WildPHP\Core\Connection\IRCMessages\VERSION;
 use WildPHP\Core\Connection\IRCMessages\WHO;
 use WildPHP\Core\Connection\IRCMessages\WHOIS;
+use WildPHP\Core\Connection\IRCMessages\WHOWAS;
 use WildPHP\Core\Connection\Parser;
 use WildPHP\Core\Connection\UserPrefix;
 
@@ -618,7 +619,7 @@ class IrcMessageTest extends TestCase
 
 	public function testWhoWasCreate()
 	{
-		$whowas = new \WildPHP\Core\Connection\IRCMessages\WHOWAS(['nickname1', 'nickname2'], 2, 'server');
+		$whowas = new WHOWAS(['nickname1', 'nickname2'], 2, 'server');
 		static::assertEquals(['nickname1', 'nickname2'], $whowas->getNicknames());
 		static::assertEquals(2, $whowas->getCount());
 		static::assertEquals('server', $whowas->getServer());
