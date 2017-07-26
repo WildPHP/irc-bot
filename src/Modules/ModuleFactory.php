@@ -99,7 +99,7 @@ class ModuleFactory implements ComponentInterface
 	/**
 	 * @param string $class
 	 *
-	 * @return bool|mixed|object
+	 * @return false|object
 	 */
 	public function getModuleInstance(string $class)
 	{
