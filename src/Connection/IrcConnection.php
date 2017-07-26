@@ -42,9 +42,6 @@ class IrcConnection implements ComponentInterface
 	 */
 	public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
 	{
-		$container->getLoop()
-			->addPeriodicTimer(1, [$this, 'flushQueue']);
-
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.005', [$this, 'handleServerConfig']);
 
@@ -66,6 +63,9 @@ class IrcConnection implements ComponentInterface
 	 */
 	public function sendInitialConnectionDetails(Queue $queue)
 	{
+		$this->getContainer()->getLoop()
+			->addPeriodicTimer(1, [$this, 'flushQueue']);
+
 		$connectionDetails = $this->getConnectionDetails();
 		$queue->user(
 			$connectionDetails->getUsername(),
