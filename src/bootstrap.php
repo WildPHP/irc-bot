@@ -112,13 +112,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add($logger);
 	$componentContainer->add($configuration);
 	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
-
-	$sasl = new \WildPHP\Core\Connection\SASL($componentContainer);
-	$componentContainer->add(new CapabilityHandler($componentContainer, $sasl));
 	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
 
 	$componentContainer->add(new Queue());
 	$componentContainer->add(new ChannelCollection());
+	$componentContainer->add(new CapabilityHandler($componentContainer));
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
 	$componentContainer->add(
@@ -147,7 +145,8 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Users\BotStateManager::class,
 		\WildPHP\Core\Connection\NicknameHandler::class,
 		\WildPHP\Core\Connection\MessageLogger::class,
-		\WildPHP\Core\Connection\AccountNotifyHandler::class
+		\WildPHP\Core\Connection\AccountNotifyHandler::class,
+		\WildPHP\Core\Connection\SASL::class
 	]);
 
 	$moduleFactory->initializeModules($modules);

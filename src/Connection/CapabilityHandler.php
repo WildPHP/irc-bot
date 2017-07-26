@@ -14,10 +14,11 @@ use WildPHP\Core\Connection\IRCMessages\CAP;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
-class CapabilityHandler implements ComponentInterface
+class CapabilityHandler extends BaseModule implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;
@@ -30,7 +31,7 @@ class CapabilityHandler implements ComponentInterface
 	/**
 	 * @var array
 	 */
-	protected $capabilitiesToRequest = [];
+	protected $queuedCapabilities = [];
 
 	/**
 	 * @var array
@@ -43,68 +44,52 @@ class CapabilityHandler implements ComponentInterface
 	protected $notAcknowledgedCapabilities = [];
 
 	/**
-	 * @var SASL
+	 * @var bool
 	 */
-	protected $sasl;
+	protected $saslIsComplete = false;
 
 	/**
 	 * CapabilityHandler constructor.
 	 *
 	 * @param ComponentContainer $container
-	 * @param SASL $SASL
 	 */
-	public function __construct(ComponentContainer $container, SASL $SASL)
+	public function __construct(ComponentContainer $container)
 	{
 		$eventEmitter = EventEmitter::fromContainer($container);
-		$eventEmitter->on('stream.created', [$this, 'initNegotiation']);
 		$eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
-		$eventEmitter->on('irc.cap.ls', [$this, 'requestCoreCapabilities']);
-		$eventEmitter->on('irc.cap.ls.after', [$this, 'flushRequestQueue']);
+		$eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
 		$eventEmitter->on('irc.cap.acknowledged', [$this, 'tryEndNegotiation']);
 		$eventEmitter->on('irc.cap.notAcknowledged', [$this, 'tryEndNegotiation']);
-		$eventEmitter->on('irc.sasl.complete', [$this, 'tryEndNegotiation']);
-		$eventEmitter->on('irc.sasl.error', [$this, 'tryEndNegotiation']);
+		$eventEmitter->on('irc.sasl.complete', [$this, 'setSaslHasCompleted']);
 		$this->setContainer($container);
 
-		$this->setSasl($SASL);
-	}
+		$this->requestCapability('extended-join');
+		$this->requestCapability('account-notify');
+		$this->requestCapability('multi-prefix');
 
-	/**
-	 * @param array $availableCapabilities
-	 */
-	public function requestCoreCapabilities(array $availableCapabilities)
-	{
-		if (in_array('extended-join', $availableCapabilities))
-			$this->requestCapability('extended-join');
-
-		if (in_array('account-notify', $availableCapabilities))
-			$this->requestCapability('account-notify');
-
-		if (in_array('multi-prefix', $availableCapabilities))
-			$this->requestCapability('multi-prefix');
-	}
-
-	/**
-	 * @param Queue $queue
-	 */
-	public function initNegotiation(Queue $queue)
-	{
 		Logger::fromContainer($this->getContainer())
-			->debug('Capability negotiation started, requesting list of capabilities.');
-		$queue->cap('LS');
+			->debug('[CapabilityHandler] Capability negotiation started.');
+		Queue::fromContainer($container)
+			->cap('LS');
 	}
 
-	/**
-	 * @param Queue $queue
-	 */
-	public function flushRequestQueue(Queue $queue)
+	public function flushRequestQueue()
 	{
-		if (empty($this->getCapabilitiesToRequest()))
+		if (empty($this->queuedCapabilities))
 			return;
 
+		$capabilities = $this->queuedCapabilities;
+		foreach ($capabilities as $key => $capability)
+		{
+			if (!in_array($capability, $this->getAvailableCapabilities()))
+				unset($capabilities[$key]);
+		}
+
 		Logger::fromContainer($this->getContainer())
-			->debug('Sending capability request.', ['capabilitiesToRequest' => $this->getCapabilitiesToRequest()]);
-		$queue->cap('REQ', $this->getCapabilitiesToRequest());
+			->debug('Sending capability request.', ['queuedCapabilities' => $capabilities]);
+
+		Queue::fromContainer($this->getContainer())
+			->cap('REQ', $capabilities);
 	}
 
 	/**
@@ -127,34 +112,16 @@ class CapabilityHandler implements ComponentInterface
 
 	/**
 	 * @param string $capability
-	 *
-	 * @return bool
 	 */
 	public function requestCapability(string $capability)
 	{
-		if (!$this->isCapabilityAvailable($capability))
-		{
-			Logger::fromContainer($this->getContainer())
-				->warning('Capability was requested, but is not available on the server.',
-					[
-						'capability' => $capability,
-						'availableCapabilities' => $this->getAvailableCapabilities()
-					]);
-
-			return false;
-		}
-
-		if ($this->isCapabilityAcknowledged($capability))
-			return true;
-
-		if (in_array($capability, $this->getCapabilitiesToRequest()))
-			return true;
+		if ($this->isCapabilityAcknowledged($capability) || in_array($capability, $this->queuedCapabilities))
+			return;
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Capability queued for request on next flush.', ['capability' => $capability]);
-		$this->capabilitiesToRequest[] = $capability;
 
-		return true;
+		$this->queuedCapabilities[] = $capability;
 	}
 
 	/**
@@ -190,8 +157,6 @@ class CapabilityHandler implements ComponentInterface
 		{
 			case 'LS':
 				$this->updateAvailableCapabilities($capabilities, $queue);
-				EventEmitter::fromContainer($this->getContainer())
-					->emit('irc.cap.ls.after', [$queue]);
 				break;
 
 			case 'ACK':
@@ -210,55 +175,66 @@ class CapabilityHandler implements ComponentInterface
 	 */
 	protected function updateAvailableCapabilities(array $capabilities, Queue $queue)
 	{
-		$this->setAvailableCapabilities($capabilities);
+		$this->availableCapabilities = $capabilities;
+
 		Logger::fromContainer($this->getContainer())
 			->debug('Updated list of available capabilities.',
 				[
 					'availableCapabilities' => $capabilities
 				]);
+
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.ls', [$capabilities, $queue]);
 	}
 
 	/**
-	 * @param string[]|string $capabilities
+	 * @param string[] $capabilities
 	 * @param Queue $queue
 	 */
-	public function updateAcknowledgedCapabilities($capabilities, Queue $queue)
+	public function updateAcknowledgedCapabilities(array $capabilities, Queue $queue)
 	{
-
-		if (is_string($capabilities))
-			$capabilities = [$capabilities];
-
 		$ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
-		$this->setAcknowledgedCapabilities($ackCapabilities);
-		Logger::fromContainer($this->getContainer())
-			->debug('Updated list of acknowledged capabilities.',
-				[
-					'acknowledgedCapabilities' => $ackCapabilities
-				]);
+		$this->acknowledgedCapabilities = $ackCapabilities;
+
+		foreach ($ackCapabilities as $capability)
+		{
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('irc.cap.acknowledged.' . $capability, [$queue]);
+
+			if (in_array($capability, $this->queuedCapabilities))
+				unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
+		}
+
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
 
 	/**
-	 * @param string[]|string $capabilities
+	 * @param string[] $capabilities
 	 * @param Queue $queue
 	 */
-	public function updateNotAcknowledgedCapabilities($capabilities, Queue $queue)
+	public function updateNotAcknowledgedCapabilities(array $capabilities, Queue $queue)
 	{
-		if (is_string($capabilities))
-			$capabilities = [$capabilities];
-
 		$nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(), $capabilities)));
-		$this->setNotAcknowledgedCapabilities($nakCapabilities);
-		Logger::fromContainer($this->getContainer())
-			->debug('Updated list of not acknowledged capabilities.',
-				[
-					'notAcknowledgedCapabilities' => $nakCapabilities
-				]);
+		$this->notAcknowledgedCapabilities = $nakCapabilities;
+
+		foreach ($nakCapabilities as $capability)
+		{
+			EventEmitter::fromContainer($this->getContainer())
+				->emit('irc.cap.notAcknowledged.' . $capability, [$queue]);
+
+			if (in_array($capability, $this->queuedCapabilities))
+				unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
+		}
+
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
+	}
+
+	public function setSaslHasCompleted()
+	{
+		$this->saslIsComplete = true;
+		$this->tryEndNegotiation();
 	}
 
 	/**
@@ -266,15 +242,7 @@ class CapabilityHandler implements ComponentInterface
 	 */
 	public function canEndNegotiation(): bool
 	{
-		$saslIsComplete = $this->getSasl()
-			->hasCompleted();
-
-		$reqCount = count($this->getCapabilitiesToRequest());
-		$ackCount = count($this->getAcknowledgedCapabilities());
-		$nakCount = count($this->getNotAcknowledgedCapabilities());
-		$handledCount = $ackCount + $nakCount;
-
-		return $handledCount === $reqCount && $saslIsComplete;
+		return empty($this->queuedCapabilities) && $this->saslIsComplete;
 	}
 
 	/**
@@ -286,43 +254,11 @@ class CapabilityHandler implements ComponentInterface
 	}
 
 	/**
-	 * @param array $availableCapabilities
-	 */
-	public function setAvailableCapabilities(array $availableCapabilities)
-	{
-		$this->availableCapabilities = $availableCapabilities;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getCapabilitiesToRequest(): array
-	{
-		return $this->capabilitiesToRequest;
-	}
-
-	/**
-	 * @param array $capabilitiesToRequest
-	 */
-	public function setCapabilitiesToRequest(array $capabilitiesToRequest)
-	{
-		$this->capabilitiesToRequest = $capabilitiesToRequest;
-	}
-
-	/**
 	 * @return array
 	 */
 	public function getAcknowledgedCapabilities(): array
 	{
 		return $this->acknowledgedCapabilities;
-	}
-
-	/**
-	 * @param array $acknowledgedCapabilities
-	 */
-	public function setAcknowledgedCapabilities(array $acknowledgedCapabilities)
-	{
-		$this->acknowledgedCapabilities = $acknowledgedCapabilities;
 	}
 
 	/**
@@ -334,26 +270,10 @@ class CapabilityHandler implements ComponentInterface
 	}
 
 	/**
-	 * @param array $notAcknowledgedCapabilities
+	 * @return string
 	 */
-	public function setNotAcknowledgedCapabilities(array $notAcknowledgedCapabilities)
+	public static function getSupportedVersionConstraint(): string
 	{
-		$this->notAcknowledgedCapabilities = $notAcknowledgedCapabilities;
-	}
-
-	/**
-	 * @return SASL
-	 */
-	public function getSasl(): SASL
-	{
-		return $this->sasl;
-	}
-
-	/**
-	 * @param SASL $sasl
-	 */
-	public function setSasl(SASL $sasl)
-	{
-		$this->sasl = $sasl;
+		return WPHP_VERSION;
 	}
 }

@@ -10,44 +10,28 @@
 namespace WildPHP\Core\Connection;
 
 
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 
-class SASL
+class SASL extends BaseModule implements EventEmitterInterface
 {
 	use ContainerTrait;
-
-	/**
-	 * @var bool
-	 */
-	protected $hasCompleted = false;
-	/**
-	 * @var bool|string
-	 */
-	protected $errorReason = false;
-	/**
-	 * @var bool
-	 */
-	protected $isSuccessful = false;
+	use EventEmitterTrait;
 
 	/**
 	 * @var array
 	 */
-	protected $successCodes = [
-		'900' => 'RPL_LOGGEDIN',
-		'901' => 'RPL_LOGGEDOUT',
+	protected $saslCodes = [
 		'903' => 'RPL_SASLSUCCESS',
-		'908' => 'RPL_SASLMECHS'
-	];
+		'908' => 'RPL_SASLMECHS',
 
-	/**
-	 * @var array
-	 */
-	protected $errorCodes = [
 		'902' => 'ERR_NICKLOCKED',
 		'904' => 'ERR_SASLFAIL',
 		'905' => 'ERR_SASLTOOLONG',
@@ -67,46 +51,45 @@ class SASL
 			empty(Configuration::fromContainer($container)['sasl']['password'])
 		)
 		{
+			$this->setContainer($container);
 			Logger::fromContainer($container)
 				->info('[SASL] Not initialized because no credentials were provided.');
-			$this->setHasCompleted(true);
+			$this->completeSasl();
 
 			return;
 		}
 
+		CapabilityHandler::fromContainer($container)
+			->requestCapability('sasl');
+
 		EventEmitter::fromContainer($container)
-			->on('irc.cap.acknowledged', [$this, 'sendAuthenticationMechanism']);
+			->on('irc.cap.acknowledged.sasl', [$this, 'sendAuthenticationMechanism']);
+		EventEmitter::fromContainer($container)
+			->on('irc.cap.notAcknowledged.sasl', [$this, 'completeSasl']);
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
-		EventEmitter::fromContainer($container)
-			->on('irc.cap.ls', [$this, 'requestCapability']);
 
 		// Map all numeric SASL responses to either the success or error handler:
 		EventEmitter::fromContainer($container)
-			->on('irc.line.in', [$this, 'handlePositiveResponse']);
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in', [$this, 'handleNegativeResponse']);
+			->on('irc.line.in', [$this, 'handleResponse']);
 
 		Logger::fromContainer($container)
 			->debug('[SASL] Initialized, awaiting server response.');
+
 		$this->setContainer($container);
 	}
 
-	public function requestCapability()
+	public function completeSasl()
 	{
-		CapabilityHandler::fromContainer($this->getContainer())
-			->requestCapability('sasl');
+		EventEmitter::fromContainer($this->getContainer())
+			->emit('irc.sasl.complete');
 	}
 
 	/**
-	 * @param array $acknowledgedCapabilities
 	 * @param Queue $queue
 	 */
-	public function sendAuthenticationMechanism(array $acknowledgedCapabilities, Queue $queue)
+	public function sendAuthenticationMechanism(Queue $queue)
 	{
-		if (!in_array('sasl', $acknowledgedCapabilities))
-			return;
-
 		$queue->authenticate('PLAIN');
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Authentication mechanism requested, awaiting server response.');
@@ -134,103 +117,36 @@ class SASL
 
 		$username = Configuration::fromContainer($this->getContainer())['sasl']['username'];
 		$password = Configuration::fromContainer($this->getContainer())['sasl']['password'];
+
 		$credentials = $this->generateCredentialString($username, $password);
 		$queue->authenticate($credentials);
+
 		Logger::fromContainer($this->getContainer())
 			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
 
 	/**
 	 * @param IncomingIrcMessage $message
-	 * @param Queue $queue
 	 */
-	public function handlePositiveResponse(IncomingIrcMessage $message, Queue $queue)
+	public function handleResponse(IncomingIrcMessage $message)
 	{
 		$code = $message->getVerb();
-		if (!array_key_exists($code, $this->successCodes))
-			return;
 
-		$this->setErrorReason(false);
-		$this->setHasCompleted(true);
-		$this->setIsSuccessful(true);
-
-		if ($code != '903')
+		if (!array_key_exists($code, $this->saslCodes))
 			return;
 
 		// This event has to fit on the events used in CapabilityHandler.
 		Logger::fromContainer($this->getContainer())
-			->info('[SASL] Authentication successful!');
-		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.sasl.complete', [[], $queue]);
+			->info('[SASL] Authentication ended with code ' . $code . ' (' . $this->saslCodes[$code] . ')');
+
+		$this->completeSasl();
 	}
 
 	/**
-	 * @param IncomingIrcMessage $message
+	 * @return string
 	 */
-	public function handleNegativeResponse(IncomingIrcMessage $message)
+	public static function getSupportedVersionConstraint(): string
 	{
-		$code = $message->getVerb();
-		if (!array_key_exists($code, $this->errorCodes))
-			return;
-
-		$reason = $this->errorCodes[$code];
-
-		$this->setErrorReason($reason);
-		$this->setHasCompleted(true);
-		$this->setIsSuccessful(false);
-
-		// This event has to fit on the events used in CapabilityHandler.
-		Logger::fromContainer($this->getContainer())
-			->warning('[SASL] Authentication was NOT successful. Continuing unauthenticated.');
-		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.sasl.error');
-	}
-
-	/**
-	 * @param string|false $reason
-	 */
-	public function setErrorReason($reason)
-	{
-		$this->errorReason = $reason;
-	}
-
-	/**
-	 * @param boolean $hasCompleted
-	 */
-	public function setHasCompleted(bool $hasCompleted)
-	{
-		$this->hasCompleted = $hasCompleted;
-	}
-
-	/**
-	 * @param boolean $isSuccessful
-	 */
-	public function setIsSuccessful(bool $isSuccessful)
-	{
-		$this->isSuccessful = $isSuccessful;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasCompleted(): bool
-	{
-		return $this->hasCompleted;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isSuccessful(): bool
-	{
-		return $this->isSuccessful;
-	}
-
-	/**
-	 * @return bool|string
-	 */
-	public function hasEncounteredError()
-	{
-		return $this->errorReason;
+		return WPHP_VERSION;
 	}
 }
