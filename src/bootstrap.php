@@ -117,7 +117,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add(new CapabilityHandler($componentContainer, $sasl));
 	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
 
-	$componentContainer->add(new Queue($componentContainer));
+	$componentContainer->add(new Queue());
 	$componentContainer->add(new ChannelCollection());
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
