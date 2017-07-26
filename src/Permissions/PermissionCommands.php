@@ -82,12 +82,14 @@ class PermissionCommands extends BaseModule
 			->registerCommand('lsperms', [$this, 'lspermsCommand'], $commandHelp, 1, 1, 'listgrouppermissions');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->append('Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])');
+		$commandHelp->append('Links a channel to a permission group, so a group only takes effect in said channel. ' .
+			'Usage: linkgroup [group name] ([channel name])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('linkgroup', [$this, 'linkgroupCommand'], $commandHelp, 1, 2, 'linkgroup');
 
 		$commandHelp = new CommandHelp();
-		$commandHelp->append('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])');
+		$commandHelp->append('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. ' .
+			'Usage: unlinkgroup [group name] ([channel name])');
 		CommandHandler::fromContainer($container)
 			->registerCommand('unlinkgroup', [$this, 'unlinkgroupCommand'], $commandHelp, 1, 2, 'unlinkgroup');
 
@@ -238,7 +240,8 @@ class PermissionCommands extends BaseModule
 		$checks = [
 			'This group does not exist.' => empty($group),
 			'This group may not contain members.' => $group ? $group->isModeGroup() : false,
-			'This user is not in my current database, in this channel, or is not logged in to services.' => empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
+			'This user is not in my current database, in this channel, or is not logged in to services.' =>
+				empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
 		];
 
 		if (!$this->doChecks($checks, $source, $user))
