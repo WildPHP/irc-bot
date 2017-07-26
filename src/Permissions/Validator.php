@@ -125,7 +125,7 @@ class Validator implements ComponentInterface
 		{
 			/** @var PermissionGroup $group */
 			if ($group->hasPermission($permissionName, $channelName))
-				return $name;
+				return (string) $name;
 		}
 
 		return false;
