@@ -18,7 +18,6 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IncomingIrcMessage;
 use WildPHP\Core\Connection\IRCMessages\ACCOUNT;
 use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
@@ -71,7 +70,7 @@ class IrcMessageTest extends TestCase
 	public function testAccountReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname ACCOUNT ircAccount' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$account = ACCOUNT::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -92,7 +91,7 @@ class IrcMessageTest extends TestCase
 	public function testAuthenticateReceive()
 	{
 		$line = Parser::parseLine('AUTHENTICATE +' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$authenticate = AUTHENTICATE::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('+', $authenticate->getResponse());
@@ -117,7 +116,7 @@ class IrcMessageTest extends TestCase
 	public function testAwayReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname AWAY :A sample message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$away = AWAY::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('nickname', $away->getNickname());
@@ -144,7 +143,7 @@ class IrcMessageTest extends TestCase
     public function testCapReceive()
     {
         $line = Parser::parseLine(':server CAP * LS :cap1 cap2' . "\r\n");
-        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $incoming = new IncomingIrcMessage($line);
         $cap = CAP::fromIncomingIrcMessage($incoming);
 
         static::assertEquals('LS', $cap->getCommand());
@@ -161,7 +160,7 @@ class IrcMessageTest extends TestCase
 	public function testErrorReceive()
 	{
 		$line = Parser::parseLine('ERROR :A sample message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$error = ERROR::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('A sample message', $error->getMessage());
@@ -194,7 +193,7 @@ class IrcMessageTest extends TestCase
 	public function testJoinReceiveExtended()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname JOIN #channel ircAccountName :realname' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('nickname', $join->getNickname());
@@ -206,7 +205,7 @@ class IrcMessageTest extends TestCase
 	public function testJoinReceiveRegular()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname JOIN #channel' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$join = JOIN::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('nickname', $join->getNickname());
@@ -236,7 +235,7 @@ class IrcMessageTest extends TestCase
 	public function testKickReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname KICK #somechannel othernickname :You deserved it!');
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$kick = KICK::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -268,7 +267,7 @@ class IrcMessageTest extends TestCase
 	public function testModeReceiveChannel()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname MODE #channel -o+b arg1 arg2' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -288,7 +287,7 @@ class IrcMessageTest extends TestCase
 	public function testModeReceiveUser()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname MODE user -o+b' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -302,7 +301,7 @@ class IrcMessageTest extends TestCase
 	public function testModeReceiveInitial()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname MODE nickname -o+b' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$mode = MODE::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('nickname', $mode->getTarget());
@@ -335,7 +334,7 @@ class IrcMessageTest extends TestCase
 	public function testNickReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname NICK newnickname' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$nick = NICK::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -364,7 +363,7 @@ class IrcMessageTest extends TestCase
 	public function testNoticeReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname NOTICE #somechannel :This is a test message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$notice = NOTICE::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -393,7 +392,7 @@ class IrcMessageTest extends TestCase
 	public function testPartReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname PART #channel :I have a valid reason' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$part = PART::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -433,7 +432,7 @@ class IrcMessageTest extends TestCase
 	public function testPingReceive()
 	{
 		$line = Parser::parseLine('PING testserver1 testserver2' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$ping = PING::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('testserver1', $ping->getServer1());
@@ -460,7 +459,7 @@ class IrcMessageTest extends TestCase
 	public function testPongReceive()
 	{
 		$line = Parser::parseLine('PONG testserver1 testserver2' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$pong = PONG::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('testserver1', $pong->getServer1());
@@ -487,7 +486,7 @@ class IrcMessageTest extends TestCase
 	public function testPrivmsgReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname PRIVMSG #somechannel :This is a test message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$privmsg = PRIVMSG::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -515,7 +514,7 @@ class IrcMessageTest extends TestCase
 	public function testQuitReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname QUIT :A sample message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$quit = QUIT::fromIncomingIrcMessage($incoming);
 
 		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -543,7 +542,7 @@ class IrcMessageTest extends TestCase
 	public function testRplEndOfNamesReceive()
 	{
 		$line = Parser::parseLine(':server 366 nickname #channel :End of /NAMES list.' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_endofnames = RPL_ENDOFNAMES::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('nickname', $rpl_endofnames->getNickname());
@@ -560,7 +559,7 @@ class IrcMessageTest extends TestCase
 	public function testRplIsupportReceive()
 	{
 		$line = Parser::parseLine(':server 005 nickname KEY1=value KEY2=value2 :are supported by this server' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_isupport = RPL_ISUPPORT::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals(['key1' => 'value', 'key2' => 'value2'], $rpl_isupport->getVariables());
@@ -578,7 +577,7 @@ class IrcMessageTest extends TestCase
 	public function testRplNamReplyReceive()
 	{
 		$line = Parser::parseLine(':server 353 nickname + #channel :nickname1 nickname2 nickname3' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_namreply = RPL_NAMREPLY::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('server', $rpl_namreply->getServer());
@@ -596,7 +595,7 @@ class IrcMessageTest extends TestCase
 	public function testRplTopicReceive()
 	{
 		$line = Parser::parseLine(':server 332 nickname #channel :A new topic message' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_topic = RPL_TOPIC::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('server', $rpl_topic->getServer());
@@ -614,7 +613,7 @@ class IrcMessageTest extends TestCase
 	public function testRplWelcomeReceive()
 	{
 		$line = Parser::parseLine(':server 001 nickname :Welcome to server!' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_welcome = RPL_WELCOME::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('server', $rpl_welcome->getServer());
@@ -631,7 +630,7 @@ class IrcMessageTest extends TestCase
 	public function testRplWhosPCRplReceive()
 	{
 		$line = Parser::parseLine(':server 354 ownnickname username hostname nickname status accountname' . "\r\n");
-		$incoming = new IncomingIrcMessage($line, new ComponentContainer());
+		$incoming = new IncomingIrcMessage($line);
 		$rpl_whospcrpl = RPL_WHOSPCRPL::fromIncomingIrcMessage($incoming);
 
 		static::assertEquals('server', $rpl_whospcrpl->getServer());
@@ -663,7 +662,7 @@ class IrcMessageTest extends TestCase
     public function testTopicReceive()
     {
         $line = Parser::parseLine(':nickname!username@hostname TOPIC #someChannel :This is a new topic' . "\r\n");
-        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $incoming = new IncomingIrcMessage($line);
         $topic = TOPIC::fromIncomingIrcMessage($incoming);
 
 	    $userPrefix = new UserPrefix('nickname', 'username', 'hostname');
@@ -694,7 +693,7 @@ class IrcMessageTest extends TestCase
     public function testUserReceive()
     {
         $line = Parser::parseLine('USER myusername localhost someserver arealname' . "\r\n");
-        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $incoming = new IncomingIrcMessage($line);
         $user = USER::fromIncomingIrcMessage($incoming);
 
         static::assertEquals('myusername', $user->getUsername());
@@ -736,7 +735,7 @@ class IrcMessageTest extends TestCase
     public function testWhoReceive()
     {
         $line = Parser::parseLine(':nickname!username@hostname WHO #someChannel %nuhaf' . "\r\n");
-        $incoming = new IncomingIrcMessage($line, new ComponentContainer());
+        $incoming = new IncomingIrcMessage($line);
         $who = WHO::fromIncomingIrcMessage($incoming);
 
 	    $userPrefix = new UserPrefix('nickname', 'username', 'hostname');
