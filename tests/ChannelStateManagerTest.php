@@ -6,19 +6,15 @@
  * See the LICENSE file for more information.
  */
 
-/**
- * Created by PhpStorm.
- * User: rick2
- * Date: 25-7-2017
- * Time: 18:15
- */
-
 use PHPUnit\Framework\TestCase;
 use WildPHP\Core\Channels\ChannelStateManager;
 use WildPHP\Core\EventEmitter;
 
 class ChannelStateManagerTest extends TestCase
 {
+	/**
+	 * @return \WildPHP\Core\ComponentContainer
+	 */
 	public function initContainer()
 	{
 		$eventEmitter = new EventEmitter();
@@ -33,6 +29,12 @@ class ChannelStateManagerTest extends TestCase
 		$componentContainer->add($channelCollection);
 		return $componentContainer;
 	}
+
+	/**
+	 * @param \WildPHP\Core\ComponentContainer $componentContainer
+	 *
+	 * @return ChannelStateManager
+	 */
 	public function init(\WildPHP\Core\ComponentContainer $componentContainer): ChannelStateManager
 	{
 		return new ChannelStateManager($componentContainer);

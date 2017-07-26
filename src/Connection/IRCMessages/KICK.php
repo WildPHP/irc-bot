@@ -33,6 +33,13 @@ class KICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	 */
 	protected $target = '';
 
+	/**
+	 * KICK constructor.
+	 *
+	 * @param string $channel
+	 * @param string $nickname
+	 * @param string $message
+	 */
 	public function __construct(string $channel, string $nickname, string $message)
 	{
 		$this->setChannel($channel);
@@ -81,6 +88,9 @@ class KICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$this->target = $target;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'KICK ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";

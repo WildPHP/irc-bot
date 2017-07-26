@@ -21,6 +21,11 @@ class AccountNotifyHandler extends BaseModule
 {
 	use ContainerTrait;
 
+	/**
+	 * AccountNotifyHandler constructor.
+	 *
+	 * @param ComponentContainer $container
+	 */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);

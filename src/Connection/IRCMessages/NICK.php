@@ -31,6 +31,11 @@ class NICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	 */
 	protected $newNickname = '';
 
+	/**
+	 * NICK constructor.
+	 *
+	 * @param string $newNickname
+	 */
 	public function __construct(string $newNickname)
 	{
 		$this->setNewNickname($newNickname);
@@ -74,6 +79,9 @@ class NICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$this->newNickname = $newNickname;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'NICK ' . $this->getNewNickname() . "\r\n";

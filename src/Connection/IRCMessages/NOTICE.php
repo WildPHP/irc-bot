@@ -30,6 +30,12 @@ class NOTICE extends BaseIRCMessage implements ReceivableMessage, SendableMessag
 	 */
 	protected static $verb = 'NOTICE';
 
+	/**
+	 * NOTICE constructor.
+	 *
+	 * @param string $channel
+	 * @param string $message
+	 */
 	public function __construct(string $channel, string $message)
 	{
 		$this->setChannel($channel);
@@ -58,6 +64,9 @@ class NOTICE extends BaseIRCMessage implements ReceivableMessage, SendableMessag
 		return $object;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'NOTICE ' . $this->getChannel() . ' :' . $this->getMessage() . "\r\n";

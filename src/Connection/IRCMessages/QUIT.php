@@ -26,6 +26,11 @@ class QUIT extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 
 	protected static $verb = 'QUIT';
 
+	/**
+	 * QUIT constructor.
+	 *
+	 * @param string $message
+	 */
 	public function __construct(string $message)
 	{
 		$this->setMessage($message);
@@ -53,6 +58,9 @@ class QUIT extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		return $object;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'QUIT :' . $this->getMessage() . "\r\n";

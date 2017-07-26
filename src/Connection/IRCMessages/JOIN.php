@@ -50,8 +50,8 @@ class JOIN extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	/**
 	 * JOIN constructor.
 	 *
-	 * @param array|string $channels
-	 * @param array|string $keys
+	 * @param string[]|string $channels
+	 * @param string[]|string $keys
 	 */
 	public function __construct($channels, $keys = [])
 	{
@@ -142,6 +142,9 @@ class JOIN extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$this->keys = $keys;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$channels = implode(',', $this->getChannels());

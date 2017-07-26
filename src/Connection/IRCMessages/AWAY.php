@@ -25,6 +25,11 @@ class AWAY extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 
 	protected static $verb = 'AWAY';
 
+	/**
+	 * AWAY constructor.
+	 *
+	 * @param string $message
+	 */
 	public function __construct(string $message)
 	{
 		$this->setMessage($message);
@@ -52,6 +57,9 @@ class AWAY extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		return $object;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'AWAY :' . $this->getMessage() . "\r\n";

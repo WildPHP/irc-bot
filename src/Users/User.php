@@ -31,6 +31,14 @@ class User
 	 */
 	protected $ircAccount = '';
 
+	/**
+	 * User constructor.
+	 *
+	 * @param string $nickname
+	 * @param string $hostname
+	 * @param string $username
+	 * @param string $ircAccount
+	 */
 	public function __construct(string $nickname, string $hostname = '', string $username = '', string $ircAccount = '')
 	{
 		$this->setNickname($nickname);

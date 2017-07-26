@@ -16,5 +16,10 @@ abstract class BaseModule implements ModuleInterface
 {
 	use ComponentTrait;
 
+	/**
+	 * BaseModule constructor.
+	 *
+	 * @param ComponentContainer $container
+	 */
 	abstract public function __construct(ComponentContainer $container);
 }

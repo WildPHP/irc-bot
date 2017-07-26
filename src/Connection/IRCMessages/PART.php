@@ -32,6 +32,12 @@ class PART extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	use PrefixTrait;
 	use MessageTrait;
 
+	/**
+	 * PART constructor.
+	 *
+	 * @param $channels
+	 * @param string $message
+	 */
 	public function __construct($channels, $message = '')
 	{
 		if (!is_array($channels))
@@ -64,6 +70,9 @@ class PART extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		return $object;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$channels = implode(',', $this->getChannels());

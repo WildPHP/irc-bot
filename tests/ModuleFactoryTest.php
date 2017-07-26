@@ -12,6 +12,9 @@ use WildPHP\Core\Modules\ModuleInitializationException;
 
 class ModuleFactoryTest extends TestCase
 {
+	/**
+	 * @return \WildPHP\Core\ComponentContainer
+	 */
 	public function initContainer(): \WildPHP\Core\ComponentContainer
 	{
 		$componentContainer = new \WildPHP\Core\ComponentContainer();
@@ -19,6 +22,11 @@ class ModuleFactoryTest extends TestCase
 		return $componentContainer;
 	}
 
+	/**
+	 * @param $componentContainer
+	 *
+	 * @return ModuleFactory
+	 */
 	public function init($componentContainer): ModuleFactory
 	{
 		if (!defined('WPHP_VERSION'))
@@ -102,11 +110,19 @@ class ModuleFactoryTest extends TestCase
 
 class ModuleNotMeetingVersionConstraint extends \WildPHP\Core\Modules\BaseModule
 {
+	/**
+	 * ModuleNotMeetingVersionConstraint constructor.
+	 *
+	 * @param \WildPHP\Core\ComponentContainer $container
+	 */
 	public function __construct(\WildPHP\Core\ComponentContainer $container)
 	{
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function getSupportedVersionConstraint(): string
 	{
 		return '2.9.9';
@@ -115,11 +131,19 @@ class ModuleNotMeetingVersionConstraint extends \WildPHP\Core\Modules\BaseModule
 
 class ValidModule extends \WildPHP\Core\Modules\BaseModule
 {
+	/**
+	 * ValidModule constructor.
+	 *
+	 * @param \WildPHP\Core\ComponentContainer $container
+	 */
 	public function __construct(\WildPHP\Core\ComponentContainer $container)
 	{
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function getSupportedVersionConstraint(): string
 	{
 		return '3.0.0';
@@ -128,11 +152,19 @@ class ValidModule extends \WildPHP\Core\Modules\BaseModule
 
 class ValidModule2 extends \WildPHP\Core\Modules\BaseModule
 {
+	/**
+	 * ValidModule2 constructor.
+	 *
+	 * @param \WildPHP\Core\ComponentContainer $container
+	 */
 	public function __construct(\WildPHP\Core\ComponentContainer $container)
 	{
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function getSupportedVersionConstraint(): string
 	{
 		return '3.0.0';
@@ -141,11 +173,19 @@ class ValidModule2 extends \WildPHP\Core\Modules\BaseModule
 
 class ModuleThrowsException extends \WildPHP\Core\Modules\BaseModule
 {
+	/**
+	 * ModuleThrowsException constructor.
+	 *
+	 * @param \WildPHP\Core\ComponentContainer $container
+	 */
 	public function __construct(\WildPHP\Core\ComponentContainer $container)
 	{
 		throw new InvalidArgumentException();
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function getSupportedVersionConstraint(): string
 	{
 		return '3.0.0';

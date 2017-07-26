@@ -6,13 +6,6 @@
  * See the LICENSE file for more information.
  */
 
-/**
- * Created by PhpStorm.
- * User: rick2
- * Date: 20-7-2017
- * Time: 12:38
- */
-
 namespace WildPHP\Core\Connection;
 
 

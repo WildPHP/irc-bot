@@ -28,6 +28,11 @@ class ACCOUNT extends BaseIRCMessage implements ReceivableMessage
 	 */
 	protected $accountName = '';
 
+	/**
+	 * ACCOUNT constructor.
+	 *
+	 * @param string $accountName
+	 */
 	function __construct(string $accountName)
 	{
 		$this->setAccountName($accountName);

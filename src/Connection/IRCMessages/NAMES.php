@@ -36,6 +36,9 @@ class NAMES extends BaseIRCMessage implements SendableMessage
 		$this->setServer($server);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';

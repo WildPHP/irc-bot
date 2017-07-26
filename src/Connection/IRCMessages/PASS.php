@@ -21,6 +21,11 @@ class PASS extends BaseIRCMessage implements SendableMessage
 
 	protected $password = '';
 
+	/**
+	 * PASS constructor.
+	 *
+	 * @param string $password
+	 */
 	public function __construct(string $password)
 	{
 		$this->setPassword($password);
@@ -42,6 +47,9 @@ class PASS extends BaseIRCMessage implements SendableMessage
 		$this->password = $password;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'PASS :' . $this->getPassword() . "\r\n";

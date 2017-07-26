@@ -27,6 +27,11 @@ class AUTHENTICATE extends BaseIRCMessage implements ReceivableMessage, Sendable
 	 */
 	protected $response = '';
 
+	/**
+	 * AUTHENTICATE constructor.
+	 *
+	 * @param string $response
+	 */
 	public function __construct(string $response)
 	{
 		$this->setResponse($response);
@@ -65,6 +70,9 @@ class AUTHENTICATE extends BaseIRCMessage implements ReceivableMessage, Sendable
 		$this->response = $response;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'AUTHENTICATE ' . $this->getResponse() . "\r\n";

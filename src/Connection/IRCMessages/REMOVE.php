@@ -33,6 +33,13 @@ class REMOVE extends BaseIRCMessage implements ReceivableMessage, SendableMessag
 	 */
 	protected $target = '';
 
+	/**
+	 * REMOVE constructor.
+	 *
+	 * @param string $channel
+	 * @param string $nickname
+	 * @param string $message
+	 */
 	public function __construct(string $channel, string $nickname, string $message)
 	{
 		$this->setChannel($channel);
@@ -81,6 +88,9 @@ class REMOVE extends BaseIRCMessage implements ReceivableMessage, SendableMessag
 		$this->target = $target;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return 'REMOVE ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";

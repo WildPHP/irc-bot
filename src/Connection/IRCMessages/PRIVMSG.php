@@ -38,6 +38,12 @@ class PRIVMSG extends BaseIRCMessage implements ReceivableMessage, SendableMessa
 	 */
 	protected $isCtcp = false;
 
+	/**
+	 * PRIVMSG constructor.
+	 *
+	 * @param string $channel
+	 * @param string $message
+	 */
 	public function __construct(string $channel, string $message)
 	{
 		$this->setChannel($channel);
@@ -111,6 +117,9 @@ class PRIVMSG extends BaseIRCMessage implements ReceivableMessage, SendableMessa
 		$this->isCtcp = $isCtcp;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		if ($this->isCtcp())

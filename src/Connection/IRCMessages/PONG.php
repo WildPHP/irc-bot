@@ -25,6 +25,12 @@ class PONG extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 
 	protected $server2 = '';
 
+	/**
+	 * PONG constructor.
+	 *
+	 * @param string $server1
+	 * @param string $server2
+	 */
 	public function __construct(string $server1, string $server2 = '')
 	{
 		$this->setServer1($server1);
@@ -81,6 +87,9 @@ class PONG extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$this->server2 = $server2;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$server2 = $this->getServer2();

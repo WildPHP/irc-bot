@@ -11,6 +11,9 @@ use WildPHP\Core\Permissions\Validator;
 
 class ValidatorTest extends TestCase
 {
+	/**
+	 * @return Validator
+	 */
 	public function initValidator(): Validator
 	{
 		if (!defined('WPHP_ROOT_DIR'))

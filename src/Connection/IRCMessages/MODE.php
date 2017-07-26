@@ -44,6 +44,13 @@ class MODE extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 	 */
 	protected $arguments = [];
 
+	/**
+	 * MODE constructor.
+	 *
+	 * @param string $target
+	 * @param string $flags
+	 * @param array $arguments
+	 */
 	public function __construct(string $target, string $flags, array $arguments = [])
 	{
 		$this->setTarget($target);
@@ -123,6 +130,9 @@ class MODE extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$this->arguments = $arguments;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$arguments = implode(' ', $this->getArguments());
