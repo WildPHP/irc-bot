@@ -57,13 +57,13 @@ class MessageLogger implements ModuleInterface
 	 */
 	public function logOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
 	{
-		$message = $message->getCommandObject();
+		$command = $message->getCommandObject();
 
-		if (!($message instanceof PRIVMSG))
+		if (!($command instanceof PRIVMSG))
 			return;
 
-		$channel = $message->getChannel();
-		$msg = $message->getMessage();
+		$channel = $command->getChannel();
+		$msg = $command->getMessage();
 
 		$toLog = 'OUT: [' . $channel . '] ' . $msg;
 		Logger::fromContainer($container)
