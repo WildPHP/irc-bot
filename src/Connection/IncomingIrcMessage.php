@@ -11,8 +11,6 @@ namespace WildPHP\Core\Connection;
 
 class IncomingIrcMessage
 {
-	//use ContainerTrait;
-
 	/**
 	 * @var string
 	 */
