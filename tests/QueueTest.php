@@ -25,16 +25,9 @@ class QueueTest extends TestCase
 {
 	protected $container;
 
-	public function setUp()
-	{
-		$this->container = new \WildPHP\Core\ComponentContainer();
-		$logger = new \WildPHP\Core\Logger\Logger('wildphp');
-		$this->container->add($logger);
-	}
-
 	public function testQueueAddItem()
     {
-        $queue = new \WildPHP\Core\Connection\Queue($this->container);
+        $queue = new Queue();
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
         
         $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
@@ -45,7 +38,7 @@ class QueueTest extends TestCase
 
     public function testCalculateTimeWithoutFoodControl()
     {
-        $queue = new Queue($this->container);
+        $queue = new Queue();
         $queue->setFloodControl(false);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
@@ -67,7 +60,7 @@ class QueueTest extends TestCase
 
     public function testCalculateTime()
     {
-        $queue = new Queue($this->container);
+        $queue = new Queue();
         $queue->setFloodControl(true);
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
@@ -91,7 +84,7 @@ class QueueTest extends TestCase
 
     public function testQueueRun()
     {
-        $queue = new Queue($this->container);
+        $queue = new Queue();
         static::assertEquals(0, $queue->getAmountOfItemsInQueue());
 
         for ($i = 1; $i <= 3; $i++)

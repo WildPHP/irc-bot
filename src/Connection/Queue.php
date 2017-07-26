@@ -9,10 +9,8 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\ComponentContainer;
+use Evenement\EventEmitter;
 use WildPHP\Core\Connection\IRCMessages\SendableMessage;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Logger\Logger;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
@@ -45,10 +43,9 @@ use Yoshi2889\Container\ComponentTrait;
  * @method void whowas(string[]|string $nicknames, int $count = 0, string $server = '')
  *
  */
-class Queue implements QueueInterface, ComponentInterface
+class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 {
 	use ComponentTrait;
-	use ContainerTrait;
 
 	/**
 	 * An explanation of how this works.
@@ -91,28 +88,16 @@ class Queue implements QueueInterface, ComponentInterface
 	protected $floodControlEnabled = false;
 
 	/**
-	 * Queue constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
-	public function __construct(ComponentContainer $container)
-	{
-		$this->setContainer($container);
-	}
-
-	/**
 	 * @param SendableMessage $command
+	 *
+	 * @return QueueItem
 	 */
 	public function insertMessage(SendableMessage $command)
 	{
 		$time = $this->calculateNextMessageTime();
-
-		if ($time > time())
-			Logger::fromContainer($this->getContainer())
-				->warning('Throttling in effect. There are ' . ($this->getAmountOfItemsInQueue() + 1) . ' messages in the queue.');
-
 		$item = new QueueItem($command, $time);
 		$this->scheduleItem($item);
+		return $item;
 	}
 
 	/**
@@ -219,6 +204,8 @@ class Queue implements QueueInterface, ComponentInterface
 	/**
 	 * @param string $name
 	 * @param array $arguments
+	 *
+	 * @return QueueItem
 	 */
 	public function __call(string $name, array $arguments)
 	{
@@ -227,6 +214,6 @@ class Queue implements QueueInterface, ComponentInterface
 			throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
 
 		$object = new $class(...$arguments);
-		$this->insertMessage($object);
+		return $this->insertMessage($object);
 	}
 }
