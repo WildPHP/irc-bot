@@ -12,7 +12,7 @@
         "evenement/evenement": "^2.0",
         "yoshi2889/collections": "^0.1",
         "yoshi2889/container": "^0.1",
-        "yoshi2889/validation-closures": "^0.1",
+        "yoshi2889/validation-closures": "^0.2",
         "monolog/monolog": "^1.23.0",
         "composer/semver": "^1.4"
     },
