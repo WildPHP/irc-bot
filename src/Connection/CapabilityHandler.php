@@ -81,7 +81,7 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 		$capabilities = $this->queuedCapabilities;
 		foreach ($capabilities as $key => $capability)
 		{
-			if (!in_array($capability, $this->getAvailableCapabilities()))
+			if (!$this->isCapabilityAvailable($capability))
 				unset($capabilities[$key]);
 		}
 
@@ -112,16 +112,19 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 
 	/**
 	 * @param string $capability
+	 *
+	 * @return bool
 	 */
 	public function requestCapability(string $capability)
 	{
 		if ($this->isCapabilityAcknowledged($capability) || in_array($capability, $this->queuedCapabilities))
-			return;
+			return false;
 
 		Logger::fromContainer($this->getContainer())
 			->debug('Capability queued for request on next flush.', ['capability' => $capability]);
 
 		$this->queuedCapabilities[] = $capability;
+		return true;
 	}
 
 	/**
