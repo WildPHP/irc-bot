@@ -94,6 +94,7 @@ class UserStateManager extends BaseModule
 		}
 
 		$channel->getUserCollection()->removeAll($user);
+		EventEmitter::fromContainer($this->getContainer())->emit('user.left', [$channel, $user, Queue::fromContainer($this->getContainer())]);
 	}
 
 	/**
