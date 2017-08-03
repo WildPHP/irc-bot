@@ -21,11 +21,11 @@ interface QueueInterface
 	public function insertMessage(SendableMessage $command);
 
 	/**
-	 * @param SendableMessage $command
+	 * @param QueueItem $item
 	 *
 	 * @return void
 	 */
-	public function removeMessage(SendableMessage $command);
+	public function removeMessage(QueueItem $item);
 
 	/**
 	 * @param int $index

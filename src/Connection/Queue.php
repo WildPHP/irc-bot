@@ -19,28 +19,28 @@ use Yoshi2889\Container\ComponentTrait;
  * @package WildPHP\Core\Connection
  *
  * Magic methods below
- * @method void authenticate(string $response)
- * @method void away(string $message)
- * @method void cap(string $command, array $capabilities = [])
- * @method void join(mixed $channels, array $keys = [])
- * @method void kick(string $channel, string $nickname, string $message)
- * @method void mode(string $target, string $flags, array $arguments = [])
- * @method void nick(string $newNickname)
- * @method void notice(string $channel, string $message)
- * @method void part(mixed $channels, $message = '')
- * @method void pass(string $password)
- * @method void ping(string $server1, string $server2 = '')
- * @method void pong(string $server1, string $server2 = '')
- * @method void privmsg(string $channel, string $message)
- * @method void quit(string $message)
- * @method void raw(string $command)
- * @method void remove(string $channel, string $nickname, string $message)
- * @method void topic(string $channelName, string $message)
- * @method void user(string $username, string $hostname, string $servername, string $realname)
- * @method void version(string $server = '')
- * @method void who(string $channel, string $options = '')
- * @method void whois(string[]|string $nicknames, string $server = '')
- * @method void whowas(string[]|string $nicknames, int $count = 0, string $server = '')
+ * @method QueueItem authenticate(string $response)
+ * @method QueueItem away(string $message)
+ * @method QueueItem cap(string $command, array $capabilities = [])
+ * @method QueueItem join(mixed $channels, array $keys = [])
+ * @method QueueItem kick(string $channel, string $nickname, string $message)
+ * @method QueueItem mode(string $target, string $flags, array $arguments = [])
+ * @method QueueItem nick(string $newNickname)
+ * @method QueueItem notice(string $channel, string $message)
+ * @method QueueItem part(mixed $channels, $message = '')
+ * @method QueueItem pass(string $password)
+ * @method QueueItem ping(string $server1, string $server2 = '')
+ * @method QueueItem pong(string $server1, string $server2 = '')
+ * @method QueueItem privmsg(string $channel, string $message)
+ * @method QueueItem quit(string $message)
+ * @method QueueItem raw(string $command)
+ * @method QueueItem remove(string $channel, string $nickname, string $message)
+ * @method QueueItem topic(string $channelName, string $message)
+ * @method QueueItem user(string $username, string $hostname, string $servername, string $realname)
+ * @method QueueItem version(string $server = '')
+ * @method QueueItem who(string $channel, string $options = '')
+ * @method QueueItem whois(string[]|string $nicknames, string $server = '')
+ * @method QueueItem whowas(string[]|string $nicknames, int $count = 0, string $server = '')
  *
  */
 class Queue extends EventEmitter implements QueueInterface, ComponentInterface
@@ -101,16 +101,16 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 	}
 
 	/**
-	 * @param SendableMessage $command
+	 * @param QueueItem $item
 	 *
 	 * @return bool
 	 */
-	public function removeMessage(SendableMessage $command)
+	public function removeMessage(QueueItem $item)
 	{
-		if (!in_array($command, $this->messageQueue))
+		if (!in_array($item, $this->messageQueue))
 			return false;
 
-		return $this->removeMessageByIndex(array_search($command, $this->messageQueue));
+		return $this->removeMessageByIndex(array_search($item, $this->messageQueue));
 	}
 
 	/**
@@ -141,10 +141,10 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 	public function calculateNextMessageTime(): int
 	{
 		// If the queue is empty, this message can be sent immediately. Do not bother calculating.
-		if ($this->getAmountOfItemsInQueue() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled())
+		if ($this->count() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled())
 			return time();
 
-		$numItems = $this->getAmountOfItemsInQueue();
+		$numItems = $this->count();
 		$numItems = $numItems - $this->floodControlMessageThreshold;
 		$messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
 
@@ -157,7 +157,7 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 	/**
 	 * @return int
 	 */
-	public function getAmountOfItemsInQueue(): int
+	public function count(): int
 	{
 		return count($this->messageQueue);
 	}

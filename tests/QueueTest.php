@@ -28,19 +28,66 @@ class QueueTest extends TestCase
 	public function testQueueAddItem()
     {
         $queue = new Queue();
-        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->count());
         
         $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
         $queue->insertMessage($dummyCommand);
         
-        static::assertEquals(1, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(1, $queue->count());
     }
 
-    public function testCalculateTimeWithoutFoodControl()
+	public function testQueueRemoveItem()
+	{
+		$queue = new Queue();
+		static::assertEquals(0, $queue->count());
+
+		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$queueItem = $queue->insertMessage($dummyCommand);
+
+		static::assertEquals(1, $queue->count());
+		
+		static::assertTrue($queue->removeMessage($queueItem));
+
+		static::assertEquals(0, $queue->count());
+		static::assertFalse($queue->removeMessage($queueItem));
+    }
+
+	public function testQueueRemoveItemByIndex()
+	{
+		$queue = new Queue();
+		static::assertEquals(0, $queue->count());
+
+		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$queue->insertMessage($dummyCommand);
+
+		static::assertEquals(1, $queue->count());
+
+		static::assertTrue($queue->removeMessageByIndex(0));
+
+		static::assertEquals(0, $queue->count());
+		static::assertFalse($queue->removeMessageByIndex(0));
+    }
+
+	public function testQueueClear()
+	{
+		$queue = new Queue();
+		static::assertEquals(0, $queue->count());
+
+		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$queue->insertMessage($dummyCommand);
+
+		static::assertEquals(1, $queue->count());
+
+		$queue->clear();
+
+		static::assertEquals(0, $queue->count());
+    }
+
+    public function testCalculateTimeWithoutFloodControl()
     {
         $queue = new Queue();
         $queue->setFloodControl(false);
-        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->count());
 
         // No matter how many messages we insert, with flood control disabled we should have no delays between messages.
         // Thus, total time should be equal to our current time.
@@ -52,7 +99,7 @@ class QueueTest extends TestCase
             $queue->insertMessage($dummyCommand);
         }
 
-        static::assertEquals(10, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(10, $queue->count());
 
         $newTime = $queue->calculateNextMessageTime();
         static::assertEquals($expectedTime, $newTime);
@@ -62,7 +109,7 @@ class QueueTest extends TestCase
     {
         $queue = new Queue();
         $queue->setFloodControl(true);
-        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->count());
 
         // If we insert 10 messages, the time the next message will be scheduled
         // should be 1*10 = 10 seconds (at a rate of 1 message per second)
@@ -76,7 +123,7 @@ class QueueTest extends TestCase
             $queue->insertMessage($dummyCommand);
         }
 
-        static::assertEquals(10, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(10, $queue->count());
 
         $newTime = $queue->calculateNextMessageTime();
         static::assertEquals($expectedTime, $newTime);
@@ -85,17 +132,39 @@ class QueueTest extends TestCase
     public function testQueueRun()
     {
         $queue = new Queue();
-        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->count());
 
         for ($i = 1; $i <= 3; $i++)
         {
             $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
-
-        sleep(2);
         $queue->flush();
 
-        static::assertEquals(0, $queue->getAmountOfItemsInQueue());
+        static::assertEquals(0, $queue->count());
+
+        
+	    $queue->setFloodControl();
+	    for ($i = 1; $i <= 50; $i++)
+	    {
+		    $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		    $queue->insertMessage($dummyCommand);
+	    }
+
+	    static::assertEquals(50, $queue->count());
+	    $queue->flush();
+	    
+	    static::assertEquals(44, $queue->count());
+    }
+
+	public function testInitializeMessage()
+	{
+		$queue = new Queue();
+		
+		$queueItem = $queue->raw('Test');
+		self::assertEquals(1, $queue->count());
+		
+		$expectedQueueItem = new \WildPHP\Core\Connection\QueueItem(new \WildPHP\Core\Connection\IRCMessages\RAW('Test'), time());
+		self::assertEquals($expectedQueueItem, $queueItem);
     }
 }
