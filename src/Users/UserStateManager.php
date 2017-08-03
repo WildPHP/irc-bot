@@ -26,7 +26,6 @@ use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 
 class UserStateManager extends BaseModule
@@ -140,14 +139,6 @@ class UserStateManager extends BaseModule
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('user.join', [$userObject, $channel, $queue]);
-
-		Logger::fromContainer($this->getContainer())
-			->debug('Added user to channel.',
-				[
-					'reason' => 'join',
-					'nickname' => $userObject->getNickname(),
-					'channel' => $channel->getName()
-				]);
 	}
 
 	/**
