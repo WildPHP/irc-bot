@@ -47,7 +47,7 @@ class Validator implements ComponentInterface
 	{
 		$eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
 
-		$this->permissionGroupCollection = $permissionGroupCollection;
+		$this->setPermissionGroupCollection($permissionGroupCollection);
 		$this->setOwner($owner);
 	}
 

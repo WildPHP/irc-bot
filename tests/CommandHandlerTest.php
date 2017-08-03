@@ -119,6 +119,12 @@ class CommandHandlerTest extends TestCase
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
+		// Nonexisting command.
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!testing');
+		$privmsg->setNickname('Test');
+
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+
 		// Only prefix
 		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!');
 		$privmsg->setNickname('Test');
