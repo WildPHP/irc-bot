@@ -81,18 +81,19 @@ class UserStateManager extends BaseModule
 		if (!$channel)
 			return;
 
-		$user = $channel->getUserCollection()->findByNickname($ircMessage->getNickname());
+		$user = $channel->getUserCollection()->findByNickname($target);
 
 		if (!$user)
 			return;
+
+		$channel->getUserCollection()->removeAll($user);
 
 		if ($target == $ownNickname)
 		{
 			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
 			return;
 		}
-
-		$channel->getUserCollection()->removeAll($user);
+		
 		EventEmitter::fromContainer($this->getContainer())->emit('user.left', [$channel, $user, Queue::fromContainer($this->getContainer())]);
 	}
 

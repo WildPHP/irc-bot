@@ -56,5 +56,16 @@ class ChannelStateManagerTest extends TestCase
 		});
 
 		$channelStateManager->processChannelTopicChange($rpl_topic);
+		
+		$rpl_topic->setChannel('#testing');
+		$channelStateManager->processChannelTopicChange($rpl_topic);
+	}
+
+	public function testIsCompatible()
+	{
+		if (!defined('WPHP_VERSION'))
+			define('WPHP_VERSION', '3.0.0');
+
+		self::assertEquals(WPHP_VERSION, ChannelStateManager::getSupportedVersionConstraint());
 	}
 }

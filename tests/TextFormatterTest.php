@@ -63,4 +63,21 @@ class TextFormatterTest extends TestCase
         static::assertSame($expectedString, $actual);
         static::assertSame($expectedString, $actualNumeric);
     }
+
+	public function testCalculateStringColor()
+	{
+		$expected = 11;
+		$string = 'Test';
+		
+		self::assertEquals($expected, TextFormatter::calculateStringColor($string));
+    }
+
+	public function testConsistentStringColor()
+	{
+		$expected = "\x0311" . 'Test' . "\x03";
+		$string = 'Test';
+		
+		self::assertEquals($expected, TextFormatter::consistentStringColor($string));
+		self::assertEquals('', TextFormatter::consistentStringColor(''));
+    }
 }
