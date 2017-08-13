@@ -105,7 +105,7 @@ class UserStateManager extends BaseModule
 		{
 			Logger::fromContainer($this->getContainer())
 				->debug('Removing channel from collection because the bot has left',
-					['target' => $channel->getName()]);
+					['channel' => $channel->getName()]);
 			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
 			$channel->getChannelModes()->wipe();
 			return;
