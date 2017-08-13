@@ -38,6 +38,7 @@ class UserStateManagerTest extends TestCase
 		$componentContainer->add($channelCollection);
 		$componentContainer->add(new \WildPHP\Core\EventEmitter());
 		$componentContainer->add(new Queue());
+		$componentContainer->add(new \WildPHP\Core\Logger\Logger('wildphp'));
 		$componentContainer->add(
 			new \WildPHP\Core\Configuration\Configuration(
 				new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/emptyconfig.neon')

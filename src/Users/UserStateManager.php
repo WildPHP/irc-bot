@@ -26,6 +26,7 @@ use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 
 class UserStateManager extends BaseModule
@@ -79,17 +80,32 @@ class UserStateManager extends BaseModule
 		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channel);
 
 		if (!$channel)
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning('!!! Attempted to remove user from channel, but channel was not found. State mismatch!',
+					['channel' => $channel->getName()]);
+
 			return;
+		}
 
 		$user = $channel->getUserCollection()->findByNickname($target);
 
 		if (!$user)
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning('!!! Attempted to remove user from channel, but user was not found. State mismatch!',
+					['channel' => $channel->getName(), 'user' => $ircMessage->getNickname()]);
 			return;
+		}
 
 		$channel->getUserCollection()->removeAll($user);
+		$channel->getChannelModes()->wipe();
 
 		if ($target == $ownNickname)
 		{
+			Logger::fromContainer($this->getContainer())
+				->debug('Removing channel from collection because the bot has left',
+					['target' => $channel->getName()]);
 			ChannelCollection::fromContainer($this->getContainer())->removeAll($channel);
 			return;
 		}
@@ -126,15 +142,35 @@ class UserStateManager extends BaseModule
 
 		if (!($channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channelName)))
 		{
+			Logger::fromContainer($this->getContainer())
+				->debug('Creating new channel',
+					['channel' => $channelName]);
+			
 			$channel = new Channel($channelName, new UserCollection(), new ChannelModes($availablemodes));
 			ChannelCollection::fromContainer($this->getContainer())
 				->append($channel);
 		}
 
 		if ($channel->getUserCollection()->findByNickname($ircMessage->getNickname()))
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning('!!! Attempted to add user to channel, but user was already found in channel. State mismatch!',
+					['channel' => $channelName, 'user' => $ircMessage->getNickname()]);
+			
 			return;
-
+		}
+		
 		$prefix = $ircMessage->getPrefix();
+
+		Logger::fromContainer($this->getContainer())->debug('Adding user to channel',
+			[
+				'reason' => 'rpl_namreply',
+				'user' => $ircMessage->getNickname(),
+				'hostname' => $prefix->getHostname(),
+				'username' => $prefix->getUsername(),
+				'ircAccount' => $ircMessage->getIrcAccount()
+			]);
+
 		$userObject = new User($ircMessage->getNickname(), $prefix->getHostname(), $prefix->getUsername(), $ircMessage->getIrcAccount());
 		$channel->getUserCollection()->append($userObject);
 
@@ -158,6 +194,9 @@ class UserStateManager extends BaseModule
 		{
 			$nickname = '';
 			$modes = $channel->getChannelModes()->extractUserModesFromNickname($nicknameWithMode, $nickname);
+			
+			Logger::fromContainer($this->getContainer())->debug('Adding user to channel',
+				['reason' => 'rpl_namreply', 'user' => $nickname, 'modes' => implode(',', $modes)]);
 
 			$user = new User($nickname);
 
@@ -191,7 +230,16 @@ class UserStateManager extends BaseModule
 		{
 			if (!($user = $channel->getUserCollection()->findByNickname($nickname)))
 				continue;
-
+			
+			Logger::fromContainer($this->getContainer())->debug('Updating user information',
+				[
+					'channel' => $channel->getName(),
+					'user' => $nickname,
+					'ircAccount' => $accountname,
+					'hostname' => $hostname,
+					'username' => $username
+				]);
+			
 			$user->setIrcAccount($accountname);
 			$user->setHostname($hostname);
 			$user->setUsername($username);
@@ -213,6 +261,10 @@ class UserStateManager extends BaseModule
 				continue;
 
 			$channel->getUserCollection()->removeAll($user);
+
+			Logger::fromContainer($this->getContainer())
+				->debug('Removing user for channel',
+					['reason' => 'quit', 'user' => $user->getNickname(), 'channel' => $channel->getName()]);
 
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('user.quit', [$channel, $user, $queue]);
@@ -258,11 +310,23 @@ class UserStateManager extends BaseModule
 
 		$channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($ircMessage->getTarget());
 		if (!$channel)
+		{
+			Logger::fromContainer($this->getContainer())
+				->debug('Attempted to change mode, but target channel was not found. User mode change? Ignoring.',
+					['target' => $ircMessage->getTarget()]);
+
 			return;
+		}
 
 		$user = $channel->getUserCollection()->findByNickname($target);
 		if (!$user)
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning('!!! Attempted to change mode, but user was not found in target. State mismatch!',
+					['target' => $ircMessage->getTarget(), 'user' => $target]);
+
 			return;
+		}
 
 		$modeCollection = $channel->getChannelModes();
 
@@ -271,9 +335,17 @@ class UserStateManager extends BaseModule
 		foreach ($chars as $char)
 		{
 			if ($add)
+			{
+				Logger::fromContainer($this->getContainer())->debug('Adding user to mode',
+					['mode' => $char, 'user' => $user->getNickname(), 'channel' => $channel->getName()]);
 				$modeCollection->addUserToMode($char, $user);
+			}
 			else
+			{
+				Logger::fromContainer($this->getContainer())->debug('Removing user from mode', 
+					['mode' => $char, 'user' => $user->getNickname(), 'channel' => $channel->getName()]);
 				$modeCollection->removeUserFromMode($char, $user);
+			}
 
 			EventEmitter::fromContainer($this->getContainer())
 				->emit('user.mode.channel', [$channel, $add, $mode, $user, $queue]);
@@ -294,6 +366,10 @@ class UserStateManager extends BaseModule
 
 		if (!($channel = ChannelCollection::fromContainer($this->getContainer())->findByChannelName($channelName)))
 		{
+			Logger::fromContainer($this->getContainer())
+				->debug('Creating new conversation channel.',
+					['channel' => $channelName]);
+			
 			$channel = new Channel($channelName, new UserCollection(), new ChannelModes(''));
 			ChannelCollection::fromContainer($this->getContainer())
 				->append($channel);
@@ -302,6 +378,10 @@ class UserStateManager extends BaseModule
 		if ($channel->getUserCollection()->findByNickname($ircMessage->getNickname()))
 			return;
 
+		Logger::fromContainer($this->getContainer())
+			->debug('Adding user to conversation channel',
+				['channel' => $channel->getName(), 'user' => $ircMessage->getNickname()]);
+		
 		$prefix = $ircMessage->getPrefix();
 		$userObject = new User($ircMessage->getNickname(), $prefix->getHostname(), $prefix->getUsername());
 		$channel->getUserCollection()->append($userObject);
