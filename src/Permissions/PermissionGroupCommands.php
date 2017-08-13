@@ -20,7 +20,7 @@ use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
-class PermissionCommands extends BaseModule
+class PermissionGroupCommands extends BaseModule
 {
 	use ContainerTrait;
 
