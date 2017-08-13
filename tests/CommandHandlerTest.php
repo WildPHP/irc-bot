@@ -14,7 +14,12 @@ use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Configuration\NeonBackend;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Permissions\PermissionGroupCollection;
+use WildPHP\Core\Permissions\Validator;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserCollection;
 
@@ -27,18 +32,19 @@ class CommandHandlerTest extends TestCase
 		$componentContainer = new ComponentContainer();
 		$eventEmitter = new \WildPHP\Core\EventEmitter();
 		$componentContainer->add($eventEmitter);
-		$componentContainer->add(new \WildPHP\Core\Permissions\Validator($eventEmitter, new \WildPHP\Core\Permissions\PermissionGroupCollection(), 'Tester'));
+		$componentContainer->add(new Logger('wildphp'));
+		$componentContainer->add(new Validator($eventEmitter, new PermissionGroupCollection(), 'Tester'));
 		$channelCollection = new ChannelCollection();
 		$componentContainer->add($channelCollection);
 		$componentContainer->add(new Queue());
 		$componentContainer->add(
-			new \WildPHP\Core\Configuration\Configuration(
-				new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/emptyconfig.neon')
+			new Configuration(
+				new NeonBackend(dirname(__FILE__) . '/emptyconfig.neon')
 			)
 		);
-		\WildPHP\Core\Configuration\Configuration::fromContainer($componentContainer)['currentNickname'] = 'Tester';
-		\WildPHP\Core\Configuration\Configuration::fromContainer($componentContainer)['prefix'] = '!';
-		\WildPHP\Core\Configuration\Configuration::fromContainer($componentContainer)['serverConfig']['prefix'] = '(ov)@+';
+		Configuration::fromContainer($componentContainer)['currentNickname'] = 'Tester';
+		Configuration::fromContainer($componentContainer)['prefix'] = '!';
+		Configuration::fromContainer($componentContainer)['serverConfig']['prefix'] = '(ov)@+';
 		$this->componentContainer = $componentContainer;
 
 		$userCollection = new UserCollection();

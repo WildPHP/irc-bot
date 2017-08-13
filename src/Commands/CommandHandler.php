@@ -17,6 +17,7 @@ use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Permissions\Validator;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
@@ -64,13 +65,17 @@ class CommandHandler implements ComponentInterface
 	                                int $maxarguments = -1,
 	                                string $requiredPermission = '')
 	{
-		if ($this->getCommandCollection()
-			->offsetExists($command)
-		)
+		if ($this->getCommandCollection()->offsetExists($command))
 			return false;
 
 		$commandObject = CommandFactory::create($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
 		$this->getCommandCollection()->offsetSet($command, $commandObject);
+		
+		Logger::fromContainer($this->getContainer())
+			->debug(
+				'New command registered', 
+				['command' => $command]
+			);
 
 		return true;
 	}
@@ -104,12 +109,28 @@ class CommandHandler implements ComponentInterface
 			->findByChannelName($channel);
 
 		if (!$source)
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning(
+					'!!! Received command from IRC, but channel was not found in collection! State mismatch!',
+					['channel' => $channel]
+				);
+
 			return;
+		}
 
 		$user = $source->getUserCollection()->findByNickname($privmsg->getNickname());
 
 		if (!$user)
+		{
+			Logger::fromContainer($this->getContainer())
+				->warning(
+					'!!! Received command from IRC, but user was not found in collection! State mismatch!',
+					['user' => $privmsg->getNickname()]
+				);
+
 			return;
+		}
 
 		$message = $privmsg->getMessage();
 
@@ -129,9 +150,7 @@ class CommandHandler implements ComponentInterface
 
 		$commandObject = $dictionary[$command];
 		$permission = $commandObject->getRequiredPermission();
-		if ($permission && !Validator::fromContainer($this->getContainer())
-				->isAllowedTo($permission, $user, $source)
-		)
+		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
 		{
 			$queue->privmsg($source->getName(),
 				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');

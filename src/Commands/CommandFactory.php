@@ -26,7 +26,7 @@ class CommandFactory
 	                              int $maxarguments = -1,
 	                              string $requiredPermission = '')
 	{
-		if (!empty($requiredPermission) && !is_null($commandHelp))
+		if (!empty($requiredPermission) && ($commandHelp instanceof CommandHelp))
 			$commandHelp->append('Required permission: ' . $requiredPermission);
 
 		$commandObject = new Command($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
