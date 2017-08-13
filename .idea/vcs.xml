@@ -12,7 +12,5 @@
     <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-tgrelay" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/wildphp/module-uno" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/yoshi2889/wphp-module-lisp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../multilog" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../tasks" vcs="Git" />
   </component>
 </project>
