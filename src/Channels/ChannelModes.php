@@ -172,6 +172,11 @@ class ChannelModes
 		}
 	}
 
+	public function wipe()
+	{
+		$this->modeMap = [];
+	}
+
 	/**
 	 * @param string $nickname
 	 * @param string $remainders
