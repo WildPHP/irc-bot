@@ -172,6 +172,26 @@ class ChannelModes
 		}
 	}
 
+	/**
+	 * @param User $user
+	 *
+	 * @return array List of modes removed.
+	 */
+	public function removeUserFromAllModes(User $user)
+	{
+		$modes = $this->getModesForUser($user);
+		
+		if (empty($modes))
+			return [];
+		
+		foreach ($modes as $mode)
+		{
+			$this->removeUserFromMode($mode, $user);
+		}
+		
+		return $modes;
+	}
+
 	public function wipe()
 	{
 		$this->modeMap = [];
