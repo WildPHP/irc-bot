@@ -164,6 +164,18 @@ class IrcConnection implements ComponentInterface
 	 */
 	public function write(string $data)
 	{
+		if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1)
+		{
+			$pieces = explode("\r", str_replace("\n", "\r", $data));
+			
+			Logger::fromContainer($this->getContainer())
+				->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.', [
+					'pieces' => $pieces
+				]);
+			
+			$data = $pieces[0] . "\r\n";
+		}
+		
 		$promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data)
 		{
 			EventEmitter::fromContainer($this->getContainer())
