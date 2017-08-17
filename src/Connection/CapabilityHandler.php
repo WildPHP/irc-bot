@@ -185,6 +185,19 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 				[
 					'availableCapabilities' => $capabilities
 				]);
+		
+		foreach ($this->queuedCapabilities as $key => $capability)
+		{
+			if (in_array($capability, $capabilities))
+				continue;
+			
+			unset($this->queuedCapabilities[$key]);
+			Logger::fromContainer($this->getContainer())
+				->debug('Removed requested capability from the queue because server does not support it.',
+					[
+						'capability' => $capability
+					]);
+		}
 
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.cap.ls', [$capabilities, $queue]);
