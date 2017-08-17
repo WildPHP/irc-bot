@@ -244,6 +244,8 @@ class UserStateManager extends BaseModule
 			$user->setIrcAccount($accountname);
 			$user->setHostname($hostname);
 			$user->setUsername($username);
+			
+			EventEmitter::fromContainer($this->getContainer())->emit('user.updated', [$user]);
 		}
 	}
 
