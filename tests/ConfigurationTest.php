@@ -35,7 +35,9 @@ class ConfigurationTest extends TestCase
 	}
 	public function testConfigurationStorage()
 	{
-		$configurationStorage = new Configuration(new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon'));
+		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon');
+		$configurationStorage = new Configuration($neonBackend);
+		self::assertEquals($neonBackend, $configurationStorage->getBackend());
 
 		$configurationItem = $configurationStorage['test']['ing'];
 		$expected = 'data';
