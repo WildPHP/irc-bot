@@ -34,6 +34,7 @@ class PermissionGroupCollectionTest extends TestCase
 		];
 		
 		self::assertEquals($expected, $permissionGroupCollection->getStoredGroupData('testGroup'));
+		self::assertNull($permissionGroupCollection->getStoredGroupData('nonexistingGroup'));
 	}
 
 	public function testFindGroupsForIrcAccount()
