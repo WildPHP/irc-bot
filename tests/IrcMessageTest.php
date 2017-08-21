@@ -686,7 +686,7 @@ class IrcMessageTest extends TestCase
         static::assertEquals('someserver', $user->getServername());
         static::assertEquals('arealname', $user->getRealname());
 
-        $expected = 'USER myusername localhost someserver arealname' . "\r\n";
+        $expected = 'USER myusername localhost someserver :arealname' . "\r\n";
         static::assertEquals($expected, $user->__toString());
     }
 
