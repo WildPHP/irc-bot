@@ -173,6 +173,6 @@ class ManagementCommands extends BaseModule
 	 */
 	public static function getSupportedVersionConstraint(): string
 	{
-		return '^3.0.0';
+		return WPHP_VERSION;
 	}
 }
