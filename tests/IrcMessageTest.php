@@ -539,6 +539,18 @@ class IrcMessageTest extends TestCase
         static::assertEquals($expected, $raw->__toString());
     }
 
+	public function testRemoveCreate()
+	{
+		$remove = new \WildPHP\Core\Connection\IRCMessages\REMOVE('#channel', 'nickname', 'Get out!');
+		
+		static::assertEquals('#channel', $remove->getChannel());
+		static::assertEquals('nickname', $remove->getTarget());
+		static::assertEquals('Get out!', $remove->getMessage());
+		
+		$expected = 'REMOVE #channel nickname :Get out!' . "\r\n";
+		static::assertEquals($expected, $remove->__toString());
+    }
+
 	public function testRplEndOfNamesReceive()
 	{
 		$line = Parser::parseLine(':server 366 nickname #channel :End of /NAMES list.' . "\r\n");
