@@ -99,4 +99,10 @@ class ChannelTest extends TestCase
 
 		static::assertSame($channelModes, $channel->getChannelModes());
 	}
+
+	public function testIsValidName()
+	{
+		self::assertTrue(Channel::isValidName('#test', '#'));
+		self::assertFalse(Channel::isValidName('#test', '!'));
+	}
 }
