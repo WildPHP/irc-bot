@@ -72,7 +72,7 @@ class ManagementCommandsTest extends TestCase
 		$managementCommands = new ManagementCommands($this->container);
 
 		$managementCommands->joinCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
-		self::assertEquals(1, Queue::fromContainer($this->container)->count());
+		self::assertEquals(2, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}
 
@@ -81,7 +81,7 @@ class ManagementCommandsTest extends TestCase
 		$managementCommands = new ManagementCommands($this->container);
 
 		$managementCommands->partCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
-		self::assertEquals(1, Queue::fromContainer($this->container)->count());
+		self::assertEquals(2, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}
 
@@ -103,7 +103,7 @@ class ManagementCommandsTest extends TestCase
 		Queue::fromContainer($this->container)->raw('Test');
 		self::assertEquals(3, Queue::fromContainer($this->container)->count());
 		
-		$managementCommands->joinCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
+		$managementCommands->clearQueueCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}
