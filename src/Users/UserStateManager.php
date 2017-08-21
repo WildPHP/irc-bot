@@ -100,6 +100,11 @@ class UserStateManager extends BaseModule
 
 		$channel->getUserCollection()->removeAll($user);
 		$channel->getChannelModes()->removeUserFromAllModes($user);
+		
+		Logger::fromContainer($this->getContainer())->debug('Removed user from channel because of a part/kick event', [
+			'nickname' => $target,
+			'channel' => $channel->getName()
+		]);
 
 		if ($target == $ownNickname)
 		{
