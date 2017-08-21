@@ -89,7 +89,7 @@ class USER extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 		$servername = $this->getServername();
 		$realname = $this->getRealname();
 
-		return 'USER ' . $username . ' ' . $hostname . ' ' . $servername . ' ' . $realname . "\r\n";
+		return 'USER ' . $username . ' ' . $hostname . ' ' . $servername . ' :' . $realname . "\r\n";
 	}
 
 	/**
