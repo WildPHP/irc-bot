@@ -770,6 +770,9 @@ class IrcMessageTest extends TestCase
 
 		$expected = 'WHOIS server nickname1,nickname2';
 		static::assertEquals($expected, $whois->__toString());
+		
+		$whois = new WHOIS('nickname1', 'server');
+		static::assertEquals(['nickname1'], $whois->getNicknames());
     }
 
 	public function testWhoWasCreate()
