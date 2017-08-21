@@ -48,4 +48,12 @@ class BotStateManagerTest extends TestCase
 
 		self::assertEquals('Testing', \WildPHP\Core\Configuration\Configuration::fromContainer($this->container)['currentNickname']);
 	}
+
+	public function testIsCompatible()
+	{
+		if (!defined('WPHP_VERSION'))
+			define('WPHP_VERSION', '3.0.0');
+
+		self::assertEquals(WPHP_VERSION, BotStateManager::getSupportedVersionConstraint());
+	}
 }
