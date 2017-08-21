@@ -692,14 +692,14 @@ class IrcMessageTest extends TestCase
 
     public function testUserReceive()
     {
-        $line = Parser::parseLine('USER myusername localhost someserver arealname' . "\r\n");
+        $line = Parser::parseLine('USER myusername localhost someserver :A real name' . "\r\n");
         $incoming = new IncomingIrcMessage($line);
         $user = USER::fromIncomingIrcMessage($incoming);
 
         static::assertEquals('myusername', $user->getUsername());
         static::assertEquals('localhost', $user->getHostname());
         static::assertEquals('someserver', $user->getServername());
-        static::assertEquals('arealname', $user->getRealname());
+        static::assertEquals('A real name', $user->getRealname());
 
 	    $message = ':server TEEHEE argument' . "\r\n";
 	    $parsedLine = Parser::parseLine($message);
