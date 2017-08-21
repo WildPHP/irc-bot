@@ -770,4 +770,13 @@ class IrcMessageTest extends TestCase
 		$expected = 'WHOWAS nickname1,nickname2 2 server';
 		static::assertEquals($expected, $whowas->__toString());
 	}
+
+	public function testMessageParameters()
+	{
+		$raw = new RAW('test');
+		
+		$raw->setMessageParameters(['test']);
+		
+		self::assertEquals(['test'], $raw->getMessageParameters());
+	}
 }
