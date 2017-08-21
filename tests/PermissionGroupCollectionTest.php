@@ -50,4 +50,17 @@ class PermissionGroupCollectionTest extends TestCase
 		
 		self::assertEquals($expectedGroup, $groups[0]);
 	}
+
+	public function testOffsetUnset()
+	{
+		$permissionGroupCollection = new PermissionGroupCollection();
+		$groupState = $permissionGroupCollection->getStoredGroupData('testGroup');
+
+		$expectedGroup = new PermissionGroup($groupState);
+		$permissionGroupCollection->offsetSet(0, $expectedGroup);
+		
+		$permissionGroupCollection->offsetUnset(0);
+		
+		self::assertFalse($permissionGroupCollection->offsetExists(0));
+	}
 }
