@@ -483,6 +483,21 @@ class IrcMessageTest extends TestCase
 		static::assertEquals($expected, $privmsg->__toString());
 	}
 
+	public function testPrivmsgCreateCTCP()
+	{
+		$privmsg = new PRIVMSG('#somechannel', 'This is a test message');
+		$privmsg->setCtcpVerb('ACTION');
+		$privmsg->setIsCtcp(true);
+
+		static::assertEquals('#somechannel', $privmsg->getChannel());
+		static::assertEquals('This is a test message', $privmsg->getMessage());
+		static::assertEquals('ACTION', $privmsg->getCtcpVerb());
+		static::assertTrue($privmsg->isCtcp());
+
+		$expected = 'PRIVMSG #somechannel :' . "\x01" . 'ACTION This is a test message' . "\x01\r\n";
+		static::assertEquals($expected, $privmsg->__toString());
+	}
+
 	public function testPrivmsgReceive()
 	{
 		$line = Parser::parseLine(':nickname!username@hostname PRIVMSG #somechannel :This is a test message' . "\r\n");
@@ -499,6 +514,20 @@ class IrcMessageTest extends TestCase
 		$incomingIrcMessage = new IncomingIrcMessage($parsedLine);
 		$this->expectException(\InvalidArgumentException::class);
 		PRIVMSG::fromIncomingIrcMessage($incomingIrcMessage);
+	}
+
+	public function testPrivmsgReceiveCTCP()
+	{
+		$line = Parser::parseLine(':nickname!username@hostname PRIVMSG #somechannel :' . "\x01" . 'ACTION This is a test message' . "\x01\r\n");
+		$incoming = new IncomingIrcMessage($line);
+		$privmsg = PRIVMSG::fromIncomingIrcMessage($incoming);
+
+		$userPrefix = new UserPrefix('nickname', 'username', 'hostname');
+		static::assertEquals($userPrefix, $privmsg->getPrefix());
+		static::assertEquals('#somechannel', $privmsg->getChannel());
+		static::assertTrue($privmsg->isCtcp());
+		static::assertEquals('ACTION', $privmsg->getCtcpVerb());
+		static::assertEquals('This is a test message', $privmsg->getMessage());
 	}
 
 	public function testQuitCreate()
