@@ -181,6 +181,11 @@ class IrcMessageTest extends TestCase
 
 		$expected = 'JOIN #channel1,#channel2 key1,key2' . "\r\n";
 		static::assertEquals($expected, $join->__toString());
+
+		$join = new JOIN('#channel1', 'key1');
+
+		static::assertEquals(['#channel1'], $join->getChannels());
+		static::assertEquals(['key1'], $join->getKeys());
 	}
 
 	public function testJoinCreateKeyMismatch()
