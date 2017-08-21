@@ -31,8 +31,17 @@ class ConfigurationTest extends TestCase
 
 		$allEntries = $neonBackend->getAllEntries();
 		static::assertEquals(['test' => ['ing' => 'data', 'array' => ['test', 'ing']], 'owner' => 'SomeUser'], $allEntries);
-
 	}
+
+	public function testNeonBackendFileDoesNotExist()
+	{
+		$path = dirname(__FILE__) . '/nonexistingfile.neon';
+		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend($path);
+		
+		$this->expectException(\RuntimeException::class);
+		$neonBackend->getAllEntries();
+	}
+	
 	public function testConfigurationStorage()
 	{
 		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon');
