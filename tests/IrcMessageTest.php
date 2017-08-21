@@ -140,6 +140,13 @@ class IrcMessageTest extends TestCase
         static::assertEquals($expected, $cap->__toString());
     }
 
+	public function testCapCreateInvalidSubcommand()
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		
+		new CAP('INVALID');
+    }
+
     public function testCapReceive()
     {
         $line = Parser::parseLine(':server CAP * LS :cap1 cap2' . "\r\n");
