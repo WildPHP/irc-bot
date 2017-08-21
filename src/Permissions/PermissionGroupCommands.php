@@ -484,17 +484,17 @@ class PermissionGroupCommands extends BaseModule
 	{
 		$groupName = $args[0];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
-
-		if (empty($group))
+		if (!PermissionGroupCollection::fromContainer($container)->offsetExists($groupName))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
 
 			return;
 		}
+
+		/** @var PermissionGroup $group */
+		$group = PermissionGroupCollection::fromContainer($container)
+			->offsetGet($groupName);
 
 		$channels = implode(', ', $group->getChannelCollection()
 			->values());

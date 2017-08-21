@@ -33,7 +33,7 @@ class PermissionGroupCollectionTest extends TestCase
 			'channelCollection' => []
 		];
 		
-		self::assertEquals($expected, $permissionGroupCollection->getStoredGroupData('testGroup'));
+		self::assertEquals($expected, $permissionGroupCollection->getStoredGroupData('collectionTestGroup'));
 		self::assertNull($permissionGroupCollection->getStoredGroupData('nonexistingGroup'));
 	}
 
@@ -42,7 +42,7 @@ class PermissionGroupCollectionTest extends TestCase
 		$ircAccount = 'ircAccount';
 
 		$permissionGroupCollection = new PermissionGroupCollection();
-		$groupState = $permissionGroupCollection->getStoredGroupData('testGroup');
+		$groupState = $permissionGroupCollection->getStoredGroupData('collectionTestGroup');
 		
 		$expectedGroup = new PermissionGroup($groupState);
 		$permissionGroupCollection->offsetSet(0, $expectedGroup);
@@ -55,7 +55,7 @@ class PermissionGroupCollectionTest extends TestCase
 	public function testOffsetUnset()
 	{
 		$permissionGroupCollection = new PermissionGroupCollection();
-		$groupState = $permissionGroupCollection->getStoredGroupData('testGroup');
+		$groupState = $permissionGroupCollection->getStoredGroupData('collectionTestGroup');
 
 		$expectedGroup = new PermissionGroup($groupState);
 		$permissionGroupCollection->offsetSet(0, $expectedGroup);
