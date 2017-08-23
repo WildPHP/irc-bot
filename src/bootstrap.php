@@ -80,7 +80,13 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
 	$loop = $container->getLoop();
 
 	$ircConnection = new IrcConnection($container, $connectionDetails);
-	$promise = $ircConnection->connect(ConnectorFactory::create($container->getLoop(), $connectionDetails->getSecure()));
+	$promise = $ircConnection->connect(
+		ConnectorFactory::create(
+			$container->getLoop(),
+			$connectionDetails->getSecure(),
+			$connectionDetails->getContextOptions()
+		)
+	);
 
 	$promise->otherwise(function (\Throwable $e) use ($container, $loop)
 	{
@@ -177,6 +183,7 @@ foreach ($connections as $connection)
 	$connectionDetails->setWantedNickname($connection['nick']);
 	$connectionDetails->setPassword($connection['password'] ?? '');
 	$connectionDetails->setSecure($connection['secure']);
+	$connectionDetails->setContextOptions($connection['options'] ?? []);
 	createNewInstance($loop, $configuration, $logger, $connectionDetails);
 }
 

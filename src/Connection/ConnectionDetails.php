@@ -52,6 +52,11 @@ class ConnectionDetails
 	protected $secure = false;
 
 	/**
+	 * @var array
+	 */
+	protected $contextOptions = [];
+
+	/**
 	 * @return string
 	 */
 	public function getUsername(): string
@@ -177,5 +182,21 @@ class ConnectionDetails
 	public function setSecure(bool $secure)
 	{
 		$this->secure = $secure;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getContextOptions(): array
+	{
+		return $this->contextOptions;
+	}
+
+	/**
+	 * @param array $contextOptions
+	 */
+	public function setContextOptions(array $contextOptions)
+	{
+		$this->contextOptions = $contextOptions;
 	}
 }

@@ -9,6 +9,11 @@ connections:
 
         # Not required to be set, can be used with e.g. ZNC servers.
         password:
+        
+        # You can set additional connection options here.
+        # Please see https://github.com/reactphp/socket#connector for more details.
+        #options:
+        #   dns: false
 
 # Prefix used for command parsing.
 prefix: '!'
