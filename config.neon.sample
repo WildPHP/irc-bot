@@ -12,8 +12,11 @@ connections:
         
         # You can set additional connection options here.
         # Please see https://github.com/reactphp/socket#connector for more details.
+        # Example options below:
         #options:
         #   dns: false
+        #   tcp:
+        #       bindto: 192.168.1.11
 
 # Prefix used for command parsing.
 prefix: '!'
