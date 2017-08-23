@@ -82,4 +82,13 @@ class ConnectionDetailsTest extends TestCase
 		$connectionDetails->setSecure($secure);
 		self::assertEquals($secure, $connectionDetails->getSecure());
 	}
+
+	public function testGetSetContextOptions()
+	{
+		$options = ['test'];
+
+		$connectionDetails = new ConnectionDetails();
+		$connectionDetails->setContextOptions($options);
+		self::assertEquals($options, $connectionDetails->getContextOptions());
+	}
 }
