@@ -46,6 +46,11 @@ class PingPongHandler extends BaseModule
 	protected $disconnectInterval = 120;
 
 	/**
+	 * @var bool
+	 */
+	protected $hasSentPing = false;
+
+	/**
 	 * PingPongHandler constructor.
 	 *
 	 * @param ComponentContainer $container
@@ -76,6 +81,7 @@ class PingPongHandler extends BaseModule
 	public function updateLastMessageReceived()
 	{
 		$this->lastMessageReceived = time();
+		$this->hasSentPing = false;
 	}
 
 	protected function registerPingLoop()
@@ -92,7 +98,7 @@ class PingPongHandler extends BaseModule
 					return $this->forceDisconnect();
 
 				$scheduledPingTime = $this->lastMessageReceived + $this->pingInterval;
-				$shouldSendPing = $currentTime >= $scheduledPingTime;
+				$shouldSendPing = $currentTime >= $scheduledPingTime && !$this->hasSentPing;
 
 				if ($shouldSendPing)
 					return $this->sendPing();
@@ -113,6 +119,8 @@ class PingPongHandler extends BaseModule
 
 		Queue::fromContainer($this->getContainer())
 			->ping($server);
+		
+		$this->hasSentPing = true;
 
 		return true;
 	}
