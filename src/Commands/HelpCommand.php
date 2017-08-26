@@ -50,13 +50,13 @@ class HelpCommand extends BaseModule
 			->getCommandCollection()
 			->keys();
 
-		$commands = array_chunk($commands, 10);
+		$commands = implode(', ', $commands);
+		$commands = explode("\n", wordwrap($commands, 200));
 
 		foreach ($commands as $key => $commandList)
 		{
-			$readableCommands = implode(', ', $commandList);
 			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': Available commands: ' . $readableCommands);
+				->privmsg($source->getName(), $user->getNickname() . ': Available commands: ' . $commandList);
 		}
 	}
 
@@ -106,6 +106,9 @@ class HelpCommand extends BaseModule
 
 			return;
 		}
+		
+		if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
+			$helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));
 
 		$pageToGet = $page - 1;
 		if (!$helpObject->offsetExists($pageToGet))

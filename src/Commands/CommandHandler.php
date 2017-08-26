@@ -34,6 +34,11 @@ class CommandHandler implements ComponentInterface
 	protected $commandCollection = null;
 
 	/**
+	 * @var array
+	 */
+	protected $aliases = [];
+
+	/**
 	 * CommandHandler constructor.
 	 *
 	 * @param ComponentContainer $container
@@ -88,11 +93,13 @@ class CommandHandler implements ComponentInterface
 	 */
 	public function alias(string $originalCommand, string $alias): bool
 	{
-		if (!$this->getCommandCollection()->offsetExists($originalCommand) || $this->getCommandCollection()->offsetExists($alias))
+		if (!$this->getCommandCollection()->offsetExists($originalCommand) || array_key_exists($alias, $this->aliases))
 			return false;
 
+		/** @var Command $commandObject */
 		$commandObject = $this->getCommandCollection()[$originalCommand];
-		$this->getCommandCollection()->offsetSet($alias, $commandObject);
+		$commandObject->getAliasCollection()->append($alias);
+		$this->aliases[$alias] = $commandObject;
 		return true;
 	}
 
@@ -145,10 +152,10 @@ class CommandHandler implements ComponentInterface
 
 		$dictionary = $this->getCommandCollection();
 
-		if (!$dictionary->offsetExists($command))
+		if (!$dictionary->offsetExists($command) || array_key_exists($command, $this->aliases))
 			return;
 
-		$commandObject = $dictionary[$command];
+		$commandObject = $dictionary[$command] ?? $this->aliases[$command];
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
 		{

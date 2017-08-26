@@ -9,6 +9,9 @@
 namespace WildPHP\Core\Commands;
 
 
+use ValidationClosures\Types;
+use Yoshi2889\Collections\Collection;
+
 class Command
 {
 	/**
@@ -35,6 +38,11 @@ class Command
 	 * @var string
 	 */
 	protected $requiredPermission = '';
+	
+	/**
+	 * @var Collection
+	 */
+	protected $aliasCollection = null;
 
 	/**
 	 * Command constructor.
@@ -49,13 +57,16 @@ class Command
 	                            ?CommandHelp $commandHelp,
 	                            int $minimumArguments = -1,
 	                            int $maximumArguments = -1,
-	                            string $requiredPermission = '')
+	                            string $requiredPermission = '',
+								array $aliases = []
+	)
 	{
 		$this->setCallback($callback);
 		$this->setMinimumArguments($minimumArguments);
 		$this->setMaximumArguments($maximumArguments);
 		$this->setHelp($commandHelp);
 		$this->setRequiredPermission($requiredPermission);
+		$this->setAliasCollection(new Collection(Types::string(), $aliases));
 	}
 
 	/**
@@ -138,5 +149,19 @@ class Command
 		$this->requiredPermission = $requiredPermission;
 	}
 
+	/**
+	 * @return Collection
+	 */
+	public function getAliasCollection(): Collection
+	{
+		return $this->aliasCollection;
+	}
 
+	/**
+	 * @param Collection $aliasCollection
+	 */
+	public function setAliasCollection(Collection $aliasCollection)
+	{
+		$this->aliasCollection = $aliasCollection;
+	}
 }
