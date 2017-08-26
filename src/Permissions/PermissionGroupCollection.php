@@ -48,6 +48,10 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
 		if ($this->offsetExists($index))
 			$this[$index]->removeAllListeners('changed');
 
+		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
+		if (in_array($index, $dataStorage->getKeys()))
+			$dataStorage->delete($index);
+
 		parent::offsetUnset($index);
 	}
 

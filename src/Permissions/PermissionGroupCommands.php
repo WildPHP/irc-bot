@@ -21,7 +21,6 @@ use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\DataStorage\DataStorageFactory;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
@@ -507,9 +506,6 @@ class PermissionGroupCommands extends BaseModule
 
 		if (!$this->doChecks($checks, $source, $user))
 			return;
-
-		$storage = DataStorageFactory::getStorage('permissiongroups');
-		$storage->delete($groupName);
 
 		PermissionGroupCollection::fromContainer($container)
 			->offsetUnset($groupName);
