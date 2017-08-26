@@ -8,10 +8,6 @@
 
 namespace WildPHP\Core\Commands;
 
-
-use ValidationClosures\Types;
-use Yoshi2889\Collections\Collection;
-
 class Command
 {
 	/**
@@ -25,48 +21,29 @@ class Command
 	protected $help = null;
 
 	/**
-	 * @var int
-	 */
-	protected $minimumArguments = -1;
-
-	/**
-	 * @var int
-	 */
-	protected $maximumArguments = -1;
-
-	/**
 	 * @var string
 	 */
 	protected $requiredPermission = '';
-	
+
 	/**
-	 * @var Collection
+	 * @var ParameterDefinitions
 	 */
-	protected $aliasCollection = null;
+	protected $parameterDefinitions;
 
 	/**
 	 * Command constructor.
 	 *
 	 * @param callable $callback
+	 * @param ParameterDefinitions $parameterDefinitions
 	 * @param null|CommandHelp $commandHelp
-	 * @param int $minimumArguments
-	 * @param int $maximumArguments
 	 * @param string $requiredPermission
 	 */
-	public function __construct(callable $callback,
-	                            ?CommandHelp $commandHelp,
-	                            int $minimumArguments = -1,
-	                            int $maximumArguments = -1,
-	                            string $requiredPermission = '',
-								array $aliases = []
-	)
+	public function __construct(callable $callback, ParameterDefinitions $parameterDefinitions, ?CommandHelp $commandHelp = null, string $requiredPermission = '')
 	{
-		$this->setCallback($callback);
-		$this->setMinimumArguments($minimumArguments);
-		$this->setMaximumArguments($maximumArguments);
-		$this->setHelp($commandHelp);
-		$this->setRequiredPermission($requiredPermission);
-		$this->setAliasCollection(new Collection(Types::string(), $aliases));
+		$this->parameterDefinitions = $parameterDefinitions;
+		$this->callback = $callback;
+		$this->help = $commandHelp;
+		$this->requiredPermission = $requiredPermission;
 	}
 
 	/**
@@ -86,6 +63,22 @@ class Command
 	}
 
 	/**
+	 * @return ParameterDefinitions
+	 */
+	public function getParameterDefinitions(): ParameterDefinitions
+	{
+		return $this->parameterDefinitions;
+	}
+
+	/**
+	 * @param ParameterDefinitions $parameterDefinitions
+	 */
+	public function setParameterDefinitions(ParameterDefinitions $parameterDefinitions)
+	{
+		$this->parameterDefinitions = $parameterDefinitions;
+	}
+
+	/**
 	 * @return CommandHelp|null
 	 */
 	public function getHelp(): ?CommandHelp
@@ -102,38 +95,6 @@ class Command
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getMinimumArguments(): int
-	{
-		return $this->minimumArguments;
-	}
-
-	/**
-	 * @param int $minimumArguments
-	 */
-	public function setMinimumArguments(int $minimumArguments)
-	{
-		$this->minimumArguments = $minimumArguments;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getMaximumArguments(): int
-	{
-		return $this->maximumArguments;
-	}
-
-	/**
-	 * @param int $maximumArguments
-	 */
-	public function setMaximumArguments(int $maximumArguments)
-	{
-		$this->maximumArguments = $maximumArguments;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getRequiredPermission(): string
@@ -147,21 +108,5 @@ class Command
 	public function setRequiredPermission(string $requiredPermission)
 	{
 		$this->requiredPermission = $requiredPermission;
-	}
-
-	/**
-	 * @return Collection
-	 */
-	public function getAliasCollection(): Collection
-	{
-		return $this->aliasCollection;
-	}
-
-	/**
-	 * @param Collection $aliasCollection
-	 */
-	public function setAliasCollection(Collection $aliasCollection)
-	{
-		$this->aliasCollection = $aliasCollection;
 	}
 }

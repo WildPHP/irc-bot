@@ -11,8 +11,13 @@ namespace WildPHP\Core\Permissions;
 
 
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
+use WildPHP\Core\Commands\JoinedChannelNameParameter;
+use WildPHP\Core\Commands\ParameterDefinitions;
+use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
@@ -31,73 +36,180 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Shows the available groups. No arguments.');
-		CommandHandler::fromContainer($container)
-			->registerCommand('lsgroups', [$this, 'lsgroupsCommand'], $commandHelp, 0, 0);
+		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
+		
+		CommandHandler::fromContainer($container)->registerCommand('lsgroups',
+			new Command(
+				[$this, 'lsgroupsCommand'],
+				new ParameterDefinitions(0, 0),
+				new CommandHelp([
+					'Shows the available groups. No arguments.'
+				]),
+				'lsgroups'
+			),
+			['lsg']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Shows if validation passes for a certain permission. Usage: validate [permission] ([username])');
-		CommandHandler::fromContainer($container)
-			->registerCommand('validate', [$this, 'validateCommand'], $commandHelp, 1, 2);
+		CommandHandler::fromContainer($container)->registerCommand('validate',
+			new Command(
+				[$this, 'validateCommand'],
+				new ParameterDefinitions(1, 2, [
+					'permission' => new StringParameter(),
+					'username' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Shows if validation passes for a certain permission. Usage: validate [permission] ([username])'
+				])
+			),
+			['val', 'v']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Creates a permission group. Usage: creategroup [group name]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('creategroup', [$this, 'creategroupCommand'], $commandHelp, 1, 1, 'creategroup');
+		CommandHandler::fromContainer($container)->registerCommand('creategroup',
+			new Command(
+				[$this, 'creategroupCommand'],
+				new ParameterDefinitions(1, 1, [
+					'groupName' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Creates a permission group. Usage: creategroup [group name]'
+				]),
+				'creategroup'
+			),
+			['newgroup', '+group', '+g', 'addgroup']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Deletes a permission group. Usage: delgroup [group name] yes');
-		CommandHandler::fromContainer($container)
-			->registerCommand('delgroup', [$this, 'delgroupCommand'], $commandHelp, 1, 2, 'delgroup');
+		CommandHandler::fromContainer($container)->registerCommand('delgroup',
+			new Command(
+				[$this, 'delgroupCommand'],
+				new ParameterDefinitions(1, 1, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				]),
+				new CommandHelp([
+					'Deletes a permission group. Usage: delgroup [group name]'
+				]),
+				'delgroup'
+			),
+			['rmgroup', 'rmg', 'removegroup', '-group', '-g']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('addmember', [$this, 'addmemberCommand'], $commandHelp, 2, 2, 'addmembertogroup');
+		CommandHandler::fromContainer($container)->registerCommand('addmember',
+			new Command(
+				[$this, 'addmemberCommand'],
+				new ParameterDefinitions(2, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'nickname' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]'
+				]),
+				'addmember'
+			),
+			['+member', '+m']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('delmember', [$this, 'delmemberCommand'], $commandHelp, 2, 2, 'delmemberfromgroup');
+		CommandHandler::fromContainer($container)->registerCommand('delmember',
+			new Command(
+				[$this, 'delmemberCommand'],
+				new ParameterDefinitions(2, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'nickname' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]'
+				]),
+				'delmember'
+			),
+			['-member', '-m']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Add a permission to a permission group. Usage: allow [group name] [permission]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('allow', [$this, 'allowCommand'], $commandHelp, 2, 2, 'allow');
+		CommandHandler::fromContainer($container)->registerCommand('allow',
+			new Command(
+				[$this, 'allowCommand'],
+				new ParameterDefinitions(2, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'permission' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Add a permission to a permission group. Usage: allow [group name] [permission]'
+				]),
+				'allow'
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Remove a permission from a permission group. Usage: deny [group name] [permission]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('deny', [$this, 'denyCommand'], $commandHelp, 2, 2, 'deny');
+		CommandHandler::fromContainer($container)->registerCommand('deny',
+			new Command(
+				[$this, 'denyCommand'],
+				new ParameterDefinitions(2, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'permission' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Remove a permission from a permission group. Usage: deny [group name] [permission]'
+				]),
+				'deny'
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('List all members in a permission group. Usage: lsmembers [group name]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('lsmembers', [$this, 'lsmembersCommand'], $commandHelp, 1, 1, 'listgroupmembers');
+		CommandHandler::fromContainer($container)->registerCommand('lsmembers',
+			new Command(
+				[$this, 'lsmembersCommand'],
+				new ParameterDefinitions(1, 1, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				]),
+				new CommandHelp([
+					'List all members in a permission group. Usage: lsmembers [group name]'
+				]),
+				'lsmembers'
+			),
+			['lsm']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('List permissions given to the specified group. Usage: lsperms [group name]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('lsperms', [$this, 'lspermsCommand'], $commandHelp, 1, 1, 'listgrouppermissions');
+		CommandHandler::fromContainer($container)->registerCommand('lsperms',
+			new Command(
+				[$this, 'lspermsCommand'],
+				new ParameterDefinitions(1, 1, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				]),
+				new CommandHelp([
+					'List all members in a permission group. Usage: lsperms [group name]'
+				]),
+				'lsperms'
+			),
+			['lsp']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Links a channel to a permission group, so a group only takes effect in said channel. ' .
-			'Usage: linkgroup [group name] ([channel name])');
-		CommandHandler::fromContainer($container)
-			->registerCommand('linkgroup', [$this, 'linkgroupCommand'], $commandHelp, 1, 2, 'linkgroup');
+		CommandHandler::fromContainer($container)->registerCommand('linkgroup',
+			new Command(
+				[$this, 'linkgroupCommand'],
+				new ParameterDefinitions(1, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'channel' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container))
+				]),
+				new CommandHelp([
+					'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
+					'The channel to be linked, if specified, must be joined by the bot for this command to work.'
+				]),
+				'linkgroup'
+			),
+			['lg']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Unlinks a channel from a permission group, so the group no longer takes effect in said channel. ' .
-			'Usage: unlinkgroup [group name] ([channel name])');
-		CommandHandler::fromContainer($container)
-			->registerCommand('unlinkgroup', [$this, 'unlinkgroupCommand'], $commandHelp, 1, 2, 'unlinkgroup');
+		CommandHandler::fromContainer($container)->registerCommand('unlinkgroup',
+			new Command(
+				[$this, 'unlinkgroupCommand'],
+				new ParameterDefinitions(1, 2, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'channel' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container))
+				]),
+				new CommandHelp([
+					'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
+					'The channel to be linked, if specified, must be joined by the bot for this command to work.'
+				]),
+				'unlinkgroup'
+			),
+			['ulg']);
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Shows info about a group. Usage: groupinfo [group name]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('groupinfo', [$this, 'groupinfoCommand'], $commandHelp, 1, 2, 'groupinfo');
-
+		CommandHandler::fromContainer($container)->registerCommand('groupinfo',
+			new Command(
+				[$this, 'groupinfoCommand'],
+				new ParameterDefinitions(1, 1, [
+					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				]),
+				new CommandHelp([
+					'Shows info about a group. Usage: groupinfo [group name]'
+				]),
+				'groupinfo'
+			),
+			['gi']);
 
 		$this->setContainer($container);
 	}
@@ -110,8 +222,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$permission = $args[1];
+		list ($groupName, $permission) = $args;
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -139,8 +250,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$permission = $args[1];
+		list ($groupName, $permission) = $args;
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -168,7 +278,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
+		$groupName = $args['groupName'];
 
 		$checks = [
 			'This group does not exist.' => !PermissionGroupCollection::fromContainer($container)
@@ -197,7 +307,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
+		$groupName = $args['groupName'];
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -227,8 +337,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$nickname = $args[1];
+		list ($groupName, $nickname) = $args;
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -267,8 +376,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$nickname = $args[1];
+		list ($groupName, $nickname) = $args;
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)
@@ -306,11 +414,9 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		if (empty($args[1]))
+		if (empty($args['username']))
 			$valUser = $user;
-		elseif (($valUser = $source->getUserCollection()
-				->findByNickname($args[1])) == false
-		)
+		elseif (($valUser = $source->getUserCollection()->findByNickname($args['username'])) == false)
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'This user does not exist or is not online.');
@@ -318,7 +424,7 @@ class PermissionGroupCommands extends BaseModule
 			return;
 		}
 
-		$perm = $args[0];
+		$perm = $args['permission'];
 
 		$result = Validator::fromContainer($container)
 			->isAllowedTo($perm, $valUser, $source);
@@ -363,7 +469,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
+		$groupName = $args['groupName'];
 
 		$checks = [
 			'A group with this name already exists.' => PermissionGroupCollection::fromContainer($container)->offsetExists($groupName)
@@ -388,7 +494,7 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
+		$groupName = $args['groupName'];
 
 		/** @var PermissionGroup|false $group */
 		$group = PermissionGroupCollection::fromContainer($container)

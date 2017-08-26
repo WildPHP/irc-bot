@@ -9,6 +9,8 @@
 
 namespace WildPHP\Core\Commands;
 
+use ValidationClosures\Types;
+use ValidationClosures\Utils;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
@@ -55,25 +57,16 @@ class CommandHandler implements ComponentInterface
 
 	/**
 	 * @param string $command
-	 * @param callable $callback
-	 * @param CommandHelp|null $commandHelp
-	 * @param int $minarguments
-	 * @param int $maxarguments
-	 * @param string $requiredPermission
+	 * @param Command $commandObject
+	 * @param string[] $aliases
 	 *
 	 * @return bool
 	 */
-	public function registerCommand(string $command,
-	                                callable $callback,
-	                                ?CommandHelp $commandHelp = null,
-	                                int $minarguments = -1,
-	                                int $maxarguments = -1,
-	                                string $requiredPermission = '')
+	public function registerCommand(string $command, Command $commandObject, array $aliases = [])
 	{
-		if ($this->getCommandCollection()->offsetExists($command))
+		if ($this->getCommandCollection()->offsetExists($command) || !Utils::validateArray(Types::string(), $aliases))
 			return false;
 
-		$commandObject = CommandFactory::create($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
 		$this->getCommandCollection()->offsetSet($command, $commandObject);
 		
 		Logger::fromContainer($this->getContainer())
@@ -81,6 +74,9 @@ class CommandHandler implements ComponentInterface
 				'New command registered', 
 				['command' => $command]
 			);
+		
+		foreach ($aliases as $alias)
+			$this->alias($command, $alias);
 
 		return true;
 	}
@@ -98,7 +94,6 @@ class CommandHandler implements ComponentInterface
 
 		/** @var Command $commandObject */
 		$commandObject = $this->getCommandCollection()[$originalCommand];
-		$commandObject->getAliasCollection()->append($alias);
 		$this->aliases[$alias] = $commandObject;
 		return true;
 	}
@@ -155,7 +150,9 @@ class CommandHandler implements ComponentInterface
 		if (!$dictionary->offsetExists($command) || array_key_exists($command, $this->aliases))
 			return;
 
+		/** @var Command $commandObject */
 		$commandObject = $dictionary[$command] ?? $this->aliases[$command];
+		
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
 		{
@@ -164,13 +161,21 @@ class CommandHandler implements ComponentInterface
 
 			return;
 		}
-
-		$maximumArguments = $commandObject->getMaximumArguments();
-		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
+		
+		try
+		{
+			$parameterDefinitions = $commandObject->getParameterDefinitions();
+			$args = $parameterDefinitions->validateArgumentArray($args);
+			
+			if (!$parameterDefinitions->validateArgumentCount($args))
+				throw new \InvalidArgumentException();
+		}
+		catch (\InvalidArgumentException $e)
 		{
 			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 			$queue->privmsg($source->getName(),
-				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions.');
+				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' . 
+				'parameters match the given requirements.');
 
 			return;
 		}
