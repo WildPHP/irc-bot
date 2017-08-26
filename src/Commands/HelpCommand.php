@@ -98,7 +98,7 @@ class HelpCommand extends BaseModule
 		$commandObject = CommandHandler::fromContainer($container)
 			->getCommandCollection()[$command];
 
-		$helpObject = $commandObject->getHelp();
+		$helpObject = clone $commandObject->getHelp();
 		if ($helpObject == null || !($helpObject instanceof CommandHelp))
 		{
 			Queue::fromContainer($container)
@@ -109,6 +109,15 @@ class HelpCommand extends BaseModule
 		
 		if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
 			$helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));
+		
+		if ($page == 'all')
+		{
+			foreach ($helpObject->getIterator() as $page)
+			{
+				Queue::fromContainer($container)->privmsg($source->getName(), $command . ':' . $page);
+			}
+			return;
+		}
 
 		$pageToGet = $page - 1;
 		if (!$helpObject->offsetExists($pageToGet))
