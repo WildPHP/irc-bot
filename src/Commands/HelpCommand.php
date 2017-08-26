@@ -114,7 +114,7 @@ class HelpCommand extends BaseModule
 		{
 			foreach ($helpObject->getIterator() as $page)
 			{
-				Queue::fromContainer($container)->privmsg($source->getName(), $command . ':' . $page);
+				Queue::fromContainer($container)->privmsg($source->getName(), $command . ': ' . $page);
 			}
 			return;
 		}
