@@ -85,9 +85,7 @@ class ParameterDefinitions extends Collection
 		if ($this->implodeLeftover())
 		{
 			$offset = count($names) - 1;
-			$array1 = array_slice($args, 0, $offset);
-			$array2 = [implode(' ', array_slice($args, $offset))];
-			$args = array_merge($array1, $array2);
+			$args = self::implodeLeftoverArguments($args, $offset);
 		}
 		
 		$validatedParameters = [];
@@ -124,5 +122,18 @@ class ParameterDefinitions extends Collection
 	public function implodeLeftover(): bool
 	{
 		return $this->implodeLeftover;
+	}
+
+	/**
+	 * @param string[] $arguments
+	 * @param int $offset
+	 *
+	 * @return string[]
+	 */
+	public static function implodeLeftoverArguments(array $arguments, int $offset): array
+	{
+		$array1 = array_slice($arguments, 0, $offset);
+		$array2 = [implode(' ', array_slice($arguments, $offset))];
+		return array_merge($array1, $array2);
 	}
 }
