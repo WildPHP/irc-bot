@@ -11,10 +11,10 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Core\Channels\ChannelCollection;
 
-class JoinedChannelNameParameter extends Parameter
+class JoinedChannelParameter extends Parameter
 {
 	/**
-	 * JoinedChannelNameParameter constructor.
+	 * JoinedChannelParameter constructor.
 	 *
 	 * @param ChannelCollection $channelCollection
 	 */
@@ -22,7 +22,7 @@ class JoinedChannelNameParameter extends Parameter
 	{
 		parent::__construct(function (string $value) use ($channelCollection)
 		{
-			return !empty($channelCollection->findByChannelName($value));
+			return $channelCollection->findByChannelName($value);
 		});
 	}
 }

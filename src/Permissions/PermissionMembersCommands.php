@@ -13,7 +13,7 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\ParameterDefinitions;
+use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
@@ -34,7 +34,7 @@ class PermissionMembersCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('lsmembers',
 			new Command(
 				[$this, 'lsmembersCommand'],
-				new ParameterDefinitions(1, 1, [
+				new ParameterStrategy(1, 1, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([
@@ -47,7 +47,7 @@ class PermissionMembersCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('addmember',
 			new Command(
 				[$this, 'addmemberCommand'],
-				new ParameterDefinitions(2, 2, [
+				new ParameterStrategy(2, 2, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'nickname' => new StringParameter()
 				]),
@@ -61,7 +61,7 @@ class PermissionMembersCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('delmember',
 			new Command(
 				[$this, 'delmemberCommand'],
-				new ParameterDefinitions(2, 2, [
+				new ParameterStrategy(2, 2, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'nickname' => new StringParameter()
 				]),

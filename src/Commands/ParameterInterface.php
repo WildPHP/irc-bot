@@ -14,7 +14,7 @@ interface ParameterInterface
 	/**
 	 * @param string $value
 	 *
-	 * @return bool
+	 * @return false|mixed False on failure.
 	 */
-	public function validate(string $value): bool;
+	public function validate(string $value);
 }

@@ -17,7 +17,7 @@ class ExistingPermissionGroupParameter extends Parameter
 	{
 		parent::__construct(function (string $value) use ($permissionGroupCollection)
 		{
-			return $permissionGroupCollection->offsetExists($value);
+			return $permissionGroupCollection->offsetExists($value) ? $permissionGroupCollection->offsetGet($value) : false;
 		});
 	}
 }

@@ -11,7 +11,7 @@ namespace WildPHP\Core\Commands;
 use ValidationClosures\Types;
 use Yoshi2889\Collections\Collection;
 
-class ParameterDefinitions extends Collection
+class ParameterStrategy extends Collection
 {
 	/**
 	 * @var int
@@ -91,10 +91,14 @@ class ParameterDefinitions extends Collection
 		$validatedParameters = [];
 		foreach ($args as $index => $value)
 		{
-			if (!array_key_exists($index, $names) || !$this->validateParameter($names[$index], $value))
+			if (!array_key_exists($index, $names) || !($return = $this->validateParameter($names[$index], $value)))
 				throw new \InvalidArgumentException('Parameter does not validate or index not in range');
 			
-			$validatedParameters[$names[$index]] = $value;
+			if ($return === true)
+				$validatedParameters[$names[$index]] = $value;
+			
+			else
+				$validatedParameters[$names[$index]] = $return;
 		}
 		
 		return $validatedParameters;

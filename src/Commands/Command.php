@@ -26,21 +26,24 @@ class Command
 	protected $requiredPermission = '';
 
 	/**
-	 * @var ParameterDefinitions
+	 * @var ParameterStrategy
 	 */
-	protected $parameterDefinitions;
+	protected $parameterStrategies;
 
 	/**
 	 * Command constructor.
 	 *
 	 * @param callable $callback
-	 * @param ParameterDefinitions $parameterDefinitions
+	 * @param array|ParameterStrategy $parameterStrategies
 	 * @param null|CommandHelp $commandHelp
 	 * @param string $requiredPermission
 	 */
-	public function __construct(callable $callback, ParameterDefinitions $parameterDefinitions, ?CommandHelp $commandHelp = null, string $requiredPermission = '')
+	public function __construct(callable $callback, $parameterStrategies, ?CommandHelp $commandHelp = null, string $requiredPermission = '')
 	{
-		$this->parameterDefinitions = $parameterDefinitions;
+		if (!is_array($parameterStrategies))
+			$parameterStrategies = [$parameterStrategies];
+		
+		$this->parameterStrategies = $parameterStrategies;
 		$this->callback = $callback;
 		$this->help = $commandHelp;
 		$this->requiredPermission = $requiredPermission;
@@ -63,19 +66,19 @@ class Command
 	}
 
 	/**
-	 * @return ParameterDefinitions
+	 * @return array
 	 */
-	public function getParameterDefinitions(): ParameterDefinitions
+	public function getParameterStrategies(): array
 	{
-		return $this->parameterDefinitions;
+		return $this->parameterStrategies;
 	}
 
 	/**
-	 * @param ParameterDefinitions $parameterDefinitions
+	 * @param ParameterStrategy $parameterStrategies
 	 */
-	public function setParameterDefinitions(ParameterDefinitions $parameterDefinitions)
+	public function setParameterStrategies(ParameterStrategy $parameterStrategies)
 	{
-		$this->parameterDefinitions = $parameterDefinitions;
+		$this->parameterStrategies = $parameterStrategies;
 	}
 
 	/**

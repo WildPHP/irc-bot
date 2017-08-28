@@ -13,7 +13,7 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\ParameterDefinitions;
+use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
@@ -34,7 +34,7 @@ class PermissionCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('allow',
 			new Command(
 				[$this, 'allowCommand'],
-				new ParameterDefinitions(2, 2, [
+				new ParameterStrategy(2, 2, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'permission' => new StringParameter()
 				]),
@@ -47,7 +47,7 @@ class PermissionCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('deny',
 			new Command(
 				[$this, 'denyCommand'],
-				new ParameterDefinitions(2, 2, [
+				new ParameterStrategy(2, 2, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'permission' => new StringParameter()
 				]),
@@ -60,7 +60,7 @@ class PermissionCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('lsperms',
 			new Command(
 				[$this, 'lspermsCommand'],
-				new ParameterDefinitions(1, 1, [
+				new ParameterStrategy(1, 1, [
 					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([

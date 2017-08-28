@@ -14,8 +14,8 @@ use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\JoinedChannelNameParameter;
-use WildPHP\Core\Commands\ParameterDefinitions;
+use WildPHP\Core\Commands\JoinedChannelParameter;
+use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
@@ -36,7 +36,7 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('lsgroups',
 			new Command(
 				[$this, 'lsgroupsCommand'],
-				new ParameterDefinitions(0, 0),
+				new ParameterStrategy(0, 0),
 				new CommandHelp([
 					'Shows the available groups. No arguments.'
 				]),
@@ -47,7 +47,7 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('validate',
 			new Command(
 				[$this, 'validateCommand'],
-				new ParameterDefinitions(1, 2, [
+				new ParameterStrategy(1, 2, [
 					'permission' => new StringParameter(),
 					'username' => new StringParameter()
 				]),
@@ -60,7 +60,7 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('creategroup',
 			new Command(
 				[$this, 'creategroupCommand'],
-				new ParameterDefinitions(1, 1, [
+				new ParameterStrategy(1, 1, [
 					'groupName' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -73,8 +73,8 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('delgroup',
 			new Command(
 				[$this, 'delgroupCommand'],
-				new ParameterDefinitions(1, 1, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				new ParameterStrategy(1, 1, [
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([
 					'Deletes a permission group. Usage: delgroup [group name]'
@@ -86,9 +86,9 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('linkgroup',
 			new Command(
 				[$this, 'linkgroupCommand'],
-				new ParameterDefinitions(1, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container))
+				new ParameterStrategy(1, 2, [
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'channel' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
@@ -101,9 +101,9 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('unlinkgroup',
 			new Command(
 				[$this, 'unlinkgroupCommand'],
-				new ParameterDefinitions(1, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container))
+				new ParameterStrategy(1, 2, [
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'channel' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
@@ -116,8 +116,8 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('groupinfo',
 			new Command(
 				[$this, 'groupinfoCommand'],
-				new ParameterDefinitions(1, 1, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+				new ParameterStrategy(1, 1, [
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([
 					'Shows info about a group. Usage: groupinfo [group name]'
@@ -139,6 +139,7 @@ class PermissionGroupCommands extends BaseModule
 	{
 		if (empty($args['username']))
 			$valUser = $user;
+		
 		elseif (($valUser = $source->getUserCollection()->findByNickname($args['username'])) == false)
 		{
 			Queue::fromContainer($container)
@@ -217,14 +218,10 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args['groupName'];
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
 
 		$checks = [
-			'This group does not exist.' => empty($group),
 			'This group may not be removed.' => $group ? $group->isModeGroup() : false
 		];
 
@@ -232,10 +229,10 @@ class PermissionGroupCommands extends BaseModule
 			return;
 
 		PermissionGroupCollection::fromContainer($container)
-			->offsetUnset($groupName);
+			->removeAll($group);
 
 		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully deleted.');
+			->privmsg($source->getName(), $user->getNickname() . ': The given group was successfully deleted.');
 	}
 
 	/**
@@ -246,15 +243,13 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$channel = $args[1] ?? $source->getName();
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
+		
+		/** @var Channel $channel */
+		$channel = $args['channel'] ?? $source;
 
 		$checks = [
-			'This group does not exist.' => empty($group),
 			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
 			'The group is already linked to this channel.' => $group ? $group->getChannelCollection()->contains($channel) : false
 		];
@@ -263,10 +258,10 @@ class PermissionGroupCommands extends BaseModule
 			return;
 
 		$group->getChannelCollection()
-			->append($channel);
+			->append($channel->getName());
 
 		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel . '"');
+			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel->getName() . '"');
 	}
 
 	/**
@@ -277,15 +272,13 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-		$channel = $args[1] ?? $source->getName();
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
+		
+		/** @var Channel $channel */
+		$channel = $args['channel'] ?? $source;
 
 		$checks = [
-			'This group does not exist.' => empty($group),
 			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
 			'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel) : false
 		];
@@ -294,10 +287,10 @@ class PermissionGroupCommands extends BaseModule
 			return;
 
 		$group->getChannelCollection()
-			->removeAll($channel);
+			->removeAll($channel->getName());
 
 		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel . '"');
+			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel->getName() . '"');
 	}
 
 	/**
@@ -308,19 +301,8 @@ class PermissionGroupCommands extends BaseModule
 	 */
 	public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args[0];
-
-		if (!PermissionGroupCollection::fromContainer($container)->offsetExists($groupName))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': This group does not exist.');
-
-			return;
-		}
-
 		/** @var PermissionGroup $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		$group = $args['group'];
 
 		$channels = implode(', ', $group->getChannelCollection()
 			->values());

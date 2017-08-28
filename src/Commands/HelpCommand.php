@@ -28,7 +28,7 @@ class HelpCommand extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('cmdhelp',
 			new Command(
 				[$this, 'helpCommand'],
-				new ParameterDefinitions(0, 1, [
+				new ParameterStrategy(0, 1, [
 					'command' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -40,7 +40,7 @@ class HelpCommand extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('lscommands',
 			new Command(
 				[$this, 'lscommandsCommand'],
-				new ParameterDefinitions(0, 0),
+				new ParameterStrategy(0, 0),
 				new CommandHelp([
 					'Shows the list of available commands. No arguments.'
 				])

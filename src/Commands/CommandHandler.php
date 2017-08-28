@@ -161,24 +161,42 @@ class CommandHandler implements ComponentInterface
 
 			return;
 		}
+
+		$parameterStrategies = $commandObject->getParameterStrategies();
+		$strategy = false;
+		$originalArgs = $args;
 		
-		try
+		/** @var ParameterStrategy $parameterStrategy */
+		foreach ($parameterStrategies as $parameterStrategy)
 		{
-			$parameterDefinitions = $commandObject->getParameterDefinitions();
-			$args = $parameterDefinitions->validateArgumentArray($args);
-			
-			if (!$parameterDefinitions->validateArgumentCount($args))
-				throw new \InvalidArgumentException();
+			try
+			{
+				$args = $parameterStrategy->validateArgumentArray($originalArgs);
+
+				if (!$parameterStrategy->validateArgumentCount($args))
+					throw new \InvalidArgumentException('Argument count mismatch');
+				
+				$strategy = $parameterStrategy;
+				break;
+			}
+			catch (\InvalidArgumentException $e)
+			{
+				Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
+			}
 		}
-		catch (\InvalidArgumentException $e)
+		
+		if (!$strategy)
 		{
+			Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
 			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 			$queue->privmsg($source->getName(),
-				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' . 
+				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' .
 				'parameters match the given requirements.');
-
+			
 			return;
 		}
+		
+		
 
 		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer(), $command);
 	}

@@ -15,8 +15,8 @@ use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\JoinedChannelNameParameter;
-use WildPHP\Core\Commands\ParameterDefinitions;
+use WildPHP\Core\Commands\JoinedChannelParameter;
+use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
@@ -39,7 +39,7 @@ class ManagementCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('join',
 			new Command(
 				[$this, 'joinCommand'],
-				new ParameterDefinitions(1, 5, [
+				new ParameterStrategy(1, 5, [
 					'channel1' => new StringParameter(),
 					'channel2' => new StringParameter(),
 					'channel3' => new StringParameter(),
@@ -55,12 +55,12 @@ class ManagementCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('part',
 			new Command(
 				[$this, 'partCommand'],
-				new ParameterDefinitions(0, 5, [
-					'channel1' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container)),
-					'channel2' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container)),
-					'channel3' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container)),
-					'channel4' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container)),
-					'channel5' => new JoinedChannelNameParameter(ChannelCollection::fromContainer($container))
+				new ParameterStrategy(0, 5, [
+					'channel1' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel2' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel3' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel4' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel5' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Parts (leaves) the specified channel(s). Usage: part [channel] ([channel]) ([channel]) ... (up to 5 channels)',
@@ -72,7 +72,7 @@ class ManagementCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('quit',
 			new Command(
 				[$this, 'quitCommand'],
-				new ParameterDefinitions(0, -1, [
+				new ParameterStrategy(0, -1, [
 					'message' => new StringParameter()
 				], true),
 				new CommandHelp([
@@ -84,7 +84,7 @@ class ManagementCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('nick',
 			new Command(
 				[$this, 'nickCommand'],
-				new ParameterDefinitions(0, -1, [
+				new ParameterStrategy(0, -1, [
 					'newNickname' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -96,7 +96,7 @@ class ManagementCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('clearqueue',
 			new Command(
 				[$this, 'clearqueueCommand'],
-				new ParameterDefinitions(0, 0),
+				new ParameterStrategy(0, 0),
 				new CommandHelp([
 					'Clears the send queue.'
 				]),
@@ -175,7 +175,16 @@ class ManagementCommands extends BaseModule
 	public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
 		if (empty($channels))
-			$channels = [$source->getName()];
+			$channels = [$source];
+		
+		/**
+		 * @var int $index
+		 * @var Channel $channel
+		 */
+		foreach ($channels as $index => $channel)
+		{
+			$channels[$index] = $channel->getName();
+		}
 
 		$validChannels = $this->validateChannels($channels);
 
