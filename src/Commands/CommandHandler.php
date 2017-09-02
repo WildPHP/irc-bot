@@ -147,7 +147,7 @@ class CommandHandler implements ComponentInterface
 
 		$dictionary = $this->getCommandCollection();
 
-		if (!$dictionary->offsetExists($command) || array_key_exists($command, $this->aliases))
+		if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases))
 			return;
 
 		/** @var Command $commandObject */
