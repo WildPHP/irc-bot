@@ -80,7 +80,7 @@ class ParameterStrategy extends Collection
 			return $args;
 		
 		if (!$this->implodeLeftover() && count($args) > count($names))
-			throw new \Exception('Parameter count is greater than supported by this definition');
+			throw new \InvalidArgumentException('Parameter count is greater than supported by this definition');
 		
 		if ($this->implodeLeftover())
 		{
