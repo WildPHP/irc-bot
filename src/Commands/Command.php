@@ -26,7 +26,7 @@ class Command
 	protected $requiredPermission = '';
 
 	/**
-	 * @var ParameterStrategy
+	 * @var array
 	 */
 	protected $parameterStrategies;
 
