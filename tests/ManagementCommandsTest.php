@@ -9,6 +9,7 @@
 use PHPUnit\Framework\TestCase;
 use ValidationClosures\Types;
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
@@ -46,6 +47,11 @@ class ManagementCommandsTest extends TestCase
 		$this->container->add(new EventEmitter());
 		$this->container->add(new Logger('wildphp'));
 		$this->container->add(new CommandHandler($this->container, new Collection(Types::instanceof(Command::class))));
+
+		$channelCollection = new ChannelCollection();
+		$this->channel = new Channel('#channel', new UserCollection(), new ChannelModes(''));
+		$channelCollection->append($this->channel);
+		$this->container->add($channelCollection);
 		
 		$neonBackend = new NeonBackend(dirname(__FILE__) . '/emptyconfig.neon');
 		$configuration = new Configuration($neonBackend);
@@ -53,8 +59,7 @@ class ManagementCommandsTest extends TestCase
 		$this->container->add($configuration);
 		
 		$this->container->add(new Queue());
-		
-		$this->channel = new Channel('#test', new UserCollection(), new ChannelModes(''));
+
 		$this->user = new User('Tester');
 	}
 
@@ -71,8 +76,8 @@ class ManagementCommandsTest extends TestCase
 	{
 		$managementCommands = new ManagementCommands($this->container);
 
-		$managementCommands->joinCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
-		self::assertEquals(2, Queue::fromContainer($this->container)->count());
+		$managementCommands->joinCommand($this->channel, $this->user, ['#channel'], $this->container);
+		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}
 
@@ -80,8 +85,8 @@ class ManagementCommandsTest extends TestCase
 	{
 		$managementCommands = new ManagementCommands($this->container);
 
-		$managementCommands->partCommand($this->channel, $this->user, ['Test', '#channel'], $this->container);
-		self::assertEquals(2, Queue::fromContainer($this->container)->count());
+		$managementCommands->partCommand($this->channel, $this->user, [$this->channel], $this->container);
+		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}
 
@@ -89,7 +94,7 @@ class ManagementCommandsTest extends TestCase
 	{
 		$managementCommands = new ManagementCommands($this->container);
 
-		$managementCommands->nickCommand($this->channel, $this->user, ['Test'], $this->container);
+		$managementCommands->nickCommand($this->channel, $this->user, ['newNickname' => 'Test'], $this->container);
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}

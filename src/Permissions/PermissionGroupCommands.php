@@ -280,7 +280,7 @@ class PermissionGroupCommands extends BaseModule
 
 		$checks = [
 			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
-			'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel) : false
+			'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel->getName()) : false
 		];
 
 		if (!$this->doChecks($checks, $source, $user))
