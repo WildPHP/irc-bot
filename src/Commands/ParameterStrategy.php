@@ -94,11 +94,7 @@ class ParameterStrategy extends Collection
 			if (!array_key_exists($index, $names) || !($return = $this->validateParameter($names[$index], $value)))
 				throw new \InvalidArgumentException('Parameter does not validate or index not in range');
 			
-			if ($return === true)
-				$validatedParameters[$names[$index]] = $value;
-			
-			else
-				$validatedParameters[$names[$index]] = $return;
+			$validatedParameters[$names[$index]] = ($return === true) ? $value : $return;
 		}
 		
 		return $validatedParameters;
