@@ -8,6 +8,9 @@
 
 namespace WildPHP\Core\Commands;
 
+use ValidationClosures\Types;
+use ValidationClosures\Utils;
+
 class Command
 {
 	/**
@@ -78,6 +81,9 @@ class Command
 	 */
 	public function setParameterStrategies(array $parameterStrategies)
 	{
+		if (!Utils::validateArray(Types::instanceof(ParameterStrategy::class), $parameterStrategies))
+			throw new \InvalidArgumentException('Invalid array passed');
+
 		$this->parameterStrategies = $parameterStrategies;
 	}
 
