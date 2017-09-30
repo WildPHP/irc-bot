@@ -74,9 +74,9 @@ class Command
 	}
 
 	/**
-	 * @param ParameterStrategy $parameterStrategies
+	 * @param ParameterStrategy[] $parameterStrategies
 	 */
-	public function setParameterStrategies(ParameterStrategy $parameterStrategies)
+	public function setParameterStrategies(array $parameterStrategies)
 	{
 		$this->parameterStrategies = $parameterStrategies;
 	}
