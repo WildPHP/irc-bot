@@ -110,25 +110,16 @@ class CommandHandler implements ComponentInterface
 		$source = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($channel);
 
-		if (!$source)
+		$user = $source ? $source->getUserCollection()->findByNickname($privmsg->getNickname()) : false;
+
+		if (!$user || !$source)
 		{
 			Logger::fromContainer($this->getContainer())
-				->warning(
-					'!!! Received command from IRC, but channel was not found in collection! State mismatch!',
-					['channel' => $channel]
-				);
-
-			return;
-		}
-
-		$user = $source->getUserCollection()->findByNickname($privmsg->getNickname());
-
-		if (!$user)
-		{
-			Logger::fromContainer($this->getContainer())
-				->warning(
-					'!!! Received command from IRC, but user was not found in collection! State mismatch!',
-					['user' => $privmsg->getNickname()]
+				->warning('!!! State mismatch!',
+					[
+						'user' => $privmsg->getNickname(),
+						'channel' => $channel
+					]
 				);
 
 			return;
@@ -145,13 +136,10 @@ class CommandHandler implements ComponentInterface
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
 
-		$dictionary = $this->getCommandCollection();
+		$commandObject = $this->findCommandInDictionary($command);
 
-		if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases))
+		if (!$commandObject)
 			return;
-
-		/** @var Command $commandObject */
-		$commandObject = $dictionary[$command] ?? $this->aliases[$command];
 		
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
@@ -162,28 +150,7 @@ class CommandHandler implements ComponentInterface
 			return;
 		}
 
-		$parameterStrategies = $commandObject->getParameterStrategies();
-		$strategy = false;
-		$originalArgs = $args;
-		
-		/** @var ParameterStrategy $parameterStrategy */
-		foreach ($parameterStrategies as $parameterStrategy)
-		{
-			try
-			{
-				$args = $parameterStrategy->validateArgumentArray($originalArgs);
-
-				if (!$parameterStrategy->validateArgumentCount($args))
-					throw new \InvalidArgumentException('Argument count mismatch');
-				
-				$strategy = $parameterStrategy;
-				break;
-			}
-			catch (\InvalidArgumentException $e)
-			{
-				Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
-			}
-		}
+		$strategy = $this->findApplicableStrategy($commandObject, $args);
 		
 		if (!$strategy)
 		{
@@ -197,6 +164,52 @@ class CommandHandler implements ComponentInterface
 		}
 		
 		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer(), $command);
+	}
+
+	/**
+	 * @param string $command
+	 *
+	 * @return Command|null
+	 */
+	protected function findCommandInDictionary(string $command): ?Command
+	{
+		$dictionary = $this->getCommandCollection();
+
+		if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases))
+			return null;
+
+		/** @var Command $commandObject */
+		return $dictionary[$command] ?? $this->aliases[$command];
+	}
+
+	/**
+	 * @param Command $commandObject
+	 * @param array $args
+	 *
+	 * @return null|ParameterStrategy
+	 */
+	protected function findApplicableStrategy(Command $commandObject, array &$args): ?ParameterStrategy
+	{
+		$parameterStrategies = $commandObject->getParameterStrategies();
+		$strategy = null;
+		$originalArgs = $args;
+
+		/** @var ParameterStrategy $parameterStrategy */
+		foreach ($parameterStrategies as $parameterStrategy)
+		{
+			try
+			{
+				$args = $parameterStrategy->validateArgumentArray($originalArgs);
+				$strategy = $parameterStrategy;
+				break;
+			}
+			catch (\InvalidArgumentException $e)
+			{
+				Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
+			}
+		}
+
+		return $strategy;
 	}
 
 	/**
