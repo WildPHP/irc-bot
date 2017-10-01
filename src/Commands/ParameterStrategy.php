@@ -76,11 +76,8 @@ class ParameterStrategy extends Collection
 	{
 		$names = array_keys((array) $this);
 		
-		if (empty($names))
-			return $args;
-		
-		if (!$this->implodeLeftover() && count($args) > count($names))
-			throw new \InvalidArgumentException('Parameter count is greater than supported by this definition');
+		if (!$this->validateArgumentCount($args))
+			throw new \InvalidArgumentException('Parameter count does not validate');
 		
 		if ($this->implodeLeftover())
 		{
@@ -89,12 +86,14 @@ class ParameterStrategy extends Collection
 		}
 		
 		$validatedParameters = [];
-		foreach ($args as $index => $value)
+		$index = 0;
+		foreach ($args as $value)
 		{
-			if (!array_key_exists($index, $names) || !($return = $this->validateParameter($names[$index], $value)))
+			if (!($return = $this->validateParameter($names[$index], $value)))
 				throw new \InvalidArgumentException('Parameter does not validate or index not in range');
 			
 			$validatedParameters[$names[$index]] = ($return === true) ? $value : $return;
+			$index++;
 		}
 		
 		return $validatedParameters;
@@ -107,7 +106,7 @@ class ParameterStrategy extends Collection
 	 */
 	public function validateArgumentCount(array $args): bool
 	{
-		if ($this->minimumParameters < 0)
+		if ($this->minimumParameters < 0 || $this->implodeLeftover())
 			return true;
 		
 		$count = count($args);

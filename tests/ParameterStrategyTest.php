@@ -84,13 +84,9 @@ class ParameterStrategyTest extends TestCase
 		]);
 
 		$args1 = ['foo', 'bar', 'baz'];
-		$args2 = ['test' => 'foo', 'bar', 'baz'];
 
 		$expected1 = ['test1' => 'foo', 'test2' => 'bar', 'test3' => 'baz'];
 		self::assertEquals($expected1, $strategy->validateArgumentArray($args1));
-
-		self::expectException(\InvalidArgumentException::class);
-		$strategy->validateArgumentArray($args2);
 	}
 
 	public function testValidateArgumentArrayCount()
