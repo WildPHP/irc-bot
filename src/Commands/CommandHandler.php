@@ -128,7 +128,7 @@ class CommandHandler implements ComponentInterface
 		$message = $privmsg->getMessage();
 
 		$args = [];
-		$command = self::parseCommandFromMessage($message, $args);
+		$command = $this->parseCommandFromMessage($message, $args);
 
 		if ($command === false)
 			return;
