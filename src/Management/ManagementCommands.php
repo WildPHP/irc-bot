@@ -11,8 +11,13 @@ namespace WildPHP\Core\Management;
 
 
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
+use WildPHP\Core\Commands\JoinedChannelParameter;
+use WildPHP\Core\Commands\ParameterStrategy;
+use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
@@ -31,30 +36,72 @@ class ManagementCommands extends BaseModule
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)');
-		CommandHandler::fromContainer($container)
-			->registerCommand('join', [$this, 'joinCommand'], $commandHelp, 1, 5, 'join');
+		CommandHandler::fromContainer($container)->registerCommand('join',
+			new Command(
+				[$this, 'joinCommand'],
+				new ParameterStrategy(1, 5, [
+					'channel1' => new StringParameter(),
+					'channel2' => new StringParameter(),
+					'channel3' => new StringParameter(),
+					'channel4' => new StringParameter(),
+					'channel5' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)'
+				]),
+				'join'
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Parts (leaves) the specified channel(s). Usage: part ([channel]) ([channel]) ([channel]) ... (up to 5 channels)');
-		CommandHandler::fromContainer($container)
-			->registerCommand('part', [$this, 'partCommand'], $commandHelp, 0, 5, 'part');
+		CommandHandler::fromContainer($container)->registerCommand('part',
+			new Command(
+				[$this, 'partCommand'],
+				new ParameterStrategy(0, 5, [
+					'channel1' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel2' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel3' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel4' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
+					'channel5' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
+				]),
+				new CommandHelp([
+					'Parts (leaves) the specified channel(s). Usage: part [channel] ([channel]) ([channel]) ... (up to 5 channels)',
+					'Channels have to be joined in order to be able to part them.'
+				]),
+				'part'
+			));
+		
+		CommandHandler::fromContainer($container)->registerCommand('quit',
+			new Command(
+				[$this, 'quitCommand'],
+				new ParameterStrategy(0, -1, [
+					'message' => new StringParameter()
+				], true),
+				new CommandHelp([
+					'Shuts down the bot and leaves the IRC network. Usage: quit ([message])'
+				]),
+				'quit'
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Quits the IRC network. Usage: quit ([message])');
-		CommandHandler::fromContainer($container)
-			->registerCommand('quit', [$this, 'quitCommand'], $commandHelp, 0, -1, 'quit');
+		CommandHandler::fromContainer($container)->registerCommand('nick',
+			new Command(
+				[$this, 'nickCommand'],
+				new ParameterStrategy(0, -1, [
+					'newNickname' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Changes the nickname of the bot. Usage: nick [nickname]'
+				]),
+				'nick'
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Changes the nickname of the bot. Usage: nick [nickname]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('nick', [$this, 'nickCommand'], $commandHelp, 0, 1, 'nick');
-
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Clears the send queue.');
-		CommandHandler::fromContainer($container)
-			->registerCommand('clearqueue', [$this, 'clearQueueCommand'], $commandHelp, 0, 1, 'clearqueue');
+		CommandHandler::fromContainer($container)->registerCommand('clearqueue',
+			new Command(
+				[$this, 'clearqueueCommand'],
+				new ParameterStrategy(0, 0),
+				new CommandHelp([
+					'Clears the send queue.'
+				]),
+				'clearqueue'
+			));
 
 		$this->setContainer($container);
 	}
@@ -128,7 +175,16 @@ class ManagementCommands extends BaseModule
 	public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
 		if (empty($channels))
-			$channels = [$source->getName()];
+			$channels = [$source];
+		
+		/**
+		 * @var int $index
+		 * @var Channel $channel
+		 */
+		foreach ($channels as $index => $channel)
+		{
+			$channels[$index] = $channel->getName();
+		}
 
 		$validChannels = $this->validateChannels($channels);
 
@@ -153,7 +209,7 @@ class ManagementCommands extends BaseModule
 	public function nickCommand(Channel $source, User $user, array $args, ComponentContainer $container)
 	{
 		// TODO: Validate
-		Queue::fromContainer($container)->nick($args[0]);
+		Queue::fromContainer($container)->nick($args['newNickname']);
 	}
 
 	/**
@@ -162,7 +218,7 @@ class ManagementCommands extends BaseModule
 	 * @param array $args
 	 * @param ComponentContainer $container
 	 */
-	public function clearQueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+	public function clearqueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
 	{
 		Queue::fromContainer($container)->clear();
 		Queue::fromContainer($container)->privmsg($source->getName(), $user->getNickname() . ': Message queue cleared.');

@@ -68,22 +68,18 @@ class HelpCommandTest extends TestCase
 		$helpCommand = new HelpCommand($this->container);
 
 		$helpCommand->helpCommand($this->channel, $this->user, [], $this->container);
+		self::assertEquals(2, Queue::fromContainer($this->container)->count());
+		Queue::fromContainer($this->container)->clear();
+
+		$helpCommand->helpCommand($this->channel, $this->user, ['command' => 'cmdhelp'], $this->container);
+		self::assertEquals(2, Queue::fromContainer($this->container)->count());
+		Queue::fromContainer($this->container)->clear();
+
+		$helpCommand->helpCommand($this->channel, $this->user, ['command' => 1], $this->container);
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 
-		$helpCommand->helpCommand($this->channel, $this->user, ['cmdhelp', 1], $this->container);
-		self::assertEquals(1, Queue::fromContainer($this->container)->count());
-		Queue::fromContainer($this->container)->clear();
-
-		$helpCommand->helpCommand($this->channel, $this->user, [1], $this->container);
-		self::assertEquals(1, Queue::fromContainer($this->container)->count());
-		Queue::fromContainer($this->container)->clear();
-
-		$helpCommand->helpCommand($this->channel, $this->user, [500], $this->container);
-		self::assertEquals(1, Queue::fromContainer($this->container)->count());
-		Queue::fromContainer($this->container)->clear();
-
-		$helpCommand->helpCommand($this->channel, $this->user, ['test'], $this->container);
+		$helpCommand->helpCommand($this->channel, $this->user, ['command' => 'test'], $this->container);
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
 	}

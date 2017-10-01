@@ -9,6 +9,8 @@
 
 namespace WildPHP\Core\Commands;
 
+use ValidationClosures\Types;
+use ValidationClosures\Utils;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
@@ -55,25 +57,16 @@ class CommandHandler implements ComponentInterface
 
 	/**
 	 * @param string $command
-	 * @param callable $callback
-	 * @param CommandHelp|null $commandHelp
-	 * @param int $minarguments
-	 * @param int $maxarguments
-	 * @param string $requiredPermission
+	 * @param Command $commandObject
+	 * @param string[] $aliases
 	 *
 	 * @return bool
 	 */
-	public function registerCommand(string $command,
-	                                callable $callback,
-	                                ?CommandHelp $commandHelp = null,
-	                                int $minarguments = -1,
-	                                int $maxarguments = -1,
-	                                string $requiredPermission = '')
+	public function registerCommand(string $command, Command $commandObject, array $aliases = [])
 	{
-		if ($this->getCommandCollection()->offsetExists($command))
+		if ($this->getCommandCollection()->offsetExists($command) || !Utils::validateArray(Types::string(), $aliases))
 			return false;
 
-		$commandObject = CommandFactory::create($callback, $commandHelp, $minarguments, $maxarguments, $requiredPermission);
 		$this->getCommandCollection()->offsetSet($command, $commandObject);
 		
 		Logger::fromContainer($this->getContainer())
@@ -81,6 +74,9 @@ class CommandHandler implements ComponentInterface
 				'New command registered', 
 				['command' => $command]
 			);
+		
+		foreach ($aliases as $alias)
+			$this->alias($command, $alias);
 
 		return true;
 	}
@@ -98,7 +94,6 @@ class CommandHandler implements ComponentInterface
 
 		/** @var Command $commandObject */
 		$commandObject = $this->getCommandCollection()[$originalCommand];
-		$commandObject->getAliasCollection()->append($alias);
 		$this->aliases[$alias] = $commandObject;
 		return true;
 	}
@@ -115,25 +110,16 @@ class CommandHandler implements ComponentInterface
 		$source = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($channel);
 
-		if (!$source)
+		$user = $source ? $source->getUserCollection()->findByNickname($privmsg->getNickname()) : false;
+
+		if (!$user || !$source)
 		{
 			Logger::fromContainer($this->getContainer())
-				->warning(
-					'!!! Received command from IRC, but channel was not found in collection! State mismatch!',
-					['channel' => $channel]
-				);
-
-			return;
-		}
-
-		$user = $source->getUserCollection()->findByNickname($privmsg->getNickname());
-
-		if (!$user)
-		{
-			Logger::fromContainer($this->getContainer())
-				->warning(
-					'!!! Received command from IRC, but user was not found in collection! State mismatch!',
-					['user' => $privmsg->getNickname()]
+				->warning('!!! State mismatch!',
+					[
+						'user' => $privmsg->getNickname(),
+						'channel' => $channel
+					]
 				);
 
 			return;
@@ -142,7 +128,7 @@ class CommandHandler implements ComponentInterface
 		$message = $privmsg->getMessage();
 
 		$args = [];
-		$command = self::parseCommandFromMessage($message, $args);
+		$command = $this->parseCommandFromMessage($message, $args);
 
 		if ($command === false)
 			return;
@@ -150,12 +136,11 @@ class CommandHandler implements ComponentInterface
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
 
-		$dictionary = $this->getCommandCollection();
+		$commandObject = $this->findCommandInDictionary($command);
 
-		if (!$dictionary->offsetExists($command) || array_key_exists($command, $this->aliases))
+		if (!$commandObject)
 			return;
-
-		$commandObject = $dictionary[$command] ?? $this->aliases[$command];
+		
 		$permission = $commandObject->getRequiredPermission();
 		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
 		{
@@ -165,17 +150,66 @@ class CommandHandler implements ComponentInterface
 			return;
 		}
 
-		$maximumArguments = $commandObject->getMaximumArguments();
-		if (count($args) < $commandObject->getMinimumArguments() || ($maximumArguments != -1 && count($args) > $maximumArguments))
+		$strategy = $this->findApplicableStrategy($commandObject, $args);
+		
+		if (!$strategy)
 		{
+			Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
 			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 			$queue->privmsg($source->getName(),
-				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions.');
-
+				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' .
+				'parameters match the given requirements.');
+			
 			return;
 		}
-
+		
 		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer(), $command);
+	}
+
+	/**
+	 * @param string $command
+	 *
+	 * @return Command|null
+	 */
+	protected function findCommandInDictionary(string $command): ?Command
+	{
+		$dictionary = $this->getCommandCollection();
+
+		if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases))
+			return null;
+
+		/** @var Command $commandObject */
+		return $dictionary[$command] ?? $this->aliases[$command];
+	}
+
+	/**
+	 * @param Command $commandObject
+	 * @param array $args
+	 *
+	 * @return null|ParameterStrategy
+	 */
+	protected function findApplicableStrategy(Command $commandObject, array &$args): ?ParameterStrategy
+	{
+		$parameterStrategies = $commandObject->getParameterStrategies();
+		$strategy = null;
+		$originalArgs = $args;
+
+		/** @var ParameterStrategy $parameterStrategy */
+		foreach ($parameterStrategies as $parameterStrategy)
+		{
+			try
+			{
+				$args = $parameterStrategy->validateArgumentArray($originalArgs);
+				$strategy = $parameterStrategy;
+				break;
+			}
+			catch (\InvalidArgumentException $e)
+			{
+				Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
+			}
+		}
+
+		return $strategy;
 	}
 
 	/**

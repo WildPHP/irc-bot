@@ -143,6 +143,14 @@ class PingPongHandler extends BaseModule
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getLastMessageReceivedTime(): int
+	{
+		return $this->lastMessageReceived;
+	}
+
+	/**
 	 * @return string
 	 */
 	public static function getSupportedVersionConstraint(): string

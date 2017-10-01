@@ -1,6 +1,8 @@
 build:
     environment:
         php: 7.1
+        postgresql: false
+        redis: false
     tests:
         override:
             -

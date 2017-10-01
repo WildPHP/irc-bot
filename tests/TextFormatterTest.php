@@ -80,4 +80,44 @@ class TextFormatterTest extends TestCase
 		self::assertEquals($expected, TextFormatter::consistentStringColor($string));
 		self::assertEquals('', TextFormatter::consistentStringColor(''));
     }
+
+	public function testStripBold()
+	{
+		$expectedString = 'Test string';
+		$string = "\x02" . $expectedString . "\x02";
+
+		$actual = TextFormatter::stripBold($string);
+
+		static::assertSame($expectedString, $actual);
+	}
+
+	public function testStripUnderline()
+	{
+		$expectedString = 'Test string';
+		$string = "\x1F" . $expectedString . "\x1F";
+
+		$actual = TextFormatter::stripUnderline($string);
+
+		static::assertSame($expectedString, $actual);
+	}
+
+	public function testStripItalic()
+	{
+		$expectedString = 'Test string';
+		$string = "\x09" . $expectedString . "\x09";
+
+		$actual = TextFormatter::stripItalic($string);
+
+		static::assertSame($expectedString, $actual);
+	}
+
+	public function testStripColor()
+	{
+		$expectedString = 'Test string';
+		$string = "\x0306,04" . $expectedString . "\x03";
+
+		$actual = TextFormatter::stripColor($string);
+
+		static::assertSame($expectedString, $actual);
+	}
 }

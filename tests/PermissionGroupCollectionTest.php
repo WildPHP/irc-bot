@@ -58,10 +58,10 @@ class PermissionGroupCollectionTest extends TestCase
 		$groupState = $permissionGroupCollection->getStoredGroupData('collectionTestGroup');
 
 		$expectedGroup = new PermissionGroup($groupState);
-		$permissionGroupCollection->offsetSet(0, $expectedGroup);
+		$permissionGroupCollection->offsetSet('test', $expectedGroup);
 		
-		$permissionGroupCollection->offsetUnset(0);
+		$permissionGroupCollection->offsetUnset('test');
 		
-		self::assertFalse($permissionGroupCollection->offsetExists(0));
+		self::assertFalse($permissionGroupCollection->offsetExists('test'));
 	}
 }

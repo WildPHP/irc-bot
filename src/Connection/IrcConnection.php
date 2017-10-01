@@ -121,6 +121,11 @@ class IrcConnection implements ComponentInterface
 		Logger::fromContainer($this->getContainer())
 			->debug('Set new server configuration to configuration serverConfig.',
 				[Configuration::fromContainer($this->getContainer())['serverConfig']]);
+		
+		EventEmitter::fromContainer($this->getContainer())->emit(
+			'irc.config.updated', 
+			[Configuration::fromContainer($this->getContainer())['serverConfig']]
+		);
 	}
 
 	/**

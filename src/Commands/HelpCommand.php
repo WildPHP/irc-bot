@@ -13,7 +13,6 @@ namespace WildPHP\Core\Commands;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
@@ -26,16 +25,26 @@ class HelpCommand extends BaseModule
 	 */
 	public function __construct(ComponentContainer $container)
 	{
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Shows the help pages for a specific command. (use the lscommands command to list available commands) ' .
-			'Usage: cmdhelp [command] [page]');
-		CommandHandler::fromContainer($container)
-			->registerCommand('cmdhelp', [$this, 'helpCommand'], $commandHelp, 0, 2);
+		CommandHandler::fromContainer($container)->registerCommand('cmdhelp',
+			new Command(
+				[$this, 'helpCommand'],
+				new ParameterStrategy(0, 1, [
+					'command' => new StringParameter()
+				]),
+				new CommandHelp([
+					'Shows the help pages for a specific command. (use the lscommands command to list available commands)',
+					'Usage: cmdhelp [command]'
+				])
+			));
 
-		$commandHelp = new CommandHelp();
-		$commandHelp->append('Shows the list of available commands. No arguments.');
-		CommandHandler::fromContainer($container)
-			->registerCommand('lscommands', [$this, 'lscommandsCommand'], $commandHelp, 0, 0);
+		CommandHandler::fromContainer($container)->registerCommand('lscommands',
+			new Command(
+				[$this, 'lscommandsCommand'],
+				new ParameterStrategy(0, 0),
+				new CommandHelp([
+					'Shows the list of available commands. No arguments.'
+				])
+			));
 	}
 
 	/**
@@ -69,24 +78,11 @@ class HelpCommand extends BaseModule
 	public function helpCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		if (empty($args))
-		{
-			$args[0] = 'cmdhelp';
-			$args[1] = '1';
-		}
+			$args['command'] = 'cmdhelp';
 
-		if (count($args) == 1 && is_numeric($args[0]))
-		{
-			$args[1] = $args[0];
-			$args[0] = 'cmdhelp';
-		}
+		$command = $args['command'];
 
-		$command = $args[0];
-		$page = !empty($args[1]) ? $args[1] : 1; // Take into account arrays starting at position 0.
-
-		if (!CommandHandler::fromContainer($container)
-			->getCommandCollection()
-			->offsetExists($command)
-		)
+		if (!CommandHandler::fromContainer($container)->getCommandCollection()->offsetExists($command))
 		{
 			Queue::fromContainer($container)
 				->privmsg($source->getName(), 'That command does not exist, sorry!');
@@ -107,37 +103,13 @@ class HelpCommand extends BaseModule
 			return;
 		}
 		
-		if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
-			$helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));
+		/*if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
+			$helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));*/
 		
-		if ($page == 'all')
+		foreach ($helpObject->getIterator() as $page)
 		{
-			foreach ($helpObject->getIterator() as $page)
-			{
-				Queue::fromContainer($container)->privmsg($source->getName(), $command . ': ' . $page);
-			}
-			return;
+			Queue::fromContainer($container)->privmsg($source->getName(), $command . ': ' . $page);
 		}
-
-		$pageToGet = $page - 1;
-		if (!$helpObject->offsetExists($pageToGet))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), 'That page does not exist for this command.');
-			Logger::fromContainer($container)
-				->debug('Tried to grab invalid page from CommandHelp object.',
-					[
-						'page' => $pageToGet,
-						'object' => $helpObject
-					]);
-
-			return;
-		}
-
-		$contents = $helpObject->offsetGet($pageToGet);
-		$pageCount = $helpObject->count();
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $command . ': ' . $contents . ' (page ' . $page . ' of ' . $pageCount . ')');
 	}
 
 	/**

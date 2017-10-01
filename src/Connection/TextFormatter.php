@@ -136,4 +136,45 @@ class TextFormatter
 		$color = self::calculateStringColor($stringToColor);
 		return self::color($stringToColor, $color, $background);
 	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function stripBold(string $text): string
+	{
+		return str_replace(self::$asciiMap['bold'], '', $text);
+	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function stripItalic(string $text): string
+	{
+		return str_replace(self::$asciiMap['italic'], '', $text);
+	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function stripUnderline(string $text): string
+	{
+		return str_replace(self::$asciiMap['underline'], '', $text);
+	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function stripColor(string $text): string
+	{
+		$regex = '/' . preg_quote(self::$asciiMap['color']) . '(\d{1,2},\d{1,2})?/';
+		return preg_replace($regex, '', $text);
+	}
 }
