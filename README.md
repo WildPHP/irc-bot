@@ -1,8 +1,8 @@
 # Wild IRC Bot
 ----------
-[![Build Status](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/build.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/quality-score.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/?branch=master)
-[![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/badges/coverage.png)](https://scrutinizer-ci.com/g/WildPHP/Wild-IRC-Bot/code-structure/master/code-coverage)
+[![Build Status](https://scrutinizer-ci.com/g/WildPHP/irc-bot/badges/build.png)](https://scrutinizer-ci.com/g/WildPHP/irc-bot/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/WildPHP/irc-bot/badges/quality-score.png)](https://scrutinizer-ci.com/g/WildPHP/irc-bot/?branch=master)
+[![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/WildPHP/irc-bot/badges/coverage.png)](https://scrutinizer-ci.com/g/WildPHP/irc-bot/code-structure/master/code-coverage)
 [![Latest Stable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/stable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 [![Latest Unstable Version](https://poser.pugx.org/wildphp/Wild-IRC-Bot/v/unstable)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
 [![Total Downloads](https://poser.pugx.org/wildphp/Wild-IRC-Bot/downloads)](https://packagist.org/packages/wildphp/Wild-IRC-Bot)
@@ -33,8 +33,8 @@ Right now this version of the bot is under heavy development, therefore the feat
 ## Installation
 To install the latest development build, you need [Composer](https://getcomposer.org/). Install WildPHP using the following commands:
 
-    $ git clone https://github.com/WildPHP/Wild-IRC-Bot
-    $ cd Wild-IRC-Bot
+    $ git clone https://github.com/WildPHP/irc-bot
+    $ cd irc-bot
     $ composer install
 
 This will pull all Composer dependencies required to run the bot.
@@ -53,7 +53,7 @@ While you can run the bot in the terminal it is best to run it in [tmux](https:/
 
 ## Contributors
 
-You can see the full list of contributors [in the GitHub repository](https://github.com/WildPHP/Wild-IRC-Bot/graphs/contributors).
+You can see the full list of contributors [in the GitHub repository](https://github.com/WildPHP/irc-bot/graphs/contributors).
 
 ### Major & Past Major Contributors
 * [Super3](http://super3.org)
