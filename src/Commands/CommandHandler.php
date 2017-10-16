@@ -218,7 +218,7 @@ class CommandHandler implements ComponentInterface
 	 *
 	 * @return false|string
 	 */
-	protected function parseCommandFromMessage(string $message, array &$args)
+	public function parseCommandFromMessage(string $message, array &$args)
 	{
 		$messageParts = explode(' ', trim($message));
 		$firstPart = array_shift($messageParts);
@@ -233,7 +233,9 @@ class CommandHandler implements ComponentInterface
 		$command = substr($firstPart, strlen($prefix));
 
 		// Remove empty elements and excessive spaces.
-		$args = array_values(array_map('trim', array_filter($messageParts)));
+		$args = array_values(array_map('trim', array_filter($messageParts, function($arg) {
+		    return !preg_match('/^$|\s/', $arg);
+        })));
 
 		return $command;
 	}
