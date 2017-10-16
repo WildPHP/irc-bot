@@ -234,8 +234,8 @@ class CommandHandler implements ComponentInterface
 
 		// Remove empty elements and excessive spaces.
 		$args = array_values(array_map('trim', array_filter($messageParts, function($arg) {
-		    return !preg_match('/^$|\s/', $arg);
-        })));
+			return !preg_match('/^$|\s/', $arg);
+		})));
 
 		return $command;
 	}

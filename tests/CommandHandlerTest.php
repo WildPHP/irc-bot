@@ -59,22 +59,22 @@ class CommandHandlerTest extends TestCase
 	{
 		$collection = new \Yoshi2889\Collections\Collection(Types::instanceof(Command::class));
 		$commandHandler = new CommandHandler($this->componentContainer, $collection);
-		
+
 		self::assertEquals(0, $collection->count());
 		$commandHelp = new CommandHelp();
 		$commandHelp->append('Test');
-		
+
 		$expectedCommand = new Command(
 			[$this, 'command'],
 			new ParameterStrategy(0, 0),
 			$commandHelp,
 			'test'
 		);
-		
+
 		self::assertTrue($commandHandler->registerCommand('test', $expectedCommand));
 		self::assertEquals(1, $collection->count());
 		self::assertEquals($expectedCommand, $collection['test']);
-		
+
 		self::assertFalse($commandHandler->registerCommand('test', $expectedCommand));
 	}
 
@@ -102,101 +102,101 @@ class CommandHandlerTest extends TestCase
 		// TODO: fix this test (get a way to retrieve aliases)
 		//self::assertEquals($expectedCommand, $collection['ing']);
 	}
-	
+
 	public function testParseAndRun()
-    {
-        $collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
-        $commandHandler = new CommandHandler($this->componentContainer, $collection);
+	{
+		$collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
+		$commandHandler = new CommandHandler($this->componentContainer, $collection);
 
-        $commandHelp = new CommandHelp();
-        $commandHelp->append('Test');
+		$commandHelp = new CommandHelp();
+		$commandHelp->append('Test');
 
-        $commandHandler->registerCommand('test', new Command(
-            [$this, 'command'],
-            new ParameterStrategy(0, 0),
-            $commandHelp,
-            'test'
-        ));
-        $commandHandler->registerCommand('test2', new Command(
-            [$this, 'command2'],
-            new ParameterStrategy(0, 0),
-            $commandHelp,
-            'test'
-        ));
+		$commandHandler->registerCommand('test', new Command(
+			[$this, 'command'],
+			new ParameterStrategy(0, 0),
+			$commandHelp,
+			'test'
+		));
+		$commandHandler->registerCommand('test2', new Command(
+			[$this, 'command2'],
+			new ParameterStrategy(0, 0),
+			$commandHelp,
+			'test'
+		));
 
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test');
-        $privmsg->setNickname('Test');
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test');
+		$privmsg->setNickname('Test');
 
-        self::expectOutputString('Hello world!');
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		self::expectOutputString('Hello world!');
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // Too many arguments
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2 ing');
-        $privmsg->setNickname('Test');
+		// Too many arguments
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2 ing');
+		$privmsg->setNickname('Test');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // No permission
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
-        $privmsg->setNickname('Testing');
+		// No permission
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
+		$privmsg->setNickname('Testing');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // No command.
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', 'test2');
-        $privmsg->setNickname('Test');
+		// No command.
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', 'test2');
+		$privmsg->setNickname('Test');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // Nonexisting command.
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!testing');
-        $privmsg->setNickname('Test');
+		// Nonexisting command.
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!testing');
+		$privmsg->setNickname('Test');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // Only prefix
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!');
-        $privmsg->setNickname('Test');
+		// Only prefix
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!');
+		$privmsg->setNickname('Test');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // Channel doesn't exist in collection.
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#testing', '!test2');
-        $privmsg->setNickname('Test');
+		// Channel doesn't exist in collection.
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#testing', '!test2');
+		$privmsg->setNickname('Test');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
-        // User doesn't exist in collection.
-        $privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
-        $privmsg->setNickname('Foo');
+		// User doesn't exist in collection.
+		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
+		$privmsg->setNickname('Foo');
 
-        $commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
-    }
+		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
+	}
 
-    public function testParseCommandFromMessage()
-    {
-        $collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
-        $commandHandler = new CommandHandler($this->componentContainer, $collection);
+	public function testParseCommandFromMessage()
+	{
+		$collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
+		$commandHandler = new CommandHandler($this->componentContainer, $collection);
 
-        // Expected behavior of command and argument extraction.
-        $args = [];
-        $command = $commandHandler->parseCommandFromMessage('!command test args', $args);
-        $this->assertEquals('command', $command);
-        $this->assertEquals(['test', 'args'], $args);
+		// Expected behavior of command and argument extraction.
+		$args = [];
+		$command = $commandHandler->parseCommandFromMessage('!command test args', $args);
+		$this->assertEquals('command', $command);
+		$this->assertEquals(['test', 'args'], $args);
 
-        // Strips whitespace.
-        $args = [];
-        $command = $commandHandler->parseCommandFromMessage("   !command \t  junk   test", $args);
-        $this->assertEquals('command', $command);
-        $this->assertEquals('command', $command);
-        $this->assertEquals(['junk', 'test'], $args);
+		// Strips whitespace.
+		$args = [];
+		$command = $commandHandler->parseCommandFromMessage("   !command \t  junk   test", $args);
+		$this->assertEquals('command', $command);
+		$this->assertEquals('command', $command);
+		$this->assertEquals(['junk', 'test'], $args);
 
-        // Regression test: Doesn't strip 0s.
-        $args = [];
-        $command = $commandHandler->parseCommandFromMessage('!command 0 args', $args);
-        $this->assertEquals('command', $command);
-        $this->assertEquals(['0', 'args'], $args);
-    }
+		// Regression test: Doesn't strip 0s.
+		$args = [];
+		$command = $commandHandler->parseCommandFromMessage('!command 0 args', $args);
+		$this->assertEquals('command', $command);
+		$this->assertEquals(['0', 'args'], $args);
+	}
 
 	/**
 	 * @param Channel $channel
