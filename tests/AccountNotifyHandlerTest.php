@@ -21,13 +21,13 @@ class AccountNotifyHandlerTest extends TestCase
 		$channelCollection->append(new \WildPHP\Core\Channels\Channel('#test', $userCollection, new \WildPHP\Core\Channels\ChannelModes('')));
 		$user = new \WildPHP\Core\Users\User('Test');
 		$userCollection->append($user);
-		
+
 		$account = new \WildPHP\Core\Connection\IRCMessages\ACCOUNT('ing');
 		$account->setPrefix(new \WildPHP\Core\Connection\UserPrefix('Test'));
-		
+
 		$accountNotifyHandler = new AccountNotifyHandler($componentContainer);
 		$accountNotifyHandler->updateUserIrcAccount($account, new \WildPHP\Core\Connection\Queue());
-		
+
 		self::assertEquals('ing', $user->getIrcAccount());
 	}
 
@@ -35,7 +35,7 @@ class AccountNotifyHandlerTest extends TestCase
 	{
 		if (!defined('WPHP_VERSION'))
 			define('WPHP_VERSION', '3.0.0');
-		
+
 		self::assertEquals(WPHP_VERSION, AccountNotifyHandler::getSupportedVersionConstraint());
 	}
 }

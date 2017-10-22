@@ -35,7 +35,7 @@ class PermissionCommands extends BaseModule
 			new Command(
 				[$this, 'allowCommand'],
 				new ParameterStrategy(2, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'permission' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -48,7 +48,7 @@ class PermissionCommands extends BaseModule
 			new Command(
 				[$this, 'denyCommand'],
 				new ParameterStrategy(2, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'permission' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -61,7 +61,7 @@ class PermissionCommands extends BaseModule
 			new Command(
 				[$this, 'lspermsCommand'],
 				new ParameterStrategy(1, 1, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([
 					'List all members in a permission group. Usage: lsperms [group name]'
@@ -81,14 +81,11 @@ class PermissionCommands extends BaseModule
 	 */
 	public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		list ($groupName, $permission) = $args;
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
+		$permission = $args['permission'];
 
 		$checks = [
-			'This group does not exist.' => empty($group),
 			'This group is already allowed to do that.' => $group ? $group->getAllowedPermissions()->contains($permission) : false
 		];
 
@@ -109,14 +106,11 @@ class PermissionCommands extends BaseModule
 	 */
 	public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		list ($groupName, $permission) = $args;
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
+		$permission = $args['permission'];
 
 		$checks = [
-			'This group does not exist.' => empty($group),
 			'This group is not allowed to do that.' => $group ? !$group->getAllowedPermissions()->contains($permission) : false
 		];
 
@@ -137,11 +131,8 @@ class PermissionCommands extends BaseModule
 	 */
 	public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args['groupName'];
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
 
 		$perms = $group->getAllowedPermissions()
 			->values();
