@@ -35,7 +35,7 @@ class PermissionMembersCommands extends BaseModule
 			new Command(
 				[$this, 'lsmembersCommand'],
 				new ParameterStrategy(1, 1, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
 				]),
 				new CommandHelp([
 					'List all members in a permission group. Usage: lsmembers [group name]'
@@ -48,7 +48,7 @@ class PermissionMembersCommands extends BaseModule
 			new Command(
 				[$this, 'addmemberCommand'],
 				new ParameterStrategy(2, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'nickname' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -62,7 +62,7 @@ class PermissionMembersCommands extends BaseModule
 			new Command(
 				[$this, 'delmemberCommand'],
 				new ParameterStrategy(2, 2, [
-					'groupName' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
 					'nickname' => new StringParameter()
 				]),
 				new CommandHelp([
@@ -83,11 +83,8 @@ class PermissionMembersCommands extends BaseModule
 	 */
 	public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		$groupName = $args['groupName'];
-
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
 
 		$checks = [
 			'This group does not exist.' => empty($group),
@@ -113,11 +110,10 @@ class PermissionMembersCommands extends BaseModule
 	 */
 	public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		list ($groupName, $nickname) = $args;
+		$nickname = $args['nickname'];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
 
 		/** @var User $userToAdd */
 		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
@@ -137,11 +133,10 @@ class PermissionMembersCommands extends BaseModule
 
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
-				sprintf('%s: User %s (identified by %s) has been added to the permission group "%s"',
+				sprintf('%s: User %s (identified by %s) has been added to the specified permission group.',
 					$user->getNickname(),
 					$nickname,
-					$userToAdd->getIrcAccount(),
-					$groupName));
+					$userToAdd->getIrcAccount()));
 	}
 
 	/**
@@ -152,11 +147,10 @@ class PermissionMembersCommands extends BaseModule
 	 */
 	public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		list ($groupName, $nickname) = $args;
+		$nickname = $args['nickname'];
 
-		/** @var PermissionGroup|false $group */
-		$group = PermissionGroupCollection::fromContainer($container)
-			->offsetGet($groupName);
+		/** @var PermissionGroup $group */
+		$group = $args['group'];
 
 		/** @var User $userToAdd */
 		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
@@ -175,11 +169,10 @@ class PermissionMembersCommands extends BaseModule
 
 		Queue::fromContainer($container)
 			->privmsg($source->getName(),
-				sprintf('%s: User %s (identified by %s) has been removed from the permission group "%s"',
+				sprintf('%s: User %s (identified by %s) has been removed from the specified permission group',
 					$user->getNickname(),
 					$nickname,
-					$userToAdd->getIrcAccount(),
-					$groupName));
+					$userToAdd->getIrcAccount()));
 	}
 	
 	/**
