@@ -106,7 +106,7 @@ class ParameterStrategy extends Collection
 	 */
 	public function validateArgumentCount(array $args): bool
 	{
-		if ($this->minimumParameters < 0 || $this->implodeLeftover())
+		if ($this->minimumParameters < 0)
 			return true;
 		
 		$count = count($args);
