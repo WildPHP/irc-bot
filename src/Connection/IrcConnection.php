@@ -66,6 +66,9 @@ class IrcConnection implements ComponentInterface
 		$this->getContainer()->getLoop()
 			->addPeriodicTimer(1, [$this, 'flushQueue']);
 
+		if (!empty($connectionDetails->getPassword()))
+			$queue->pass($connectionDetails->getPassword());
+
 		$connectionDetails = $this->getConnectionDetails();
 		$queue->user(
 			$connectionDetails->getUsername(),
@@ -74,9 +77,6 @@ class IrcConnection implements ComponentInterface
 			$connectionDetails->getRealname()
 		);
 		$queue->nick($connectionDetails->getWantedNickname());
-
-		if (!empty($connectionDetails->getPassword()))
-			$queue->pass($connectionDetails->getPassword());
 	}
 
 	public function flushQueue()
