@@ -66,10 +66,10 @@ class IrcConnection implements ComponentInterface
 		$this->getContainer()->getLoop()
 			->addPeriodicTimer(1, [$this, 'flushQueue']);
 
+		$connectionDetails = $this->getConnectionDetails();
 		if (!empty($connectionDetails->getPassword()))
 			$queue->pass($connectionDetails->getPassword());
 
-		$connectionDetails = $this->getConnectionDetails();
 		$queue->user(
 			$connectionDetails->getUsername(),
 			$connectionDetails->getHostname(),
