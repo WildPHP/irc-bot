@@ -81,16 +81,15 @@ class ChannelStateManager extends BaseModule
 	{
 		$channel = $ircMessage->getChannel();
 
-		/** @var Channel $channel */
-		$channel = ChannelCollection::fromContainer($this->getContainer())
+		$channelObject = ChannelCollection::fromContainer($this->getContainer())
 			->findByChannelName($channel);
 
-		if (!$channel)
+		if (!$channelObject)
 			return;
 
-		$channel->setTopic($ircMessage->getMessage());
+		$channelObject->setTopic($ircMessage->getMessage());
 		EventEmitter::fromContainer($this->getContainer())
-			->emit('channel.topic', [$channel, $ircMessage->getMessage()]);
+			->emit('channel.topic', [$channelObject, $ircMessage->getMessage()]);
 	}
 
 	/**
