@@ -18,11 +18,11 @@ class ParsedIrcMessage
 	/**
 	 * @var string
 	 */
-	public $prefix = null;
+	public $prefix = '';
 	/**
 	 * @var string
 	 */
-	public $verb = null;
+	public $verb = '';
 	/**
 	 * @var array
 	 */
