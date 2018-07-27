@@ -1,12 +1,18 @@
 build:
-    environment:
-        php: 7.1
-        postgresql: false
-        redis: false
-    tests:
-        override:
-            -
-                command: 'vendor/bin/phpunit --coverage-clover=cloverCoverage'
-                coverage:
-                    file: 'cloverCoverage'
-                    format: 'clover'
+  nodes:
+      analysis:
+          tests:
+              override:
+                  - php-scrutinizer-run
+      tests-and-coverage:
+          environment:
+              php: 7.1
+              postgresql: false
+              redis: false
+          tests:
+              override:
+                  -
+                      command: 'vendor/bin/phpunit --coverage-clover=cloverCoverage'
+                      coverage:
+                          file: 'cloverCoverage'
+                          format: 'clover'
