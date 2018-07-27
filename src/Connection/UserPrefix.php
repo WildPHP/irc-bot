@@ -118,6 +118,9 @@ class UserPrefix
 	 */
 	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
 	{
-		return self::fromString($incomingIrcMessage->getPrefix());
+	    if (!empty($incomingIrcMessage->getPrefix()))
+		    return self::fromString($incomingIrcMessage->getPrefix());
+
+	    return new self();
 	}
 }
