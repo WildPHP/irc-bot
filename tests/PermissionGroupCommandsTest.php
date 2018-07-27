@@ -130,7 +130,9 @@ class PermissionGroupCommandsTest extends TestCase
 	{
 		$permissionGroupCommands = new PermissionMembersCommands($this->container);
 
-		$permissionGroupCommands->lsmembersCommand($this->channel, $this->user, ['groupName' => 'testGroup'], $this->container);
+        /** @var PermissionGroup $group */
+        $group = PermissionGroupCollection::fromContainer($this->container)->offsetGet('testGroup');
+		$permissionGroupCommands->lsmembersCommand($this->channel, $this->user, ['group' => $group], $this->container);
 
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
 		Queue::fromContainer($this->container)->clear();
@@ -143,7 +145,7 @@ class PermissionGroupCommandsTest extends TestCase
 		$group = PermissionGroupCollection::fromContainer($this->container)->offsetGet('testGroup');
 		$group->getUserCollection()->exchangeArray(['testUser']);
 
-		$permissionGroupCommands->addmemberCommand($this->channel, $this->user, ['testGroup', 'Tester2'], $this->container);
+		$permissionGroupCommands->addmemberCommand($this->channel, $this->user, ['group' => $group, 'nickname' => 'Tester2'], $this->container);
 		self::assertTrue($group->getUserCollection()->contains('testUser2'));
 
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
@@ -157,7 +159,7 @@ class PermissionGroupCommandsTest extends TestCase
 		$group = PermissionGroupCollection::fromContainer($this->container)->offsetGet('testGroup');
 		$group->getUserCollection()->exchangeArray(['testUser']);
 
-		$permissionGroupCommands->delmemberCommand($this->channel, $this->user, ['testGroup', 'Tester'], $this->container);
+		$permissionGroupCommands->delmemberCommand($this->channel, $this->user, ['group' => $group, 'nickname' => 'Tester'], $this->container);
 		self::assertFalse($group->getUserCollection()->contains('testUser'));
 
 		self::assertEquals(1, Queue::fromContainer($this->container)->count());
