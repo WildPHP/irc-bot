@@ -44,7 +44,7 @@ class IncomingIrcMessage
 	/**
 	 * @return string
 	 */
-	public function getPrefix()
+	public function getPrefix(): string
 	{
 		return $this->prefix;
 	}
@@ -52,7 +52,7 @@ class IncomingIrcMessage
 	/**
 	 * @param string $prefix
 	 */
-	public function setPrefix($prefix)
+	public function setPrefix(string $prefix)
 	{
 		$this->prefix = $prefix;
 	}
@@ -60,7 +60,7 @@ class IncomingIrcMessage
 	/**
 	 * @return string
 	 */
-	public function getVerb()
+	public function getVerb(): string
 	{
 		return $this->verb;
 	}
@@ -68,7 +68,7 @@ class IncomingIrcMessage
 	/**
 	 * @param string $verb
 	 */
-	public function setVerb($verb)
+	public function setVerb(string $verb)
 	{
 		$this->verb = $verb;
 	}
@@ -76,7 +76,7 @@ class IncomingIrcMessage
 	/**
 	 * @return array
 	 */
-	public function getArgs()
+	public function getArgs(): array
 	{
 		return $this->args;
 	}
@@ -84,7 +84,7 @@ class IncomingIrcMessage
 	/**
 	 * @param array $args
 	 */
-	public function setArgs($args)
+	public function setArgs(array $args)
 	{
 		$this->args = $args;
 	}
