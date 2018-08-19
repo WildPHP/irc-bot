@@ -131,6 +131,11 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		$configuration['owner'])
 	);
 
+	$componentContainer->add(new \WildPHP\Core\Database\Database(new \Medoo\Medoo([
+	    'database_type' => 'sqlite',
+        'database_file' => WPHP_ROOT_DIR . '/state.sqlite'
+    ])));
+
 	$moduleFactory = new ModuleFactory($componentContainer);
 	$componentContainer->add($moduleFactory);
 
@@ -143,8 +148,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$modules = array_merge($modules, [
 		\WildPHP\Core\Connection\Parser::class,
 		\WildPHP\Core\Connection\PingPongHandler::class,
-		\WildPHP\Core\Users\UserStateManager::class,
-		\WildPHP\Core\Channels\ChannelStateManager::class,
+		//\WildPHP\Core\Users\UserStateManager::class,
 		\WildPHP\Core\Commands\HelpCommand::class,
 		\WildPHP\Core\Permissions\PermissionGroupCommands::class,
 		\WildPHP\Core\Permissions\PermissionCommands::class,
@@ -154,7 +158,9 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Connection\NicknameHandler::class,
 		\WildPHP\Core\Connection\MessageLogger::class,
 		\WildPHP\Core\Connection\AccountNotifyHandler::class,
-		\WildPHP\Core\Connection\SASL::class
+		\WildPHP\Core\Connection\SASL::class,
+        \WildPHP\Core\Users\UserObserver::class,
+        \WildPHP\Core\Channels\ChannelObserver::class
 	]);
 
 	$moduleFactory->initializeModules($modules);
