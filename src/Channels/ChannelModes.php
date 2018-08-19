@@ -25,21 +25,11 @@ class ChannelModes
 	protected $modeMap = [];
 
 	/**
-	 * ChannelModes constructor.
-	 *
-	 * @param string $modeDefinitions
-	 */
-	public function __construct(string $modeDefinitions)
-	{
-		$this->definitions = $this->parseDefinitions($modeDefinitions);
-	}
-
-	/**
 	 * @param string $definitions
 	 *
 	 * @return array
 	 */
-	protected function parseDefinitions(string $definitions): array
+	protected static function parseDefinitions(string $definitions): array
 	{
 		if (!preg_match('/\((.+)\)(.+)/', $definitions, $out))
 			return [];
@@ -197,15 +187,16 @@ class ChannelModes
 		$this->modeMap = [];
 	}
 
-	/**
-	 * @param string $nickname
-	 * @param string $remainders
-	 *
-	 * @return array
-	 */
-	public function extractUserModesFromNickname(string $nickname, string &$remainders): array
+    /**
+     * @param string $prefixes
+     * @param string $nickname
+     * @param string $remainders
+     *
+     * @return array
+     */
+	public static function extractUserModesFromNickname(string $prefixes, string $nickname, string &$remainders): array
 	{
-		$modeMap = $this->getModeDefinitions();
+		$modeMap = self::parseDefinitions($prefixes);
 		$parts = str_split($nickname);
 		$modes = [];
 
