@@ -35,6 +35,54 @@ class Database implements ComponentInterface
     public function __construct(Medoo $medoo)
     {
         $this->medoo = $medoo;
+
+        $medoo->query('
+            create table if not exists users
+            (
+                id INTEGER primary key autoincrement,
+                nickname text,
+                hostname text,
+                username text,
+                irc_account text
+            );');
+        $medoo->query('
+            create table if not exists channels
+            (
+                id INTEGER primary key autoincrement,
+                name text,
+                topic text
+            );');
+        $medoo->query('
+            create table if not exists user_channel_relationships
+            (
+                channel_id int,
+                user_id int
+            );');
+        $medoo->query('
+            create table if not exists server_config
+            (
+                key text not null,
+                value text not null
+            );');
+        $medoo->query('
+            create unique index if not exists server_config_key_uindex on server_config (key);');
+        $medoo->query('
+            create table if not exists mode_relations
+            (
+                user_id int,
+                channel_id int,
+                mode text
+            );');
+        $medoo->query('
+            delete from users;');
+        $medoo->query('
+            delete from channels;');
+        $medoo->query('
+            delete from user_channel_relationships;');
+        $medoo->query('
+            delete from server_config;');
+        $medoo->query('
+            delete from mode_relations;');
     }
 
     /**
@@ -93,12 +141,12 @@ class Database implements ComponentInterface
 
     /**
      * @param string $table
-     * @param array $join
-     * @param array|string $columns
-     * @param array $where
+     * @param array|null $join
+     * @param array|string|null $columns
+     * @param array|null $where
      * @return array|bool|mixed
      */
-    public function get(string $table, array $join, $columns, array $where)
+    public function get(string $table, array $join = null, $columns = null, array $where = null)
     {
         return $this->medoo->get($table, $join, $columns, $where);
     }
@@ -106,10 +154,10 @@ class Database implements ComponentInterface
     /**
      * @param string $table
      * @param array $join
-     * @param array $where
+     * @param array|null $where
      * @return bool
      */
-    public function has(string $table, array $join, array $where)
+    public function has(string $table, array $join, array $where = null)
     {
         return $this->medoo->has($table, $join, $where);
     }
@@ -199,5 +247,13 @@ class Database implements ComponentInterface
     public function quote(string $string)
     {
         return $this->medoo->quote($string);
+    }
+
+    /**
+     * @return null
+     */
+    public function error()
+    {
+        return $this->medoo->error();
     }
 }
