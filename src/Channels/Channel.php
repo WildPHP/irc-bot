@@ -9,6 +9,8 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\Database\Database;
+use WildPHP\Core\StateException;
 use WildPHP\Core\Users\UserCollection;
 
 class Channel
@@ -33,15 +35,10 @@ class Channel
 	 */
 	protected $createdTime = 0;
 
-	/**
-	 * @var UserCollection
-	 */
-	protected $userCollection;
-
-	/**
-	 * @var ChannelModes
-	 */
-	protected $channelModes;
+    /**
+     * @var int
+     */
+	protected $id = 0;
 
 	/**
 	 * Channel constructor.
@@ -50,43 +47,9 @@ class Channel
 	 * @param UserCollection $userCollection
 	 * @param ChannelModes $channelModes
 	 */
-	public function __construct(string $name, UserCollection $userCollection, ChannelModes $channelModes)
+	public function __construct(string $name)
 	{
 		$this->name = $name;
-		$this->setUserCollection($userCollection);
-		$this->setChannelModes($channelModes);
-	}
-
-	/**
-	 * @return ChannelModes
-	 */
-	public function getChannelModes(): ChannelModes
-	{
-		return $this->channelModes;
-	}
-
-	/**
-	 * @param ChannelModes $channelModes
-	 */
-	public function setChannelModes(ChannelModes $channelModes)
-	{
-		$this->channelModes = $channelModes;
-	}
-
-	/**
-	 * @return UserCollection
-	 */
-	public function getUserCollection(): UserCollection
-	{
-		return $this->userCollection;
-	}
-
-	/**
-	 * @param UserCollection $userCollection
-	 */
-	public function setUserCollection(?UserCollection $userCollection)
-	{
-		$this->userCollection = $userCollection;
 	}
 
 	/**
@@ -154,5 +117,44 @@ class Channel
 	public static function isValidName(string $name, string $prefix)
 	{
 		return substr($name, 0, strlen($prefix)) == $prefix;
+	}
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    protected function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param Database $db
+     * @param array $where
+     * @return static
+     * @throws ChannelNotFoundException
+     * @throws StateException
+     */
+    public static function fromDatabase(Database $db, array $where = [])
+    {
+        if (!$db->has('channels', [], $where))
+            throw new ChannelNotFoundException();
+
+        $data = $db->get('channels', ['id', 'name', 'topic'], $where);
+
+        if (!$data)
+            throw new StateException('Tried to get 1 channel from database but received none or multiple... State mismatch!');
+
+        $channel = new Channel($data['name']);
+        $channel->setTopic($data['topic']);
+        $channel->setId($data['id']);
+        return $channel;
 	}
 }
