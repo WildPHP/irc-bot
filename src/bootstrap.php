@@ -118,7 +118,6 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add($logger);
 	$componentContainer->add($configuration);
 	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
-	$componentContainer->add(new CommandHandler($componentContainer, new Collection(Types::instanceof(\WildPHP\Core\Commands\Command::class))));
 
 	$componentContainer->add(new Queue());
 	$componentContainer->add(new ChannelCollection());
@@ -149,18 +148,19 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 		\WildPHP\Core\Connection\Parser::class,
 		\WildPHP\Core\Connection\PingPongHandler::class,
 		//\WildPHP\Core\Users\UserStateManager::class,
-		\WildPHP\Core\Commands\HelpCommand::class,
-		\WildPHP\Core\Permissions\PermissionGroupCommands::class,
-		\WildPHP\Core\Permissions\PermissionCommands::class,
-		\WildPHP\Core\Permissions\PermissionMembersCommands::class,
-		\WildPHP\Core\Management\ManagementCommands::class,
 		\WildPHP\Core\Users\BotStateManager::class,
 		\WildPHP\Core\Connection\NicknameHandler::class,
 		\WildPHP\Core\Connection\MessageLogger::class,
 		\WildPHP\Core\Connection\AccountNotifyHandler::class,
 		\WildPHP\Core\Connection\SASL::class,
         \WildPHP\Core\Users\UserObserver::class,
-        \WildPHP\Core\Channels\ChannelObserver::class
+        \WildPHP\Core\Channels\ChannelObserver::class,
+        CommandHandler::class,
+        \WildPHP\Core\Commands\HelpCommand::class,
+        \WildPHP\Core\Permissions\PermissionGroupCommands::class,
+        \WildPHP\Core\Permissions\PermissionCommands::class,
+        \WildPHP\Core\Permissions\PermissionMembersCommands::class,
+        \WildPHP\Core\Management\ManagementCommands::class
 	]);
 
 	$moduleFactory->initializeModules($modules);
