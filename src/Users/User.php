@@ -9,6 +9,9 @@
 
 namespace WildPHP\Core\Users;
 
+use WildPHP\Core\Database\Database;
+use WildPHP\Core\StateException;
+
 class User
 {
 	/**
@@ -31,6 +34,11 @@ class User
 	 */
 	protected $ircAccount = '';
 
+    /**
+     * @var int
+     */
+	protected $id = 0;
+
 	/**
 	 * User constructor.
 	 *
@@ -47,7 +55,30 @@ class User
 		$this->setIrcAccount($ircAccount);
 	}
 
-	/**
+    /**
+     * @param Database $db
+     * @param array $where
+     * @return User
+     * @throws UserNotFoundException
+     * @throws StateException
+     */
+    public static function fromDatabase(Database $db, array $where)
+    {
+        if (!$db->has('users', [], $where))
+            throw new UserNotFoundException();
+
+        $data = $db->get('users', ['id', 'nickname', 'hostname', 'username', 'irc_account'], $where);
+
+        if (!$data)
+            throw new StateException('Tried to get 1 channel from database but received none or multiple... State mismatch!');
+
+        $user = new User($data['nickname'], $data['hostname'], $data['username'], $data['irc_account']);
+        $user->setId($data['id']);
+        return $user;
+
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getHostname(): string
@@ -110,4 +141,20 @@ class User
 	{
 		$this->ircAccount = $ircAccount;
 	}
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
 }
