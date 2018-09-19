@@ -12,20 +12,23 @@ namespace WildPHP\Core\Commands;
 use ValidationClosures\Types;
 use ValidationClosures\Utils;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Permissions\Validator;
+use WildPHP\Core\StateException;
+use WildPHP\Core\Users\User;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
-class CommandHandler implements ComponentInterface
+class CommandHandler extends BaseModule implements ComponentInterface
 {
 	use ComponentTrait;
 	use ContainerTrait;
@@ -46,9 +49,11 @@ class CommandHandler implements ComponentInterface
 	 * @param ComponentContainer $container
 	 * @param Collection $commandCollection
 	 */
-	public function __construct(ComponentContainer $container, Collection $commandCollection)
+	public function __construct(ComponentContainer $container)
 	{
-		$this->setCommandCollection($commandCollection);
+	    // TODO: Fix this into a nicer solution
+        $container->add($this);
+		$this->setCommandCollection(new Collection(Types::instanceof(Command::class)));
 
 		EventEmitter::fromContainer($container)
 			->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
@@ -98,21 +103,25 @@ class CommandHandler implements ComponentInterface
 		return true;
 	}
 
-	/**
-	 * @param PRIVMSG $privmsg
-	 * @param Queue $queue
-	 */
+    /**
+     * @param PRIVMSG $privmsg
+     * @param Queue $queue
+     * @throws StateException
+     * @throws \WildPHP\Core\Channels\ChannelNotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \WildPHP\Core\Users\UserNotFoundException
+     */
 	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
 	{
-		/** @var Channel $source */
+	    $db = Database::fromContainer($this->getContainer());
+
+	    /** @var Channel $source */
 		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
-		$channel = $privmsg->getChannel() == $ownNickname ? $privmsg->getNickname() : $privmsg->getChannel();
-		$source = ChannelCollection::fromContainer($this->getContainer())
-			->findByChannelName($channel);
 
-		$user = $source ? $source->getUserCollection()->findByNickname($privmsg->getNickname()) : false;
+		$channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
+		$user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
 
-		if (!$user || !$source)
+		if (!$user || !$channel)
 		{
 			Logger::fromContainer($this->getContainer())
 				->warning('!!! State mismatch!',
@@ -134,7 +143,7 @@ class CommandHandler implements ComponentInterface
 			return;
 
 		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.command', [$command, $source, $user, $args, $this->getContainer()]);
+			->emit('irc.command', [$command, $channel, $user, $args, $this->getContainer()]);
 
 		$commandObject = $this->findCommandInDictionary($command);
 
@@ -142,9 +151,9 @@ class CommandHandler implements ComponentInterface
 			return;
 		
 		$permission = $commandObject->getRequiredPermission();
-		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $source))
+		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $channel))
 		{
-			$queue->privmsg($source->getName(),
+			$queue->privmsg($channel->getName(),
 				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
 
 			return;
@@ -156,14 +165,14 @@ class CommandHandler implements ComponentInterface
 		{
 			Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
 			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
-			$queue->privmsg($source->getName(),
+			$queue->privmsg($channel->getName(),
 				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' .
 				'parameters match the given requirements.');
 			
 			return;
 		}
 		
-		call_user_func($commandObject->getCallback(), $source, $user, $args, $this->getContainer(), $command);
+		call_user_func($commandObject->getCallback(), $channel, $user, $args, $this->getContainer(), $command);
 	}
 
 	/**
@@ -255,4 +264,12 @@ class CommandHandler implements ComponentInterface
 	{
 		$this->commandCollection = $commandCollection;
 	}
+
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }
