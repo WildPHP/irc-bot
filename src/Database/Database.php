@@ -164,62 +164,56 @@ class Database implements ComponentInterface
 
     /**
      * @param string $table
-     * @param array $join
-     * @param string $column
      * @param array|null $where
      * @return mixed
      */
-    public function count(string $table, array $join, string $column, array $where = null)
+    public function count(string $table, array $where = null)
     {
-        return $this->medoo->__call('count', [$table, $join, $column, $where]);
+        return $this->medoo->__call('count', [$table, null, null, $where]);
     }
 
     /**
      * @param string $table
-     * @param array $join
      * @param string $column
      * @param array|null $where
      * @return mixed
      */
-    public function min(string $table, array $join, string $column, array $where = null)
+    public function min(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('min', [$table, $join, $column, $where]);
+        return $this->medoo->__call('min', [$table, null, $column, $where]);
     }
 
     /**
      * @param string $table
-     * @param array $join
      * @param string $column
      * @param array|null $where
      * @return mixed
      */
-    public function max(string $table, array $join, string $column, array $where = null)
+    public function max(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('max', [$table, $join, $column, $where]);
+        return $this->medoo->__call('max', [$table, null, $column, $where]);
     }
 
     /**
      * @param string $table
-     * @param array $join
      * @param string $column
      * @param array|null $where
      * @return mixed
      */
-    public function avg(string $table, array $join, string $column, array $where = null)
+    public function avg(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('avg', [$table, $join, $column, $where]);
+        return $this->medoo->__call('avg', [$table, null, $column, $where]);
     }
 
     /**
      * @param string $table
-     * @param array $join
      * @param string $column
      * @param array|null $where
      * @return mixed
      */
-    public function sum(string $table, array $join, string $column, array $where = null)
+    public function sum(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('sum', [$table, $join, $column, $where]);
+        return $this->medoo->__call('sum', [$table, $column, $where]);
     }
 
     /**
@@ -255,5 +249,13 @@ class Database implements ComponentInterface
     public function error()
     {
         return $this->medoo->error();
+    }
+
+    /**
+     * @return mixed|null|string|string[]
+     */
+    public function last()
+    {
+        return $this->medoo->last();
     }
 }
