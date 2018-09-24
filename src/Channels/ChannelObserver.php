@@ -251,7 +251,7 @@ class ChannelObserver extends BaseModule
             'channel' => $kickMessage->getChannel()
         ]);
 
-        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0) {
+        if ($db->count('user_channel_relationships', ['user_id' => $userID]) === 0) {
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 
@@ -291,7 +291,7 @@ class ChannelObserver extends BaseModule
             ]);
         }
 
-        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0) {
+        if ($db->count('user_channel_relationships', ['user_id' => $userID]) === 0) {
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 

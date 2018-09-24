@@ -98,7 +98,7 @@ class User
             unset($data['id']);
             $db->insert('users', [$data]);
 
-            return $db->id();
+            return (int) $db->id();
         }
 
         $db->update('users', $data, ['id' => $user->getId()]);
