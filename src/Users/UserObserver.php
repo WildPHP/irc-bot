@@ -142,6 +142,7 @@ class UserObserver extends BaseModule
      * @param RPL_WHOSPCRPL $ircMessage
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
+     * @throws UserNotFoundException
      */
     public function processWhoxReply(RPL_WHOSPCRPL $ircMessage)
     {
@@ -150,23 +151,15 @@ class UserObserver extends BaseModule
         if (!$db->has('users', ['nickname' => $ircMessage->getNickname()]))
             throw new StateException('RPL_WHOSPCRPL received but user was not found... Impossible!');
 
-        $userID = $db->get('users', ['id'], ['nickname' => $ircMessage->getNickname()])['id'];
+        $user = User::fromDatabase($db, ['nickname' => $ircMessage->getNickname()]);
+        $user->setNickname($ircMessage->getNickname());
+        $user->setUsername($ircMessage->getUsername());
+        $user->setHostname($ircMessage->getHostname());
+        $user->setIrcAccount($ircMessage->getAccountname());
+        User::toDatabase($db, $user);
 
-        $db->update('users', [
-            'nickname' => $ircMessage->getNickname(),
-            'username' => $ircMessage->getUsername(),
-            'hostname' => $ircMessage->getHostname(),
-            'irc_account' => $ircMessage->getAccountname()
-        ], ['id' => $userID]);
-
-        Logger::fromContainer($this->getContainer())->debug('Modified user', [
-            'reason' => 'rpl_whospcrpl',
-            'id' => $userID,
-            'nickname' => $ircMessage->getNickname(),
-            'username' => $ircMessage->getUsername(),
-            'hostname' => $ircMessage->getHostname(),
-            'irc_account' => $ircMessage->getAccountname()
-        ]);
+        Logger::fromContainer($this->getContainer())->debug('Modified user',
+            array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray()));
     }
 
     /**

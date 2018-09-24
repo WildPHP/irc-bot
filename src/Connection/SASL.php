@@ -39,11 +39,12 @@ class SASL extends BaseModule implements EventEmitterInterface
 		'907' => 'ERR_SASLALREADY'
 	];
 
-	/**
-	 * SASL constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * SASL constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		if (!Configuration::fromContainer($container)->offsetExists('sasl') ||
@@ -79,15 +80,19 @@ class SASL extends BaseModule implements EventEmitterInterface
 		$this->setContainer($container);
 	}
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function completeSasl()
 	{
 		EventEmitter::fromContainer($this->getContainer())
 			->emit('irc.sasl.complete');
 	}
 
-	/**
-	 * @param Queue $queue
-	 */
+    /**
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function sendAuthenticationMechanism(Queue $queue)
 	{
 		$queue->authenticate('PLAIN');
@@ -106,10 +111,11 @@ class SASL extends BaseModule implements EventEmitterInterface
 		return base64_encode($username . "\0" . $username . "\0" . $password);
 	}
 
-	/**
-	 * @param AUTHENTICATE $message
-	 * @param Queue $queue
-	 */
+    /**
+     * @param AUTHENTICATE $message
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function sendCredentials(AUTHENTICATE $message, Queue $queue)
 	{
 		if ($message->getResponse() != '+')
@@ -125,9 +131,10 @@ class SASL extends BaseModule implements EventEmitterInterface
 			->debug('[SASL] Sent authentication details, awaiting response from server.');
 	}
 
-	/**
-	 * @param IncomingIrcMessage $message
-	 */
+    /**
+     * @param IncomingIrcMessage $message
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function handleResponse(IncomingIrcMessage $message)
 	{
 		$code = $message->getVerb();

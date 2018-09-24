@@ -157,7 +157,7 @@ class Database implements ComponentInterface
      * @param array|null $where
      * @return bool
      */
-    public function has(string $table, array $join, array $where = null)
+    public function has(string $table, array $join, ?array $where = null)
     {
         return $this->medoo->has($table, $join, $where);
     }

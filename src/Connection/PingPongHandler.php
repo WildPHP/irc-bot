@@ -50,11 +50,13 @@ class PingPongHandler extends BaseModule
 	 */
 	protected $hasSentPing = false;
 
-	/**
-	 * PingPongHandler constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * PingPongHandler constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
@@ -107,9 +109,12 @@ class PingPongHandler extends BaseModule
 			});
 	}
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	protected function sendPing()
 	{
 		Logger::fromContainer($this->getContainer())
@@ -125,9 +130,12 @@ class PingPongHandler extends BaseModule
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	protected function forceDisconnect()
 	{
 		Logger::fromContainer($this->getContainer())

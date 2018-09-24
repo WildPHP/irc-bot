@@ -21,11 +21,12 @@ class BotStateManager extends BaseModule
 {
 	use ContainerTrait;
 
-	/**
-	 * BotStateManager constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * BotStateManager constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
@@ -33,12 +34,14 @@ class BotStateManager extends BaseModule
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param Channel $channel
-	 * @param User $user
-	 * @param string $oldNickname
-	 * @param string $newNickname
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $channel
+     * @param User $user
+     * @param string $oldNickname
+     * @param string $newNickname
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function monitorOwnNickname(Channel $channel, User $user, string $oldNickname, string $newNickname)
 	{
 		if ($oldNickname != Configuration::fromContainer($this->getContainer())['currentNickname'])

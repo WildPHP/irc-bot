@@ -37,11 +37,13 @@ class Parser extends BaseModule
 	 */
 	protected $buffer = '';
 
-	/**
-	 * Parser constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * Parser constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
@@ -53,9 +55,11 @@ class Parser extends BaseModule
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param string $data
-	 */
+    /**
+     * @param string $data
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function convertDataToLines(string $data)
 	{
 		// Prepend the buffer, first.
@@ -77,9 +81,11 @@ class Parser extends BaseModule
 		}
 	}
 
-	/**
-	 * @param string $line
-	 */
+    /**
+     * @param string $line
+     * @throws \ReflectionException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function parseIncomingIrcLine(string $line)
 	{
 		$parsedLine = static::parseLine($line);
@@ -94,11 +100,12 @@ class Parser extends BaseModule
 			->emit('irc.line.in.' . $verb, [$ircMessage, Queue::fromContainer($this->getContainer())]);
 	}
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return IncomingIrcMessage|ReceivableMessage
-	 */
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return IncomingIrcMessage|ReceivableMessage
+     * @throws \ReflectionException
+     */
 	public function specializeIrcMessage(IncomingIrcMessage $incomingIrcMessage)
 	{
 		$verb = $incomingIrcMessage->getVerb();

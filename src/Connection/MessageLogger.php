@@ -22,9 +22,11 @@ class MessageLogger implements ModuleInterface
 	use ContainerTrait;
 	use ComponentTrait;
 
-	/**
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)
@@ -36,9 +38,10 @@ class MessageLogger implements ModuleInterface
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param PRIVMSG $incoming
-	 */
+    /**
+     * @param PRIVMSG $incoming
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function logIncomingPrivmsg(PRIVMSG $incoming)
 	{
 		$nickname = $incoming->getNickname();
@@ -51,10 +54,11 @@ class MessageLogger implements ModuleInterface
 			->info($toLog);
 	}
 
-	/**
-	 * @param QueueItem $message
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param QueueItem $message
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function logOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
 	{
 		$command = $message->getCommandObject();

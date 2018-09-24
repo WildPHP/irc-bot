@@ -22,11 +22,15 @@ use WildPHP\Core\Users\User;
 
 class PermissionCommands extends BaseModule
 {
-	/**
-	 * PermissionCommands constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * PermissionCommands constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
@@ -72,13 +76,14 @@ class PermissionCommands extends BaseModule
 
 		$this->setContainer($container);
 	}
-	
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -98,12 +103,13 @@ class PermissionCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -123,12 +129,13 @@ class PermissionCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */

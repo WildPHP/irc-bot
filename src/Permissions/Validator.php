@@ -10,7 +10,10 @@
 namespace WildPHP\Core\Permissions;
 
 use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
+use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Users\User;
 use Yoshi2889\Collections\Collection;
@@ -20,6 +23,7 @@ use Yoshi2889\Container\ComponentTrait;
 class Validator implements ComponentInterface
 {
 	use ComponentTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var array
@@ -36,19 +40,20 @@ class Validator implements ComponentInterface
 	 */
 	protected $permissionGroupCollection;
 
-	/**
-	 * Validator constructor.
-	 *
-	 * @param EventEmitter $eventEmitter
-	 * @param PermissionGroupCollection $permissionGroupCollection
-	 * @param string $owner
-	 */
-	public function __construct(EventEmitter $eventEmitter, PermissionGroupCollection $permissionGroupCollection, string $owner)
+    /**
+     * Validator constructor.
+     *
+     * @param ComponentContainer $container
+     * @param string $owner
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+	public function __construct(ComponentContainer $container, string $owner)
 	{
-		$eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
+		EventEmitter::fromContainer($container)->on('irc.line.in.005', [$this, 'createModeGroups']);
 
-		$this->setPermissionGroupCollection($permissionGroupCollection);
+		$this->setPermissionGroupCollection(PermissionGroupCollection::fromContainer($container));
 		$this->setOwner($owner);
+		$this->setContainer($container);
 	}
 
 	/**
@@ -75,15 +80,18 @@ class Validator implements ComponentInterface
 		}
 	}
 
-	/**
-	 * @param string $permissionName
-	 * @param User $user
-	 * @param Channel|null $channel
-	 *
-	 * @return string|false String with reason on success; boolean false otherwise.
-	 */
+    /**
+     * @param string $permissionName
+     * @param User $user
+     * @param Channel|null $channel
+     *
+     * @return string|false String with reason on success; boolean false otherwise.
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function isAllowedTo(string $permissionName, User $user, ?Channel $channel = null)
 	{
+	    $db = Database::fromContainer($this->getContainer());
+
 		// The order to check in:
 		// 0. Is bot owner (has all perms)
 		// 1. User OP in channel
@@ -94,18 +102,15 @@ class Validator implements ComponentInterface
 
 		if (!empty($channel))
 		{
-			foreach ($this->modes as $mode)
-			{
-				if (!$channel->getChannelModes()->isUserInMode($mode, $user))
-					continue;
+		    $rows = $db->select('mode_relations', ['mode'], ['user_id' => $user->getId(), 'channel_id' => $channel->getId()]);
 
-				/** @var PermissionGroup $permGroup */
-				$permGroup = $this->permissionGroupCollection
-					->offsetGet($mode);
+		    foreach ($rows as $row) {
+		        /** @var PermissionGroup $permissionGroup */
+		        $permissionGroup = $this->getPermissionGroupCollection()->offsetGet($row['mode']);
 
-				if ($permGroup->hasPermission($permissionName))
-					return $mode;
-			}
+		        if ($permissionGroup->hasPermission($permissionName))
+		            return $row['mode'];
+            }
 		}
 
 		$channelName = !empty($channel) ? $channel->getName() : '';

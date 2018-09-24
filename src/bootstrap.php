@@ -7,7 +7,6 @@
  */
 
 use React\EventLoop\Factory as LoopFactory;
-use ValidationClosures\Types;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\ComponentContainer;
@@ -23,10 +22,10 @@ use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Permissions\PermissionGroup;
 use WildPHP\Core\Permissions\Validator;
-use Yoshi2889\Collections\Collection;
 
 /**
  * @return Logger
+ * @throws Exception
  */
 function setupLogger(): Logger
 {
@@ -74,6 +73,7 @@ function setupPermissionGroupCollection()
  * @param ConnectionDetails $connectionDetails
  *
  * @return IrcConnection
+ * @throws \Yoshi2889\Container\NotFoundException
  */
 function setupIrcConnection(ComponentContainer $container, ConnectionDetails $connectionDetails)
 {
@@ -109,6 +109,10 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
  * @param Configuration $configuration
  * @param Logger $logger
  * @param ConnectionDetails $connectionDetails
+ * @throws ReflectionException
+ * @throws \WildPHP\Core\Modules\ModuleInitializationException
+ * @throws \Yoshi2889\Container\ContainerException
+ * @throws \Yoshi2889\Container\NotFoundException
  */
 function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, Logger $logger, ConnectionDetails $connectionDetails)
 {
@@ -124,11 +128,7 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
 	$componentContainer->add(new CapabilityHandler($componentContainer));
 	$componentContainer->add(setupPermissionGroupCollection());
 	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
-	$componentContainer->add(
-		new Validator(EventEmitter::fromContainer($componentContainer),
-		\WildPHP\Core\Permissions\PermissionGroupCollection::fromContainer($componentContainer),
-		$configuration['owner'])
-	);
+	$componentContainer->add(new Validator($componentContainer, $configuration['owner']));
 
 	$componentContainer->add(new \WildPHP\Core\Database\Database(new \Medoo\Medoo([
 	    'database_type' => 'sqlite',

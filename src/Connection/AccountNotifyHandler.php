@@ -9,46 +9,49 @@
 namespace WildPHP\Core\Connection;
 
 
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\IRCMessages\ACCOUNT;
 use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
+use WildPHP\Core\Users\User;
 
 class AccountNotifyHandler extends BaseModule
 {
 	use ContainerTrait;
 
-	/**
-	 * AccountNotifyHandler constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * AccountNotifyHandler constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param ACCOUNT $ircMessage
-	 * @param Queue $queue
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param ACCOUNT $ircMessage
+     * @param Queue $queue
+     * @throws \WildPHP\Core\StateException
+     * @throws \WildPHP\Core\Users\UserNotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function updateUserIrcAccount(ACCOUNT $ircMessage, Queue $queue)
 	{
-		$channels = ChannelCollection::fromContainer($this->getContainer());
 		$nickname = $ircMessage->getPrefix()->getNickname();
+		$db = Database::fromContainer($this->getContainer());
 
-		/** @var Channel $channel */
-		foreach ($channels as $channel)
-		{
-			if (!($user = $channel->getUserCollection()->findByNickname($nickname)))
-				continue;
+		$user = User::fromDatabase($db, ['nickname' => $nickname]);
+		Logger::fromContainer($this->getContainer())->debug('Updated irc account for userid ' . $user->getId());
+		$user->setIrcAccount($ircMessage->getAccountName());
 
-			$user->setIrcAccount($ircMessage->getAccountName());
-		}
+		User::toDatabase($db, $user);
 	}
 
 	/**

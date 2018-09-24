@@ -11,7 +11,6 @@ namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\StateException;
-use WildPHP\Core\Users\UserCollection;
 
 class Channel
 {
@@ -40,13 +39,11 @@ class Channel
      */
 	protected $id = 0;
 
-	/**
-	 * Channel constructor.
-	 *
-	 * @param string $name
-	 * @param UserCollection $userCollection
-	 * @param ChannelModes $channelModes
-	 */
+    /**
+     * Channel constructor.
+     *
+     * @param string $name
+     */
 	public function __construct(string $name)
 	{
 		$this->name = $name;
@@ -144,7 +141,7 @@ class Channel
      */
     public static function fromDatabase(Database $db, array $where = [])
     {
-        if (!$db->has('channels', [], $where))
+        if (!$db->has('channels', $where))
             throw new ChannelNotFoundException();
 
         $data = $db->get('channels', ['id', 'name', 'topic'], $where);

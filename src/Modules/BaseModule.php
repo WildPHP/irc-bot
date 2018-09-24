@@ -28,13 +28,14 @@ abstract class BaseModule implements ModuleInterface
 	 */
 	abstract public function __construct(ComponentContainer $container);
 
-	/**
-	 * @param array $checks
-	 * @param Channel $source
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
+    /**
+     * @param array $checks
+     * @param Channel $source
+     * @param User $user
+     *
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	protected function doChecks(array $checks, Channel $source, User $user)
 	{
 		foreach ($checks as $string => $check)

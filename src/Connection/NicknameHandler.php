@@ -25,11 +25,12 @@ class NicknameHandler implements ModuleInterface
 	protected $nicknames = [];
 	protected $tryNicknames = [];
 
-	/**
-	 * NicknameHandler constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * NicknameHandler constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		if (empty(Configuration::fromContainer($container)['alternativeNicknames']))
@@ -51,6 +52,9 @@ class NicknameHandler implements ModuleInterface
 		$this->setContainer($container);
 	}
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function deregisterListeners()
 	{
 		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.431', [$this, 'chooseAlternateNickname']);
@@ -59,10 +63,12 @@ class NicknameHandler implements ModuleInterface
 		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.436', [$this, 'chooseAlternateNickname']);
 	}
 
-	/**
-	 * @param IncomingIrcMessage $ircMessage
-	 * @param Queue $queue
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param IncomingIrcMessage $ircMessage
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function chooseAlternateNickname(IncomingIrcMessage $ircMessage, Queue $queue)
 	{
 		if (empty($this->tryNicknames))

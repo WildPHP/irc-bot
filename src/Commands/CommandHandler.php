@@ -43,12 +43,13 @@ class CommandHandler extends BaseModule implements ComponentInterface
 	 */
 	protected $aliases = [];
 
-	/**
-	 * CommandHandler constructor.
-	 *
-	 * @param ComponentContainer $container
-	 * @param Collection $commandCollection
-	 */
+    /**
+     * CommandHandler constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\ContainerException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 	    // TODO: Fix this into a nicer solution
@@ -60,13 +61,14 @@ class CommandHandler extends BaseModule implements ComponentInterface
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param string $command
-	 * @param Command $commandObject
-	 * @param string[] $aliases
-	 *
-	 * @return bool
-	 */
+    /**
+     * @param string $command
+     * @param Command $commandObject
+     * @param string[] $aliases
+     *
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function registerCommand(string $command, Command $commandObject, array $aliases = [])
 	{
 		if ($this->getCommandCollection()->offsetExists($command) || !Utils::validateArray(Types::string(), $aliases))
@@ -115,24 +117,8 @@ class CommandHandler extends BaseModule implements ComponentInterface
 	{
 	    $db = Database::fromContainer($this->getContainer());
 
-	    /** @var Channel $source */
-		$ownNickname = Configuration::fromContainer($this->getContainer())['currentNickname'];
-
 		$channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
 		$user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
-
-		if (!$user || !$channel)
-		{
-			Logger::fromContainer($this->getContainer())
-				->warning('!!! State mismatch!',
-					[
-						'user' => $privmsg->getNickname(),
-						'channel' => $channel
-					]
-				);
-
-			return;
-		}
 
 		$message = $privmsg->getMessage();
 
@@ -191,12 +177,14 @@ class CommandHandler extends BaseModule implements ComponentInterface
 		return $dictionary[$command] ?? $this->aliases[$command];
 	}
 
-	/**
-	 * @param Command $commandObject
-	 * @param array $args
-	 *
-	 * @return null|ParameterStrategy
-	 */
+    /**
+     * @param Command $commandObject
+     * @param array $args
+     *
+     * @return null|ParameterStrategy
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Exception
+     */
 	protected function findApplicableStrategy(Command $commandObject, array &$args): ?ParameterStrategy
 	{
 		$parameterStrategies = $commandObject->getParameterStrategies();
@@ -221,12 +209,13 @@ class CommandHandler extends BaseModule implements ComponentInterface
 		return $strategy;
 	}
 
-	/**
-	 * @param string $message
-	 * @param array $args
-	 *
-	 * @return false|string
-	 */
+    /**
+     * @param string $message
+     * @param array $args
+     *
+     * @return false|string
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function parseCommandFromMessage(string $message, array &$args)
 	{
 		$messageParts = explode(' ', trim($message));

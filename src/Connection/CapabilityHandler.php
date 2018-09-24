@@ -48,11 +48,12 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 	 */
 	protected $saslIsComplete = false;
 
-	/**
-	 * CapabilityHandler constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * CapabilityHandler constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		$eventEmitter = EventEmitter::fromContainer($container);
@@ -73,6 +74,9 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 			->cap('LS');
 	}
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function flushRequestQueue()
 	{
 		if (empty($this->queuedCapabilities))
@@ -92,9 +96,10 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 			->cap('REQ', $capabilities);
 	}
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function tryEndNegotiation(): bool
 	{
 		if (!$this->canEndNegotiation())
@@ -110,11 +115,12 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 		return true;
 	}
 
-	/**
-	 * @param string $capability
-	 *
-	 * @return bool
-	 */
+    /**
+     * @param string $capability
+     *
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function requestCapability(string $capability)
 	{
 		if ($this->isCapabilityAcknowledged($capability) || in_array($capability, $this->queuedCapabilities))
@@ -147,10 +153,11 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 		return in_array($capability, $this->acknowledgedCapabilities);
 	}
 
-	/**
-	 * @param CAP $incomingIrcMessage
-	 * @param Queue $queue
-	 */
+    /**
+     * @param CAP $incomingIrcMessage
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function responseRouter(CAP $incomingIrcMessage, Queue $queue)
 	{
 		$command = $incomingIrcMessage->getCommand();
@@ -172,10 +179,11 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 		}
 	}
 
-	/**
-	 * @param array $capabilities
-	 * @param Queue $queue
-	 */
+    /**
+     * @param array $capabilities
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	protected function updateAvailableCapabilities(array $capabilities, Queue $queue)
 	{
 		$this->availableCapabilities = $capabilities;
@@ -203,10 +211,11 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 			->emit('irc.cap.ls', [$capabilities, $queue]);
 	}
 
-	/**
-	 * @param string[] $capabilities
-	 * @param Queue $queue
-	 */
+    /**
+     * @param string[] $capabilities
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function updateAcknowledgedCapabilities(array $capabilities, Queue $queue)
 	{
 		$ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
@@ -225,10 +234,11 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 			->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
 	}
 
-	/**
-	 * @param string[] $capabilities
-	 * @param Queue $queue
-	 */
+    /**
+     * @param string[] $capabilities
+     * @param Queue $queue
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function updateNotAcknowledgedCapabilities(array $capabilities, Queue $queue)
 	{
 		$nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(), $capabilities)));
@@ -247,6 +257,9 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
 			->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
 	}
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function setSaslHasCompleted()
 	{
 		$this->saslIsComplete = true;

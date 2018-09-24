@@ -11,7 +11,6 @@ namespace WildPHP\Core\Management;
 
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
@@ -22,6 +21,7 @@ use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
@@ -29,11 +29,12 @@ class ManagementCommands extends BaseModule
 {
 	use ContainerTrait;
 
-	/**
-	 * ManagementCommands constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * ManagementCommands constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		CommandHandler::fromContainer($container)->registerCommand('join',
@@ -56,11 +57,11 @@ class ManagementCommands extends BaseModule
 			new Command(
 				[$this, 'partCommand'],
 				new ParameterStrategy(0, 5, [
-					'channel1' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
-					'channel2' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
-					'channel3' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
-					'channel4' => new JoinedChannelParameter(ChannelCollection::fromContainer($container)),
-					'channel5' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
+					'channel1' => new JoinedChannelParameter(Database::fromContainer($container)),
+					'channel2' => new JoinedChannelParameter(Database::fromContainer($container)),
+					'channel3' => new JoinedChannelParameter(Database::fromContainer($container)),
+					'channel4' => new JoinedChannelParameter(Database::fromContainer($container)),
+					'channel5' => new JoinedChannelParameter(Database::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Parts (leaves) the specified channel(s). Usage: part [channel] ([channel]) ([channel]) ... (up to 5 channels)',
@@ -106,12 +107,14 @@ class ManagementCommands extends BaseModule
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function quitCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$message = implode(' ', $args);
@@ -123,11 +126,12 @@ class ManagementCommands extends BaseModule
 			->quit($message);
 	}
 
-	/**
-	 * @param array $channels
-	 *
-	 * @return array
-	 */
+    /**
+     * @param array $channels
+     *
+     * @return array
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	protected function validateChannels(array $channels): array
 	{
 		$validChannels = [];
@@ -144,12 +148,14 @@ class ManagementCommands extends BaseModule
 		return $validChannels;
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $channels
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $channels
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function joinCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
 		$validChannels = $this->validateChannels($channels);
@@ -166,12 +172,14 @@ class ManagementCommands extends BaseModule
 					'Did not join the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $channels
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $channels
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
 	{
 		if (empty($channels))
@@ -200,24 +208,29 @@ class ManagementCommands extends BaseModule
 					'Did not part the following channels because they do not follow proper formatting: ' . implode(', ', $diff));
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param array $args
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param array $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function nickCommand(Channel $source, User $user, array $args, ComponentContainer $container)
 	{
 		// TODO: Validate
 		Queue::fromContainer($container)->nick($args['newNickname']);
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param array $args
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param array $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function clearqueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
 	{
 		Queue::fromContainer($container)->clear();

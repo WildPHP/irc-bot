@@ -64,6 +64,7 @@ class ChannelObserver extends BaseModule
             'irc.line.in.quit', [$this, 'processUserQuit']);
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param RPL_WELCOME $incomingIrcMessage
      * @param Queue $queue

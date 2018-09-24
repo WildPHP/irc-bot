@@ -36,9 +36,13 @@ class ModuleFactory implements ComponentInterface
 		$this->loadedModules = new ComponentContainer();
 	}
 
-	/**
-	 * @param array $entryClassNames
-	 */
+    /**
+     * @param array $entryClassNames
+     * @throws ModuleInitializationException
+     * @throws \ReflectionException
+     * @throws \Yoshi2889\Container\ContainerException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function initializeModules(array $entryClassNames)
 	{
 		foreach ($entryClassNames as $entryClassName)
@@ -47,12 +51,16 @@ class ModuleFactory implements ComponentInterface
 		}
 	}
 
-	/**
-	 * @param string $entryClassName
-	 *
-	 * @return ModuleInterface
-	 * @throws ModuleInitializationException
-	 */
+    /**
+     * @param string $entryClassName
+     *
+     * @return ModuleInterface
+     * @throws ModuleInitializationException
+     * @throws \Yoshi2889\Container\ContainerException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \ReflectionException
+     * @throws \Yoshi2889\Container\ContainerException
+     */
 	public function initializeModule(string $entryClassName)
 	{
 		if (!class_exists($entryClassName))
@@ -66,7 +74,8 @@ class ModuleFactory implements ComponentInterface
 		if (!$reflection->implementsInterface(ModuleInterface::class))
 			throw new ModuleInitializationException('The given class is not a (valid) WildPHP module!');
 
-		if (!Semver::satisfies(WPHP_VERSION, $entryClassName::getSupportedVersionConstraint()))
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!Semver::satisfies(WPHP_VERSION, $entryClassName::getSupportedVersionConstraint()))
 			throw new ModuleInitializationException('This module does not support this version of WildPHP');
 
 		try
@@ -86,21 +95,23 @@ class ModuleFactory implements ComponentInterface
 		return $object;
 	}
 
-	/**
-	 * @param string $class
-	 *
-	 * @return bool
-	 */
+    /**
+     * @param string $class
+     *
+     * @return bool
+     * @throws \Yoshi2889\Container\ContainerException
+     */
 	public function isModuleLoaded(string $class): bool
 	{
 		return $this->loadedModules->has($class);
 	}
 
-	/**
-	 * @param string $class
-	 *
-	 * @return false|object
-	 */
+    /**
+     * @param string $class
+     *
+     * @return false|object
+     * @throws \Yoshi2889\Container\ContainerException
+     */
 	public function getModuleInstance(string $class)
 	{
 		if (!$this->isModuleLoaded($class))

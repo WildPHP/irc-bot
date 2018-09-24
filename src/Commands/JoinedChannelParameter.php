@@ -9,20 +9,28 @@
 namespace WildPHP\Core\Commands;
 
 
-use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Channels\ChannelNotFoundException;
+use WildPHP\Core\Database\Database;
 
 class JoinedChannelParameter extends Parameter
 {
-	/**
-	 * JoinedChannelParameter constructor.
-	 *
-	 * @param ChannelCollection $channelCollection
-	 */
-	public function __construct(ChannelCollection $channelCollection)
+    /**
+     * JoinedChannelParameter constructor.
+     *
+     * @param Database $database
+     */
+	public function __construct(Database $database)
 	{
-		parent::__construct(function (string $value) use ($channelCollection)
+		parent::__construct(function (string $value) use ($database)
 		{
-			return $channelCollection->findByChannelName($value);
+		    try {
+                return Channel::fromDatabase($database, ['name' => $value]);
+            }
+            catch (ChannelNotFoundException $exception)
+            {
+                return false;
+            }
 		});
 	}
 }

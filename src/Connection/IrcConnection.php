@@ -36,10 +36,11 @@ class IrcConnection implements ComponentInterface
 	 */
 	protected $connectionDetails;
 
-	/**
-	 * @param ComponentContainer $container
-	 * @param ConnectionDetails $connectionDetails
-	 */
+    /**
+     * @param ComponentContainer $container
+     * @param ConnectionDetails $connectionDetails
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
 	{
 		EventEmitter::fromContainer($container)
@@ -79,6 +80,9 @@ class IrcConnection implements ComponentInterface
 		$queue->nick($connectionDetails->getWantedNickname());
 	}
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function flushQueue()
 	{
 		$queueItems = Queue::fromContainer($this->getContainer())->flush();
@@ -99,9 +103,10 @@ class IrcConnection implements ComponentInterface
 		}
 	}
 
-	/**
-	 * @param RPL_ISUPPORT $incomingIrcMessage
-	 */
+    /**
+     * @param RPL_ISUPPORT $incomingIrcMessage
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function handleServerConfig(RPL_ISUPPORT $incomingIrcMessage)
 	{
 		$hostname = $incomingIrcMessage->getServer();
@@ -162,11 +167,12 @@ class IrcConnection implements ComponentInterface
 		return $promise;
 	}
 
-	/**
-	 * @param string $data
-	 *
-	 * @return \React\Promise\PromiseInterface
-	 */
+    /**
+     * @param string $data
+     *
+     * @return \React\Promise\PromiseInterface
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function write(string $data)
 	{
 		if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1)

@@ -10,25 +10,36 @@
 namespace WildPHP\Core\Permissions;
 
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandHandler;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\Commands\JoinedChannelParameter;
 use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
+use WildPHP\Core\Commands\UserParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 
 class PermissionGroupCommands extends BaseModule
 {
-	/**
-	 * PermissionCommands constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * PermissionCommands constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
@@ -47,10 +58,15 @@ class PermissionGroupCommands extends BaseModule
 		CommandHandler::fromContainer($container)->registerCommand('validate',
 			new Command(
 				[$this, 'validateCommand'],
-				new ParameterStrategy(1, 2, [
-					'permission' => new StringParameter(),
-					'username' => new StringParameter()
-				]),
+				[
+				    new ParameterStrategy(2, 2, [
+					    'user' => new UserParameter(Database::fromContainer($container)),
+					    'permission' => new StringParameter()
+    				]),
+                    new ParameterStrategy(1, 1, [
+                        'permission' => new StringParameter()
+                    ])
+				],
 				new CommandHelp([
 					'Shows if validation passes for a certain permission. Usage: validate [permission] ([username])'
 				])
@@ -88,7 +104,7 @@ class PermissionGroupCommands extends BaseModule
 				[$this, 'linkgroupCommand'],
 				new ParameterStrategy(1, 2, [
 					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
+					'channel' => new JoinedChannelParameter(Database::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
@@ -103,7 +119,7 @@ class PermissionGroupCommands extends BaseModule
 				[$this, 'unlinkgroupCommand'],
 				new ParameterStrategy(1, 2, [
 					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelParameter(ChannelCollection::fromContainer($container))
+					'channel' => new JoinedChannelParameter(Database::fromContainer($container))
 				]),
 				new CommandHelp([
 					'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
@@ -129,24 +145,16 @@ class PermissionGroupCommands extends BaseModule
 		$this->setContainer($container);
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
-		if (empty($args['username']))
-			$valUser = $user;
-		
-		elseif (($valUser = $source->getUserCollection()->findByNickname($args['username'])) == false)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), 'This user does not exist or is not online.');
-
-			return;
-		}
+	    $valUser = $args['user'] ?? $user;
 
 		$perm = $args['permission'];
 
@@ -169,12 +177,15 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), $message);
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var string[] $groups */
@@ -185,12 +196,15 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), 'Available groups: ' . implode(', ', $groups));
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$groupName = $args['groupName'];
@@ -210,12 +224,14 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully created.');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -235,12 +251,13 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': The given group was successfully deleted.');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -264,12 +281,13 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel->getName() . '"');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -293,12 +311,14 @@ class PermissionGroupCommands extends BaseModule
 			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel->getName() . '"');
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+	/** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */

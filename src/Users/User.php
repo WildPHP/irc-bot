@@ -47,7 +47,7 @@ class User
 	 * @param string $username
 	 * @param string $ircAccount
 	 */
-	public function __construct(string $nickname, string $hostname = '', string $username = '', string $ircAccount = '')
+	public function __construct(string $nickname, ?string $hostname = '', ?string $username = '', ?string $ircAccount = '')
 	{
 		$this->setNickname($nickname);
 		$this->setHostname($hostname);
@@ -64,13 +64,13 @@ class User
      */
     public static function fromDatabase(Database $db, array $where)
     {
-        if (!$db->has('users', [], $where))
+        if (!$db->has('users', $where))
             throw new UserNotFoundException();
 
         $data = $db->get('users', ['id', 'nickname', 'hostname', 'username', 'irc_account'], $where);
 
         if (!$data)
-            throw new StateException('Tried to get 1 channel from database but received none or multiple... State mismatch!');
+            throw new StateException('Tried to get 1 user from database but received none or multiple... State mismatch!');
 
         $user = new User($data['nickname'], $data['hostname'], $data['username'], $data['irc_account']);
         $user->setId($data['id']);
@@ -79,9 +79,45 @@ class User
     }
 
     /**
+     * @param Database $db
+     * @param User $user
+     * @return int The user id
+     */
+    public static function toDatabase(Database $db, User $user): int
+    {
+        $data = $user->toArray();
+
+        if (empty($user->getId()) || !$db->has('users', [], ['id' => $user->getId()]))
+        {
+            // unset the id here so we don't overwrite or cause a potential error
+            unset($data['id']);
+            $db->insert('users', [$data]);
+
+            return $db->id();
+        }
+
+        $db->update('users', $data, ['id' => $user->getId()]);
+        return $user->getId();
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nickname' => $this->getNickname(),
+            'username' => $this->getUsername(),
+            'hostname' => $this->getHostname(),
+            'irc_account' => $this->getIrcAccount()
+        ];
+    }
+
+    /**
 	 * @return string
 	 */
-	public function getHostname(): string
+	public function getHostname(): ?string
 	{
 		return $this->hostname;
 	}
@@ -89,7 +125,7 @@ class User
 	/**
 	 * @param string $hostname
 	 */
-	public function setHostname(string $hostname)
+	public function setHostname(?string $hostname)
 	{
 		$this->hostname = $hostname;
 	}
@@ -97,7 +133,7 @@ class User
 	/**
 	 * @return string
 	 */
-	public function getUsername(): string
+	public function getUsername(): ?string
 	{
 		return $this->username;
 	}
@@ -105,7 +141,7 @@ class User
 	/**
 	 * @param string $username
 	 */
-	public function setUsername(string $username)
+	public function setUsername(?string $username)
 	{
 		$this->username = $username;
 	}
@@ -129,7 +165,7 @@ class User
 	/**
 	 * @return string
 	 */
-	public function getIrcAccount(): string
+	public function getIrcAccount(): ?string
 	{
 		return $this->ircAccount;
 	}
@@ -137,7 +173,7 @@ class User
 	/**
 	 * @param string $ircAccount
 	 */
-	public function setIrcAccount(string $ircAccount)
+	public function setIrcAccount(?string $ircAccount)
 	{
 		$this->ircAccount = $ircAccount;
 	}

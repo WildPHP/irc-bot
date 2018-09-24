@@ -17,16 +17,22 @@ use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Database\Database;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
+use WildPHP\Core\Users\UserNotFoundException;
 
 class PermissionMembersCommands extends BaseModule
 {
-	/**
-	 * PermissionCommands constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * PermissionCommands constructor.
+     *
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function __construct(ComponentContainer $container)
 	{
 		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
@@ -74,13 +80,14 @@ class PermissionMembersCommands extends BaseModule
 		
 		$this->setContainer($container);
 	}
-	
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		/** @var PermissionGroup $group */
@@ -102,21 +109,25 @@ class PermissionMembersCommands extends BaseModule
 				implode(', ', $members)));
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \WildPHP\Core\StateException
+     * @throws \WildPHP\Core\Users\UserNotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
+	    $db = Database::fromContainer($this->getContainer());
 		$nickname = $args['nickname'];
 
 		/** @var PermissionGroup $group */
 		$group = $args['group'];
 
 		/** @var User $userToAdd */
-		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
+		$userToAdd = User::fromDatabase($db, ['nickname' => $nickname]);
 
 		$checks = [
 			'This group does not exist.' => empty($group),
@@ -139,25 +150,31 @@ class PermissionMembersCommands extends BaseModule
 					$userToAdd->getIrcAccount()));
 	}
 
-	/**
-	 * @param Channel $source
-	 * @param User $user
-	 * @param $args
-	 * @param ComponentContainer $container
-	 */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \WildPHP\Core\StateException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
 	public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
 	{
 		$nickname = $args['nickname'];
+		$db = Database::fromContainer($this->getContainer());
 
 		/** @var PermissionGroup $group */
 		$group = $args['group'];
 
 		/** @var User $userToAdd */
-		$userToAdd = $source->getUserCollection()->findByNickname($nickname);
+		try {
+            $userToAdd = User::fromDatabase($db, ['nickname' => $nickname]);
+        }
+        catch (UserNotFoundException $exception) {}
 
 		$checks = [
 			'This group does not exist.' => empty($group),
-			'This user is not in the group, in this channel, or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
+			'This user is not in the group or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
 						->contains($userToAdd->getIrcAccount()))
 		];
 
