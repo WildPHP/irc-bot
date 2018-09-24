@@ -18,15 +18,15 @@ use Yoshi2889\Container\ComponentTrait;
 
 abstract class BaseModule implements ModuleInterface
 {
-	use ComponentTrait;
-	use ContainerTrait;
+    use ComponentTrait;
+    use ContainerTrait;
 
-	/**
-	 * BaseModule constructor.
-	 *
-	 * @param ComponentContainer $container
-	 */
-	abstract public function __construct(ComponentContainer $container);
+    /**
+     * BaseModule constructor.
+     *
+     * @param ComponentContainer $container
+     */
+    abstract public function __construct(ComponentContainer $container);
 
     /**
      * @param array $checks
@@ -36,19 +36,19 @@ abstract class BaseModule implements ModuleInterface
      * @return bool
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	protected function doChecks(array $checks, Channel $source, User $user)
-	{
-		foreach ($checks as $string => $check)
-		{
-			if (!$check)
-				continue;
+    protected function doChecks(array $checks, Channel $source, User $user)
+    {
+        foreach ($checks as $string => $check) {
+            if (!$check) {
+                continue;
+            }
 
-			Queue::fromContainer($this->getContainer())
-				->privmsg($source->getName(), $user->getNickname() . ': ' . $string);
+            Queue::fromContainer($this->getContainer())
+                ->privmsg($source->getName(), $user->getNickname() . ': ' . $string);
 
-			return false;
-		}
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

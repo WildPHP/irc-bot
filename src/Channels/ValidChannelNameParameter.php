@@ -13,16 +13,15 @@ use WildPHP\Core\Commands\Parameter;
 
 class ValidChannelNameParameter extends Parameter
 {
-	/**
-	 * NumericParameter constructor.
-	 *
-	 * @param string $prefix
-	 */
-	public function __construct(string $prefix)
-	{
-		parent::__construct(function ($value) use ($prefix)
-		{
-			return Channel::isValidName($value, $prefix);
-		});
-	}
+    /**
+     * NumericParameter constructor.
+     *
+     * @param string $prefix
+     */
+    public function __construct(string $prefix)
+    {
+        parent::__construct(function ($value) use ($prefix) {
+            return Channel::isValidName($value, $prefix);
+        });
+    }
 }

@@ -18,73 +18,74 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class RPL_NAMREPLY extends BaseIRCMessage implements ReceivableMessage
 {
-	use NicknameTrait;
-	use ChannelTrait;
-	use ServerTrait;
+    use NicknameTrait;
+    use ChannelTrait;
+    use ServerTrait;
 
-	protected static $verb = '353';
+    protected static $verb = '353';
 
-	protected $visibility = '';
+    protected $visibility = '';
 
-	protected $nicknames = [];
+    protected $nicknames = [];
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$server = $incomingIrcMessage->getPrefix();
-		$args = $incomingIrcMessage->getArgs();
-		$nickname = array_shift($args);
-		$visibility = array_shift($args);
-		$channel = array_shift($args);
-		$nicknames = explode(' ', array_shift($args));
+        $server = $incomingIrcMessage->getPrefix();
+        $args = $incomingIrcMessage->getArgs();
+        $nickname = array_shift($args);
+        $visibility = array_shift($args);
+        $channel = array_shift($args);
+        $nicknames = explode(' ', array_shift($args));
 
-		$object = new self();
-		$object->setNickname($nickname);
-		$object->setVisibility($visibility);
-		$object->setChannel($channel);
-		$object->setNicknames($nicknames);
-		$object->setServer($server);
+        $object = new self();
+        $object->setNickname($nickname);
+        $object->setVisibility($visibility);
+        $object->setChannel($channel);
+        $object->setNicknames($nicknames);
+        $object->setServer($server);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getVisibility(): string
-	{
-		return $this->visibility;
-	}
+    /**
+     * @return string
+     */
+    public function getVisibility(): string
+    {
+        return $this->visibility;
+    }
 
-	/**
-	 * @param string $visibility
-	 */
-	public function setVisibility(string $visibility)
-	{
-		$this->visibility = $visibility;
-	}
+    /**
+     * @param string $visibility
+     */
+    public function setVisibility(string $visibility)
+    {
+        $this->visibility = $visibility;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getNicknames(): array
-	{
-		return $this->nicknames;
-	}
+    /**
+     * @return array
+     */
+    public function getNicknames(): array
+    {
+        return $this->nicknames;
+    }
 
-	/**
-	 * @param array $nicknames
-	 */
-	public function setNicknames(array $nicknames)
-	{
-		$this->nicknames = $nicknames;
-	}
+    /**
+     * @param array $nicknames
+     */
+    public function setNicknames(array $nicknames)
+    {
+        $this->nicknames = $nicknames;
+    }
 }

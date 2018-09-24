@@ -16,21 +16,22 @@ use React\Socket\SecureConnector;
 
 class ConnectorFactory
 {
-	/**
-	 * @param LoopInterface $loop
-	 * @param bool $secure
-	 *
-	 * @param array $options
-	 *
-	 * @return ConnectorInterface
-	 */
-	public static function create(LoopInterface $loop, bool $secure = false, array $options = []): ConnectorInterface
-	{
-		$connector = new Connector($loop, $options);
+    /**
+     * @param LoopInterface $loop
+     * @param bool $secure
+     *
+     * @param array $options
+     *
+     * @return ConnectorInterface
+     */
+    public static function create(LoopInterface $loop, bool $secure = false, array $options = []): ConnectorInterface
+    {
+        $connector = new Connector($loop, $options);
 
-		if ($secure)
-			return new SecureConnector($connector, $loop);
+        if ($secure) {
+            return new SecureConnector($connector, $loop);
+        }
 
-		return $connector;
-	}
+        return $connector;
+    }
 }

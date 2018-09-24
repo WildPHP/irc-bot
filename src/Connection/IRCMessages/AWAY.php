@@ -19,49 +19,50 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class AWAY extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	use PrefixTrait;
-	use MessageTrait;
-	use NicknameTrait;
+    use PrefixTrait;
+    use MessageTrait;
+    use NicknameTrait;
 
-	protected static $verb = 'AWAY';
+    protected static $verb = 'AWAY';
 
-	/**
-	 * AWAY constructor.
-	 *
-	 * @param string $message
-	 */
-	public function __construct(string $message)
-	{
-		$this->setMessage($message);
-	}
+    /**
+     * AWAY constructor.
+     *
+     * @param string $message
+     */
+    public function __construct(string $message)
+    {
+        $this->setMessage($message);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 
-		$message = $incomingIrcMessage->getArgs()[0];
+        $message = $incomingIrcMessage->getArgs()[0];
 
-		$object = new self($message);
-		$object->setPrefix($prefix);
-		$object->setNickname($prefix->getNickname());
+        $object = new self($message);
+        $object->setPrefix($prefix);
+        $object->setNickname($prefix->getNickname());
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'AWAY :' . $this->getMessage() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'AWAY :' . $this->getMessage() . "\r\n";
+    }
 }

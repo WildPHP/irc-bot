@@ -10,24 +10,24 @@ namespace WildPHP\Core;
 
 trait ContainerTrait
 {
-	/**
-	 * @var ComponentContainer
-	 */
-	protected $container;
+    /**
+     * @var ComponentContainer
+     */
+    protected $container;
 
-	/**
-	 * @return ComponentContainer
-	 */
-	public function getContainer(): ComponentContainer
-	{
-		return $this->container;
-	}
+    /**
+     * @return ComponentContainer
+     */
+    public function getContainer(): ComponentContainer
+    {
+        return $this->container;
+    }
 
-	/**
-	 * @param ComponentContainer $container
-	 */
-	public function setContainer(ComponentContainer $container)
-	{
-		$this->container = $container;
-	}
+    /**
+     * @param ComponentContainer $container
+     */
+    public function setContainer(ComponentContainer $container)
+    {
+        $this->container = $container;
+    }
 }

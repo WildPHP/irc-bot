@@ -12,15 +12,15 @@ namespace WildPHP\Core\Configuration;
 interface ConfigurationBackendInterface
 {
 
-	/**
-	 * ConfigurationBackendInterface constructor.
-	 *
-	 * @param string $configFile
-	 */
-	public function __construct(string $configFile);
-	
-	/**
-	 * @return array
-	 */
-	public function getAllEntries(): array;
+    /**
+     * ConfigurationBackendInterface constructor.
+     *
+     * @param string $configFile
+     */
+    public function __construct(string $configFile);
+
+    /**
+     * @return array
+     */
+    public function getAllEntries(): array;
 }

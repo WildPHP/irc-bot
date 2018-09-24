@@ -30,18 +30,18 @@ use Yoshi2889\Container\ComponentTrait;
 
 class CommandHandler extends BaseModule implements ComponentInterface
 {
-	use ComponentTrait;
-	use ContainerTrait;
+    use ComponentTrait;
+    use ContainerTrait;
 
-	/**
-	 * @var Collection
-	 */
-	protected $commandCollection = null;
+    /**
+     * @var Collection
+     */
+    protected $commandCollection = null;
 
-	/**
-	 * @var array
-	 */
-	protected $aliases = [];
+    /**
+     * @var array
+     */
+    protected $aliases = [];
 
     /**
      * CommandHandler constructor.
@@ -50,16 +50,16 @@ class CommandHandler extends BaseModule implements ComponentInterface
      * @throws \Yoshi2889\Container\ContainerException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-	    // TODO: Fix this into a nicer solution
+    public function __construct(ComponentContainer $container)
+    {
+        // TODO: Fix this into a nicer solution
         $container->add($this);
-		$this->setCommandCollection(new Collection(Types::instanceof(Command::class)));
+        $this->setCommandCollection(new Collection(Types::instanceof(Command::class)));
 
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
-		$this->setContainer($container);
-	}
+        EventEmitter::fromContainer($container)
+            ->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
+        $this->setContainer($container);
+    }
 
     /**
      * @param string $command
@@ -69,41 +69,45 @@ class CommandHandler extends BaseModule implements ComponentInterface
      * @return bool
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function registerCommand(string $command, Command $commandObject, array $aliases = [])
-	{
-		if ($this->getCommandCollection()->offsetExists($command) || !Utils::validateArray(Types::string(), $aliases))
-			return false;
+    public function registerCommand(string $command, Command $commandObject, array $aliases = [])
+    {
+        if ($this->getCommandCollection()->offsetExists($command) || !Utils::validateArray(Types::string(), $aliases)) {
+            return false;
+        }
 
-		$this->getCommandCollection()->offsetSet($command, $commandObject);
-		
-		Logger::fromContainer($this->getContainer())
-			->debug(
-				'New command registered', 
-				['command' => $command]
-			);
-		
-		foreach ($aliases as $alias)
-			$this->alias($command, $alias);
+        $this->getCommandCollection()->offsetSet($command, $commandObject);
 
-		return true;
-	}
+        Logger::fromContainer($this->getContainer())
+            ->debug(
+                'New command registered',
+                ['command' => $command]
+            );
 
-	/**
-	 * @param string $originalCommand
-	 * @param string $alias
-	 *
-	 * @return bool
-	 */
-	public function alias(string $originalCommand, string $alias): bool
-	{
-		if (!$this->getCommandCollection()->offsetExists($originalCommand) || array_key_exists($alias, $this->aliases))
-			return false;
+        foreach ($aliases as $alias) {
+            $this->alias($command, $alias);
+        }
 
-		/** @var Command $commandObject */
-		$commandObject = $this->getCommandCollection()[$originalCommand];
-		$this->aliases[$alias] = $commandObject;
-		return true;
-	}
+        return true;
+    }
+
+    /**
+     * @param string $originalCommand
+     * @param string $alias
+     *
+     * @return bool
+     */
+    public function alias(string $originalCommand, string $alias): bool
+    {
+        if (!$this->getCommandCollection()->offsetExists($originalCommand) || array_key_exists($alias,
+                $this->aliases)) {
+            return false;
+        }
+
+        /** @var Command $commandObject */
+        $commandObject = $this->getCommandCollection()[$originalCommand];
+        $this->aliases[$alias] = $commandObject;
+        return true;
+    }
 
     /**
      * @param PRIVMSG $privmsg
@@ -113,69 +117,71 @@ class CommandHandler extends BaseModule implements ComponentInterface
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \WildPHP\Core\Users\UserNotFoundException
      */
-	public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
-	{
-	    $db = Database::fromContainer($this->getContainer());
+    public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
+    {
+        $db = Database::fromContainer($this->getContainer());
 
-		$channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
-		$user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
+        $channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
+        $user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
 
-		$message = $privmsg->getMessage();
+        $message = $privmsg->getMessage();
 
-		$args = [];
-		$command = $this->parseCommandFromMessage($message, $args);
+        $args = [];
+        $command = $this->parseCommandFromMessage($message, $args);
 
-		if ($command === false)
-			return;
+        if ($command === false) {
+            return;
+        }
 
-		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.command', [$command, $channel, $user, $args, $this->getContainer()]);
+        EventEmitter::fromContainer($this->getContainer())
+            ->emit('irc.command', [$command, $channel, $user, $args, $this->getContainer()]);
 
-		$commandObject = $this->findCommandInDictionary($command);
+        $commandObject = $this->findCommandInDictionary($command);
 
-		if (!$commandObject)
-			return;
-		
-		$permission = $commandObject->getRequiredPermission();
-		if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user, $channel))
-		{
-			$queue->privmsg($channel->getName(),
-				$user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
+        if (!$commandObject) {
+            return;
+        }
 
-			return;
-		}
+        $permission = $commandObject->getRequiredPermission();
+        if ($permission && !Validator::fromContainer($this->getContainer())->isAllowedTo($permission, $user,
+                $channel)) {
+            $queue->privmsg($channel->getName(),
+                $user->getNickname() . ': You do not have the required permission to run this command (' . $permission . ')');
 
-		$strategy = $this->findApplicableStrategy($commandObject, $args);
-		
-		if (!$strategy)
-		{
-			Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
-			$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
-			$queue->privmsg($channel->getName(),
-				'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' .
-				'parameters match the given requirements.');
-			
-			return;
-		}
-		
-		call_user_func($commandObject->getCallback(), $channel, $user, $args, $this->getContainer(), $command);
-	}
+            return;
+        }
 
-	/**
-	 * @param string $command
-	 *
-	 * @return Command|null
-	 */
-	protected function findCommandInDictionary(string $command): ?Command
-	{
-		$dictionary = $this->getCommandCollection();
+        $strategy = $this->findApplicableStrategy($commandObject, $args);
 
-		if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases))
-			return null;
+        if (!$strategy) {
+            Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
+            $prefix = Configuration::fromContainer($this->getContainer())['prefix'];
+            $queue->privmsg($channel->getName(),
+                'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $command . ' for usage instructions and make sure that your ' .
+                'parameters match the given requirements.');
 
-		/** @var Command $commandObject */
-		return $dictionary[$command] ?? $this->aliases[$command];
-	}
+            return;
+        }
+
+        call_user_func($commandObject->getCallback(), $channel, $user, $args, $this->getContainer(), $command);
+    }
+
+    /**
+     * @param string $command
+     *
+     * @return Command|null
+     */
+    protected function findCommandInDictionary(string $command): ?Command
+    {
+        $dictionary = $this->getCommandCollection();
+
+        if (!$dictionary->offsetExists($command) && !array_key_exists($command, $this->aliases)) {
+            return null;
+        }
+
+        /** @var Command $commandObject */
+        return $dictionary[$command] ?? $this->aliases[$command];
+    }
 
     /**
      * @param Command $commandObject
@@ -185,29 +191,25 @@ class CommandHandler extends BaseModule implements ComponentInterface
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Exception
      */
-	protected function findApplicableStrategy(Command $commandObject, array &$args): ?ParameterStrategy
-	{
-		$parameterStrategies = $commandObject->getParameterStrategies();
-		$strategy = null;
-		$originalArgs = $args;
+    protected function findApplicableStrategy(Command $commandObject, array &$args): ?ParameterStrategy
+    {
+        $parameterStrategies = $commandObject->getParameterStrategies();
+        $strategy = null;
+        $originalArgs = $args;
 
-		/** @var ParameterStrategy $parameterStrategy */
-		foreach ($parameterStrategies as $parameterStrategy)
-		{
-			try
-			{
-				$args = $parameterStrategy->validateArgumentArray($originalArgs);
-				$strategy = $parameterStrategy;
-				break;
-			}
-			catch (\InvalidArgumentException $e)
-			{
-				Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
-			}
-		}
+        /** @var ParameterStrategy $parameterStrategy */
+        foreach ($parameterStrategies as $parameterStrategy) {
+            try {
+                $args = $parameterStrategy->validateArgumentArray($originalArgs);
+                $strategy = $parameterStrategy;
+                break;
+            } catch (\InvalidArgumentException $e) {
+                Logger::fromContainer($this->getContainer())->debug('Not applying strategy; ' . $e->getMessage());
+            }
+        }
 
-		return $strategy;
-	}
+        return $strategy;
+    }
 
     /**
      * @param string $message
@@ -216,43 +218,45 @@ class CommandHandler extends BaseModule implements ComponentInterface
      * @return false|string
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function parseCommandFromMessage(string $message, array &$args)
-	{
-		$messageParts = explode(' ', trim($message));
-		$firstPart = array_shift($messageParts);
-		$prefix = Configuration::fromContainer($this->getContainer())['prefix'];
+    public function parseCommandFromMessage(string $message, array &$args)
+    {
+        $messageParts = explode(' ', trim($message));
+        $firstPart = array_shift($messageParts);
+        $prefix = Configuration::fromContainer($this->getContainer())['prefix'];
 
-		if (strlen($firstPart) == strlen($prefix))
-			return false;
+        if (strlen($firstPart) == strlen($prefix)) {
+            return false;
+        }
 
-		if (substr($firstPart, 0, strlen($prefix)) != $prefix)
-			return false;
+        if (substr($firstPart, 0, strlen($prefix)) != $prefix) {
+            return false;
+        }
 
-		$command = substr($firstPart, strlen($prefix));
+        $command = substr($firstPart, strlen($prefix));
 
-		// Remove empty elements and excessive spaces.
-		$args = array_values(array_map('trim', array_filter($messageParts, function($arg) {
-			return !preg_match('/^$|\s/', $arg);
-		})));
+        // Remove empty elements and excessive spaces.
+        $args = array_values(array_map('trim', array_filter($messageParts, function ($arg) {
+            return !preg_match('/^$|\s/', $arg);
+        })));
 
-		return $command;
-	}
+        return $command;
+    }
 
-	/**
-	 * @return Collection
-	 */
-	public function getCommandCollection(): Collection
-	{
-		return $this->commandCollection;
-	}
+    /**
+     * @return Collection
+     */
+    public function getCommandCollection(): Collection
+    {
+        return $this->commandCollection;
+    }
 
-	/**
-	 * @param Collection $commandCollection
-	 */
-	public function setCommandCollection(Collection $commandCollection)
-	{
-		$this->commandCollection = $commandCollection;
-	}
+    /**
+     * @param Collection $commandCollection
+     */
+    public function setCommandCollection(Collection $commandCollection)
+    {
+        $this->commandCollection = $commandCollection;
+    }
 
     /**
      * @return string

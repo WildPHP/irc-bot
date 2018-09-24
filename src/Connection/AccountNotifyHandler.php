@@ -20,7 +20,7 @@ use WildPHP\Core\Users\User;
 
 class AccountNotifyHandler extends BaseModule
 {
-	use ContainerTrait;
+    use ContainerTrait;
 
     /**
      * AccountNotifyHandler constructor.
@@ -28,13 +28,13 @@ class AccountNotifyHandler extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
-		$this->setContainer($container);
-	}
+    public function __construct(ComponentContainer $container)
+    {
+        EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
+        $this->setContainer($container);
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param ACCOUNT $ircMessage
      * @param Queue $queue
@@ -42,23 +42,23 @@ class AccountNotifyHandler extends BaseModule
      * @throws \WildPHP\Core\Users\UserNotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function updateUserIrcAccount(ACCOUNT $ircMessage, Queue $queue)
-	{
-		$nickname = $ircMessage->getPrefix()->getNickname();
-		$db = Database::fromContainer($this->getContainer());
+    public function updateUserIrcAccount(ACCOUNT $ircMessage, Queue $queue)
+    {
+        $nickname = $ircMessage->getPrefix()->getNickname();
+        $db = Database::fromContainer($this->getContainer());
 
-		$user = User::fromDatabase($db, ['nickname' => $nickname]);
-		Logger::fromContainer($this->getContainer())->debug('Updated irc account for userid ' . $user->getId());
-		$user->setIrcAccount($ircMessage->getAccountName());
+        $user = User::fromDatabase($db, ['nickname' => $nickname]);
+        Logger::fromContainer($this->getContainer())->debug('Updated irc account for userid ' . $user->getId());
+        $user->setIrcAccount($ircMessage->getAccountName());
 
-		User::toDatabase($db, $user);
-	}
+        User::toDatabase($db, $user);
+    }
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

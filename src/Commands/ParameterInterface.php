@@ -11,10 +11,10 @@ namespace WildPHP\Core\Commands;
 
 interface ParameterInterface
 {
-	/**
-	 * @param string $value
-	 *
-	 * @return false|mixed False on failure.
-	 */
-	public function validate(string $value);
+    /**
+     * @param string $value
+     *
+     * @return false|mixed False on failure.
+     */
+    public function validate(string $value);
 }

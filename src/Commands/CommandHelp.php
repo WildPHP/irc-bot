@@ -15,13 +15,13 @@ use Yoshi2889\Collections\Collection;
 
 class CommandHelp extends Collection
 {
-	/**
-	 * CommandHelp constructor.
-	 *
-	 * @param array $initialValues
-	 */
-	public function __construct(array $initialValues = [])
-	{
-		parent::__construct(Types::string(), $initialValues);
-	}
+    /**
+     * CommandHelp constructor.
+     *
+     * @param array $initialValues
+     */
+    public function __construct(array $initialValues = [])
+    {
+        parent::__construct(Types::string(), $initialValues);
+    }
 }

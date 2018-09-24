@@ -17,31 +17,31 @@ use Yoshi2889\Container\ComponentTrait;
 
 class Configuration extends Collection implements ComponentInterface
 {
-	use ComponentTrait;
+    use ComponentTrait;
 
-	/**
-	 * @var ConfigurationBackendInterface
-	 */
-	protected $backend = null;
+    /**
+     * @var ConfigurationBackendInterface
+     */
+    protected $backend = null;
 
-	/**
-	 * Configuration constructor.
-	 *
-	 * @param ConfigurationBackendInterface $configurationBackend
-	 */
-	public function __construct(ConfigurationBackendInterface $configurationBackend)
-	{
-		$this->backend = $configurationBackend;
+    /**
+     * Configuration constructor.
+     *
+     * @param ConfigurationBackendInterface $configurationBackend
+     */
+    public function __construct(ConfigurationBackendInterface $configurationBackend)
+    {
+        $this->backend = $configurationBackend;
 
-		// Accept any type, except objects.
-		parent::__construct(Utils::invert(Types::object()), $configurationBackend->getAllEntries());
-	}
+        // Accept any type, except objects.
+        parent::__construct(Utils::invert(Types::object()), $configurationBackend->getAllEntries());
+    }
 
-	/**
-	 * @return ConfigurationBackendInterface
-	 */
-	public function getBackend(): ConfigurationBackendInterface
-	{
-		return $this->backend;
-	}
+    /**
+     * @return ConfigurationBackendInterface
+     */
+    public function getBackend(): ConfigurationBackendInterface
+    {
+        return $this->backend;
+    }
 }

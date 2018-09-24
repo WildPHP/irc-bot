@@ -10,11 +10,11 @@ namespace WildPHP\Core\Commands;
 
 class NumericParameter extends Parameter
 {
-	/**
-	 * NumericParameter constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct(\Closure::fromCallable('is_numeric'));
-	}
+    /**
+     * NumericParameter constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(\Closure::fromCallable('is_numeric'));
+    }
 }

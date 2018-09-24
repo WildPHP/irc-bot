@@ -11,21 +11,21 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 trait ChannelsTrait
 {
-	protected $channels = [];
+    protected $channels = [];
 
-	/**
-	 * @return array
-	 */
-	public function getChannels(): array
-	{
-		return $this->channels;
-	}
+    /**
+     * @return array
+     */
+    public function getChannels(): array
+    {
+        return $this->channels;
+    }
 
-	/**
-	 * @param array $channels
-	 */
-	public function setChannels(array $channels)
-	{
-		$this->channels = $channels;
-	}
+    /**
+     * @param array $channels
+     */
+    public function setChannels(array $channels)
+    {
+        $this->channels = $channels;
+    }
 }

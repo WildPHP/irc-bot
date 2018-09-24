@@ -16,26 +16,26 @@ namespace WildPHP\Core\Connection\IRCMessages;
  */
 class VERSION extends BaseIRCMessage implements SendableMessage
 {
-	protected static $verb = 'VERSION';
+    protected static $verb = 'VERSION';
 
-	use ServerTrait;
+    use ServerTrait;
 
-	/**
-	 * WHOIS constructor.
-	 *
-	 * @param string $server
-	 */
-	public function __construct(string $server = '')
-	{
-		$this->setServer($server);
-	}
+    /**
+     * WHOIS constructor.
+     *
+     * @param string $server
+     */
+    public function __construct(string $server = '')
+    {
+        $this->setServer($server);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		$server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';
-		return 'VERSION' . $server;
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';
+        return 'VERSION' . $server;
+    }
 }

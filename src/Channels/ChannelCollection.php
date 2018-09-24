@@ -16,38 +16,40 @@ use Yoshi2889\Container\ComponentTrait;
 
 class ChannelCollection extends Collection implements ComponentInterface
 {
-	use ComponentTrait;
+    use ComponentTrait;
 
-	/**
-	 * ChannelCollection constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct(Types::instanceof(Channel::class));
-	}
+    /**
+     * ChannelCollection constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(Types::instanceof(Channel::class));
+    }
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
-	public function containsChannelName(string $name): bool
-	{
-		return !empty($this->findByChannelName($name));
-	}
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function containsChannelName(string $name): bool
+    {
+        return !empty($this->findByChannelName($name));
+    }
 
-	/**
-	 * @param string $name
-	 *
-	 * @return false|Channel
-	 */
-	public function findByChannelName(string $name)
-	{
-		/** @var Channel $value */
-		foreach ($this->values() as $value)
-			if ($value->getName() == $name)
-				return $value;
+    /**
+     * @param string $name
+     *
+     * @return false|Channel
+     */
+    public function findByChannelName(string $name)
+    {
+        /** @var Channel $value */
+        foreach ($this->values() as $value) {
+            if ($value->getName() == $name) {
+                return $value;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

@@ -17,41 +17,41 @@ namespace WildPHP\Core\Connection\IRCMessages;
  */
 class PASS extends BaseIRCMessage implements SendableMessage
 {
-	protected static $verb = 'PASS';
+    protected static $verb = 'PASS';
 
-	protected $password = '';
+    protected $password = '';
 
-	/**
-	 * PASS constructor.
-	 *
-	 * @param string $password
-	 */
-	public function __construct(string $password)
-	{
-		$this->setPassword($password);
-	}
+    /**
+     * PASS constructor.
+     *
+     * @param string $password
+     */
+    public function __construct(string $password)
+    {
+        $this->setPassword($password);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getPassword(): string
-	{
-		return $this->password;
-	}
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
 
-	/**
-	 * @param string $password
-	 */
-	public function setPassword(string $password)
-	{
-		$this->password = $password;
-	}
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'PASS :' . $this->getPassword() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'PASS :' . $this->getPassword() . "\r\n";
+    }
 }

@@ -19,58 +19,59 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class ACCOUNT extends BaseIRCMessage implements ReceivableMessage
 {
-	protected static $verb = 'ACCOUNT';
+    protected static $verb = 'ACCOUNT';
 
-	use PrefixTrait;
+    use PrefixTrait;
 
-	/**
-	 * @var string
-	 */
-	protected $accountName = '';
+    /**
+     * @var string
+     */
+    protected $accountName = '';
 
-	/**
-	 * ACCOUNT constructor.
-	 *
-	 * @param string $accountName
-	 */
-	function __construct(string $accountName)
-	{
-		$this->setAccountName($accountName);
-	}
+    /**
+     * ACCOUNT constructor.
+     *
+     * @param string $accountName
+     */
+    function __construct(string $accountName)
+    {
+        $this->setAccountName($accountName);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$accountName = $incomingIrcMessage->getArgs()[0];
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $accountName = $incomingIrcMessage->getArgs()[0];
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 
-		$object = new self($accountName);
-		$object->setPrefix($prefix);
+        $object = new self($accountName);
+        $object->setPrefix($prefix);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAccountName(): string
-	{
-		return $this->accountName;
-	}
+    /**
+     * @return string
+     */
+    public function getAccountName(): string
+    {
+        return $this->accountName;
+    }
 
-	/**
-	 * @param string $accountName
-	 */
-	public function setAccountName(string $accountName)
-	{
-		$this->accountName = $accountName;
-	}
+    /**
+     * @param string $accountName
+     */
+    public function setAccountName(string $accountName)
+    {
+        $this->accountName = $accountName;
+    }
 }

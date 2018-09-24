@@ -10,16 +10,15 @@ namespace WildPHP\Core\Commands;
 
 class PredefinedStringParameter extends Parameter
 {
-	/**
-	 * PredefinedStringParameter constructor.
-	 *
-	 * @param string $expected
-	 */
-	public function __construct(string $expected)
-	{
-		parent::__construct(function (string $value) use ($expected)
-		{
-			return $value == $expected;
-		});
-	}
+    /**
+     * PredefinedStringParameter constructor.
+     *
+     * @param string $expected
+     */
+    public function __construct(string $expected)
+    {
+        parent::__construct(function (string $value) use ($expected) {
+            return $value == $expected;
+        });
+    }
 }

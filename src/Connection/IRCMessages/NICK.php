@@ -21,69 +21,70 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class NICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	use PrefixTrait;
-	use NicknameTrait;
+    use PrefixTrait;
+    use NicknameTrait;
 
-	protected static $verb = 'NICK';
+    protected static $verb = 'NICK';
 
-	/**
-	 * @var string
-	 */
-	protected $newNickname = '';
+    /**
+     * @var string
+     */
+    protected $newNickname = '';
 
-	/**
-	 * NICK constructor.
-	 *
-	 * @param string $newNickname
-	 */
-	public function __construct(string $newNickname)
-	{
-		$this->setNewNickname($newNickname);
-	}
+    /**
+     * NICK constructor.
+     *
+     * @param string $newNickname
+     */
+    public function __construct(string $newNickname)
+    {
+        $this->setNewNickname($newNickname);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-		$nickname = $prefix->getNickname();
-		$newNickname = $incomingIrcMessage->getArgs()[0];
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $nickname = $prefix->getNickname();
+        $newNickname = $incomingIrcMessage->getArgs()[0];
 
-		$object = new self($newNickname);
-		$object->setPrefix($prefix);
-		$object->setNickname($nickname);
+        $object = new self($newNickname);
+        $object->setPrefix($prefix);
+        $object->setNickname($nickname);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getNewNickname(): string
-	{
-		return $this->newNickname;
-	}
+    /**
+     * @return string
+     */
+    public function getNewNickname(): string
+    {
+        return $this->newNickname;
+    }
 
-	/**
-	 * @param string $newNickname
-	 */
-	public function setNewNickname(string $newNickname)
-	{
-		$this->newNickname = $newNickname;
-	}
+    /**
+     * @param string $newNickname
+     */
+    public function setNewNickname(string $newNickname)
+    {
+        $this->newNickname = $newNickname;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'NICK ' . $this->getNewNickname() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'NICK ' . $this->getNewNickname() . "\r\n";
+    }
 }

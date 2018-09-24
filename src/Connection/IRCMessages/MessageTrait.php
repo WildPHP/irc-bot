@@ -11,21 +11,21 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 trait MessageTrait
 {
-	protected $message = '';
+    protected $message = '';
 
-	/**
-	 * @return string
-	 */
-	public function getMessage(): string
-	{
-		return $this->message;
-	}
+    /**
+     * @return string
+     */
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 
-	/**
-	 * @param string $message
-	 */
-	public function setMessage(string $message)
-	{
-		$this->message = $message;
-	}
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message)
+    {
+        $this->message = $message;
+    }
 }

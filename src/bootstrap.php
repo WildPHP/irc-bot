@@ -29,10 +29,10 @@ use WildPHP\Core\Permissions\Validator;
  */
 function setupLogger(): Logger
 {
-	$logger = new Logger('wildphp');
-	$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout'));
-	$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log'));
-	return $logger;
+    $logger = new Logger('wildphp');
+    $logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout'));
+    $logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log'));
+    return $logger;
 }
 
 /**
@@ -40,13 +40,13 @@ function setupLogger(): Logger
  */
 function setupConfiguration()
 {
-	$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(WPHP_ROOT_DIR . '/config.neon');
+    $neonBackend = new \WildPHP\Core\Configuration\NeonBackend(WPHP_ROOT_DIR . '/config.neon');
 
-	$configuration = new Configuration($neonBackend);
-	$rootdir = dirname(dirname(__FILE__));
-	$configuration['rootdir'] = $rootdir;
+    $configuration = new Configuration($neonBackend);
+    $rootdir = dirname(dirname(__FILE__));
+    $configuration['rootdir'] = $rootdir;
 
-	return $configuration;
+    return $configuration;
 }
 
 /**
@@ -54,18 +54,17 @@ function setupConfiguration()
  */
 function setupPermissionGroupCollection()
 {
-	$globalPermissionGroup = new \WildPHP\Core\Permissions\PermissionGroupCollection();
+    $globalPermissionGroup = new \WildPHP\Core\Permissions\PermissionGroupCollection();
 
-	$dataStorage = DataStorageFactory::getStorage('permissiongroups');
+    $dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
-	$groupsToLoad = $dataStorage->getAll();
-	foreach ($groupsToLoad as $name => $groupState)
-	{
-		$pGroup = new PermissionGroup($groupState);
-		$globalPermissionGroup->offsetSet($name, $pGroup);
-	}
+    $groupsToLoad = $dataStorage->getAll();
+    foreach ($groupsToLoad as $name => $groupState) {
+        $pGroup = new PermissionGroup($groupState);
+        $globalPermissionGroup->offsetSet($name, $pGroup);
+    }
 
-	return $globalPermissionGroup;
+    return $globalPermissionGroup;
 }
 
 /**
@@ -77,31 +76,30 @@ function setupPermissionGroupCollection()
  */
 function setupIrcConnection(ComponentContainer $container, ConnectionDetails $connectionDetails)
 {
-	$loop = $container->getLoop();
+    $loop = $container->getLoop();
 
-	$ircConnection = new IrcConnection($container, $connectionDetails);
-	$promise = $ircConnection->connect(
-		ConnectorFactory::create(
-			$container->getLoop(),
-			$connectionDetails->getSecure(),
-			$connectionDetails->getContextOptions()
-		)
-	);
+    $ircConnection = new IrcConnection($container, $connectionDetails);
+    $promise = $ircConnection->connect(
+        ConnectorFactory::create(
+            $container->getLoop(),
+            $connectionDetails->getSecure(),
+            $connectionDetails->getContextOptions()
+        )
+    );
 
-	$promise->otherwise(function (\Throwable $e) use ($container, $loop)
-	{
-		Logger::fromContainer($container)->error('An error occurred in the IRC connection:', [
-			'message' => $e->getMessage(),
-			'file' => $e->getFile(),
-			'line' => $e->getLine()
-		]);
-		$loop->stop();
-	});
+    $promise->otherwise(function (\Throwable $e) use ($container, $loop) {
+        Logger::fromContainer($container)->error('An error occurred in the IRC connection:', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ]);
+        $loop->stop();
+    });
 
-	EventEmitter::fromContainer($container)
-		->on('stream.closed', [$loop, 'stop']);
+    EventEmitter::fromContainer($container)
+        ->on('stream.closed', [$loop, 'stop']);
 
-	return $ircConnection;
+    return $ircConnection;
 }
 
 /**
@@ -114,45 +112,51 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
  * @throws \Yoshi2889\Container\ContainerException
  * @throws \Yoshi2889\Container\NotFoundException
  */
-function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $configuration, Logger $logger, ConnectionDetails $connectionDetails)
-{
-	$componentContainer = new ComponentContainer();
-	$componentContainer->setLoop($loop);
-	$componentContainer->add(new EventEmitter());
-	$componentContainer->add($logger);
-	$componentContainer->add($configuration);
-	Logger::fromContainer($componentContainer)->info('WildPHP initializing');
+function createNewInstance(
+    \React\EventLoop\LoopInterface $loop,
+    Configuration $configuration,
+    Logger $logger,
+    ConnectionDetails $connectionDetails
+) {
+    $componentContainer = new ComponentContainer();
+    $componentContainer->setLoop($loop);
+    $componentContainer->add(new EventEmitter());
+    $componentContainer->add($logger);
+    $componentContainer->add($configuration);
+    Logger::fromContainer($componentContainer)->info('WildPHP initializing');
 
-	$componentContainer->add(new Queue());
-	$componentContainer->add(new ChannelCollection());
-	$componentContainer->add(new CapabilityHandler($componentContainer));
-	$componentContainer->add(setupPermissionGroupCollection());
-	$componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
-	$componentContainer->add(new Validator($componentContainer, $configuration['owner']));
+    $componentContainer->add(new Queue());
+    $componentContainer->add(new ChannelCollection());
+    $componentContainer->add(new CapabilityHandler($componentContainer));
+    $componentContainer->add(setupPermissionGroupCollection());
+    $componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
+    $componentContainer->add(new Validator($componentContainer, $configuration['owner']));
 
-	$componentContainer->add(new \WildPHP\Core\Database\Database(new \Medoo\Medoo([
-	    'database_type' => 'sqlite',
+    $componentContainer->add(new \WildPHP\Core\Database\Database(new \Medoo\Medoo([
+        'database_type' => 'sqlite',
         'database_file' => WPHP_ROOT_DIR . '/state.sqlite'
     ])));
 
-	$moduleFactory = new ModuleFactory($componentContainer);
-	$componentContainer->add($moduleFactory);
+    $moduleFactory = new ModuleFactory($componentContainer);
+    $componentContainer->add($moduleFactory);
 
-	if (Configuration::fromContainer($componentContainer)->offsetExists('modules'))
-		$modules = Configuration::fromContainer($componentContainer)['modules'];
+    if (Configuration::fromContainer($componentContainer)->offsetExists('modules')) {
+        $modules = Configuration::fromContainer($componentContainer)['modules'];
+    }
 
-	if (empty($modules) || !is_array($modules))
-		$modules = [];
+    if (empty($modules) || !is_array($modules)) {
+        $modules = [];
+    }
 
-	$modules = array_merge($modules, [
-		\WildPHP\Core\Connection\Parser::class,
-		\WildPHP\Core\Connection\PingPongHandler::class,
-		//\WildPHP\Core\Users\UserStateManager::class,
-		\WildPHP\Core\Users\BotStateManager::class,
-		\WildPHP\Core\Connection\NicknameHandler::class,
-		\WildPHP\Core\Connection\MessageLogger::class,
-		\WildPHP\Core\Connection\AccountNotifyHandler::class,
-		\WildPHP\Core\Connection\SASL::class,
+    $modules = array_merge($modules, [
+        \WildPHP\Core\Connection\Parser::class,
+        \WildPHP\Core\Connection\PingPongHandler::class,
+        //\WildPHP\Core\Users\UserStateManager::class,
+        \WildPHP\Core\Users\BotStateManager::class,
+        \WildPHP\Core\Connection\NicknameHandler::class,
+        \WildPHP\Core\Connection\MessageLogger::class,
+        \WildPHP\Core\Connection\AccountNotifyHandler::class,
+        \WildPHP\Core\Connection\SASL::class,
         \WildPHP\Core\Users\UserObserver::class,
         \WildPHP\Core\Channels\ChannelObserver::class,
         CommandHandler::class,
@@ -161,17 +165,18 @@ function createNewInstance(\React\EventLoop\LoopInterface $loop, Configuration $
         \WildPHP\Core\Permissions\PermissionCommands::class,
         \WildPHP\Core\Permissions\PermissionMembersCommands::class,
         \WildPHP\Core\Management\ManagementCommands::class
-	]);
+    ]);
 
-	$moduleFactory->initializeModules($modules);
+    $moduleFactory->initializeModules($modules);
 
-	EventEmitter::fromContainer($componentContainer)
-		->emit('wildphp.init-modules.after');
+    EventEmitter::fromContainer($componentContainer)
+        ->emit('wildphp.init-modules.after');
 
-	Logger::fromContainer($componentContainer)->info('A connection has been set up successfully and will be started. This may take a while.', [
-		'server' => $connectionDetails->getAddress() . ':' . $connectionDetails->getPort(),
-		'wantedNickname' => $connectionDetails->getWantedNickname()
-	]);
+    Logger::fromContainer($componentContainer)->info('A connection has been set up successfully and will be started. This may take a while.',
+        [
+            'server' => $connectionDetails->getAddress() . ':' . $connectionDetails->getPort(),
+            'wantedNickname' => $connectionDetails->getWantedNickname()
+        ]);
 }
 
 $loop = LoopFactory::create();
@@ -180,19 +185,18 @@ $logger = setupLogger();
 
 $connections = $configuration['connections'];
 
-foreach ($connections as $connection)
-{
-	$connectionDetails = new ConnectionDetails();
-	$connectionDetails->setHostname(gethostname());
-	$connectionDetails->setAddress($connection['server']);
-	$connectionDetails->setPort($connection['port']);
-	$connectionDetails->setUsername($connection['user']);
-	$connectionDetails->setRealname($connection['realname']);
-	$connectionDetails->setWantedNickname($connection['nick']);
-	$connectionDetails->setPassword($connection['password'] ?? '');
-	$connectionDetails->setSecure($connection['secure']);
-	$connectionDetails->setContextOptions($connection['options'] ?? []);
-	createNewInstance($loop, $configuration, $logger, $connectionDetails);
+foreach ($connections as $connection) {
+    $connectionDetails = new ConnectionDetails();
+    $connectionDetails->setHostname(gethostname());
+    $connectionDetails->setAddress($connection['server']);
+    $connectionDetails->setPort($connection['port']);
+    $connectionDetails->setUsername($connection['user']);
+    $connectionDetails->setRealname($connection['realname']);
+    $connectionDetails->setWantedNickname($connection['nick']);
+    $connectionDetails->setPassword($connection['password'] ?? '');
+    $connectionDetails->setSecure($connection['secure']);
+    $connectionDetails->setContextOptions($connection['options'] ?? []);
+    createNewInstance($loop, $configuration, $logger, $connectionDetails);
 }
 
 $loop->run();

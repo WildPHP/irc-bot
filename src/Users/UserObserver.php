@@ -63,8 +63,7 @@ class UserObserver extends BaseModule
     {
         $db = Database::fromContainer($this->getContainer());
 
-        if (!$db->has('users', ['nickname' => $joinMessage->getNickname()]))
-        {
+        if (!$db->has('users', ['nickname' => $joinMessage->getNickname()])) {
             $prefix = $joinMessage->getPrefix();
             $db->insert('users', [
                 'nickname' => $joinMessage->getNickname(),
@@ -93,10 +92,10 @@ class UserObserver extends BaseModule
         $db = Database::fromContainer($this->getContainer());
         $nicknames = $ircMessage->getNicknames();
 
-        $modePrefixes = ($result = $db->get('server_config', ['value'], ['key' => 'PREFIX'])) ? $result['value'] : '(ohv)@%+';
+        $modePrefixes = ($result = $db->get('server_config', ['value'],
+            ['key' => 'PREFIX'])) ? $result['value'] : '(ohv)@%+';
 
-        foreach ($nicknames as $nicknameWithMode)
-        {
+        foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
             $modes = ChannelModes::extractUserModesFromNickname($modePrefixes, $nicknameWithMode, $nickname);
 
@@ -105,17 +104,17 @@ class UserObserver extends BaseModule
                     'nickname' => $nickname
                 ]);
                 $userID = $db->id();
-            }
-            else
+            } else {
                 $userID = $db->get('users', ['id'], ['nickname' => $nickname])['id'];
+            }
 
-            if (!$db->has('channels', ['name' => $ircMessage->getChannel()]))
+            if (!$db->has('channels', ['name' => $ircMessage->getChannel()])) {
                 throw new StateException('Channel not found, but RPL_NAMES received; state mismatch!');
+            }
 
             $channelID = $db->get('channels', ['id'], ['name' => $ircMessage->getChannel()])['id'];
 
-            foreach ($modes as $mode)
-            {
+            foreach ($modes as $mode) {
                 $db->insert('mode_relations', [
                     'user_id' => $userID,
                     'channel_id' => $channelID,
@@ -148,8 +147,9 @@ class UserObserver extends BaseModule
     {
         $db = Database::fromContainer($this->getContainer());
 
-        if (!$db->has('users', ['nickname' => $ircMessage->getNickname()]))
+        if (!$db->has('users', ['nickname' => $ircMessage->getNickname()])) {
             throw new StateException('RPL_WHOSPCRPL received but user was not found... Impossible!');
+        }
 
         $user = User::fromDatabase($db, ['nickname' => $ircMessage->getNickname()]);
         $user->setNickname($ircMessage->getNickname());
@@ -173,8 +173,9 @@ class UserObserver extends BaseModule
 
         $userID = $db->get('users', ['id'], ['nickname' => $nickMessage->getNickname()]);
 
-        if (!$userID)
+        if (!$userID) {
             throw new StateException('Nick change detected but I have no idea who this user is... Help!');
+        }
 
         $db->update('users', [
             'nickname' => $nickMessage->getNewNickname()

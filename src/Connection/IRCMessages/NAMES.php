@@ -16,32 +16,33 @@ namespace WildPHP\Core\Connection\IRCMessages;
  */
 class NAMES extends BaseIRCMessage implements SendableMessage
 {
-	protected static $verb = 'NAMES';
+    protected static $verb = 'NAMES';
 
-	use ChannelsTrait;
-	use ServerTrait;
+    use ChannelsTrait;
+    use ServerTrait;
 
-	/**
-	 * NAMES constructor.
-	 *
-	 * @param string[]|string $channels
-	 * @param string $server
-	 */
-	public function __construct($channels, string $server = '')
-	{
-		if (is_string($channels))
-			$channels = [$channels];
+    /**
+     * NAMES constructor.
+     *
+     * @param string[]|string $channels
+     * @param string $server
+     */
+    public function __construct($channels, string $server = '')
+    {
+        if (is_string($channels)) {
+            $channels = [$channels];
+        }
 
-		$this->setChannels($channels);
-		$this->setServer($server);
-	}
+        $this->setChannels($channels);
+        $this->setServer($server);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		$server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';
-		return 'NAMES ' .  implode(',', $this->getChannels()) . $server;
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $server = !empty($this->getServer()) ? ' ' . $this->getServer() : '';
+        return 'NAMES ' . implode(',', $this->getChannels()) . $server;
+    }
 }

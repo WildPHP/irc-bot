@@ -19,7 +19,7 @@ use WildPHP\Core\Modules\BaseModule;
 
 class BotStateManager extends BaseModule
 {
-	use ContainerTrait;
+    use ContainerTrait;
 
     /**
      * BotStateManager constructor.
@@ -27,14 +27,14 @@ class BotStateManager extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		EventEmitter::fromContainer($container)
-			->on('user.nick', [$this, 'monitorOwnNickname']);
-		$this->setContainer($container);
-	}
+    public function __construct(ComponentContainer $container)
+    {
+        EventEmitter::fromContainer($container)
+            ->on('user.nick', [$this, 'monitorOwnNickname']);
+        $this->setContainer($container);
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param Channel $channel
      * @param User $user
@@ -42,24 +42,25 @@ class BotStateManager extends BaseModule
      * @param string $newNickname
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function monitorOwnNickname(Channel $channel, User $user, string $oldNickname, string $newNickname)
-	{
-		if ($oldNickname != Configuration::fromContainer($this->getContainer())['currentNickname'])
-			return;
+    public function monitorOwnNickname(Channel $channel, User $user, string $oldNickname, string $newNickname)
+    {
+        if ($oldNickname != Configuration::fromContainer($this->getContainer())['currentNickname']) {
+            return;
+        }
 
-		Configuration::fromContainer($this->getContainer())['currentNickname'] = $newNickname;
+        Configuration::fromContainer($this->getContainer())['currentNickname'] = $newNickname;
 
-		Logger::fromContainer($this->getContainer())->debug('Updated current nickname for bot', [
-			'oldNickname' => $oldNickname,
-			'newNickname' => $newNickname
-		]);
-	}
+        Logger::fromContainer($this->getContainer())->debug('Updated current nickname for bot', [
+            'oldNickname' => $oldNickname,
+            'newNickname' => $newNickname
+        ]);
+    }
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

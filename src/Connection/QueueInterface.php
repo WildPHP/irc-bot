@@ -13,36 +13,36 @@ use WildPHP\Core\Connection\IRCMessages\SendableMessage;
 
 interface QueueInterface
 {
-	/**
-	 * @param SendableMessage $command
-	 *
-	 * @return void
-	 */
-	public function insertMessage(SendableMessage $command);
+    /**
+     * @param SendableMessage $command
+     *
+     * @return void
+     */
+    public function insertMessage(SendableMessage $command);
 
-	/**
-	 * @param QueueItem $item
-	 *
-	 * @return void
-	 */
-	public function removeMessage(QueueItem $item);
+    /**
+     * @param QueueItem $item
+     *
+     * @return void
+     */
+    public function removeMessage(QueueItem $item);
 
-	/**
-	 * @param int $index
-	 *
-	 * @return void
-	 */
-	public function removeMessageByIndex(int $index);
+    /**
+     * @param int $index
+     *
+     * @return void
+     */
+    public function removeMessageByIndex(int $index);
 
-	/**
-	 * @param QueueItem $item
-	 *
-	 * @return void
-	 */
-	public function scheduleItem(QueueItem $item);
+    /**
+     * @param QueueItem $item
+     *
+     * @return void
+     */
+    public function scheduleItem(QueueItem $item);
 
-	/**
-	 * @return QueueItem[]
-	 */
-	public function flush(): array;
+    /**
+     * @return QueueItem[]
+     */
+    public function flush(): array;
 }

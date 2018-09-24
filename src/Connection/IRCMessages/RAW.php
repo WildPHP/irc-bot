@@ -16,42 +16,42 @@ namespace WildPHP\Core\Connection\IRCMessages;
  */
 class RAW extends BaseIRCMessage implements SendableMessage
 {
-	/**
-	 * @var string
-	 */
-	protected $command;
+    /**
+     * @var string
+     */
+    protected $command;
 
-	/**
-	 * RAW constructor.
-	 *
-	 * @param string $command
-	 */
-	public function __construct(string $command)
-	{
-		$this->setCommand($command);
-	}
+    /**
+     * RAW constructor.
+     *
+     * @param string $command
+     */
+    public function __construct(string $command)
+    {
+        $this->setCommand($command);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getCommand(): string
-	{
-		return $this->command;
-	}
+    /**
+     * @return string
+     */
+    public function getCommand(): string
+    {
+        return $this->command;
+    }
 
-	/**
-	 * @param string $command
-	 */
-	public function setCommand(string $command)
-	{
-		$this->command = $command;
-	}
+    /**
+     * @param string $command
+     */
+    public function setCommand(string $command)
+    {
+        $this->command = $command;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString(): string
-	{
-		return $this->getCommand() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->getCommand() . "\r\n";
+    }
 }

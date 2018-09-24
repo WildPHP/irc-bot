@@ -25,31 +25,31 @@ class HelpCommand extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		CommandHandler::fromContainer($container)->registerCommand('cmdhelp',
-			new Command(
-				[$this, 'helpCommand'],
-				new ParameterStrategy(0, 1, [
-					'command' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Shows the help pages for a specific command. (use the lscommands command to list available commands)',
-					'Usage: cmdhelp [command]'
-				])
-			));
+    public function __construct(ComponentContainer $container)
+    {
+        CommandHandler::fromContainer($container)->registerCommand('cmdhelp',
+            new Command(
+                [$this, 'helpCommand'],
+                new ParameterStrategy(0, 1, [
+                    'command' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Shows the help pages for a specific command. (use the lscommands command to list available commands)',
+                    'Usage: cmdhelp [command]'
+                ])
+            ));
 
-		CommandHandler::fromContainer($container)->registerCommand('lscommands',
-			new Command(
-				[$this, 'lscommandsCommand'],
-				new ParameterStrategy(0, 0),
-				new CommandHelp([
-					'Shows the list of available commands. No arguments.'
-				])
-			));
-	}
+        CommandHandler::fromContainer($container)->registerCommand('lscommands',
+            new Command(
+                [$this, 'lscommandsCommand'],
+                new ParameterStrategy(0, 0),
+                new CommandHelp([
+                    'Shows the list of available commands. No arguments.'
+                ])
+            ));
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param Channel $source
      * @param User $user
@@ -58,23 +58,22 @@ class HelpCommand extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function lscommandsCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		$commands = CommandHandler::fromContainer($container)
-			->getCommandCollection()
-			->keys();
+    public function lscommandsCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        $commands = CommandHandler::fromContainer($container)
+            ->getCommandCollection()
+            ->keys();
 
-		$commands = implode(', ', $commands);
-		$commands = explode("\n", wordwrap($commands, 200));
+        $commands = implode(', ', $commands);
+        $commands = explode("\n", wordwrap($commands, 200));
 
-		foreach ($commands as $key => $commandList)
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $user->getNickname() . ': Available commands: ' . $commandList);
-		}
-	}
+        foreach ($commands as $key => $commandList) {
+            Queue::fromContainer($container)
+                ->privmsg($source->getName(), $user->getNickname() . ': Available commands: ' . $commandList);
+        }
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param Channel $source
      * @param User $user
@@ -82,48 +81,46 @@ class HelpCommand extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function helpCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		if (empty($args))
-			$args['command'] = 'cmdhelp';
+    public function helpCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        if (empty($args)) {
+            $args['command'] = 'cmdhelp';
+        }
 
-		$command = $args['command'];
+        $command = $args['command'];
 
-		if (!CommandHandler::fromContainer($container)->getCommandCollection()->offsetExists($command))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), 'That command does not exist, sorry!');
+        if (!CommandHandler::fromContainer($container)->getCommandCollection()->offsetExists($command)) {
+            Queue::fromContainer($container)
+                ->privmsg($source->getName(), 'That command does not exist, sorry!');
 
-			return;
-		}
+            return;
+        }
 
-		/** @var Command $commandObject */
-		$commandObject = CommandHandler::fromContainer($container)
-			->getCommandCollection()[$command];
+        /** @var Command $commandObject */
+        $commandObject = CommandHandler::fromContainer($container)
+            ->getCommandCollection()[$command];
 
-		$helpObject = clone $commandObject->getHelp();
-		if ($helpObject == null || !($helpObject instanceof CommandHelp))
-		{
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), 'There is no help available for this command.');
+        $helpObject = clone $commandObject->getHelp();
+        if ($helpObject == null || !($helpObject instanceof CommandHelp)) {
+            Queue::fromContainer($container)
+                ->privmsg($source->getName(), 'There is no help available for this command.');
 
-			return;
-		}
-		
-		/*if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
-			$helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));*/
-		
-		foreach ($helpObject->getIterator() as $page)
-		{
-			Queue::fromContainer($container)->privmsg($source->getName(), $command . ': ' . $page);
-		}
-	}
+            return;
+        }
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+        /*if (!empty($commandObject->getAliasCollection()->getArrayCopy()))
+            $helpObject->append('Aliases: ' . implode(', ', $commandObject->getAliasCollection()->getArrayCopy()));*/
+
+        foreach ($helpObject->getIterator() as $page) {
+            Queue::fromContainer($container)->privmsg($source->getName(), $command . ': ' . $page);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

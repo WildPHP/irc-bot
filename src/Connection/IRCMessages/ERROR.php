@@ -18,25 +18,26 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class ERROR extends BaseIRCMessage implements ReceivableMessage
 {
-	use MessageTrait;
+    use MessageTrait;
 
-	protected static $verb = 'ERROR';
+    protected static $verb = 'ERROR';
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$message = $incomingIrcMessage->getArgs()[0];
-		$object = new self();
-		$object->setMessage($message);
+        $message = $incomingIrcMessage->getArgs()[0];
+        $object = new self();
+        $object->setMessage($message);
 
-		return $object;
-	}
+        return $object;
+    }
 }

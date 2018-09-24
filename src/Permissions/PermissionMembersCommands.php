@@ -33,53 +33,53 @@ class PermissionMembersCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
+    public function __construct(ComponentContainer $container)
+    {
+        $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-		CommandHandler::fromContainer($container)->registerCommand('lsmembers',
-			new Command(
-				[$this, 'lsmembersCommand'],
-				new ParameterStrategy(1, 1, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-				]),
-				new CommandHelp([
-					'List all members in a permission group. Usage: lsmembers [group name]'
-				]),
-				'lsmembers'
-			),
-			['lsm']);
-		
-		CommandHandler::fromContainer($container)->registerCommand('addmember',
-			new Command(
-				[$this, 'addmemberCommand'],
-				new ParameterStrategy(2, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'nickname' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]'
-				]),
-				'addmember'
-			),
-			['+member', '+m']);
+        CommandHandler::fromContainer($container)->registerCommand('lsmembers',
+            new Command(
+                [$this, 'lsmembersCommand'],
+                new ParameterStrategy(1, 1, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                ]),
+                new CommandHelp([
+                    'List all members in a permission group. Usage: lsmembers [group name]'
+                ]),
+                'lsmembers'
+            ),
+            ['lsm']);
 
-		CommandHandler::fromContainer($container)->registerCommand('delmember',
-			new Command(
-				[$this, 'delmemberCommand'],
-				new ParameterStrategy(2, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'nickname' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]'
-				]),
-				'delmember'
-			),
-			['-member', '-m']);
-		
-		$this->setContainer($container);
-	}
+        CommandHandler::fromContainer($container)->registerCommand('addmember',
+            new Command(
+                [$this, 'addmemberCommand'],
+                new ParameterStrategy(2, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'nickname' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]'
+                ]),
+                'addmember'
+            ),
+            ['+member', '+m']);
+
+        CommandHandler::fromContainer($container)->registerCommand('delmember',
+            new Command(
+                [$this, 'delmemberCommand'],
+                new ParameterStrategy(2, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'nickname' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]'
+                ]),
+                'delmember'
+            ),
+            ['-member', '-m']);
+
+        $this->setContainer($container);
+    }
 
     /**
      * @param Channel $source
@@ -88,26 +88,27 @@ class PermissionMembersCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+    public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		$checks = [
-			'This group does not exist.' => empty($group),
-			'This group may not contain members.' => $group ? $group->isModeGroup() : false
-		];
+        $checks = [
+            'This group does not exist.' => empty($group),
+            'This group may not contain members.' => $group ? $group->isModeGroup() : false
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		$members = $group->getUserCollection()
-			->values();
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), sprintf('%s: The following members are in this group: %s',
-				$user->getNickname(),
-				implode(', ', $members)));
-	}
+        $members = $group->getUserCollection()
+            ->values();
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(), sprintf('%s: The following members are in this group: %s',
+                $user->getNickname(),
+                implode(', ', $members)));
+    }
 
     /**
      * @param Channel $source
@@ -118,37 +119,39 @@ class PermissionMembersCommands extends BaseModule
      * @throws \WildPHP\Core\Users\UserNotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-	    $db = Database::fromContainer($this->getContainer());
-		$nickname = $args['nickname'];
+    public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        $db = Database::fromContainer($this->getContainer());
+        $nickname = $args['nickname'];
 
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		/** @var User $userToAdd */
-		$userToAdd = User::fromDatabase($db, ['nickname' => $nickname]);
+        /** @var User $userToAdd */
+        $userToAdd = User::fromDatabase($db, ['nickname' => $nickname]);
 
-		$checks = [
-			'This group does not exist.' => empty($group),
-			'This group may not contain members.' => $group ? $group->isModeGroup() : false,
-			'This user is not in my current database, in this channel, or is not logged in to services.' =>
-				empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(), ['*', '0'])
-		];
+        $checks = [
+            'This group does not exist.' => empty($group),
+            'This group may not contain members.' => $group ? $group->isModeGroup() : false,
+            'This user is not in my current database, in this channel, or is not logged in to services.' =>
+                empty($userToAdd) || empty($userToAdd->getIrcAccount()) || in_array($userToAdd->getIrcAccount(),
+                    ['*', '0'])
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		$group->getUserCollection()
-			->append($userToAdd->getIrcAccount());
+        $group->getUserCollection()
+            ->append($userToAdd->getIrcAccount());
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(),
-				sprintf('%s: User %s (identified by %s) has been added to the specified permission group.',
-					$user->getNickname(),
-					$nickname,
-					$userToAdd->getIrcAccount()));
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                sprintf('%s: User %s (identified by %s) has been added to the specified permission group.',
+                    $user->getNickname(),
+                    $nickname,
+                    $userToAdd->getIrcAccount()));
+    }
 
     /**
      * @param Channel $source
@@ -158,45 +161,46 @@ class PermissionMembersCommands extends BaseModule
      * @throws \WildPHP\Core\StateException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		$nickname = $args['nickname'];
-		$db = Database::fromContainer($this->getContainer());
+    public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        $nickname = $args['nickname'];
+        $db = Database::fromContainer($this->getContainer());
 
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		/** @var User $userToAdd */
-		try {
+        /** @var User $userToAdd */
+        try {
             $userToAdd = User::fromDatabase($db, ['nickname' => $nickname]);
+        } catch (UserNotFoundException $exception) {
         }
-        catch (UserNotFoundException $exception) {}
 
-		$checks = [
-			'This group does not exist.' => empty($group),
-			'This user is not in the group or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
-						->contains($userToAdd->getIrcAccount()))
-		];
+        $checks = [
+            'This group does not exist.' => empty($group),
+            'This user is not in the group or not online.' => empty($userToAdd) || ($group && !$group->getUserCollection()
+                        ->contains($userToAdd->getIrcAccount()))
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		$group->getUserCollection()
-			->removeAll($userToAdd->getIrcAccount());
+        $group->getUserCollection()
+            ->removeAll($userToAdd->getIrcAccount());
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(),
-				sprintf('%s: User %s (identified by %s) has been removed from the specified permission group',
-					$user->getNickname(),
-					$nickname,
-					$userToAdd->getIrcAccount()));
-	}
-	
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                sprintf('%s: User %s (identified by %s) has been removed from the specified permission group',
+                    $user->getNickname(),
+                    $nickname,
+                    $userToAdd->getIrcAccount()));
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

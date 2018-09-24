@@ -20,61 +20,62 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class AUTHENTICATE extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	protected static $verb = 'AUTHENTICATE';
+    protected static $verb = 'AUTHENTICATE';
 
-	/**
-	 * @var string
-	 */
-	protected $response = '';
+    /**
+     * @var string
+     */
+    protected $response = '';
 
-	/**
-	 * AUTHENTICATE constructor.
-	 *
-	 * @param string $response
-	 */
-	public function __construct(string $response)
-	{
-		$this->setResponse($response);
-	}
+    /**
+     * AUTHENTICATE constructor.
+     *
+     * @param string $response
+     */
+    public function __construct(string $response)
+    {
+        $this->setResponse($response);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
-		$response = $incomingIrcMessage->getArgs()[0];
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
+        $response = $incomingIrcMessage->getArgs()[0];
 
-		$object = new self($response);
+        $object = new self($response);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getResponse(): string
-	{
-		return $this->response;
-	}
+    /**
+     * @return string
+     */
+    public function getResponse(): string
+    {
+        return $this->response;
+    }
 
-	/**
-	 * @param string $response
-	 */
-	public function setResponse(string $response)
-	{
-		$this->response = $response;
-	}
+    /**
+     * @param string $response
+     */
+    public function setResponse(string $response)
+    {
+        $this->response = $response;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'AUTHENTICATE ' . $this->getResponse() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'AUTHENTICATE ' . $this->getResponse() . "\r\n";
+    }
 }

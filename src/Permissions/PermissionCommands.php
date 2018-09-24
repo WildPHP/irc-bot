@@ -31,77 +31,51 @@ class PermissionCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
+    public function __construct(ComponentContainer $container)
+    {
+        $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-		CommandHandler::fromContainer($container)->registerCommand('allow',
-			new Command(
-				[$this, 'allowCommand'],
-				new ParameterStrategy(2, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'permission' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Add a permission to a permission group. Usage: allow [group name] [permission]'
-				]),
-				'allow'
-			));
+        CommandHandler::fromContainer($container)->registerCommand('allow',
+            new Command(
+                [$this, 'allowCommand'],
+                new ParameterStrategy(2, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'permission' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Add a permission to a permission group. Usage: allow [group name] [permission]'
+                ]),
+                'allow'
+            ));
 
-		CommandHandler::fromContainer($container)->registerCommand('deny',
-			new Command(
-				[$this, 'denyCommand'],
-				new ParameterStrategy(2, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'permission' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Remove a permission from a permission group. Usage: deny [group name] [permission]'
-				]),
-				'deny'
-			));
+        CommandHandler::fromContainer($container)->registerCommand('deny',
+            new Command(
+                [$this, 'denyCommand'],
+                new ParameterStrategy(2, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'permission' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Remove a permission from a permission group. Usage: deny [group name] [permission]'
+                ]),
+                'deny'
+            ));
 
-		CommandHandler::fromContainer($container)->registerCommand('lsperms',
-			new Command(
-				[$this, 'lspermsCommand'],
-				new ParameterStrategy(1, 1, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-				]),
-				new CommandHelp([
-					'List all members in a permission group. Usage: lsperms [group name]'
-				]),
-				'lsperms'
-			),
-			['lsp']);
+        CommandHandler::fromContainer($container)->registerCommand('lsperms',
+            new Command(
+                [$this, 'lspermsCommand'],
+                new ParameterStrategy(1, 1, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                ]),
+                new CommandHelp([
+                    'List all members in a permission group. Usage: lsperms [group name]'
+                ]),
+                'lsperms'
+            ),
+            ['lsp']);
 
-		$this->setContainer($container);
-	}
-
-    /**
-     * @param Channel $source
-     * @param User $user
-     * @param $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-	public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
-		$permission = $args['permission'];
-
-		$checks = [
-			'This group is already allowed to do that.' => $group ? $group->getAllowedPermissions()->contains($permission) : false
-		];
-
-		if (!$this->doChecks($checks, $source, $user))
-			return;
-
-		$group->getAllowedPermissions()
-			->append($permission);
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
-	}
+        $this->setContainer($container);
+    }
 
     /**
      * @param Channel $source
@@ -110,24 +84,26 @@ class PermissionCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
-		$permission = $args['permission'];
+    public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
+        $permission = $args['permission'];
 
-		$checks = [
-			'This group is not allowed to do that.' => $group ? !$group->getAllowedPermissions()->contains($permission) : false
-		];
+        $checks = [
+            'This group is already allowed to do that.' => $group ? $group->getAllowedPermissions()->contains($permission) : false
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		$group->getAllowedPermissions()
-			->removeAll($permission);
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
-	}
+        $group->getAllowedPermissions()
+            ->append($permission);
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': This group is now allowed the permission "' . $permission . '"');
+    }
 
     /**
      * @param Channel $source
@@ -136,23 +112,51 @@ class PermissionCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+    public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
+        $permission = $args['permission'];
 
-		$perms = $group->getAllowedPermissions()
-			->values();
-		Queue::fromContainer($container)
-			->privmsg($source->getName(),
-				$user->getNickname() . ': The following permissions are set for this group: ' . implode(', ', $perms));
-	}
+        $checks = [
+            'This group is not allowed to do that.' => $group ? !$group->getAllowedPermissions()->contains($permission) : false
+        ];
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
+
+        $group->getAllowedPermissions()
+            ->removeAll($permission);
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': This group is now denied the permission "' . $permission . '"');
+    }
+
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
+
+        $perms = $group->getAllowedPermissions()
+            ->values();
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': The following permissions are set for this group: ' . implode(', ', $perms));
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

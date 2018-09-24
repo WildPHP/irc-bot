@@ -18,33 +18,34 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class RPL_ENDOFNAMES extends BaseIRCMessage implements ReceivableMessage
 {
-	use NicknameTrait;
-	use ChannelTrait;
-	use MessageTrait;
+    use NicknameTrait;
+    use ChannelTrait;
+    use MessageTrait;
 
-	protected static $verb = '366';
+    protected static $verb = '366';
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$args = $incomingIrcMessage->getArgs();
-		$nickname = array_shift($args);
-		$channel = array_shift($args);
-		$message = array_shift($args);
+        $args = $incomingIrcMessage->getArgs();
+        $nickname = array_shift($args);
+        $channel = array_shift($args);
+        $message = array_shift($args);
 
-		$object = new self();
-		$object->setNickname($nickname);
-		$object->setChannel($channel);
-		$object->setMessage($message);
+        $object = new self();
+        $object->setNickname($nickname);
+        $object->setChannel($channel);
+        $object->setMessage($message);
 
-		return $object;
-	}
+        return $object;
+    }
 }

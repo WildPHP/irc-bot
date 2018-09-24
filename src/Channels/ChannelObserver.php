@@ -8,7 +8,9 @@
 
 namespace WildPHP\Core\Channels;
 
+use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Connection\IRCMessages\KICK;
 use WildPHP\Core\Connection\IRCMessages\PART;
 use WildPHP\Core\Connection\IRCMessages\QUIT;
@@ -16,13 +18,11 @@ use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
 use WildPHP\Core\Connection\IRCMessages\RPL_TOPIC;
 use WildPHP\Core\Connection\IRCMessages\RPL_WELCOME;
 use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\StateException;
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\JOIN;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
+use WildPHP\Core\StateException;
 
 class ChannelObserver extends BaseModule
 {
@@ -74,14 +74,14 @@ class ChannelObserver extends BaseModule
     {
         $channels = Configuration::fromContainer($this->getContainer())['channels'];
 
-        if (empty($channels))
+        if (empty($channels)) {
             return;
+        }
 
         $chunks = array_chunk($channels, 3);
         $queue->setFloodControl(true);
 
-        foreach ($chunks as $chunk)
-        {
+        foreach ($chunks as $chunk) {
             $queue->join($chunk);
         }
 
@@ -101,10 +101,8 @@ class ChannelObserver extends BaseModule
     {
         $db = Database::fromContainer($this->getContainer());
 
-        foreach ($joinMessage->getChannels() as $channel)
-        {
-            if (!$db->has('channels', ['name' => $channel]))
-            {
+        foreach ($joinMessage->getChannels() as $channel) {
+            if (!$db->has('channels', ['name' => $channel])) {
                 $db->insert('channels', [
                     'name' => $channel
                 ]);
@@ -130,17 +128,18 @@ class ChannelObserver extends BaseModule
 
         $row = $db->get('users', ['id'], ['nickname' => $joinMessage->getNickname()]);
 
-        if (!$row)
+        if (!$row) {
             throw new StateException('State mismatch! User not found in users table but join message received.');
+        }
 
         $userID = $row['id'];
 
-        foreach ($joinMessage->getChannels() as $channel)
-        {
+        foreach ($joinMessage->getChannels() as $channel) {
             $channelID = $db->get('channels', ['id'], ['name' => $channel])['id'];
 
-            if ($db->has('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]))
+            if ($db->has('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID])) {
                 throw new StateException('User just joined channel, but already has a relation... Makes no sense!');
+            }
 
             $db->insert('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]);
 
@@ -165,8 +164,9 @@ class ChannelObserver extends BaseModule
 
         $row = $db->get('channels', ['id'], ['name' => $topicMessage->getChannel()]);
 
-        if (!$row)
+        if (!$row) {
             throw new StateException('State mismatch! Channel not found in users table but topic received.');
+        }
 
         $channelID = $row['id'];
 
@@ -190,10 +190,10 @@ class ChannelObserver extends BaseModule
         $db = Database::fromContainer($this->getContainer());
         $nicknames = $ircMessage->getNicknames();
 
-        $modePrefixes = ($result = $db->get('server_config', ['value'], ['key' => 'PREFIX'])) ? $result['value'] : '(ohv)@%+';
+        $modePrefixes = ($result = $db->get('server_config', ['value'],
+            ['key' => 'PREFIX'])) ? $result['value'] : '(ohv)@%+';
 
-        foreach ($nicknames as $nicknameWithMode)
-        {
+        foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
             ChannelModes::extractUserModesFromNickname($modePrefixes, $nicknameWithMode, $nickname);
 
@@ -203,12 +203,14 @@ class ChannelObserver extends BaseModule
             $channelID = $db->get('channels', ['id'], ['name' => $ircMessage->getChannel()])['id'];
             $userID = $db->get('users', ['id'], ['nickname' => $nickname])['id'];
 
-            if (!$channelID || !$userID)
+            if (!$channelID || !$userID) {
                 throw new StateException('User or channel not found while they should be present during rpl_namreply, state mismatch!');
+            }
 
             // this could be the bot itself; silently ignore this time.
-            if ($db->has('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]))
+            if ($db->has('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID])) {
                 continue;
+            }
 
             $db->insert('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]);
 
@@ -233,13 +235,15 @@ class ChannelObserver extends BaseModule
 
         $userID = $db->get('users', ['id'], ['nickname' => $kickMessage->getNickname()])['id'];
 
-        if (!$userID)
+        if (!$userID) {
             throw new StateException('Kick detected but user not in database...I need help here!');
+        }
 
         $channelID = $db->get('channels', ['id'], ['name' => $kickMessage->getChannel()])['id'];
 
-        if (!$userID)
+        if (!$userID) {
             throw new StateException('Kick detected but channel not in database...I need help here!');
+        }
 
         $db->delete('user_channel_relationships', ['user_id' => $userID, 'channel_id' => $channelID]);
         Logger::fromContainer($this->getContainer())->debug('Deleted user relationship', [
@@ -247,14 +251,14 @@ class ChannelObserver extends BaseModule
             'channel' => $kickMessage->getChannel()
         ]);
 
-        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0)
-        {
+        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0) {
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels', [
-                'nickname' => $kickMessage->getNickname()
-            ]);
+            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels',
+                [
+                    'nickname' => $kickMessage->getNickname()
+                ]);
         }
     }
 
@@ -269,15 +273,16 @@ class ChannelObserver extends BaseModule
 
         $userID = $db->get('users', ['id'], ['nickname' => $partMessage->getNickname()])['id'];
 
-        if (!$userID)
+        if (!$userID) {
             throw new StateException('Part detected but user not in database...I need help here!');
+        }
 
-        foreach ($partMessage->getChannels() as $channel)
-        {
+        foreach ($partMessage->getChannels() as $channel) {
             $channelID = $db->get('channels', ['id'], ['name' => $channel])['id'];
 
-            if (!$userID)
+            if (!$userID) {
                 throw new StateException('Part detected but channel not in database...I need help here!');
+            }
 
             $db->delete('user_channel_relationships', ['user_id' => $userID, 'channel_id' => $channelID]);
             Logger::fromContainer($this->getContainer())->debug('Deleted user relationship', [
@@ -286,14 +291,14 @@ class ChannelObserver extends BaseModule
             ]);
         }
 
-        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0)
-        {
+        if ($db->count('user_channel_relationships', ['user_id' => $userID]) == 0) {
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels', [
-                'nickname' => $partMessage->getNickname()
-            ]);
+            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels',
+                [
+                    'nickname' => $partMessage->getNickname()
+                ]);
         }
     }
 
@@ -308,8 +313,9 @@ class ChannelObserver extends BaseModule
 
         $userID = $db->get('users', ['id'], ['nickname' => $quitMessage->getNickname()])['id'];
 
-        if (!$userID)
+        if (!$userID) {
             throw new StateException('Quit detected but user not in database...can somebody explain this to me?');
+        }
 
         $db->delete('user_channel_relationships', ['user_id' => $userID]);
         $db->delete('mode_relations', ['user_id' => $userID]);

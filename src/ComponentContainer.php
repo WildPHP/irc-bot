@@ -12,24 +12,24 @@ use React\EventLoop\LoopInterface;
 
 class ComponentContainer extends \Yoshi2889\Container\ComponentContainer
 {
-	/**
-	 * @var LoopInterface
-	 */
-	protected $loop;
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
 
-	/**
-	 * @return LoopInterface
-	 */
-	public function getLoop(): LoopInterface
-	{
-		return $this->loop;
-	}
+    /**
+     * @return LoopInterface
+     */
+    public function getLoop(): LoopInterface
+    {
+        return $this->loop;
+    }
 
-	/**
-	 * @param LoopInterface $loop
-	 */
-	public function setLoop(LoopInterface $loop)
-	{
-		$this->loop = $loop;
-	}
+    /**
+     * @param LoopInterface $loop
+     */
+    public function setLoop(LoopInterface $loop)
+    {
+        $this->loop = $loop;
+    }
 }

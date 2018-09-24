@@ -11,13 +11,13 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 interface SendableMessage
 {
-	/**
-	 * @return string
-	 */
-	public function __toString();
+    /**
+     * @return string
+     */
+    public function __toString();
 
-	/**
-	 * @return string
-	 */
-	public static function getVerb(): string;
+    /**
+     * @return string
+     */
+    public static function getVerb(): string;
 }

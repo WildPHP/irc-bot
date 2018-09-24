@@ -13,24 +13,24 @@ use WildPHP\Core\Connection\UserPrefix;
 
 trait PrefixTrait
 {
-	/**
-	 * @var UserPrefix
-	 */
-	protected $prefix = null;
+    /**
+     * @var UserPrefix
+     */
+    protected $prefix = null;
 
-	/**
-	 * @return UserPrefix
-	 */
-	public function getPrefix(): UserPrefix
-	{
-		return $this->prefix;
-	}
+    /**
+     * @return UserPrefix
+     */
+    public function getPrefix(): UserPrefix
+    {
+        return $this->prefix;
+    }
 
-	/**
-	 * @param UserPrefix $prefix
-	 */
-	public function setPrefix(UserPrefix $prefix)
-	{
-		$this->prefix = $prefix;
-	}
+    /**
+     * @param UserPrefix $prefix
+     */
+    public function setPrefix(UserPrefix $prefix)
+    {
+        $this->prefix = $prefix;
+    }
 }

@@ -40,110 +40,110 @@ class PermissionGroupCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		$permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
-		
-		CommandHandler::fromContainer($container)->registerCommand('lsgroups',
-			new Command(
-				[$this, 'lsgroupsCommand'],
-				new ParameterStrategy(0, 0),
-				new CommandHelp([
-					'Shows the available groups. No arguments.'
-				]),
-				'lsgroups'
-			),
-			['lsg']);
+    public function __construct(ComponentContainer $container)
+    {
+        $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-		CommandHandler::fromContainer($container)->registerCommand('validate',
-			new Command(
-				[$this, 'validateCommand'],
-				[
-				    new ParameterStrategy(2, 2, [
-					    'user' => new UserParameter(Database::fromContainer($container)),
-					    'permission' => new StringParameter()
-    				]),
+        CommandHandler::fromContainer($container)->registerCommand('lsgroups',
+            new Command(
+                [$this, 'lsgroupsCommand'],
+                new ParameterStrategy(0, 0),
+                new CommandHelp([
+                    'Shows the available groups. No arguments.'
+                ]),
+                'lsgroups'
+            ),
+            ['lsg']);
+
+        CommandHandler::fromContainer($container)->registerCommand('validate',
+            new Command(
+                [$this, 'validateCommand'],
+                [
+                    new ParameterStrategy(2, 2, [
+                        'user' => new UserParameter(Database::fromContainer($container)),
+                        'permission' => new StringParameter()
+                    ]),
                     new ParameterStrategy(1, 1, [
                         'permission' => new StringParameter()
                     ])
-				],
-				new CommandHelp([
-					'Shows if validation passes for a certain permission. Usage: validate [permission] ([username])'
-				])
-			),
-			['val', 'v']);
+                ],
+                new CommandHelp([
+                    'Shows if validation passes for a certain permission. Usage: validate [permission] ([username])'
+                ])
+            ),
+            ['val', 'v']);
 
-		CommandHandler::fromContainer($container)->registerCommand('creategroup',
-			new Command(
-				[$this, 'creategroupCommand'],
-				new ParameterStrategy(1, 1, [
-					'groupName' => new StringParameter()
-				]),
-				new CommandHelp([
-					'Creates a permission group. Usage: creategroup [group name]'
-				]),
-				'creategroup'
-			),
-			['newgroup', '+group', '+g', 'addgroup']);
+        CommandHandler::fromContainer($container)->registerCommand('creategroup',
+            new Command(
+                [$this, 'creategroupCommand'],
+                new ParameterStrategy(1, 1, [
+                    'groupName' => new StringParameter()
+                ]),
+                new CommandHelp([
+                    'Creates a permission group. Usage: creategroup [group name]'
+                ]),
+                'creategroup'
+            ),
+            ['newgroup', '+group', '+g', 'addgroup']);
 
-		CommandHandler::fromContainer($container)->registerCommand('delgroup',
-			new Command(
-				[$this, 'delgroupCommand'],
-				new ParameterStrategy(1, 1, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-				]),
-				new CommandHelp([
-					'Deletes a permission group. Usage: delgroup [group name]'
-				]),
-				'delgroup'
-			),
-			['rmgroup', 'rmg', 'removegroup', '-group', '-g']);
+        CommandHandler::fromContainer($container)->registerCommand('delgroup',
+            new Command(
+                [$this, 'delgroupCommand'],
+                new ParameterStrategy(1, 1, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                ]),
+                new CommandHelp([
+                    'Deletes a permission group. Usage: delgroup [group name]'
+                ]),
+                'delgroup'
+            ),
+            ['rmgroup', 'rmg', 'removegroup', '-group', '-g']);
 
-		CommandHandler::fromContainer($container)->registerCommand('linkgroup',
-			new Command(
-				[$this, 'linkgroupCommand'],
-				new ParameterStrategy(1, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelParameter(Database::fromContainer($container))
-				]),
-				new CommandHelp([
-					'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
-					'The channel to be linked, if specified, must be joined by the bot for this command to work.'
-				]),
-				'linkgroup'
-			),
-			['lg']);
+        CommandHandler::fromContainer($container)->registerCommand('linkgroup',
+            new Command(
+                [$this, 'linkgroupCommand'],
+                new ParameterStrategy(1, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'channel' => new JoinedChannelParameter(Database::fromContainer($container))
+                ]),
+                new CommandHelp([
+                    'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
+                    'The channel to be linked, if specified, must be joined by the bot for this command to work.'
+                ]),
+                'linkgroup'
+            ),
+            ['lg']);
 
-		CommandHandler::fromContainer($container)->registerCommand('unlinkgroup',
-			new Command(
-				[$this, 'unlinkgroupCommand'],
-				new ParameterStrategy(1, 2, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
-					'channel' => new JoinedChannelParameter(Database::fromContainer($container))
-				]),
-				new CommandHelp([
-					'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
-					'The channel to be linked, if specified, must be joined by the bot for this command to work.'
-				]),
-				'unlinkgroup'
-			),
-			['ulg']);
+        CommandHandler::fromContainer($container)->registerCommand('unlinkgroup',
+            new Command(
+                [$this, 'unlinkgroupCommand'],
+                new ParameterStrategy(1, 2, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'channel' => new JoinedChannelParameter(Database::fromContainer($container))
+                ]),
+                new CommandHelp([
+                    'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
+                    'The channel to be linked, if specified, must be joined by the bot for this command to work.'
+                ]),
+                'unlinkgroup'
+            ),
+            ['ulg']);
 
-		CommandHandler::fromContainer($container)->registerCommand('groupinfo',
-			new Command(
-				[$this, 'groupinfoCommand'],
-				new ParameterStrategy(1, 1, [
-					'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-				]),
-				new CommandHelp([
-					'Shows info about a group. Usage: groupinfo [group name]'
-				]),
-				'groupinfo'
-			),
-			['gi']);
+        CommandHandler::fromContainer($container)->registerCommand('groupinfo',
+            new Command(
+                [$this, 'groupinfoCommand'],
+                new ParameterStrategy(1, 1, [
+                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                ]),
+                new CommandHelp([
+                    'Shows info about a group. Usage: groupinfo [group name]'
+                ]),
+                'groupinfo'
+            ),
+            ['gi']);
 
-		$this->setContainer($container);
-	}
+        $this->setContainer($container);
+    }
 
     /**
      * @param Channel $source
@@ -152,32 +152,29 @@ class PermissionGroupCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-	    $valUser = $args['user'] ?? $user;
+    public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        $valUser = $args['user'] ?? $user;
 
-		$perm = $args['permission'];
+        $perm = $args['permission'];
 
-		$result = Validator::fromContainer($container)
-			->isAllowedTo($perm, $valUser, $source);
+        $result = Validator::fromContainer($container)
+            ->isAllowedTo($perm, $valUser, $source);
 
-		if ($result)
-		{
-			$message = sprintf('%s passes validation for permission "%s" in this context. (permitted by group: %s)',
-				$valUser->getNickname(),
-				$perm,
-				$result);
-		}
-		else
-		{
-			$message = $valUser->getNickname() . ' does not pass validation for permission "' . $perm . '" in this context.';
-		}
+        if ($result) {
+            $message = sprintf('%s passes validation for permission "%s" in this context. (permitted by group: %s)',
+                $valUser->getNickname(),
+                $perm,
+                $result);
+        } else {
+            $message = $valUser->getNickname() . ' does not pass validation for permission "' . $perm . '" in this context.';
+        }
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $message);
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(), $message);
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param Channel $source
      * @param User $user
@@ -186,15 +183,15 @@ class PermissionGroupCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var string[] $groups */
-		$groups = PermissionGroupCollection::fromContainer($this->getContainer())
-			->keys();
+    public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var string[] $groups */
+        $groups = PermissionGroupCollection::fromContainer($this->getContainer())
+            ->keys();
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), 'Available groups: ' . implode(', ', $groups));
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(), 'Available groups: ' . implode(', ', $groups));
+    }
 
     /**
      * @param Channel $source
@@ -205,24 +202,26 @@ class PermissionGroupCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		$groupName = $args['groupName'];
+    public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        $groupName = $args['groupName'];
 
-		$checks = [
-			'A group with this name already exists.' => PermissionGroupCollection::fromContainer($container)->offsetExists($groupName)
-		];
+        $checks = [
+            'A group with this name already exists.' => PermissionGroupCollection::fromContainer($container)->offsetExists($groupName)
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		$groupObj = new PermissionGroup();
-		PermissionGroupCollection::fromContainer($this->getContainer())
-			->offsetSet($groupName, $groupObj);
+        $groupObj = new PermissionGroup();
+        PermissionGroupCollection::fromContainer($this->getContainer())
+            ->offsetSet($groupName, $groupObj);
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': The group "' . $groupName . '" was successfully created.');
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': The group "' . $groupName . '" was successfully created.');
+    }
 
     /**
      * @param Channel $source
@@ -232,54 +231,25 @@ class PermissionGroupCommands extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+    public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		$checks = [
-			'This group may not be removed.' => $group ? $group->isModeGroup() : false
-		];
+        $checks = [
+            'This group may not be removed.' => $group ? $group->isModeGroup() : false
+        ];
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		PermissionGroupCollection::fromContainer($container)
-			->removeAll($group);
+        PermissionGroupCollection::fromContainer($container)
+            ->removeAll($group);
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': The given group was successfully deleted.');
-	}
-
-    /**
-     * @param Channel $source
-     * @param User $user
-     * @param $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-	public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
-		
-		/** @var Channel $channel */
-		$channel = $args['channel'] ?? $source;
-
-		$checks = [
-			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
-			'The group is already linked to this channel.' => $group ? $group->getChannelCollection()->contains($channel) : false
-		];
-
-		if (!$this->doChecks($checks, $source, $user))
-			return;
-
-		$group->getChannelCollection()
-			->append($channel->getName());
-
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now linked with channel "' . $channel->getName() . '"');
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(), $user->getNickname() . ': The given group was successfully deleted.');
+    }
 
     /**
      * @param Channel $source
@@ -288,30 +258,31 @@ class PermissionGroupCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
-		
-		/** @var Channel $channel */
-		$channel = $args['channel'] ?? $source;
+    public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		$checks = [
-			'This group may not be linked.' => $group ? $group->isModeGroup() : false,
-			'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel->getName()) : false
-		];
+        /** @var Channel $channel */
+        $channel = $args['channel'] ?? $source;
 
-		if (!$this->doChecks($checks, $source, $user))
-			return;
+        $checks = [
+            'This group may not be linked.' => $group ? $group->isModeGroup() : false,
+            'The group is already linked to this channel.' => $group ? $group->getChannelCollection()->contains($channel) : false
+        ];
 
-		$group->getChannelCollection()
-			->removeAll($channel->getName());
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		Queue::fromContainer($container)
-			->privmsg($source->getName(), $user->getNickname() . ': This group is now no longer linked with channel "' . $channel->getName() . '"');
-	}
+        $group->getChannelCollection()
+            ->append($channel->getName());
 
-	/** @noinspection PhpUnusedParameterInspection */
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': This group is now linked with channel "' . $channel->getName() . '"');
+    }
+
     /**
      * @param Channel $source
      * @param User $user
@@ -319,40 +290,74 @@ class PermissionGroupCommands extends BaseModule
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
-	{
-		/** @var PermissionGroup $group */
-		$group = $args['group'];
+    public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
 
-		$channels = implode(', ', $group->getChannelCollection()
-			->values());
-		$members = implode(', ', $group->getUserCollection()
-			->values());
-		$permissions = implode(', ', $group->getAllowedPermissions()
-			->values());
+        /** @var Channel $channel */
+        $channel = $args['channel'] ?? $source;
 
-		$lines = [
-			'This group is linked to the following channels:',
-			$channels,
-			'This group contains the following members:',
-			$members,
-			'This group is allowed the following permissions:',
-			$permissions
-		];
+        $checks = [
+            'This group may not be linked.' => $group ? $group->isModeGroup() : false,
+            'The group is not linked to this channel.' => $group ? !$group->getChannelCollection()->contains($channel->getName()) : false
+        ];
 
-		// Avoid sending empty lines.
-		$lines = array_filter($lines);
+        if (!$this->doChecks($checks, $source, $user)) {
+            return;
+        }
 
-		foreach ($lines as $line)
-			Queue::fromContainer($container)
-				->privmsg($source->getName(), $line);
-	}
+        $group->getChannelCollection()
+            ->removeAll($channel->getName());
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+        Queue::fromContainer($container)
+            ->privmsg($source->getName(),
+                $user->getNickname() . ': This group is now no longer linked with channel "' . $channel->getName() . '"');
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    /**
+     * @param Channel $source
+     * @param User $user
+     * @param $args
+     * @param ComponentContainer $container
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    {
+        /** @var PermissionGroup $group */
+        $group = $args['group'];
+
+        $channels = implode(', ', $group->getChannelCollection()
+            ->values());
+        $members = implode(', ', $group->getUserCollection()
+            ->values());
+        $permissions = implode(', ', $group->getAllowedPermissions()
+            ->values());
+
+        $lines = [
+            'This group is linked to the following channels:',
+            $channels,
+            'This group contains the following members:',
+            $members,
+            'This group is allowed the following permissions:',
+            $permissions
+        ];
+
+        // Avoid sending empty lines.
+        $lines = array_filter($lines);
+
+        foreach ($lines as $line) {
+            Queue::fromContainer($container)
+                ->privmsg($source->getName(), $line);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

@@ -13,109 +13,115 @@ use ValidationClosures\Utils;
 
 class Command
 {
-	/**
-	 * @var callable
-	 */
-	protected $callback;
+    /**
+     * @var callable
+     */
+    protected $callback;
 
-	/**
-	 * @var CommandHelp|null
-	 */
-	protected $help = null;
+    /**
+     * @var CommandHelp|null
+     */
+    protected $help = null;
 
-	/**
-	 * @var string
-	 */
-	protected $requiredPermission = '';
+    /**
+     * @var string
+     */
+    protected $requiredPermission = '';
 
-	/**
-	 * @var ParameterStrategy[]
-	 */
-	protected $parameterStrategies;
+    /**
+     * @var ParameterStrategy[]
+     */
+    protected $parameterStrategies;
 
-	/**
-	 * Command constructor.
-	 *
-	 * @param callable $callback
-	 * @param array|ParameterStrategy $parameterStrategies
-	 * @param null|CommandHelp $commandHelp
-	 * @param string $requiredPermission
-	 */
-	public function __construct(callable $callback, $parameterStrategies, ?CommandHelp $commandHelp = null, string $requiredPermission = '')
-	{
-		if (!is_array($parameterStrategies))
-			$parameterStrategies = [$parameterStrategies];
-		
-		$this->parameterStrategies = $parameterStrategies;
-		$this->callback = $callback;
-		$this->help = $commandHelp;
-		$this->requiredPermission = $requiredPermission;
-	}
+    /**
+     * Command constructor.
+     *
+     * @param callable $callback
+     * @param array|ParameterStrategy $parameterStrategies
+     * @param null|CommandHelp $commandHelp
+     * @param string $requiredPermission
+     */
+    public function __construct(
+        callable $callback,
+        $parameterStrategies,
+        ?CommandHelp $commandHelp = null,
+        string $requiredPermission = ''
+    ) {
+        if (!is_array($parameterStrategies)) {
+            $parameterStrategies = [$parameterStrategies];
+        }
 
-	/**
-	 * @return callable
-	 */
-	public function getCallback(): callable
-	{
-		return $this->callback;
-	}
+        $this->parameterStrategies = $parameterStrategies;
+        $this->callback = $callback;
+        $this->help = $commandHelp;
+        $this->requiredPermission = $requiredPermission;
+    }
 
-	/**
-	 * @param callable $callback
-	 */
-	public function setCallback(callable $callback)
-	{
-		$this->callback = $callback;
-	}
+    /**
+     * @return callable
+     */
+    public function getCallback(): callable
+    {
+        return $this->callback;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getParameterStrategies(): array
-	{
-		return $this->parameterStrategies;
-	}
+    /**
+     * @param callable $callback
+     */
+    public function setCallback(callable $callback)
+    {
+        $this->callback = $callback;
+    }
 
-	/**
-	 * @param ParameterStrategy[] $parameterStrategies
-	 */
-	public function setParameterStrategies(array $parameterStrategies)
-	{
-		if (!Utils::validateArray(Types::instanceof(ParameterStrategy::class), $parameterStrategies))
-			throw new \InvalidArgumentException('Invalid array passed');
+    /**
+     * @return array
+     */
+    public function getParameterStrategies(): array
+    {
+        return $this->parameterStrategies;
+    }
 
-		$this->parameterStrategies = $parameterStrategies;
-	}
+    /**
+     * @param ParameterStrategy[] $parameterStrategies
+     */
+    public function setParameterStrategies(array $parameterStrategies)
+    {
+        if (!Utils::validateArray(Types::instanceof(ParameterStrategy::class), $parameterStrategies)) {
+            throw new \InvalidArgumentException('Invalid array passed');
+        }
 
-	/**
-	 * @return CommandHelp|null
-	 */
-	public function getHelp(): ?CommandHelp
-	{
-		return $this->help;
-	}
+        $this->parameterStrategies = $parameterStrategies;
+    }
 
-	/**
-	 * @param null|CommandHelp $help
-	 */
-	public function setHelp(?CommandHelp $help)
-	{
-		$this->help = $help;
-	}
+    /**
+     * @return CommandHelp|null
+     */
+    public function getHelp(): ?CommandHelp
+    {
+        return $this->help;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getRequiredPermission(): string
-	{
-		return $this->requiredPermission;
-	}
+    /**
+     * @param null|CommandHelp $help
+     */
+    public function setHelp(?CommandHelp $help)
+    {
+        $this->help = $help;
+    }
 
-	/**
-	 * @param string $requiredPermission
-	 */
-	public function setRequiredPermission(string $requiredPermission)
-	{
-		$this->requiredPermission = $requiredPermission;
-	}
+    /**
+     * @return string
+     */
+    public function getRequiredPermission(): string
+    {
+        return $this->requiredPermission;
+    }
+
+    /**
+     * @param string $requiredPermission
+     */
+    public function setRequiredPermission(string $requiredPermission)
+    {
+        $this->requiredPermission = $requiredPermission;
+    }
 }

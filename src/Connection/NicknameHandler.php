@@ -19,11 +19,11 @@ use Yoshi2889\Container\ComponentTrait;
 
 class NicknameHandler implements ModuleInterface
 {
-	use ComponentTrait;
-	use ContainerTrait;
+    use ComponentTrait;
+    use ContainerTrait;
 
-	protected $nicknames = [];
-	protected $tryNicknames = [];
+    protected $nicknames = [];
+    protected $tryNicknames = [];
 
     /**
      * NicknameHandler constructor.
@@ -31,65 +31,70 @@ class NicknameHandler implements ModuleInterface
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		if (empty(Configuration::fromContainer($container)['alternativeNicknames']))
-			return;
+    public function __construct(ComponentContainer $container)
+    {
+        if (empty(Configuration::fromContainer($container)['alternativeNicknames'])) {
+            return;
+        }
 
-		$this->nicknames = Configuration::fromContainer($container)['alternativeNicknames'];
+        $this->nicknames = Configuration::fromContainer($container)['alternativeNicknames'];
 
-		// 001: RPL_WELCOME
-		EventEmitter::fromContainer($container)->on('irc.line.in.001', [$this, 'deregisterListeners']);
+        // 001: RPL_WELCOME
+        EventEmitter::fromContainer($container)->on('irc.line.in.001', [$this, 'deregisterListeners']);
 
-		// 431: ERR_NONICKNAMEGIVEN
-		// 432: ERR_ERRONEUSNICKNAME
-		// 433: ERR_NICKNAMEINUSE
-		// 436: ERR_NICKCOLLISION
-		EventEmitter::fromContainer($container)->on('irc.line.in.431', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($container)->on('irc.line.in.432', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($container)->on('irc.line.in.433', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($container)->on('irc.line.in.436', [$this, 'chooseAlternateNickname']);
-		$this->setContainer($container);
-	}
+        // 431: ERR_NONICKNAMEGIVEN
+        // 432: ERR_ERRONEUSNICKNAME
+        // 433: ERR_NICKNAMEINUSE
+        // 436: ERR_NICKCOLLISION
+        EventEmitter::fromContainer($container)->on('irc.line.in.431', [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($container)->on('irc.line.in.432', [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($container)->on('irc.line.in.433', [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($container)->on('irc.line.in.436', [$this, 'chooseAlternateNickname']);
+        $this->setContainer($container);
+    }
 
     /**
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function deregisterListeners()
-	{
-		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.431', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.432', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.433', [$this, 'chooseAlternateNickname']);
-		EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.436', [$this, 'chooseAlternateNickname']);
-	}
+    public function deregisterListeners()
+    {
+        EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.431',
+            [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.432',
+            [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.433',
+            [$this, 'chooseAlternateNickname']);
+        EventEmitter::fromContainer($this->getContainer())->removeListener('irc.line.in.436',
+            [$this, 'chooseAlternateNickname']);
+    }
 
-	/** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param IncomingIrcMessage $ircMessage
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function chooseAlternateNickname(IncomingIrcMessage $ircMessage, Queue $queue)
-	{
-		if (empty($this->tryNicknames))
-			$this->tryNicknames = $this->nicknames;
+    public function chooseAlternateNickname(IncomingIrcMessage $ircMessage, Queue $queue)
+    {
+        if (empty($this->tryNicknames)) {
+            $this->tryNicknames = $this->nicknames;
+        }
 
-		if (empty($this->nicknames))
-		{
-			Logger::fromContainer($this->getContainer())->warning('Out of nicknames to try; giving up.');
-			IrcConnection::fromContainer($this->getContainer())->close();
-			return;
-		}
+        if (empty($this->nicknames)) {
+            Logger::fromContainer($this->getContainer())->warning('Out of nicknames to try; giving up.');
+            IrcConnection::fromContainer($this->getContainer())->close();
+            return;
+        }
 
-		$nickname = array_shift($this->nicknames);
-		$queue->nick($nickname);
-	}
+        $nickname = array_shift($this->nicknames);
+        $queue->nick($nickname);
+    }
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

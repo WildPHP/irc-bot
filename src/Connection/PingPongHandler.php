@@ -19,36 +19,36 @@ use WildPHP\Core\Modules\BaseModule;
 
 class PingPongHandler extends BaseModule
 {
-	use ContainerTrait;
+    use ContainerTrait;
 
-	/**
-	 * @var int
-	 */
-	protected $lastMessageReceived = 0;
+    /**
+     * @var int
+     */
+    protected $lastMessageReceived = 0;
 
-	/**
-	 * The amount of seconds per time the checking loop is run.
-	 * Do not set this too high or the ping handler won't be effective.
-	 * @var int
-	 */
-	protected $loopInterval = 2;
+    /**
+     * The amount of seconds per time the checking loop is run.
+     * Do not set this too high or the ping handler won't be effective.
+     * @var int
+     */
+    protected $loopInterval = 2;
 
-	/**
-	 * In seconds.
-	 * @var int
-	 */
-	protected $pingInterval = 180;
+    /**
+     * In seconds.
+     * @var int
+     */
+    protected $pingInterval = 180;
 
-	/**
-	 * In seconds.
-	 * @var int
-	 */
-	protected $disconnectInterval = 120;
+    /**
+     * In seconds.
+     * @var int
+     */
+    protected $disconnectInterval = 120;
 
-	/**
-	 * @var bool
-	 */
-	protected $hasSentPing = false;
+    /**
+     * @var bool
+     */
+    protected $hasSentPing = false;
 
     /**
      * PingPongHandler constructor.
@@ -57,57 +57,58 @@ class PingPongHandler extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	public function __construct(ComponentContainer $container)
-	{
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in', [$this, 'updateLastMessageReceived']);
+    public function __construct(ComponentContainer $container)
+    {
+        EventEmitter::fromContainer($container)
+            ->on('irc.line.in', [$this, 'updateLastMessageReceived']);
 
-		EventEmitter::fromContainer($container)
-			->on('irc.line.in.ping', [$this, 'sendPong']);
+        EventEmitter::fromContainer($container)
+            ->on('irc.line.in.ping', [$this, 'sendPong']);
 
-		$this->updateLastMessageReceived();
-		$this->setContainer($container);
+        $this->updateLastMessageReceived();
+        $this->setContainer($container);
 
-		$this->registerPingLoop();
-	}
+        $this->registerPingLoop();
+    }
 
-	/**
-	 * @param PING $pingMessage
-	 * @param Queue $queue
-	 */
-	public function sendPong(PING $pingMessage, Queue $queue)
-	{
-		$queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
-	}
+    /**
+     * @param PING $pingMessage
+     * @param Queue $queue
+     */
+    public function sendPong(PING $pingMessage, Queue $queue)
+    {
+        $queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
+    }
 
-	public function updateLastMessageReceived()
-	{
-		$this->lastMessageReceived = time();
-		$this->hasSentPing = false;
-	}
+    public function updateLastMessageReceived()
+    {
+        $this->lastMessageReceived = time();
+        $this->hasSentPing = false;
+    }
 
-	protected function registerPingLoop()
-	{
-		$this->getContainer()->getLoop()->addPeriodicTimer($this->loopInterval,
-			function ()
-			{
-				$currentTime = time();
+    protected function registerPingLoop()
+    {
+        $this->getContainer()->getLoop()->addPeriodicTimer($this->loopInterval,
+            function () {
+                $currentTime = time();
 
-				$disconnectTime = $this->lastMessageReceived + $this->pingInterval + $this->disconnectInterval;
-				$shouldDisconnect = $currentTime >= $disconnectTime;
+                $disconnectTime = $this->lastMessageReceived + $this->pingInterval + $this->disconnectInterval;
+                $shouldDisconnect = $currentTime >= $disconnectTime;
 
-				if ($shouldDisconnect)
-					return $this->forceDisconnect();
+                if ($shouldDisconnect) {
+                    return $this->forceDisconnect();
+                }
 
-				$scheduledPingTime = $this->lastMessageReceived + $this->pingInterval;
-				$shouldSendPing = $currentTime >= $scheduledPingTime && !$this->hasSentPing;
+                $scheduledPingTime = $this->lastMessageReceived + $this->pingInterval;
+                $shouldSendPing = $currentTime >= $scheduledPingTime && !$this->hasSentPing;
 
-				if ($shouldSendPing)
-					return $this->sendPing();
+                if ($shouldSendPing) {
+                    return $this->sendPing();
+                }
 
-				return true;
-			});
-	}
+                return true;
+            });
+    }
 
     /**
      * @return bool
@@ -115,20 +116,20 @@ class PingPongHandler extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	protected function sendPing()
-	{
-		Logger::fromContainer($this->getContainer())
-			->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
+    protected function sendPing()
+    {
+        Logger::fromContainer($this->getContainer())
+            ->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
 
-		$server = Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'];
+        $server = Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'];
 
-		Queue::fromContainer($this->getContainer())
-			->ping($server);
-		
-		$this->hasSentPing = true;
+        Queue::fromContainer($this->getContainer())
+            ->ping($server);
 
-		return true;
-	}
+        $this->hasSentPing = true;
+
+        return true;
+    }
 
     /**
      * @return bool
@@ -136,33 +137,33 @@ class PingPongHandler extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-	protected function forceDisconnect()
-	{
-		Logger::fromContainer($this->getContainer())
-			->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
+    protected function forceDisconnect()
+    {
+        Logger::fromContainer($this->getContainer())
+            ->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
 
-		Queue::fromContainer($this->getContainer())
-			->quit('No vital signs detected, closing link...');
+        Queue::fromContainer($this->getContainer())
+            ->quit('No vital signs detected, closing link...');
 
-		EventEmitter::fromContainer($this->getContainer())
-			->emit('irc.force.close');
+        EventEmitter::fromContainer($this->getContainer())
+            ->emit('irc.force.close');
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getLastMessageReceivedTime(): int
-	{
-		return $this->lastMessageReceived;
-	}
+    /**
+     * @return int
+     */
+    public function getLastMessageReceivedTime(): int
+    {
+        return $this->lastMessageReceived;
+    }
 
-	/**
-	 * @return string
-	 */
-	public static function getSupportedVersionConstraint(): string
-	{
-		return WPHP_VERSION;
-	}
+    /**
+     * @return string
+     */
+    public static function getSupportedVersionConstraint(): string
+    {
+        return WPHP_VERSION;
+    }
 }

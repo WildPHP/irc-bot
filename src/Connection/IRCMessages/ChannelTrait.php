@@ -10,21 +10,21 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 trait ChannelTrait
 {
-	protected $channel = '';
+    protected $channel = '';
 
-	/**
-	 * @return string
-	 */
-	public function getChannel(): string
-	{
-		return $this->channel;
-	}
+    /**
+     * @return string
+     */
+    public function getChannel(): string
+    {
+        return $this->channel;
+    }
 
-	/**
-	 * @param string $channel
-	 */
-	public function setChannel(string $channel)
-	{
-		$this->channel = $channel;
-	}
+    /**
+     * @param string $channel
+     */
+    public function setChannel(string $channel)
+    {
+        $this->channel = $channel;
+    }
 }

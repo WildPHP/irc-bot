@@ -20,17 +20,14 @@ class JoinedChannelParameter extends Parameter
      *
      * @param Database $database
      */
-	public function __construct(Database $database)
-	{
-		parent::__construct(function (string $value) use ($database)
-		{
-		    try {
+    public function __construct(Database $database)
+    {
+        parent::__construct(function (string $value) use ($database) {
+            try {
                 return Channel::fromDatabase($database, ['name' => $value]);
-            }
-            catch (ChannelNotFoundException $exception)
-            {
+            } catch (ChannelNotFoundException $exception) {
                 return false;
             }
-		});
-	}
+        });
+    }
 }

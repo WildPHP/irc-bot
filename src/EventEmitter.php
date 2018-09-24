@@ -13,24 +13,24 @@ use Yoshi2889\Container\ComponentTrait;
 
 class EventEmitter extends \Evenement\EventEmitter implements ComponentInterface
 {
-	use ComponentTrait;
+    use ComponentTrait;
 
-	/**
-	 * Puts a listener first in the listener array.
-	 *
-	 * @param string $event
-	 * @param callable $listener
-	 *
-	 * @return $this
-	 */
-	public function first(string $event, callable $listener)
-	{
-		if (!isset($this->listeners[$event])) {
-			$this->listeners[$event] = [];
-		}
+    /**
+     * Puts a listener first in the listener array.
+     *
+     * @param string $event
+     * @param callable $listener
+     *
+     * @return $this
+     */
+    public function first(string $event, callable $listener)
+    {
+        if (!isset($this->listeners[$event])) {
+            $this->listeners[$event] = [];
+        }
 
-		array_unshift($this->listeners[$event], $listener);
+        array_unshift($this->listeners[$event], $listener);
 
-		return $this;
-	}
+        return $this;
+    }
 }

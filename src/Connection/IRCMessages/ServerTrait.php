@@ -11,21 +11,21 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 trait ServerTrait
 {
-	protected $server = '';
+    protected $server = '';
 
-	/**
-	 * @return string
-	 */
-	public function getServer(): string
-	{
-		return $this->server;
-	}
+    /**
+     * @return string
+     */
+    public function getServer(): string
+    {
+        return $this->server;
+    }
 
-	/**
-	 * @param string $server
-	 */
-	public function setServer(string $server)
-	{
-		$this->server = $server;
-	}
+    /**
+     * @param string $server
+     */
+    public function setServer(string $server)
+    {
+        $this->server = $server;
+    }
 }

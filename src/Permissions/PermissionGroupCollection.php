@@ -17,79 +17,80 @@ use Yoshi2889\Container\ComponentTrait;
 
 class PermissionGroupCollection extends Collection implements ComponentInterface
 {
-	use ComponentTrait;
+    use ComponentTrait;
 
-	/**
-	 * PermissionGroupCollection constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct(Types::instanceof(PermissionGroup::class));
-	}
+    /**
+     * PermissionGroupCollection constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(Types::instanceof(PermissionGroup::class));
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function offsetSet($offset, $value)
-	{
-		/** @var PermissionGroup $value */
-		parent::offsetSet($offset, $value);
-		$value->on('changed', function () use ($offset, $value)
-		{
-			$this->saveGroupData($offset, $value);
-		});
-	}
+    /**
+     * @inheritdoc
+     */
+    public function offsetSet($offset, $value)
+    {
+        /** @var PermissionGroup $value */
+        parent::offsetSet($offset, $value);
+        $value->on('changed', function () use ($offset, $value) {
+            $this->saveGroupData($offset, $value);
+        });
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function offsetUnset($index)
-	{
-		if ($this->offsetExists($index))
-			$this[$index]->removeAllListeners('changed');
+    /**
+     * @inheritdoc
+     */
+    public function offsetUnset($index)
+    {
+        if ($this->offsetExists($index)) {
+            $this[$index]->removeAllListeners('changed');
+        }
 
-		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
-		if (in_array($index, $dataStorage->getKeys()))
-			$dataStorage->delete($index);
+        $dataStorage = DataStorageFactory::getStorage('permissiongroups');
+        if (in_array($index, $dataStorage->getKeys())) {
+            $dataStorage->delete($index);
+        }
 
-		parent::offsetUnset($index);
-	}
+        parent::offsetUnset($index);
+    }
 
-	/**
-	 * @param string $groupName
-	 *
-	 * @return array
-	 */
-	public function getStoredGroupData(string $groupName): ?array
-	{
-		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
+    /**
+     * @param string $groupName
+     *
+     * @return array
+     */
+    public function getStoredGroupData(string $groupName): ?array
+    {
+        $dataStorage = DataStorageFactory::getStorage('permissiongroups');
 
-		if (!in_array($groupName, $dataStorage->getKeys()))
-			return null;
+        if (!in_array($groupName, $dataStorage->getKeys())) {
+            return null;
+        }
 
-		return $dataStorage->get($groupName);
-	}
+        return $dataStorage->get($groupName);
+    }
 
-	/**
-	 * @param string $groupName
-	 * @param PermissionGroup $group
-	 */
-	public function saveGroupData(string $groupName, PermissionGroup $group)
-	{
-		$dataStorage = DataStorageFactory::getStorage('permissiongroups');
-		$dataStorage->set($groupName, $group->toArray());
-	}
+    /**
+     * @param string $groupName
+     * @param PermissionGroup $group
+     */
+    public function saveGroupData(string $groupName, PermissionGroup $group)
+    {
+        $dataStorage = DataStorageFactory::getStorage('permissiongroups');
+        $dataStorage->set($groupName, $group->toArray());
+    }
 
-	/**
-	 * @param string $ircAccount
-	 *
-	 * @return Collection
-	 */
-	public function findAllGroupsForIrcAccount(string $ircAccount)
-	{
-		return $this->filter(function (PermissionGroup $group) use ($ircAccount)
-		{
-			return $group->getUserCollection()->contains($ircAccount);
-		});
-	}
+    /**
+     * @param string $ircAccount
+     *
+     * @return Collection
+     */
+    public function findAllGroupsForIrcAccount(string $ircAccount)
+    {
+        return $this->filter(function (PermissionGroup $group) use ($ircAccount) {
+            return $group->getUserCollection()->contains($ircAccount);
+        });
+    }
 }

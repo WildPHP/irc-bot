@@ -10,21 +10,21 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 trait NicknameTrait
 {
-	protected $nickname = '';
+    protected $nickname = '';
 
-	/**
-	 * @return string
-	 */
-	public function getNickname(): string
-	{
-		return $this->nickname;
-	}
+    /**
+     * @return string
+     */
+    public function getNickname(): string
+    {
+        return $this->nickname;
+    }
 
-	/**
-	 * @param string $nickname
-	 */
-	public function setNickname(string $nickname)
-	{
-		$this->nickname = $nickname;
-	}
+    /**
+     * @param string $nickname
+     */
+    public function setNickname(string $nickname)
+    {
+        $this->nickname = $nickname;
+    }
 }

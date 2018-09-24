@@ -13,11 +13,10 @@ use WildPHP\Core\Commands\Parameter;
 
 class ExistingPermissionGroupParameter extends Parameter
 {
-	public function __construct(PermissionGroupCollection $permissionGroupCollection)
-	{
-		parent::__construct(function (string $value) use ($permissionGroupCollection)
-		{
-			return $permissionGroupCollection->offsetExists($value) ? $permissionGroupCollection->offsetGet($value) : false;
-		});
-	}
+    public function __construct(PermissionGroupCollection $permissionGroupCollection)
+    {
+        parent::__construct(function (string $value) use ($permissionGroupCollection) {
+            return $permissionGroupCollection->offsetExists($value) ? $permissionGroupCollection->offsetGet($value) : false;
+        });
+    }
 }

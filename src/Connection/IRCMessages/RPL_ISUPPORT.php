@@ -18,61 +18,61 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class RPL_ISUPPORT extends BaseIRCMessage implements ReceivableMessage
 {
-	use NicknameTrait;
-	use ServerTrait;
-	use MessageTrait;
+    use NicknameTrait;
+    use ServerTrait;
+    use MessageTrait;
 
-	protected static $verb = '005';
+    protected static $verb = '005';
 
-	protected $variables = [];
+    protected $variables = [];
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$args = $incomingIrcMessage->getArgs();
-		$nickname = array_shift($args);
-		$server = $incomingIrcMessage->getPrefix();
-		$message = array_pop($args);
+        $args = $incomingIrcMessage->getArgs();
+        $nickname = array_shift($args);
+        $server = $incomingIrcMessage->getPrefix();
+        $message = array_pop($args);
 
-		$variables = [];
-		foreach ($args as $arrayKey => $value)
-		{
-			$parts = explode('=', $value);
-			$key = strtolower($parts[0]);
-			$value = !empty($parts[1]) ? $parts[1] : true;
-			$variables[$key] = $value;
-		}
+        $variables = [];
+        foreach ($args as $arrayKey => $value) {
+            $parts = explode('=', $value);
+            $key = strtolower($parts[0]);
+            $value = !empty($parts[1]) ? $parts[1] : true;
+            $variables[$key] = $value;
+        }
 
-		$object = new self();
-		$object->setNickname($nickname);
-		$object->setServer($server);
-		$object->setVariables($variables);
-		$object->setMessage($message);
+        $object = new self();
+        $object->setNickname($nickname);
+        $object->setServer($server);
+        $object->setVariables($variables);
+        $object->setMessage($message);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getVariables(): array
-	{
-		return $this->variables;
-	}
+    /**
+     * @return array
+     */
+    public function getVariables(): array
+    {
+        return $this->variables;
+    }
 
-	/**
-	 * @param array $variables
-	 */
-	public function setVariables(array $variables)
-	{
-		$this->variables = $variables;
-	}
+    /**
+     * @param array $variables
+     */
+    public function setVariables(array $variables)
+    {
+        $this->variables = $variables;
+    }
 }

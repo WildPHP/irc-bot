@@ -20,49 +20,50 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class QUIT extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	use PrefixTrait;
-	use NicknameTrait;
-	use MessageTrait;
+    use PrefixTrait;
+    use NicknameTrait;
+    use MessageTrait;
 
-	protected static $verb = 'QUIT';
+    protected static $verb = 'QUIT';
 
-	/**
-	 * QUIT constructor.
-	 *
-	 * @param string $message
-	 */
-	public function __construct(string $message)
-	{
-		$this->setMessage($message);
-	}
+    /**
+     * QUIT constructor.
+     *
+     * @param string $message
+     */
+    public function __construct(string $message)
+    {
+        $this->setMessage($message);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-		$nickname = $prefix->getNickname();
-		$message = $incomingIrcMessage->getArgs()[0];
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $nickname = $prefix->getNickname();
+        $message = $incomingIrcMessage->getArgs()[0];
 
-		$object = new self($message);
-		$object->setPrefix($prefix);
-		$object->setNickname($nickname);
+        $object = new self($message);
+        $object->setPrefix($prefix);
+        $object->setNickname($nickname);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'QUIT :' . $this->getMessage() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'QUIT :' . $this->getMessage() . "\r\n";
+    }
 }

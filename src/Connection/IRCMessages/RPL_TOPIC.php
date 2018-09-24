@@ -18,36 +18,37 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class RPL_TOPIC extends BaseIRCMessage implements ReceivableMessage
 {
-	use NicknameTrait;
-	use ChannelTrait;
-	use MessageTrait;
-	use ServerTrait;
+    use NicknameTrait;
+    use ChannelTrait;
+    use MessageTrait;
+    use ServerTrait;
 
-	protected static $verb = '332';
+    protected static $verb = '332';
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$server = $incomingIrcMessage->getPrefix();
-		$args = $incomingIrcMessage->getArgs();
-		$nickname = array_shift($args);
-		$channel = array_shift($args);
-		$message = array_shift($args);
+        $server = $incomingIrcMessage->getPrefix();
+        $args = $incomingIrcMessage->getArgs();
+        $nickname = array_shift($args);
+        $channel = array_shift($args);
+        $message = array_shift($args);
 
-		$object = new self();
-		$object->setNickname($nickname);
-		$object->setChannel($channel);
-		$object->setMessage($message);
-		$object->setServer($server);
+        $object = new self();
+        $object->setNickname($nickname);
+        $object->setChannel($channel);
+        $object->setMessage($message);
+        $object->setServer($server);
 
-		return $object;
-	}
+        return $object;
+    }
 }

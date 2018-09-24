@@ -21,78 +21,79 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class KICK extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	use ChannelTrait;
-	use PrefixTrait;
-	use NicknameTrait;
-	use MessageTrait;
+    use ChannelTrait;
+    use PrefixTrait;
+    use NicknameTrait;
+    use MessageTrait;
 
-	protected static $verb = 'KICK';
+    protected static $verb = 'KICK';
 
-	/**
-	 * @var string
-	 */
-	protected $target = '';
+    /**
+     * @var string
+     */
+    protected $target = '';
 
-	/**
-	 * KICK constructor.
-	 *
-	 * @param string $channel
-	 * @param string $nickname
-	 * @param string $message
-	 */
-	public function __construct(string $channel, string $nickname, string $message)
-	{
-		$this->setChannel($channel);
-		$this->setTarget($nickname);
-		$this->setMessage($message);
-	}
+    /**
+     * KICK constructor.
+     *
+     * @param string $channel
+     * @param string $nickname
+     * @param string $message
+     */
+    public function __construct(string $channel, string $nickname, string $message)
+    {
+        $this->setChannel($channel);
+        $this->setTarget($nickname);
+        $this->setMessage($message);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
 
-		$args = $incomingIrcMessage->getArgs();
-		$channel = $args[0];
-		$target = $args[1];
-		$message = $args[2];
+        $args = $incomingIrcMessage->getArgs();
+        $channel = $args[0];
+        $target = $args[1];
+        $message = $args[2];
 
-		$object = new self($channel, $target, $message);
-		$object->setPrefix($prefix);
-		$object->setNickname($prefix->getNickname());
+        $object = new self($channel, $target, $message);
+        $object->setPrefix($prefix);
+        $object->setNickname($prefix->getNickname());
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getTarget(): string
-	{
-		return $this->target;
-	}
+    /**
+     * @return string
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
 
-	/**
-	 * @param string $target
-	 */
-	public function setTarget(string $target)
-	{
-		$this->target = $target;
-	}
+    /**
+     * @param string $target
+     */
+    public function setTarget(string $target)
+    {
+        $this->target = $target;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'KICK ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'KICK ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";
+    }
 }

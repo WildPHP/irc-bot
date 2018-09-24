@@ -22,62 +22,64 @@ use WildPHP\Core\Connection\UserPrefix;
  */
 class PART extends BaseIRCMessage implements ReceivableMessage, SendableMessage
 {
-	/**
-	 * @var string
-	 */
-	protected static $verb = 'PART';
+    /**
+     * @var string
+     */
+    protected static $verb = 'PART';
 
-	use ChannelsTrait;
-	use NicknameTrait;
-	use PrefixTrait;
-	use MessageTrait;
+    use ChannelsTrait;
+    use NicknameTrait;
+    use PrefixTrait;
+    use MessageTrait;
 
-	/**
-	 * PART constructor.
-	 *
-	 * @param $channels
-	 * @param string $message
-	 */
-	public function __construct($channels, $message = '')
-	{
-		if (!is_array($channels))
-			$channels = [$channels];
+    /**
+     * PART constructor.
+     *
+     * @param $channels
+     * @param string $message
+     */
+    public function __construct($channels, $message = '')
+    {
+        if (!is_array($channels)) {
+            $channels = [$channels];
+        }
 
-		$this->setChannels($channels);
-		$this->setMessage($message);
-	}
+        $this->setChannels($channels);
+        $this->setMessage($message);
+    }
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
-		$args = $incomingIrcMessage->getArgs();
-		$channel = $args[0];
-		$message = $args[1] ?? '';
+        $prefix = UserPrefix::fromIncomingIrcMessage($incomingIrcMessage);
+        $args = $incomingIrcMessage->getArgs();
+        $channel = $args[0];
+        $message = $args[1] ?? '';
 
-		$object = new self($channel, $message);
-		$object->setPrefix($prefix);
-		$object->setNickname($prefix->getNickname());
+        $object = new self($channel, $message);
+        $object->setPrefix($prefix);
+        $object->setNickname($prefix->getNickname());
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		$channels = implode(',', $this->getChannels());
-		$message = $this->getMessage();
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $channels = implode(',', $this->getChannels());
+        $message = $this->getMessage();
 
-		return 'PART ' . $channels . (!empty($message) ? ' :' . $message : '') . "\r\n";
-	}
+        return 'PART ' . $channels . (!empty($message) ? ' :' . $message : '') . "\r\n";
+    }
 }

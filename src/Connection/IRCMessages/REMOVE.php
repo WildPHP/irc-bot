@@ -18,53 +18,53 @@ namespace WildPHP\Core\Connection\IRCMessages;
  */
 class REMOVE extends BaseIRCMessage implements SendableMessage
 {
-	use ChannelTrait;
-	use PrefixTrait;
-	use NicknameTrait;
-	use MessageTrait;
+    use ChannelTrait;
+    use PrefixTrait;
+    use NicknameTrait;
+    use MessageTrait;
 
-	protected static $verb = 'REMOVE';
+    protected static $verb = 'REMOVE';
 
-	/**
-	 * @var string
-	 */
-	protected $target = '';
+    /**
+     * @var string
+     */
+    protected $target = '';
 
-	/**
-	 * REMOVE constructor.
-	 *
-	 * @param string $channel
-	 * @param string $nickname
-	 * @param string $message
-	 */
-	public function __construct(string $channel, string $nickname, string $message)
-	{
-		$this->setChannel($channel);
-		$this->setTarget($nickname);
-		$this->setMessage($message);
-	}
+    /**
+     * REMOVE constructor.
+     *
+     * @param string $channel
+     * @param string $nickname
+     * @param string $message
+     */
+    public function __construct(string $channel, string $nickname, string $message)
+    {
+        $this->setChannel($channel);
+        $this->setTarget($nickname);
+        $this->setMessage($message);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getTarget(): string
-	{
-		return $this->target;
-	}
+    /**
+     * @return string
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
 
-	/**
-	 * @param string $target
-	 */
-	public function setTarget(string $target)
-	{
-		$this->target = $target;
-	}
+    /**
+     * @param string $target
+     */
+    public function setTarget(string $target)
+    {
+        $this->target = $target;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return 'REMOVE ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'REMOVE ' . $this->getChannel() . ' ' . $this->getTarget() . ' :' . $this->getMessage() . "\r\n";
+    }
 }

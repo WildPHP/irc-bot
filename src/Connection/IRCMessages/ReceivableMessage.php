@@ -20,15 +20,15 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 interface ReceivableMessage
 {
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return mixed
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return mixed
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage);
 
-	/**
-	 * @return string
-	 */
-	public static function getVerb(): string;
+    /**
+     * @return string
+     */
+    public static function getVerb(): string;
 }

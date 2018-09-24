@@ -11,38 +11,38 @@ namespace WildPHP\Core\Connection\IRCMessages;
 
 abstract class BaseIRCMessage
 {
-	/**
-	 * @var string
-	 */
-	protected static $verb;
+    /**
+     * @var string
+     */
+    protected static $verb;
 
-	/**
-	 * Additional data to be sent with the message.
-	 * @var array
-	 */
-	protected $messageParameters = [];
+    /**
+     * Additional data to be sent with the message.
+     * @var array
+     */
+    protected $messageParameters = [];
 
-	/**
-	 * @return string
-	 */
-	public static function getVerb(): string
-	{
-		return static::$verb;
-	}
+    /**
+     * @return string
+     */
+    public static function getVerb(): string
+    {
+        return static::$verb;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getMessageParameters(): array
-	{
-		return $this->messageParameters;
-	}
+    /**
+     * @return array
+     */
+    public function getMessageParameters(): array
+    {
+        return $this->messageParameters;
+    }
 
-	/**
-	 * @param array $messageParameters
-	 */
-	public function setMessageParameters(array $messageParameters)
-	{
-		$this->messageParameters = $messageParameters;
-	}
+    /**
+     * @param array $messageParameters
+     */
+    public function setMessageParameters(array $messageParameters)
+    {
+        $this->messageParameters = $messageParameters;
+    }
 }

@@ -18,32 +18,33 @@ use WildPHP\Core\Connection\IncomingIrcMessage;
  */
 class RPL_WELCOME extends BaseIRCMessage implements ReceivableMessage
 {
-	use NicknameTrait;
-	use ServerTrait;
-	use MessageTrait;
+    use NicknameTrait;
+    use ServerTrait;
+    use MessageTrait;
 
-	protected static $verb = '001';
+    protected static $verb = '001';
 
-	/**
-	 * @param IncomingIrcMessage $incomingIrcMessage
-	 *
-	 * @return \self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
-	{
-		if ($incomingIrcMessage->getVerb() != self::getVerb())
-			throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+    /**
+     * @param IncomingIrcMessage $incomingIrcMessage
+     *
+     * @return \self
+     * @throws \InvalidArgumentException
+     */
+    public static function fromIncomingIrcMessage(IncomingIrcMessage $incomingIrcMessage): self
+    {
+        if ($incomingIrcMessage->getVerb() != self::getVerb()) {
+            throw new \InvalidArgumentException('Expected incoming ' . self::getVerb() . '; got ' . $incomingIrcMessage->getVerb());
+        }
 
-		$nickname = $incomingIrcMessage->getArgs()[0];
-		$message = $incomingIrcMessage->getArgs()[1];
-		$server = $incomingIrcMessage->getPrefix();
+        $nickname = $incomingIrcMessage->getArgs()[0];
+        $message = $incomingIrcMessage->getArgs()[1];
+        $server = $incomingIrcMessage->getPrefix();
 
-		$object = new self();
-		$object->setNickname($nickname);
-		$object->setServer($server);
-		$object->setMessage($message);
+        $object = new self();
+        $object->setNickname($nickname);
+        $object->setServer($server);
+        $object->setMessage($message);
 
-		return $object;
-	}
+        return $object;
+    }
 }

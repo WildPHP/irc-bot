@@ -14,5 +14,5 @@ use Yoshi2889\Container\ComponentTrait;
 
 class Logger extends \Monolog\Logger implements ComponentInterface
 {
-	use ComponentTrait;
+    use ComponentTrait;
 }

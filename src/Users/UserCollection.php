@@ -14,53 +14,54 @@ use Yoshi2889\Collections\Collection;
 
 class UserCollection extends Collection
 {
-	/**
-	 * UserCollection constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct(Types::instanceof(User::class));
-	}
+    /**
+     * UserCollection constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(Types::instanceof(User::class));
+    }
 
-	/**
-	 * @param string $nickname
-	 *
-	 * @return bool
-	 */
-	public function containsNickname(string $nickname): bool
-	{
-		return !empty($this->findByNickname($nickname));
-	}
+    /**
+     * @param string $nickname
+     *
+     * @return bool
+     */
+    public function containsNickname(string $nickname): bool
+    {
+        return !empty($this->findByNickname($nickname));
+    }
 
-	/**
-	 * @param string $nickname
-	 *
-	 * @return false|User
-	 */
-	public function findByNickname(string $nickname)
-	{
-		/** @var User $value */
-		foreach ($this->values() as $value)
-			if ($value->getNickname() == $nickname)
-				return $value;
+    /**
+     * @param string $nickname
+     *
+     * @return false|User
+     */
+    public function findByNickname(string $nickname)
+    {
+        /** @var User $value */
+        foreach ($this->values() as $value) {
+            if ($value->getNickname() == $nickname) {
+                return $value;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getAllNicknames(): array
-	{
-		/** @var User[] $array */
-		$array = $this->values();
+    /**
+     * @return array
+     */
+    public function getAllNicknames(): array
+    {
+        /** @var User[] $array */
+        $array = $this->values();
 
-		$nicknames = [];
-		foreach ($array as $user)
-		{
-			$nicknames[] = $user->getNickname();
-		}
+        $nicknames = [];
+        foreach ($array as $user) {
+            $nicknames[] = $user->getNickname();
+        }
 
-		return $nicknames;
-	}
+        return $nicknames;
+    }
 }
