@@ -1,6 +1,8 @@
 logs/*
 config.neon
 php_errors
+composer.phar
+state.sqlite
 
 /vendor/
 /storage/*

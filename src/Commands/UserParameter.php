@@ -9,13 +9,13 @@
 namespace WildPHP\Core\Commands;
 
 
+use WildPHP\Commands\Parameters\Parameter;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserNotFoundException;
 
 class UserParameter extends Parameter
 {
-
     /**
      * UserParameter constructor.
      * @param Database $db

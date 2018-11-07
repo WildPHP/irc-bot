@@ -77,6 +77,38 @@ class TextFormatter
     }
 
     /**
+     * @param string $stringToColor
+     * @param string $background
+     *
+     * @return string
+     */
+    public static function consistentStringColor(string $stringToColor, string $background = ''): string
+    {
+        // Don't even bother.
+        if (empty($stringToColor)) {
+            return '';
+        }
+
+        $color = self::calculateStringColor($stringToColor);
+        return self::color($stringToColor, $color, $background);
+    }
+
+    /**
+     * @param string $stringToColor
+     *
+     * @return string
+     */
+    public static function calculateStringColor(string $stringToColor): string
+    {
+        $num = 0;
+        foreach (str_split($stringToColor) as $char) {
+            $num += ord($char);
+        }
+        // The -1 is here to account for index 0
+        return abs($num) % (count(self::$colorMap) - 1);
+    }
+
+    /**
      * @param string $text
      * @param string $foreground
      * @param string $background
@@ -105,38 +137,6 @@ class TextFormatter
     {
         $color = strtolower($color);
         return self::$colorMap[$color] ?? '';
-    }
-
-    /**
-     * @param string $stringToColor
-     *
-     * @return string
-     */
-    public static function calculateStringColor(string $stringToColor): string
-    {
-        $num = 0;
-        foreach (str_split($stringToColor) as $char) {
-            $num += ord($char);
-        }
-        // The -1 is here to account for index 0
-        return abs($num) % (count(self::$colorMap) - 1);
-    }
-
-    /**
-     * @param string $stringToColor
-     * @param string $background
-     *
-     * @return string
-     */
-    public static function consistentStringColor(string $stringToColor, string $background = ''): string
-    {
-        // Don't even bother.
-        if (empty($stringToColor)) {
-            return '';
-        }
-
-        $color = self::calculateStringColor($stringToColor);
-        return self::color($stringToColor, $color, $background);
     }
 
     /**

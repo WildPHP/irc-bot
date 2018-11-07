@@ -54,6 +54,17 @@ class PermissionGroup
     }
 
     /**
+     * @param array $data
+     */
+    public function fromArray(array $data)
+    {
+        $this->setModeGroup((bool)$data['modeGroup']);
+        $this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
+        $this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
+        $this->setChannelCollection(new Collection(Types::string(), $data['channelCollection']));
+    }
+
+    /**
      * @param string $permission
      * @param string $channel
      *
@@ -71,41 +82,6 @@ class PermissionGroup
             ->contains($channel);
 
         return $hasPermission && $isCorrectChannel;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getUserCollection(): Collection
-    {
-        return $this->userCollection;
-    }
-
-    /**
-     * @param Collection $members
-     */
-    protected function setUserCollection(Collection $members)
-    {
-        $members->on('changed', function () {
-            $this->emit('changed');
-        });
-        $this->userCollection = $members;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isModeGroup(): bool
-    {
-        return $this->modeGroup;
-    }
-
-    /**
-     * @param bool $modeGroup
-     */
-    public function setModeGroup(bool $modeGroup)
-    {
-        $this->modeGroup = $modeGroup;
     }
 
     /**
@@ -163,13 +139,37 @@ class PermissionGroup
     }
 
     /**
-     * @param array $data
+     * @return bool
      */
-    public function fromArray(array $data)
+    public function isModeGroup(): bool
     {
-        $this->setModeGroup((bool)$data['modeGroup']);
-        $this->setUserCollection(new Collection(Types::string(), $data['userCollection']));
-        $this->setAllowedPermissions(new Collection(Types::string(), $data['allowedPermissions']));
-        $this->setChannelCollection(new Collection(Types::string(), $data['channelCollection']));
+        return $this->modeGroup;
+    }
+
+    /**
+     * @param bool $modeGroup
+     */
+    public function setModeGroup(bool $modeGroup)
+    {
+        $this->modeGroup = $modeGroup;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getUserCollection(): Collection
+    {
+        return $this->userCollection;
+    }
+
+    /**
+     * @param Collection $members
+     */
+    protected function setUserCollection(Collection $members)
+    {
+        $members->on('changed', function () {
+            $this->emit('changed');
+        });
+        $this->userCollection = $members;
     }
 }

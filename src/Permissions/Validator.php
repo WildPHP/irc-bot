@@ -11,11 +11,11 @@ namespace WildPHP\Core\Permissions;
 
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Users\User;
+use WildPHP\Messages\RPL\ISupport;
 use Yoshi2889\Collections\Collection;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
@@ -57,9 +57,9 @@ class Validator implements ComponentInterface
     }
 
     /**
-     * @param RPL_ISUPPORT $ircMessage
+     * @param ISupport $ircMessage
      */
-    public function createModeGroups(RPL_ISUPPORT $ircMessage)
+    public function createModeGroups(ISupport $ircMessage)
     {
         $variables = $ircMessage->getVariables();
 
@@ -140,6 +140,22 @@ class Validator implements ComponentInterface
     }
 
     /**
+     * @return string
+     */
+    public function getOwner(): string
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param string $owner
+     */
+    public function setOwner(string $owner)
+    {
+        $this->owner = $owner;
+    }
+
+    /**
      * @return PermissionGroupCollection
      */
     public function getPermissionGroupCollection(): PermissionGroupCollection
@@ -161,21 +177,5 @@ class Validator implements ComponentInterface
     public function getModes(): array
     {
         return $this->modes;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOwner(): string
-    {
-        return $this->owner;
-    }
-
-    /**
-     * @param string $owner
-     */
-    public function setOwner(string $owner)
-    {
-        $this->owner = $owner;
     }
 }

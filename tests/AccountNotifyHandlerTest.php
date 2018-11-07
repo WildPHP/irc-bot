@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\AccountNotifyHandler;
+use WildPHP\Core\Connection\Capabilities\AccountNotifyHandler;
 
 class AccountNotifyHandlerTest extends TestCase
 {
@@ -22,8 +22,8 @@ class AccountNotifyHandlerTest extends TestCase
 		$user = new \WildPHP\Core\Users\User('Test');
 		$userCollection->append($user);
 
-		$account = new \WildPHP\Core\Connection\IRCMessages\ACCOUNT('ing');
-		$account->setPrefix(new \WildPHP\Core\Connection\UserPrefix('Test'));
+		$account = new \WildPHP\Messages\Account('ing');
+		$account->setPrefix(new \WildPHP\Messages\Generics\Prefix('Test'));
 
 		$accountNotifyHandler = new AccountNotifyHandler($componentContainer);
 		$accountNotifyHandler->updateUserIrcAccount($account, new \WildPHP\Core\Connection\Queue());

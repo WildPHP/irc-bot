@@ -14,10 +14,10 @@ use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Messages\RPL\ISupport;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
@@ -82,6 +82,22 @@ class IrcConnection implements ComponentInterface
     }
 
     /**
+     * @return ConnectionDetails
+     */
+    public function getConnectionDetails(): ConnectionDetails
+    {
+        return $this->connectionDetails;
+    }
+
+    /**
+     * @param ConnectionDetails $connectionDetails
+     */
+    public function setConnectionDetails(ConnectionDetails $connectionDetails)
+    {
+        $this->connectionDetails = $connectionDetails;
+    }
+
+    /**
      * @throws \Yoshi2889\Container\NotFoundException
      */
     public function flushQueue()
@@ -105,10 +121,42 @@ class IrcConnection implements ComponentInterface
     }
 
     /**
-     * @param RPL_ISUPPORT $incomingIrcMessage
+     * @param string $data
+     *
+     * @return \React\Promise\PromiseInterface
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function handleServerConfig(RPL_ISUPPORT $incomingIrcMessage)
+    public function write(string $data)
+    {
+        if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1) {
+            $pieces = explode("\r", str_replace("\n", "\r", $data));
+
+            Logger::fromContainer($this->getContainer())
+                ->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
+                    [
+                        'pieces' => $pieces
+                    ]);
+
+            $data = $pieces[0] . "\r\n";
+        }
+
+        $promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data) {
+            EventEmitter::fromContainer($this->getContainer())
+                ->emit('stream.data.out', [$data]);
+
+            Logger::fromContainer($this->getContainer())
+                ->debug('>> ' . $data);
+            $stream->write($data);
+        });
+
+        return $promise;
+    }
+
+    /**
+     * @param ISupport $incomingIrcMessage
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function handleServerConfig(ISupport $incomingIrcMessage)
     {
         $hostname = $incomingIrcMessage->getServer();
         Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'] = $hostname;
@@ -166,38 +214,6 @@ class IrcConnection implements ComponentInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @return \React\Promise\PromiseInterface
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function write(string $data)
-    {
-        if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1) {
-            $pieces = explode("\r", str_replace("\n", "\r", $data));
-
-            Logger::fromContainer($this->getContainer())
-                ->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
-                    [
-                        'pieces' => $pieces
-                    ]);
-
-            $data = $pieces[0] . "\r\n";
-        }
-
-        $promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data) {
-            EventEmitter::fromContainer($this->getContainer())
-                ->emit('stream.data.out', [$data]);
-
-            Logger::fromContainer($this->getContainer())
-                ->debug('>> ' . $data);
-            $stream->write($data);
-        });
-
-        return $promise;
-    }
-
-    /**
      * @return \React\Promise\PromiseInterface
      */
     public function close()
@@ -211,21 +227,5 @@ class IrcConnection implements ComponentInterface
         });
 
         return $promise;
-    }
-
-    /**
-     * @return ConnectionDetails
-     */
-    public function getConnectionDetails(): ConnectionDetails
-    {
-        return $this->connectionDetails;
-    }
-
-    /**
-     * @param ConnectionDetails $connectionDetails
-     */
-    public function setConnectionDetails(ConnectionDetails $connectionDetails)
-    {
-        $this->connectionDetails = $connectionDetails;
     }
 }

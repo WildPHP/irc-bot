@@ -9,12 +9,12 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\Connection\IRCMessages\SendableMessage;
+use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
 class QueueItem
 {
     /**
-     * @var SendableMessage
+     * @var OutgoingMessageInterface
      */
     protected $commandObject;
 
@@ -31,29 +31,37 @@ class QueueItem
     /**
      * QueueItem constructor.
      *
-     * @param SendableMessage $command
+     * @param OutgoingMessageInterface $command
      * @param int $time
      */
-    public function __construct(SendableMessage $command, int $time)
+    public function __construct(OutgoingMessageInterface $command, int $time)
     {
         $this->setCommandObject($command);
         $this->setTime($time);
     }
 
     /**
-     * @return SendableMessage
+     * @return OutgoingMessageInterface
      */
-    public function getCommandObject(): SendableMessage
+    public function getCommandObject(): OutgoingMessageInterface
     {
         return $this->commandObject;
     }
 
     /**
-     * @param SendableMessage $commandObject
+     * @param OutgoingMessageInterface $commandObject
      */
-    public function setCommandObject(SendableMessage $commandObject)
+    public function setCommandObject(OutgoingMessageInterface $commandObject)
     {
         $this->commandObject = $commandObject;
+    }
+
+    /**
+     * @return bool
+     */
+    public function itemShouldBeTriggered(): bool
+    {
+        return time() >= $this->getTime();
     }
 
     /**
@@ -70,14 +78,6 @@ class QueueItem
     public function setTime(int $time)
     {
         $this->time = $time;
-    }
-
-    /**
-     * @return bool
-     */
-    public function itemShouldBeTriggered(): bool
-    {
-        return time() >= $this->getTime();
     }
 
     /**

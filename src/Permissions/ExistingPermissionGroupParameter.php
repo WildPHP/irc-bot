@@ -9,7 +9,7 @@
 namespace WildPHP\Core\Permissions;
 
 
-use WildPHP\Core\Commands\Parameter;
+use WildPHP\Commands\Parameters\Parameter;
 
 class ExistingPermissionGroupParameter extends Parameter
 {

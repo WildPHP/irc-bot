@@ -50,7 +50,9 @@ class Database implements ComponentInterface
             (
                 id INTEGER primary key autoincrement,
                 name text,
-                topic text
+                topic text,
+                created_by text,
+                created_time int
             );');
         $medoo->query('
             create table if not exists user_channel_relationships

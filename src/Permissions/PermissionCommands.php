@@ -9,12 +9,11 @@
 namespace WildPHP\Core\Permissions;
 
 
+use WildPHP\Commands\Command;
+use WildPHP\Commands\Parameters\StringParameter;
+use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
-use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\ParameterStrategy;
-use WildPHP\Core\Commands\StringParameter;
+use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Modules\BaseModule;
@@ -35,44 +34,31 @@ class PermissionCommands extends BaseModule
     {
         $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-        CommandHandler::fromContainer($container)->registerCommand('allow',
+        CommandRegistrar::fromContainer($container)->register('allow',
             new Command(
                 [$this, 'allowCommand'],
                 new ParameterStrategy(2, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'permission' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Add a permission to a permission group. Usage: allow [group name] [permission]'
-                ]),
-                'allow'
+                ])
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('deny',
+        CommandRegistrar::fromContainer($container)->register('deny',
             new Command(
                 [$this, 'denyCommand'],
                 new ParameterStrategy(2, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'permission' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Remove a permission from a permission group. Usage: deny [group name] [permission]'
-                ]),
-                'deny'
+                ])
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('lsperms',
+        CommandRegistrar::fromContainer($container)->register('lsperms',
             new Command(
                 [$this, 'lspermsCommand'],
                 new ParameterStrategy(1, 1, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-                ]),
-                new CommandHelp([
-                    'List all members in a permission group. Usage: lsperms [group name]'
-                ]),
-                'lsperms'
-            ),
-            ['lsp']);
+                ])
+            ));
 
         $this->setContainer($container);
     }

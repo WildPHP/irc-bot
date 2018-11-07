@@ -35,6 +35,8 @@ class BotStateManager extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+    /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $channel
      * @param User $user

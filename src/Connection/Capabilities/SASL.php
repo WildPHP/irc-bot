@@ -7,18 +7,20 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Connection\Capabilities;
 
 
 use Evenement\EventEmitterInterface;
 use Evenement\EventEmitterTrait;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IRCMessages\AUTHENTICATE;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
+use WildPHP\Messages\Authenticate;
+use WildPHP\Messages\Generics\IncomingMessage;
 
 class SASL extends BaseModule implements EventEmitterInterface
 {
@@ -100,17 +102,6 @@ class SASL extends BaseModule implements EventEmitterInterface
     }
 
     /**
-     * @param string $username
-     * @param string $password
-     *
-     * @return string
-     */
-    protected function generateCredentialString(string $username, string $password)
-    {
-        return base64_encode($username . "\0" . $username . "\0" . $password);
-    }
-
-    /**
      * @param AUTHENTICATE $message
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
@@ -132,10 +123,21 @@ class SASL extends BaseModule implements EventEmitterInterface
     }
 
     /**
-     * @param IncomingIrcMessage $message
+     * @param string $username
+     * @param string $password
+     *
+     * @return string
+     */
+    protected function generateCredentialString(string $username, string $password)
+    {
+        return base64_encode($username . "\0" . $username . "\0" . $password);
+    }
+
+    /**
+     * @param IncomingMessage $message
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function handleResponse(IncomingIrcMessage $message)
+    public function handleResponse(IncomingMessage $message)
     {
         $code = $message->getVerb();
 

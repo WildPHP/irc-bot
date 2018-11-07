@@ -25,22 +25,6 @@ class ChannelModes
     protected $modeMap = [];
 
     /**
-     * @param string $definitions
-     *
-     * @return array
-     */
-    protected static function parseDefinitions(string $definitions): array
-    {
-        if (!preg_match('/\((.+)\)(.+)/', $definitions, $out)) {
-            return [];
-        }
-
-        $modes = str_split($out[1]);
-        $prefixes = str_split($out[2]);
-        return array_combine($prefixes, $modes);
-    }
-
-    /**
      * @return array
      */
     public function getModeDefinitions(): array
@@ -58,19 +42,36 @@ class ChannelModes
 
     /**
      * @param string $mode
-     * @param User $user
      *
-     * @return bool
+     * @return array
      */
-    public function isUserInMode(string $mode, User $user): bool
+    public function getUsersForMode(string $mode): array
     {
-        if (!array_key_exists($mode, $this->modeMap)) {
-            return false;
+        if (!in_array($mode, $this->getPopulatedModeNames())) {
+            return [];
         }
 
-        return in_array($user, $this->modeMap[$mode]);
+        return $this->modeMap[$mode];
     }
 
+    /**
+     * @return array
+     */
+    public function getPopulatedModeNames(): array
+    {
+        return array_keys($this->modeMap);
+    }
+
+    /**
+     * @param array $modes
+     * @param User $user
+     */
+    public function addUserToModes(array $modes, User $user)
+    {
+        foreach ($modes as $mode) {
+            $this->addUserToMode($mode, $user);
+        }
+    }
 
     /**
      * @param string $mode
@@ -91,30 +92,37 @@ class ChannelModes
 
     /**
      * @param string $mode
-     * @param User[] $users
+     * @param User $user
      *
-     * @internal param User $user
-     *
-     * @return void
+     * @return bool
      */
-    public function removeUserFromMode(string $mode, User ...$users): void
+    public function isUserInMode(string $mode, User $user): bool
     {
-        foreach ($users as $user) {
-            if (!$this->isUserInMode($mode, $user)) {
-                continue;
-            }
-
-            $key = array_search($user, $this->modeMap[$mode]);
-            unset($this->modeMap[$mode][$key]);
+        if (!array_key_exists($mode, $this->modeMap)) {
+            return false;
         }
+
+        return in_array($user, $this->modeMap[$mode]);
     }
 
     /**
-     * @return array
+     * @param User $user
+     *
+     * @return array List of modes removed.
      */
-    public function getPopulatedModeNames(): array
+    public function removeUserFromAllModes(User $user)
     {
-        return array_keys($this->modeMap);
+        $modes = $this->getModesForUser($user);
+
+        if (empty($modes)) {
+            return [];
+        }
+
+        foreach ($modes as $mode) {
+            $this->removeUserFromMode($mode, $user);
+        }
+
+        return $modes;
     }
 
     /**
@@ -137,47 +145,22 @@ class ChannelModes
 
     /**
      * @param string $mode
+     * @param User[] $users
      *
-     * @return array
-     */
-    public function getUsersForMode(string $mode): array
-    {
-        if (!in_array($mode, $this->getPopulatedModeNames())) {
-            return [];
-        }
-
-        return $this->modeMap[$mode];
-    }
-
-    /**
-     * @param array $modes
-     * @param User $user
-     */
-    public function addUserToModes(array $modes, User $user)
-    {
-        foreach ($modes as $mode) {
-            $this->addUserToMode($mode, $user);
-        }
-    }
-
-    /**
-     * @param User $user
+     * @internal param User $user
      *
-     * @return array List of modes removed.
+     * @return void
      */
-    public function removeUserFromAllModes(User $user)
+    public function removeUserFromMode(string $mode, User ...$users): void
     {
-        $modes = $this->getModesForUser($user);
+        foreach ($users as $user) {
+            if (!$this->isUserInMode($mode, $user)) {
+                continue;
+            }
 
-        if (empty($modes)) {
-            return [];
+            $key = array_search($user, $this->modeMap[$mode]);
+            unset($this->modeMap[$mode][$key]);
         }
-
-        foreach ($modes as $mode) {
-            $this->removeUserFromMode($mode, $user);
-        }
-
-        return $modes;
     }
 
     public function wipe()
@@ -209,5 +192,21 @@ class ChannelModes
         }
 
         return $modes;
+    }
+
+    /**
+     * @param string $definitions
+     *
+     * @return array
+     */
+    protected static function parseDefinitions(string $definitions): array
+    {
+        if (!preg_match('/\((.+)\)(.+)/', $definitions, $out)) {
+            return [];
+        }
+
+        $modes = str_split($out[1]);
+        $prefixes = str_split($out[2]);
+        return array_combine($prefixes, $modes);
     }
 }

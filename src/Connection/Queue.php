@@ -10,7 +10,7 @@
 namespace WildPHP\Core\Connection;
 
 use Evenement\EventEmitter;
-use WildPHP\Core\Connection\IRCMessages\SendableMessage;
+use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
@@ -88,19 +88,6 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     protected $floodControlEnabled = false;
 
     /**
-     * @param SendableMessage $command
-     *
-     * @return QueueItem
-     */
-    public function insertMessage(SendableMessage $command)
-    {
-        $time = $this->calculateNextMessageTime();
-        $item = new QueueItem($command, $time);
-        $this->scheduleItem($item);
-        return $item;
-    }
-
-    /**
      * @param QueueItem $item
      *
      * @return bool
@@ -127,42 +114,6 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 
         unset($this->messageQueue[$index]);
         return true;
-    }
-
-    /**
-     * @param QueueItem $item
-     */
-    public function scheduleItem(QueueItem $item)
-    {
-        $this->messageQueue[] = $item;
-    }
-
-    /**
-     * @return int
-     */
-    public function calculateNextMessageTime(): int
-    {
-        // If the queue is empty, this message can be sent immediately. Do not bother calculating.
-        if ($this->count() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled()) {
-            return time();
-        }
-
-        $numItems = $this->count();
-        $numItems = $numItems - $this->floodControlMessageThreshold;
-        $messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
-
-        // For every message pair, we add the specified delay.
-        $totalDelay = $messagePairs * $this->messageDelayInSeconds;
-
-        return time() + $totalDelay;
-    }
-
-    /**
-     * @return int
-     */
-    public function count(): int
-    {
-        return count($this->messageQueue);
     }
 
     public function clear()
@@ -197,6 +148,64 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     }
 
     /**
+     * @param string $name
+     * @param array $arguments
+     *
+     * @return QueueItem
+     */
+    public function __call(string $name, array $arguments)
+    {
+        $class = '\\WildPHP\\Messages\\' . ucfirst($name);
+        if (!class_exists($class)) {
+            throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
+        }
+
+        $object = new $class(...$arguments);
+        return $this->insertMessage($object);
+    }
+
+    /**
+     * @param OutgoingMessageInterface $command
+     *
+     * @return QueueItem
+     */
+    public function insertMessage(OutgoingMessageInterface $command)
+    {
+        $time = $this->calculateNextMessageTime();
+        $item = new QueueItem($command, $time);
+        $this->scheduleItem($item);
+        return $item;
+    }
+
+    /**
+     * @return int
+     */
+    public function calculateNextMessageTime(): int
+    {
+        // If the queue is empty, this message can be sent immediately. Do not bother calculating.
+        if ($this->count() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled()) {
+            return time();
+        }
+
+        $numItems = $this->count();
+        $numItems = $numItems - $this->floodControlMessageThreshold;
+        $messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
+
+        // For every message pair, we add the specified delay.
+        $totalDelay = $messagePairs * $this->messageDelayInSeconds;
+
+        return time() + $totalDelay;
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->messageQueue);
+    }
+
+    /**
      * @return bool
      */
     public function isFloodControlEnabled(): bool
@@ -205,19 +214,10 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     }
 
     /**
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return QueueItem
+     * @param QueueItem $item
      */
-    public function __call(string $name, array $arguments)
+    public function scheduleItem(QueueItem $item)
     {
-        $class = '\WildPHP\Core\Connection\IRCMessages\\' . strtoupper($name);
-        if (!class_exists($class)) {
-            throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
-        }
-
-        $object = new $class(...$arguments);
-        return $this->insertMessage($object);
+        $this->messageQueue[] = $item;
     }
 }

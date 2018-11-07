@@ -10,19 +10,19 @@ namespace WildPHP\Core\Channels;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IRCMessages\JOIN;
-use WildPHP\Core\Connection\IRCMessages\KICK;
-use WildPHP\Core\Connection\IRCMessages\PART;
-use WildPHP\Core\Connection\IRCMessages\QUIT;
-use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
-use WildPHP\Core\Connection\IRCMessages\RPL_TOPIC;
-use WildPHP\Core\Connection\IRCMessages\RPL_WELCOME;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\StateException;
+use WildPHP\Messages\Join;
+use WildPHP\Messages\Kick;
+use WildPHP\Messages\Part;
+use WildPHP\Messages\Quit;
+use WildPHP\Messages\RPL\NamReply;
+use WildPHP\Messages\RPL\Topic;
+use WildPHP\Messages\RPL\Welcome;
 
 class ChannelObserver extends BaseModule
 {
@@ -65,12 +65,13 @@ class ChannelObserver extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
-     * @param RPL_WELCOME $incomingIrcMessage
+     * @param Welcome $incomingIrcMessage
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function joinInitialChannels(RPL_WELCOME $incomingIrcMessage, Queue $queue)
+    public function joinInitialChannels(Welcome $incomingIrcMessage, Queue $queue)
     {
         $channels = Configuration::fromContainer($this->getContainer())['channels'];
 
@@ -154,11 +155,11 @@ class ChannelObserver extends BaseModule
     }
 
     /**
-     * @param RPL_TOPIC $topicMessage
+     * @param Topic $topicMessage
      * @throws StateException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function processTopic(RPL_TOPIC $topicMessage)
+    public function processTopic(Topic $topicMessage)
     {
         $db = Database::fromContainer($this->getContainer());
 
@@ -181,11 +182,11 @@ class ChannelObserver extends BaseModule
     }
 
     /**
-     * @param RPL_NAMREPLY $ircMessage
+     * @param NamReply $ircMessage
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      */
-    public function processNamesReply(RPL_NAMREPLY $ircMessage)
+    public function processNamesReply(NamReply $ircMessage)
     {
         $db = Database::fromContainer($this->getContainer());
         $nicknames = $ircMessage->getNicknames();

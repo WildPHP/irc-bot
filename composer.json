@@ -16,7 +16,10 @@
     "monolog/monolog": "^1.23.0",
     "composer/semver": "^1.4",
     "catfan/medoo": "^1.5",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-posix": "*",
+    "wildphp/command-parser": "^0.1",
+    "wildphp/irc-messages": "^0.1"
   },
   "autoload": {
     "psr-4": {

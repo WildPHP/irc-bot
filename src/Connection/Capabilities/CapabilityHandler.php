@@ -7,14 +7,15 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Connection\Capabilities;
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\CAP;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
+use WildPHP\Messages\Cap;
 use Yoshi2889\Container\ComponentInterface;
 use Yoshi2889\Container\ComponentTrait;
 
@@ -75,49 +76,6 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     }
 
     /**
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function flushRequestQueue()
-    {
-        if (empty($this->queuedCapabilities)) {
-            return;
-        }
-
-        $capabilities = $this->queuedCapabilities;
-        foreach ($capabilities as $key => $capability) {
-            if (!$this->isCapabilityAvailable($capability)) {
-                unset($capabilities[$key]);
-            }
-        }
-
-        Logger::fromContainer($this->getContainer())
-            ->debug('Sending capability request.', ['queuedCapabilities' => $capabilities]);
-
-        Queue::fromContainer($this->getContainer())
-            ->cap('REQ', $capabilities);
-    }
-
-    /**
-     * @return bool
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function tryEndNegotiation(): bool
-    {
-        if (!$this->canEndNegotiation()) {
-            return false;
-        }
-
-        Logger::fromContainer($this->getContainer())
-            ->debug('Ending capability negotiation.');
-        Queue::fromContainer($this->getContainer())
-            ->cap('END');
-        EventEmitter::fromContainer($this->getContainer())
-            ->emit('irc.cap.end');
-
-        return true;
-    }
-
-    /**
      * @param string $capability
      *
      * @return bool
@@ -141,9 +99,32 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
      *
      * @return bool
      */
-    public function isCapabilityAvailable(string $capability): bool
+    public function isCapabilityAcknowledged(string $capability): bool
     {
-        return in_array($capability, $this->availableCapabilities);
+        return in_array($capability, $this->acknowledgedCapabilities);
+    }
+
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function flushRequestQueue()
+    {
+        if (empty($this->queuedCapabilities)) {
+            return;
+        }
+
+        $capabilities = $this->queuedCapabilities;
+        foreach ($capabilities as $key => $capability) {
+            if (!$this->isCapabilityAvailable($capability)) {
+                unset($capabilities[$key]);
+            }
+        }
+
+        Logger::fromContainer($this->getContainer())
+            ->debug('Sending capability request.', ['queuedCapabilities' => $capabilities]);
+
+        Queue::fromContainer($this->getContainer())
+            ->cap('REQ', $capabilities);
     }
 
     /**
@@ -151,9 +132,9 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
      *
      * @return bool
      */
-    public function isCapabilityAcknowledged(string $capability): bool
+    public function isCapabilityAvailable(string $capability): bool
     {
-        return in_array($capability, $this->acknowledgedCapabilities);
+        return in_array($capability, $this->availableCapabilities);
     }
 
     /**
@@ -237,6 +218,14 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     }
 
     /**
+     * @return array
+     */
+    public function getAcknowledgedCapabilities(): array
+    {
+        return $this->acknowledgedCapabilities;
+    }
+
+    /**
      * @param string[] $capabilities
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
@@ -261,12 +250,40 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     }
 
     /**
+     * @return array
+     */
+    public function getNotAcknowledgedCapabilities(): array
+    {
+        return $this->notAcknowledgedCapabilities;
+    }
+
+    /**
      * @throws \Yoshi2889\Container\NotFoundException
      */
     public function setSaslHasCompleted()
     {
         $this->saslIsComplete = true;
         $this->tryEndNegotiation();
+    }
+
+    /**
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function tryEndNegotiation(): bool
+    {
+        if (!$this->canEndNegotiation()) {
+            return false;
+        }
+
+        Logger::fromContainer($this->getContainer())
+            ->debug('Ending capability negotiation.');
+        Queue::fromContainer($this->getContainer())
+            ->cap('END');
+        EventEmitter::fromContainer($this->getContainer())
+            ->emit('irc.cap.end');
+
+        return true;
     }
 
     /**
@@ -283,22 +300,6 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     public function getAvailableCapabilities(): array
     {
         return $this->availableCapabilities;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAcknowledgedCapabilities(): array
-    {
-        return $this->acknowledgedCapabilities;
-    }
-
-    /**
-     * @return array
-     */
-    public function getNotAcknowledgedCapabilities(): array
-    {
-        return $this->notAcknowledgedCapabilities;
     }
 
     /**

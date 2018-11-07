@@ -9,12 +9,11 @@
 namespace WildPHP\Core\Permissions;
 
 
+use WildPHP\Commands\Command;
+use WildPHP\Commands\Parameters\StringParameter;
+use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
-use WildPHP\Core\Commands\CommandHelp;
-use WildPHP\Core\Commands\ParameterStrategy;
-use WildPHP\Core\Commands\StringParameter;
+use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Database\Database;
@@ -37,46 +36,31 @@ class PermissionMembersCommands extends BaseModule
     {
         $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-        CommandHandler::fromContainer($container)->registerCommand('lsmembers',
+        CommandRegistrar::fromContainer($container)->register('lsmembers',
             new Command(
                 [$this, 'lsmembersCommand'],
                 new ParameterStrategy(1, 1, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-                ]),
-                new CommandHelp([
-                    'List all members in a permission group. Usage: lsmembers [group name]'
-                ]),
-                'lsmembers'
-            ),
-            ['lsm']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('addmember',
+        CommandRegistrar::fromContainer($container)->register('addmember',
             new Command(
                 [$this, 'addmemberCommand'],
                 new ParameterStrategy(2, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'nickname' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Add a member to a group in the permissions system. Usage: addmember [group name] [nickname]'
-                ]),
-                'addmember'
-            ),
-            ['+member', '+m']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('delmember',
+        CommandRegistrar::fromContainer($container)->register('delmember',
             new Command(
                 [$this, 'delmemberCommand'],
                 new ParameterStrategy(2, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'nickname' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Remove a member from a group in the permissions system. Usage: delmember [group name] [nickname]'
-                ]),
-                'delmember'
-            ),
-            ['-member', '-m']);
+                ])
+            ));
 
         $this->setContainer($container);
     }

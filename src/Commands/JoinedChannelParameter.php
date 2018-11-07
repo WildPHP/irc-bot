@@ -9,6 +9,7 @@
 namespace WildPHP\Core\Commands;
 
 
+use WildPHP\Commands\Parameters\Parameter;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelNotFoundException;
 use WildPHP\Core\Database\Database;

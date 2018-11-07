@@ -9,13 +9,12 @@
 
 namespace WildPHP\Core\Permissions;
 
+use WildPHP\Commands\Command;
+use WildPHP\Commands\Parameters\StringParameter;
+use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
-use WildPHP\Core\Commands\CommandHelp;
+use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Commands\JoinedChannelParameter;
-use WildPHP\Core\Commands\ParameterStrategy;
-use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\Commands\UserParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
@@ -44,18 +43,13 @@ class PermissionGroupCommands extends BaseModule
     {
         $permissionGroupCollection = PermissionGroupCollection::fromContainer($container);
 
-        CommandHandler::fromContainer($container)->registerCommand('lsgroups',
+        CommandRegistrar::fromContainer($container)->register('lsgroups',
             new Command(
                 [$this, 'lsgroupsCommand'],
-                new ParameterStrategy(0, 0),
-                new CommandHelp([
-                    'Shows the available groups. No arguments.'
-                ]),
-                'lsgroups'
-            ),
-            ['lsg']);
+                new ParameterStrategy(0, 0)
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('validate',
+        CommandRegistrar::fromContainer($container)->register('validate',
             new Command(
                 [$this, 'validateCommand'],
                 [
@@ -66,81 +60,50 @@ class PermissionGroupCommands extends BaseModule
                     new ParameterStrategy(1, 1, [
                         'permission' => new StringParameter()
                     ])
-                ],
-                new CommandHelp([
-                    'Shows if validation passes for a certain permission. Usage: validate [permission] ([username])'
-                ])
-            ),
-            ['val', 'v']);
+                ]
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('creategroup',
+        CommandRegistrar::fromContainer($container)->register('creategroup',
             new Command(
                 [$this, 'creategroupCommand'],
                 new ParameterStrategy(1, 1, [
                     'groupName' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Creates a permission group. Usage: creategroup [group name]'
-                ]),
-                'creategroup'
-            ),
-            ['newgroup', '+group', '+g', 'addgroup']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('delgroup',
+        CommandRegistrar::fromContainer($container)->register('delgroup',
             new Command(
                 [$this, 'delgroupCommand'],
                 new ParameterStrategy(1, 1, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-                ]),
-                new CommandHelp([
-                    'Deletes a permission group. Usage: delgroup [group name]'
-                ]),
-                'delgroup'
-            ),
-            ['rmgroup', 'rmg', 'removegroup', '-group', '-g']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('linkgroup',
+        CommandRegistrar::fromContainer($container)->register('linkgroup',
             new Command(
                 [$this, 'linkgroupCommand'],
                 new ParameterStrategy(1, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'channel' => new JoinedChannelParameter(Database::fromContainer($container))
-                ]),
-                new CommandHelp([
-                    'Links a channel to a permission group, so a group only takes effect in said channel. Usage: linkgroup [group name] ([channel name])',
-                    'The channel to be linked, if specified, must be joined by the bot for this command to work.'
-                ]),
-                'linkgroup'
-            ),
-            ['lg']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('unlinkgroup',
+        CommandRegistrar::fromContainer($container)->register('unlinkgroup',
             new Command(
                 [$this, 'unlinkgroupCommand'],
                 new ParameterStrategy(1, 2, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
                     'channel' => new JoinedChannelParameter(Database::fromContainer($container))
-                ]),
-                new CommandHelp([
-                    'Unlinks a channel from a permission group, so the group no longer takes effect in said channel. Usage: unlinkgroup [group name] ([channel name])',
-                    'The channel to be linked, if specified, must be joined by the bot for this command to work.'
-                ]),
-                'unlinkgroup'
-            ),
-            ['ulg']);
+                ])
+            ));
 
-        CommandHandler::fromContainer($container)->registerCommand('groupinfo',
+        CommandRegistrar::fromContainer($container)->register('groupinfo',
             new Command(
                 [$this, 'groupinfoCommand'],
                 new ParameterStrategy(1, 1, [
                     'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
-                ]),
-                new CommandHelp([
-                    'Shows info about a group. Usage: groupinfo [group name]'
-                ]),
-                'groupinfo'
-            ),
-            ['gi']);
+                ])
+            ));
 
         $this->setContainer($container);
     }
@@ -175,6 +138,7 @@ class PermissionGroupCommands extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $source
      * @param User $user
@@ -316,6 +280,7 @@ class PermissionGroupCommands extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $source
      * @param User $user

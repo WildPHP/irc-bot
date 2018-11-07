@@ -12,7 +12,7 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
+use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\Commands\CommandHelp;
 use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\ComponentContainer;
@@ -58,7 +58,7 @@ class CommandHandlerTest extends TestCase
 	public function testRegisterCommand()
 	{
 		$collection = new \Yoshi2889\Collections\Collection(Types::instanceof(Command::class));
-		$commandHandler = new CommandHandler($this->componentContainer, $collection);
+		$commandHandler = new CommandRunner($this->componentContainer, $collection);
 
 		self::assertEquals(0, $collection->count());
 		$commandHelp = new CommandHelp();
@@ -81,7 +81,7 @@ class CommandHandlerTest extends TestCase
 	public function testAlias()
 	{
 		$collection = new \Yoshi2889\Collections\Collection(Types::instanceof(Command::class));
-		$commandHandler = new CommandHandler($this->componentContainer, $collection);
+		$commandHandler = new CommandRunner($this->componentContainer, $collection);
 
 		self::assertEquals(0, $collection->count());
 		$commandHelp = new CommandHelp();
@@ -106,7 +106,7 @@ class CommandHandlerTest extends TestCase
 	public function testParseAndRun()
 	{
 		$collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
-		$commandHandler = new CommandHandler($this->componentContainer, $collection);
+		$commandHandler = new CommandRunner($this->componentContainer, $collection);
 
 		$commandHelp = new CommandHelp();
 		$commandHelp->append('Test');
@@ -176,7 +176,7 @@ class CommandHandlerTest extends TestCase
 	public function testParseCommandFromMessage()
 	{
 		$collection = new \Yoshi2889\Collections\Collection(Types:: instanceof (Command::class));
-		$commandHandler = new CommandHandler($this->componentContainer, $collection);
+		$commandHandler = new CommandRunner($this->componentContainer, $collection);
 
 		// Expected behavior of command and argument extraction.
 		$args = [];

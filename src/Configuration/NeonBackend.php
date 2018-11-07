@@ -40,22 +40,6 @@ class NeonBackend implements ConfigurationBackendInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @return array
-     */
-    protected function parseNeonData(string $data): array
-    {
-        $decodedData = Neon::decode($data);
-
-        if (empty($decodedData)) {
-            return [];
-        }
-
-        return $decodedData;
-    }
-
-    /**
      * @param string $file
      *
      * @return string
@@ -89,5 +73,21 @@ class NeonBackend implements ConfigurationBackendInterface
     public function setConfigFile(string $configFile)
     {
         $this->configFile = $configFile;
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return array
+     */
+    protected function parseNeonData(string $data): array
+    {
+        $decodedData = Neon::decode($data);
+
+        if (empty($decodedData)) {
+            return [];
+        }
+
+        return $decodedData;
     }
 }

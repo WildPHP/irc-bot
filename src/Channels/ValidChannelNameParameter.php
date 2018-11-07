@@ -8,8 +8,7 @@
 
 namespace WildPHP\Core\Channels;
 
-
-use WildPHP\Core\Commands\Parameter;
+use WildPHP\Commands\Parameters\Parameter;
 
 class ValidChannelNameParameter extends Parameter
 {

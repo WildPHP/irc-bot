@@ -6,17 +6,18 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Connection\Capabilities;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\ACCOUNT;
+use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
+use WildPHP\Messages\Account;
 
 class AccountNotifyHandler extends BaseModule
 {
@@ -35,6 +36,7 @@ class AccountNotifyHandler extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param ACCOUNT $ircMessage
      * @param Queue $queue

@@ -98,7 +98,7 @@ class User
             unset($data['id']);
             $db->insert('users', [$data]);
 
-            return (int) $db->id();
+            return (int)$db->id();
         }
 
         $db->update('users', $data, ['id' => $user->getId()]);
@@ -120,35 +120,19 @@ class User
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getHostname(): ?string
+    public function getId(): int
     {
-        return $this->hostname;
+        return $this->id;
     }
 
     /**
-     * @param string $hostname
+     * @param int $id
      */
-    public function setHostname(?string $hostname)
+    public function setId(int $id): void
     {
-        $this->hostname = $hostname;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(?string $username)
-    {
-        $this->username = $username;
+        $this->id = $id;
     }
 
     /**
@@ -170,6 +154,38 @@ class User
     /**
      * @return string
      */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(?string $username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostname(): ?string
+    {
+        return $this->hostname;
+    }
+
+    /**
+     * @param string $hostname
+     */
+    public function setHostname(?string $hostname)
+    {
+        $this->hostname = $hostname;
+    }
+
+    /**
+     * @return string
+     */
     public function getIrcAccount(): ?string
     {
         return $this->ircAccount;
@@ -181,21 +197,5 @@ class User
     public function setIrcAccount(?string $ircAccount)
     {
         $this->ircAccount = $ircAccount;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 }

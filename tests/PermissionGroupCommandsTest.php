@@ -12,7 +12,7 @@ use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelCollection;
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
+use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\NeonBackend;
@@ -52,7 +52,7 @@ class PermissionGroupCommandsTest extends TestCase
 		$this->container = new ComponentContainer();
 		$this->container->add(new EventEmitter());
 		$this->container->add(new Logger('wildphp'));
-		$this->container->add(new CommandHandler($this->container, new Collection(Types::instanceof(Command::class))));
+		$this->container->add(new CommandRunner($this->container, new Collection(Types::instanceof(Command::class))));
 		$permissionGroupsCollection = new PermissionGroupCollection();
 		$this->container->add($permissionGroupsCollection);
 		

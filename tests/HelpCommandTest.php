@@ -11,7 +11,7 @@ use ValidationClosures\Types;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
+use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\Commands\HelpCommand;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Connection\Queue;
@@ -45,7 +45,7 @@ class HelpCommandTest extends TestCase
 		$this->container = new ComponentContainer();
 		$this->container->add(new EventEmitter());
 		$this->container->add(new Logger('wildphp'));
-		$this->container->add(new CommandHandler($this->container, new Collection(Types:: instanceof (Command::class))));
+		$this->container->add(new CommandRunner($this->container, new Collection(Types:: instanceof (Command::class))));
 		$this->container->add(new Queue());
 
 		$this->channel = new Channel('#test', new UserCollection(), new ChannelModes(''));

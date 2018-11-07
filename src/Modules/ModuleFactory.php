@@ -99,17 +99,6 @@ class ModuleFactory implements ComponentInterface
     /**
      * @param string $class
      *
-     * @return bool
-     * @throws \Yoshi2889\Container\ContainerException
-     */
-    public function isModuleLoaded(string $class): bool
-    {
-        return $this->loadedModules->has($class);
-    }
-
-    /**
-     * @param string $class
-     *
      * @return false|object
      * @throws \Yoshi2889\Container\ContainerException
      */
@@ -120,5 +109,16 @@ class ModuleFactory implements ComponentInterface
         }
 
         return $this->loadedModules->get($class);
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return bool
+     * @throws \Yoshi2889\Container\ContainerException
+     */
+    public function isModuleLoaded(string $class): bool
+    {
+        return $this->loadedModules->has($class);
     }
 }

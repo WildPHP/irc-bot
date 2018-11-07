@@ -10,11 +10,11 @@ namespace WildPHP\Core\Connection;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\PRIVMSG;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleInterface;
+use WildPHP\Messages\Privmsg;
 use Yoshi2889\Container\ComponentTrait;
 
 class MessageLogger implements ModuleInterface

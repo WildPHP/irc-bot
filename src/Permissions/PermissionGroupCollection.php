@@ -40,6 +40,16 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
     }
 
     /**
+     * @param string $groupName
+     * @param PermissionGroup $group
+     */
+    public function saveGroupData(string $groupName, PermissionGroup $group)
+    {
+        $dataStorage = DataStorageFactory::getStorage('permissiongroups');
+        $dataStorage->set($groupName, $group->toArray());
+    }
+
+    /**
      * @inheritdoc
      */
     public function offsetUnset($index)
@@ -70,16 +80,6 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
         }
 
         return $dataStorage->get($groupName);
-    }
-
-    /**
-     * @param string $groupName
-     * @param PermissionGroup $group
-     */
-    public function saveGroupData(string $groupName, PermissionGroup $group)
-    {
-        $dataStorage = DataStorageFactory::getStorage('permissiongroups');
-        $dataStorage->set($groupName, $group->toArray());
     }
 
     /**

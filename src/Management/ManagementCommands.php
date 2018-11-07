@@ -10,13 +10,12 @@
 namespace WildPHP\Core\Management;
 
 
+use WildPHP\Commands\Command;
+use WildPHP\Commands\Parameters\StringParameter;
+use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandHandler;
-use WildPHP\Core\Commands\CommandHelp;
+use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Commands\JoinedChannelParameter;
-use WildPHP\Core\Commands\ParameterStrategy;
-use WildPHP\Core\Commands\StringParameter;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\Queue;
@@ -37,7 +36,7 @@ class ManagementCommands extends BaseModule
      */
     public function __construct(ComponentContainer $container)
     {
-        CommandHandler::fromContainer($container)->registerCommand('join',
+        CommandRegistrar::fromContainer($container)->register('join',
             new Command(
                 [$this, 'joinCommand'],
                 new ParameterStrategy(1, 5, [
@@ -46,14 +45,10 @@ class ManagementCommands extends BaseModule
                     'channel3' => new StringParameter(),
                     'channel4' => new StringParameter(),
                     'channel5' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Joins the specified channel(s). Usage: join [channel] ([channel]) ([channel]) ... (up to 5 channels)'
-                ]),
-                'join'
+                ])
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('part',
+        CommandRegistrar::fromContainer($container)->register('part',
             new Command(
                 [$this, 'partCommand'],
                 new ParameterStrategy(0, 5, [
@@ -62,52 +57,36 @@ class ManagementCommands extends BaseModule
                     'channel3' => new JoinedChannelParameter(Database::fromContainer($container)),
                     'channel4' => new JoinedChannelParameter(Database::fromContainer($container)),
                     'channel5' => new JoinedChannelParameter(Database::fromContainer($container))
-                ]),
-                new CommandHelp([
-                    'Parts (leaves) the specified channel(s). Usage: part [channel] ([channel]) ([channel]) ... (up to 5 channels)',
-                    'Channels have to be joined in order to be able to part them.'
-                ]),
-                'part'
+                ])
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('quit',
+        CommandRegistrar::fromContainer($container)->register('quit',
             new Command(
                 [$this, 'quitCommand'],
                 new ParameterStrategy(0, -1, [
                     'message' => new StringParameter()
-                ], true),
-                new CommandHelp([
-                    'Shuts down the bot and leaves the IRC network. Usage: quit ([message])'
-                ]),
-                'quit'
+                ], true)
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('nick',
+        CommandRegistrar::fromContainer($container)->register('nick',
             new Command(
                 [$this, 'nickCommand'],
                 new ParameterStrategy(0, -1, [
                     'newNickname' => new StringParameter()
-                ]),
-                new CommandHelp([
-                    'Changes the nickname of the bot. Usage: nick [nickname]'
-                ]),
-                'nick'
+                ])
             ));
 
-        CommandHandler::fromContainer($container)->registerCommand('clearqueue',
+        CommandRegistrar::fromContainer($container)->register('clearqueue',
             new Command(
                 [$this, 'clearqueueCommand'],
-                new ParameterStrategy(0, 0),
-                new CommandHelp([
-                    'Clears the send queue.'
-                ]),
-                'clearqueue'
+                new ParameterStrategy(0, 0)
             ));
 
         $this->setContainer($container);
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $source
      * @param User $user
@@ -127,29 +106,6 @@ class ManagementCommands extends BaseModule
             ->quit($message);
     }
 
-    /**
-     * @param array $channels
-     *
-     * @return array
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    protected function validateChannels(array $channels): array
-    {
-        $validChannels = [];
-        $serverChannelPrefix = Configuration::fromContainer($this->getContainer())['serverConfig']['chantypes'];
-
-        foreach ($channels as $channel) {
-            if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix) {
-                continue;
-            }
-
-            $validChannels[] = $channel;
-        }
-
-        return $validChannels;
-    }
-
-    /** @noinspection PhpUnusedParameterInspection */
     /**
      * @param Channel $source
      * @param User $user
@@ -174,6 +130,30 @@ class ManagementCommands extends BaseModule
                     'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
                         $diff));
         }
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+
+    /**
+     * @param array $channels
+     *
+     * @return array
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    protected function validateChannels(array $channels): array
+    {
+        $validChannels = [];
+        $serverChannelPrefix = Configuration::fromContainer($this->getContainer())['serverConfig']['chantypes'];
+
+        foreach ($channels as $channel) {
+            if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix) {
+                continue;
+            }
+
+            $validChannels[] = $channel;
+        }
+
+        return $validChannels;
     }
 
     /**
@@ -216,6 +196,7 @@ class ManagementCommands extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $source
      * @param User $user
@@ -230,6 +211,7 @@ class ManagementCommands extends BaseModule
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
      * @param Channel $source
      * @param User $user

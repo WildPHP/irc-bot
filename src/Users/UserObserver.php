@@ -11,17 +11,17 @@ namespace WildPHP\Core\Users;
 
 use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\IRCMessages\JOIN;
-use WildPHP\Core\Connection\IRCMessages\NICK;
-use WildPHP\Core\Connection\IRCMessages\RPL_ENDOFNAMES;
-use WildPHP\Core\Connection\IRCMessages\RPL_NAMREPLY;
-use WildPHP\Core\Connection\IRCMessages\RPL_WHOSPCRPL;
 use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\StateException;
+use WildPHP\Messages\Join;
+use WildPHP\Messages\Nick;
+use WildPHP\Messages\RPL\EndOfNames;
+use WildPHP\Messages\RPL\NamReply;
+use WildPHP\Messages\RPL\WhosPcRpl;
 
 class UserObserver extends BaseModule
 {
@@ -83,11 +83,11 @@ class UserObserver extends BaseModule
     }
 
     /**
-     * @param RPL_NAMREPLY $ircMessage
+     * @param NamReply $ircMessage
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      */
-    public function processNamesReply(RPL_NAMREPLY $ircMessage)
+    public function processNamesReply(NamReply $ircMessage)
     {
         $db = Database::fromContainer($this->getContainer());
         $nicknames = $ircMessage->getNicknames();
@@ -128,22 +128,22 @@ class UserObserver extends BaseModule
     }
 
     /**
-     * @param RPL_ENDOFNAMES $ircMessage
+     * @param EndOfNames $ircMessage
      * @param Queue $queue
      */
-    public function sendInitialWhoxMessage(RPL_ENDOFNAMES $ircMessage, Queue $queue)
+    public function sendInitialWhoxMessage(EndOfNames $ircMessage, Queue $queue)
     {
         $channel = $ircMessage->getChannel();
         $queue->who($channel, '%nuhaf');
     }
 
     /**
-     * @param RPL_WHOSPCRPL $ircMessage
+     * @param WhosPcRpl $ircMessage
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      * @throws UserNotFoundException
      */
-    public function processWhoxReply(RPL_WHOSPCRPL $ircMessage)
+    public function processWhoxReply(WhosPcRpl $ircMessage)
     {
         $db = Database::fromContainer($this->getContainer());
 

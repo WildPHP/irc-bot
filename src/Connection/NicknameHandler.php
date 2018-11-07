@@ -15,6 +15,7 @@ use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleInterface;
+use WildPHP\Messages\Generics\IncomingMessage;
 use Yoshi2889\Container\ComponentTrait;
 
 class NicknameHandler implements ModuleInterface
@@ -69,12 +70,13 @@ class NicknameHandler implements ModuleInterface
     }
 
     /** @noinspection PhpUnusedParameterInspection */
+
     /**
-     * @param IncomingIrcMessage $ircMessage
+     * @param IncomingMessage $ircMessage
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function chooseAlternateNickname(IncomingIrcMessage $ircMessage, Queue $queue)
+    public function chooseAlternateNickname(IncomingMessage $ircMessage, Queue $queue)
     {
         if (empty($this->tryNicknames)) {
             $this->tryNicknames = $this->nicknames;

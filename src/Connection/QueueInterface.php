@@ -9,16 +9,16 @@
 
 namespace WildPHP\Core\Connection;
 
-use WildPHP\Core\Connection\IRCMessages\SendableMessage;
+use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
 interface QueueInterface
 {
     /**
-     * @param SendableMessage $command
+     * @param OutgoingMessageInterface $command
      *
      * @return void
      */
-    public function insertMessage(SendableMessage $command);
+    public function insertMessage(OutgoingMessageInterface $command);
 
     /**
      * @param QueueItem $item

@@ -11,11 +11,11 @@ namespace WildPHP\Core\Connection;
 
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\IRCMessages\PING;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
+use WildPHP\Messages\Ping;
 
 class PingPongHandler extends BaseModule
 {
@@ -71,15 +71,6 @@ class PingPongHandler extends BaseModule
         $this->registerPingLoop();
     }
 
-    /**
-     * @param PING $pingMessage
-     * @param Queue $queue
-     */
-    public function sendPong(PING $pingMessage, Queue $queue)
-    {
-        $queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
-    }
-
     public function updateLastMessageReceived()
     {
         $this->lastMessageReceived = time();
@@ -116,6 +107,26 @@ class PingPongHandler extends BaseModule
      * @throws \Yoshi2889\Container\NotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
+    protected function forceDisconnect()
+    {
+        Logger::fromContainer($this->getContainer())
+            ->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
+
+        Queue::fromContainer($this->getContainer())
+            ->quit('No vital signs detected, closing link...');
+
+        EventEmitter::fromContainer($this->getContainer())
+            ->emit('irc.force.close');
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
     protected function sendPing()
     {
         Logger::fromContainer($this->getContainer())
@@ -132,23 +143,12 @@ class PingPongHandler extends BaseModule
     }
 
     /**
-     * @return bool
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param PING $pingMessage
+     * @param Queue $queue
      */
-    protected function forceDisconnect()
+    public function sendPong(PING $pingMessage, Queue $queue)
     {
-        Logger::fromContainer($this->getContainer())
-            ->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
-
-        Queue::fromContainer($this->getContainer())
-            ->quit('No vital signs detected, closing link...');
-
-        EventEmitter::fromContainer($this->getContainer())
-            ->emit('irc.force.close');
-
-        return true;
+        $queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
     }
 
     /**

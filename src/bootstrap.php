@@ -8,10 +8,10 @@
 
 use React\EventLoop\Factory as LoopFactory;
 use WildPHP\Core\Channels\ChannelCollection;
-use WildPHP\Core\Commands\CommandHandler;
+use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\CapabilityHandler;
+use WildPHP\Core\Connection\Capabilities\CapabilityHandler;
 use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\ConnectorFactory;
 use WildPHP\Core\Connection\IrcConnection;
@@ -21,7 +21,6 @@ use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Permissions\PermissionGroup;
-use WildPHP\Core\Permissions\Validator;
 
 /**
  * @return Logger
@@ -130,7 +129,8 @@ function createNewInstance(
     $componentContainer->add(new CapabilityHandler($componentContainer));
     $componentContainer->add(setupPermissionGroupCollection());
     $componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
-    $componentContainer->add(new Validator($componentContainer, $configuration['owner']));
+    //$componentContainer->add(new Validator($componentContainer, $configuration['owner']));
+    $componentContainer->add(new \WildPHP\Core\Commands\CommandRegistrar(new \WildPHP\Commands\CommandProcessor()));
 
     $componentContainer->add(new \WildPHP\Core\Database\Database(new \Medoo\Medoo([
         'database_type' => 'sqlite',
@@ -151,15 +151,14 @@ function createNewInstance(
     $modules = array_merge($modules, [
         \WildPHP\Core\Connection\Parser::class,
         \WildPHP\Core\Connection\PingPongHandler::class,
-        //\WildPHP\Core\Users\UserStateManager::class,
         \WildPHP\Core\Users\BotStateManager::class,
         \WildPHP\Core\Connection\NicknameHandler::class,
         \WildPHP\Core\Connection\MessageLogger::class,
-        \WildPHP\Core\Connection\AccountNotifyHandler::class,
-        \WildPHP\Core\Connection\SASL::class,
+        \WildPHP\Core\Connection\Capabilities\AccountNotifyHandler::class,
+        \WildPHP\Core\Connection\Capabilities\SASL::class,
         \WildPHP\Core\Users\UserObserver::class,
         \WildPHP\Core\Channels\ChannelObserver::class,
-        CommandHandler::class,
+        CommandRunner::class,
         \WildPHP\Core\Commands\HelpCommand::class,
         \WildPHP\Core\Permissions\PermissionGroupCommands::class,
         \WildPHP\Core\Permissions\PermissionCommands::class,
