@@ -16,9 +16,9 @@ interface QueueInterface
     /**
      * @param OutgoingMessageInterface $command
      *
-     * @return void
+     * @return QueueItem
      */
-    public function insertMessage(OutgoingMessageInterface $command);
+    public function insertMessage(OutgoingMessageInterface $command): QueueItem;
 
     /**
      * @param QueueItem $item

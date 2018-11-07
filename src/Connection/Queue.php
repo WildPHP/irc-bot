@@ -169,7 +169,7 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
      *
      * @return QueueItem
      */
-    public function insertMessage(OutgoingMessageInterface $command)
+    public function insertMessage(OutgoingMessageInterface $command): QueueItem
     {
         $time = $this->calculateNextMessageTime();
         $item = new QueueItem($command, $time);
