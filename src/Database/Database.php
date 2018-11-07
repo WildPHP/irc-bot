@@ -78,8 +78,6 @@ class Database implements ComponentInterface
         $medoo->query('
             delete from users;');
         $medoo->query('
-            delete from channels;');
-        $medoo->query('
             delete from user_channel_relationships;');
         $medoo->query('
             delete from server_config;');
@@ -171,7 +169,7 @@ class Database implements ComponentInterface
      */
     public function count(string $table, array $where = null)
     {
-        return $this->medoo->__call('count', [$table, null, null, $where]);
+        return $this->medoo->count($table, $where);
     }
 
     /**
@@ -182,7 +180,7 @@ class Database implements ComponentInterface
      */
     public function min(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('min', [$table, null, $column, $where]);
+        return $this->medoo->min($table, $column, $where);
     }
 
     /**
@@ -193,7 +191,7 @@ class Database implements ComponentInterface
      */
     public function max(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('max', [$table, null, $column, $where]);
+        return $this->medoo->max($table, $column, $where);
     }
 
     /**
@@ -204,7 +202,7 @@ class Database implements ComponentInterface
      */
     public function avg(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('avg', [$table, null, $column, $where]);
+        return $this->medoo->avg($table, $column, $where);
     }
 
     /**
@@ -215,7 +213,7 @@ class Database implements ComponentInterface
      */
     public function sum(string $table, string $column, array $where = null)
     {
-        return $this->medoo->__call('sum', [$table, $column, $where]);
+        return $this->medoo->sum($table, $column, $where);
     }
 
     /**
