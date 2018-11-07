@@ -23,7 +23,7 @@ interface QueueInterface
     /**
      * @param QueueItem $item
      *
-     * @return void
+     * @return bool
      */
     public function removeMessage(QueueItem $item);
 
