@@ -69,7 +69,7 @@ class PermissionGroupCollection extends Collection implements ComponentInterface
     /**
      * @param string $groupName
      *
-     * @return array
+     * @return array|null|false
      */
     public function getStoredGroupData(string $groupName): ?array
     {
