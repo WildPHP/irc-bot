@@ -86,7 +86,7 @@ function setupIrcConnection(ComponentContainer $container, ConnectionDetails $co
         )
     );
 
-    $promise->otherwise(function (\Throwable $e) use ($container, $loop) {
+    $promise->then(null, function (\Throwable $e) use ($container, $loop) {
         Logger::fromContainer($container)->error('An error occurred in the IRC connection:', [
             'message' => $e->getMessage(),
             'file' => $e->getFile(),

@@ -185,7 +185,7 @@ class IrcConnection implements ComponentInterface
     /**
      * @param ConnectorInterface $connectorInterface
      *
-     * @return Promise|\React\Promise\PromiseInterface
+     * @return \React\Promise\PromiseInterface
      */
     public function connect(ConnectorInterface $connectorInterface)
     {
