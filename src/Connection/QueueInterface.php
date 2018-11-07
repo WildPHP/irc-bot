@@ -30,7 +30,7 @@ interface QueueInterface
     /**
      * @param int $index
      *
-     * @return void
+     * @return bool
      */
     public function removeMessageByIndex(int $index);
 
