@@ -189,7 +189,7 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
 
         $numItems = $this->count();
         $numItems = $numItems - $this->floodControlMessageThreshold;
-        $messagePairs = round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
+        $messagePairs = (int) round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
 
         // For every message pair, we add the specified delay.
         $totalDelay = $messagePairs * $this->messageDelayInSeconds;
