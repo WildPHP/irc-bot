@@ -25,6 +25,14 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     use ContainerTrait;
 
     /**
+     * Array of built-in capability handlers
+     * @var string[]
+     */
+    protected $capabilities = [
+        Sasl::class
+    ];
+
+    /**
      * @var array
      */
     protected $availableCapabilities = [];
@@ -45,34 +53,55 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     protected $notAcknowledgedCapabilities = [];
 
     /**
-     * @var bool
-     */
-    protected $saslIsComplete = false;
-
-    /**
      * CapabilityHandler constructor.
      *
      * @param ComponentContainer $container
      * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Yoshi2889\Container\ContainerException
      */
     public function __construct(ComponentContainer $container)
     {
+        $container->add($this);
         $eventEmitter = EventEmitter::fromContainer($container);
         $eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
         $eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
-        $eventEmitter->on('irc.cap.acknowledged', [$this, 'tryEndNegotiation']);
-        $eventEmitter->on('irc.cap.notAcknowledged', [$this, 'tryEndNegotiation']);
-        $eventEmitter->on('irc.sasl.complete', [$this, 'setSaslHasCompleted']);
+        $eventEmitter->on('irc.line.in', [$this, 'tryEndNegotiation']);
         $this->setContainer($container);
 
         $this->requestCapability('extended-join');
         $this->requestCapability('account-notify');
         $this->requestCapability('multi-prefix');
 
+        $this->initializeCapabilityHandlers();
+
         Logger::fromContainer($this->getContainer())
             ->debug('[CapabilityHandler] Capability negotiation started.');
         Queue::fromContainer($container)
             ->cap('LS');
+    }
+
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function initializeCapabilityHandlers()
+    {
+        foreach ($this->capabilities as $capability) {
+            /** @var CapabilityInterface $capability */
+            $capability = new $capability($this->getContainer());
+            $capabilities = $capability->getCapabilities();
+            $this->requestCapabilities($capabilities);
+        }
+    }
+
+    /**
+     * @param array $capabilities
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
+    public function requestCapabilities(array $capabilities)
+    {
+        foreach ($capabilities as $capability) {
+            $this->requestCapability($capability);
+        }
     }
 
     /**
@@ -260,30 +289,21 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     /**
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function setSaslHasCompleted()
-    {
-        $this->saslIsComplete = true;
-        $this->tryEndNegotiation();
-    }
-
-    /**
-     * @return bool
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function tryEndNegotiation(): bool
+    public function tryEndNegotiation(): void
     {
         if (!$this->canEndNegotiation()) {
-            return false;
+            return;
         }
 
         Logger::fromContainer($this->getContainer())
             ->debug('Ending capability negotiation.');
         Queue::fromContainer($this->getContainer())
             ->cap('END');
+
         EventEmitter::fromContainer($this->getContainer())
             ->emit('irc.cap.end');
-
-        return true;
+        EventEmitter::fromContainer($this->getContainer())
+            ->removeListener('irc.line.in', [$this, 'tryEndNegotiation']);
     }
 
     /**
@@ -291,7 +311,14 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
      */
     public function canEndNegotiation(): bool
     {
-        return empty($this->queuedCapabilities) && $this->saslIsComplete;
+        /** @var CapabilityInterface $capability */
+        foreach ($this->capabilities as $capability) {
+            if (!$capability->finished()) {
+                return false;
+            }
+        }
+
+        return empty($this->queuedCapabilities);
     }
 
     /**

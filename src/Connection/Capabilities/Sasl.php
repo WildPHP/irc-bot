@@ -9,8 +9,6 @@
 
 namespace WildPHP\Core\Connection\Capabilities;
 
-
-use Evenement\EventEmitterInterface;
 use Evenement\EventEmitterTrait;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
@@ -18,14 +16,28 @@ use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Messages\Authenticate;
 use WildPHP\Messages\Generics\IncomingMessage;
 
-class SASL extends BaseModule implements EventEmitterInterface
+class Sasl implements CapabilityInterface
 {
     use ContainerTrait;
     use EventEmitterTrait;
+
+    /**
+     * @var bool
+     */
+    protected $isAuthenticated = false;
+
+    /**
+     * @var bool
+     */
+    protected $failed = false;
+
+    /**
+     * @var bool
+     */
+    protected $complete = false;
 
     /**
      * @var array
@@ -53,10 +65,9 @@ class SASL extends BaseModule implements EventEmitterInterface
             empty(Configuration::fromContainer($container)['sasl']['username']) ||
             empty(Configuration::fromContainer($container)['sasl']['password'])
         ) {
-            $this->setContainer($container);
             Logger::fromContainer($container)
                 ->info('[SASL] Not initialized because no credentials were provided.');
-            $this->completeSasl();
+            $this->complete = true;
 
             return;
         }
@@ -82,15 +93,6 @@ class SASL extends BaseModule implements EventEmitterInterface
     }
 
     /**
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function completeSasl()
-    {
-        EventEmitter::fromContainer($this->getContainer())
-            ->emit('irc.sasl.complete');
-    }
-
-    /**
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
      */
@@ -102,11 +104,11 @@ class SASL extends BaseModule implements EventEmitterInterface
     }
 
     /**
-     * @param AUTHENTICATE $message
+     * @param Authenticate $message
      * @param Queue $queue
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function sendCredentials(AUTHENTICATE $message, Queue $queue)
+    public function sendCredentials(Authenticate $message, Queue $queue)
     {
         if ($message->getResponse() != '+') {
             return;
@@ -152,11 +154,30 @@ class SASL extends BaseModule implements EventEmitterInterface
         $this->completeSasl();
     }
 
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
+    public function completeSasl()
     {
-        return WPHP_VERSION;
+        Logger::fromContainer($this->getContainer())
+            ->info('[SASL] Ended.');
+
+        EventEmitter::fromContainer($this->getContainer())
+            ->removeListener('irc.line.in', [$this, 'handleResponse']);
+
+        $this->complete = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function finished(): bool
+    {
+        return $this->complete;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCapabilities(): array
+    {
+        return ['sasl'];
     }
 }

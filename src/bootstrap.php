@@ -126,7 +126,7 @@ function createNewInstance(
 
     $componentContainer->add(new Queue());
     $componentContainer->add(new ChannelCollection());
-    $componentContainer->add(new CapabilityHandler($componentContainer));
+    new CapabilityHandler($componentContainer);
     $componentContainer->add(setupPermissionGroupCollection());
     $componentContainer->add(setupIrcConnection($componentContainer, $connectionDetails));
     //$componentContainer->add(new Validator($componentContainer, $configuration['owner']));
@@ -155,7 +155,6 @@ function createNewInstance(
         \WildPHP\Core\Connection\NicknameHandler::class,
         \WildPHP\Core\Connection\MessageLogger::class,
         \WildPHP\Core\Connection\Capabilities\AccountNotifyHandler::class,
-        \WildPHP\Core\Connection\Capabilities\SASL::class,
         \WildPHP\Core\Users\UserObserver::class,
         \WildPHP\Core\Channels\ChannelObserver::class,
         CommandRunner::class,
