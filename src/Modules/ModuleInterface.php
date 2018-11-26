@@ -16,4 +16,9 @@ interface ModuleInterface extends ComponentInterface
      * @return string
      */
     public static function getSupportedVersionConstraint(): string;
+
+    /**
+     * @return array
+     */
+    public static function getDependentModules(): array;
 }

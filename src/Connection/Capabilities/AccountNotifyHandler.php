@@ -39,12 +39,11 @@ class AccountNotifyHandler extends BaseModule
 
     /**
      * @param ACCOUNT $ircMessage
-     * @param Queue $queue
      * @throws \WildPHP\Core\StateException
      * @throws \WildPHP\Core\Users\UserNotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function updateUserIrcAccount(ACCOUNT $ircMessage, Queue $queue)
+    public function updateUserIrcAccount(ACCOUNT $ircMessage)
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
         $db = Database::fromContainer($this->getContainer());
@@ -62,5 +61,17 @@ class AccountNotifyHandler extends BaseModule
     public static function getSupportedVersionConstraint(): string
     {
         return WPHP_VERSION;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDependentModules(): array
+    {
+        return [
+            EventEmitter::class,
+            Database::class,
+            Logger::class
+        ];
     }
 }

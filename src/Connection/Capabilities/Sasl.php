@@ -154,6 +154,9 @@ class Sasl implements CapabilityInterface
         $this->completeSasl();
     }
 
+    /**
+     * @throws \Yoshi2889\Container\NotFoundException
+     */
     public function completeSasl()
     {
         Logger::fromContainer($this->getContainer())

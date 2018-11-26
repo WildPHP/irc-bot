@@ -10,7 +10,6 @@ namespace WildPHP\Core\Connection\Capabilities;
 
 
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Messages\Cap;
 
 interface CapabilityInterface
 {

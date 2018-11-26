@@ -70,15 +70,17 @@ class ModuleFactory implements ComponentInterface
             throw new ModuleInitializationException('Cannot initialize modules twice!');
         }
 
-        $reflection = new \ReflectionClass($entryClassName);
-
-        if (!$reflection->implementsInterface(ModuleInterface::class)) {
+        if (!$this->validateModuleInterface($entryClassName)) {
             throw new ModuleInitializationException('The given class is not a (valid) WildPHP module!');
+        }
+
+        if (!$this->dependenciesSatisfied($entryClassName)) {
+            throw new ModuleInitializationException('The given module does not have all its dependencies satisfied!');
         }
 
         /** @noinspection PhpUndefinedMethodInspection */
         if (!Semver::satisfies(WPHP_VERSION, $entryClassName::getSupportedVersionConstraint())) {
-            throw new ModuleInitializationException('This module does not support this version of WildPHP');
+            throw new ModuleInitializationException('This module does not support this version of WildPHP!');
         }
 
         try {
@@ -94,6 +96,40 @@ class ModuleFactory implements ComponentInterface
 
         $this->loadedModules->add($object);
         return $object;
+    }
+
+    /**
+     * @param string $moduleClass
+     * @return bool
+     * @throws \ReflectionException
+     */
+    public function validateModuleInterface(string $moduleClass)
+    {
+        $reflection = new \ReflectionClass($moduleClass);
+
+        return $reflection->implementsInterface(ModuleInterface::class);
+    }
+
+    /**
+     * @param string $moduleClass
+     * @return bool
+     * @throws \ReflectionException
+     * @throws \Yoshi2889\Container\ContainerException
+     */
+    public function dependenciesSatisfied(string $moduleClass): bool
+    {
+        if (!$this->validateModuleInterface($moduleClass))
+            return false;
+
+        /** @var BaseModule $moduleClass */
+        $dependencies = $moduleClass::getDependentModules();
+
+        foreach ($dependencies as $dependency) {
+            if (!$this->getContainer()->has($dependency))
+                return false;
+        }
+
+        return true;
     }
 
     /**

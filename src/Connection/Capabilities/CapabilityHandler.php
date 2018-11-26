@@ -336,4 +336,16 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     {
         return WPHP_VERSION;
     }
+
+    /**
+     * @return array
+     */
+    public static function getDependentModules(): array
+    {
+        return [
+            EventEmitter::class,
+            Logger::class,
+            Queue::class
+        ];
+    }
 }

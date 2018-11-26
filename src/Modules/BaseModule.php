@@ -29,6 +29,11 @@ abstract class BaseModule implements ModuleInterface
     abstract public function __construct(ComponentContainer $container);
 
     /**
+     * @return array
+     */
+    abstract public static function getDependentModules(): array;
+
+    /**
      * @param array $checks
      * @param Channel $source
      * @param User $user

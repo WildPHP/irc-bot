@@ -65,4 +65,16 @@ class BotStateManager extends BaseModule
     {
         return WPHP_VERSION;
     }
+
+    /**
+     * @return array
+     */
+    public static function getDependentModules(): array
+    {
+        return [
+            Configuration::class,
+            EventEmitter::class,
+            Logger::class
+        ];
+    }
 }

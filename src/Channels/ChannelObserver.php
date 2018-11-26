@@ -334,4 +334,17 @@ class ChannelObserver extends BaseModule
     {
         return WPHP_VERSION;
     }
+
+    /**
+     * @return array
+     */
+    public static function getDependentModules(): array
+    {
+        return [
+            EventEmitter::class,
+            Database::class,
+            Logger::class,
+            Queue::class,
+        ];
+    }
 }
