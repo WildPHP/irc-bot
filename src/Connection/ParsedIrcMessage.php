@@ -15,14 +15,17 @@ class ParsedIrcMessage
      * @var array
      */
     public $tags = [];
+
     /**
      * @var string
      */
     public $prefix = '';
+
     /**
      * @var string
      */
     public $verb = '';
+
     /**
      * @var array
      */

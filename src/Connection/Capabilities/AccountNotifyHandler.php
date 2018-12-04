@@ -9,30 +9,42 @@
 namespace WildPHP\Core\Connection\Capabilities;
 
 
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use WildPHP\Core\Database\Database;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\Users\User;
 use WildPHP\Messages\Account;
 
-class AccountNotifyHandler extends BaseModule
+class AccountNotifyHandler
 {
-    use ContainerTrait;
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var Database
+     */
+    private $database;
 
     /**
      * AccountNotifyHandler constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param LoggerInterface $logger
+     * @param Database $database
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, Database $database)
     {
-        EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
-        $this->setContainer($container);
+        $eventEmitter->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
+        $this->eventEmitter = $eventEmitter;
+        $this->logger = $logger;
+        $this->database = $database;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
@@ -41,37 +53,16 @@ class AccountNotifyHandler extends BaseModule
      * @param ACCOUNT $ircMessage
      * @throws \WildPHP\Core\StateException
      * @throws \WildPHP\Core\Users\UserNotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function updateUserIrcAccount(ACCOUNT $ircMessage)
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $user = User::fromDatabase($db, ['nickname' => $nickname]);
-        Logger::fromContainer($this->getContainer())->debug('Updated irc account for userid ' . $user->getId());
+        $this->logger->debug('Updated irc account for userid ' . $user->getId());
         $user->setIrcAccount($ircMessage->getAccountName());
 
         User::toDatabase($db, $user);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            EventEmitter::class,
-            Database::class,
-            Logger::class
-        ];
     }
 }

@@ -9,22 +9,15 @@
 
 namespace WildPHP\Core\Connection;
 
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\ConnectorInterface;
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Messages\RPL\ISupport;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
-class IrcConnection implements ComponentInterface
+class IrcConnection implements IrcConnectionInterface
 {
-    use ComponentTrait;
-    use ContainerTrait;
 
     /**
      * @var Promise
@@ -34,105 +27,44 @@ class IrcConnection implements ComponentInterface
     /**
      * @var ConnectionDetails
      */
-    protected $connectionDetails;
+    private $connectionDetails;
 
     /**
-     * @param ComponentContainer $container
-     * @param ConnectionDetails $connectionDetails
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @var EventEmitterInterface
      */
-    public function __construct(ComponentContainer $container, ConnectionDetails $connectionDetails)
-    {
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in.005', [$this, 'handleServerConfig']);
-
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in.error', [$this, 'close']);
-
-        EventEmitter::fromContainer($container)
-            ->on('irc.force.close', [$this, 'close']);
-
-        EventEmitter::fromContainer($container)
-            ->on('stream.created', [$this, 'sendInitialConnectionDetails']);
-
-        $this->setContainer($container);
-        $this->setConnectionDetails($connectionDetails);
-    }
+    private $eventEmitter;
 
     /**
-     * @param Queue $queue
+     * @var LoggerInterface
      */
-    public function sendInitialConnectionDetails(Queue $queue)
-    {
-        $this->getContainer()->getLoop()
-            ->addPeriodicTimer(1, [$this, 'flushQueue']);
-
-        $connectionDetails = $this->getConnectionDetails();
-        if (!empty($connectionDetails->getPassword())) {
-            $queue->pass($connectionDetails->getPassword());
-        }
-
-        $queue->user(
-            $connectionDetails->getUsername(),
-            $connectionDetails->getHostname(),
-            $connectionDetails->getAddress(),
-            $connectionDetails->getRealname()
-        );
-        $queue->nick($connectionDetails->getWantedNickname());
-    }
+    private $logger;
 
     /**
-     * @return ConnectionDetails
-     */
-    public function getConnectionDetails(): ConnectionDetails
-    {
-        return $this->connectionDetails;
-    }
-
-    /**
+     * @param EventEmitterInterface $eventEmitter
      * @param ConnectionDetails $connectionDetails
      */
-    public function setConnectionDetails(ConnectionDetails $connectionDetails)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, ConnectionDetails $connectionDetails)
     {
+        $eventEmitter->on('irc.line.in.error', [$this, 'close']);
+        $eventEmitter->on('irc.line.out', [$this, 'writeQueueItem']);
+        $eventEmitter->on('irc.force.close', [$this, 'close']);
+
         $this->connectionDetails = $connectionDetails;
-    }
-
-    /**
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function flushQueue()
-    {
-        $queueItems = Queue::fromContainer($this->getContainer())->flush();
-
-        /** @var QueueItem $item */
-        foreach ($queueItems as $item) {
-            $verb = strtolower($item->getCommandObject()::getVerb());
-
-            EventEmitter::fromContainer($this->getContainer())
-                ->emit('irc.line.out', [$item, $this->getContainer()]);
-
-            EventEmitter::fromContainer($this->getContainer())
-                ->emit('irc.line.out.' . $verb, [$item, $this->getContainer()]);
-
-            if (!$item->isCancelled()) {
-                $this->write($item->getCommandObject());
-            }
-        }
+        $this->eventEmitter = $eventEmitter;
+        $this->logger = $logger;
     }
 
     /**
      * @param string $data
      *
      * @return \React\Promise\PromiseInterface
-     * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function write(string $data)
+    public function write(string $data): PromiseInterface
     {
         if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1) {
             $pieces = explode("\r", str_replace("\n", "\r", $data));
 
-            Logger::fromContainer($this->getContainer())
-                ->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
+            $this->logger->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
                     [
                         'pieces' => $pieces
                     ]);
@@ -141,11 +73,9 @@ class IrcConnection implements ComponentInterface
         }
 
         $promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data) {
-            EventEmitter::fromContainer($this->getContainer())
-                ->emit('stream.data.out', [$data]);
+            $this->eventEmitter->emit('stream.data.out', [$data]);
 
-            Logger::fromContainer($this->getContainer())
-                ->debug('>> ' . $data);
+            $this->logger->debug('>> ' . $data);
             $stream->write($data);
         });
 
@@ -153,33 +83,21 @@ class IrcConnection implements ComponentInterface
     }
 
     /**
-     * @param ISupport $incomingIrcMessage
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param string $data
      */
-    public function handleServerConfig(ISupport $incomingIrcMessage)
+    public function incomingData(string $data)
     {
-        $hostname = $incomingIrcMessage->getServer();
-        Configuration::fromContainer($this->getContainer())['serverConfig']['hostname'] = $hostname;
+        $this->eventEmitter->emit('stream.data.in', [$data]);
+    }
 
-        // The first argument is the nickname set.
-        $currentNickname = $incomingIrcMessage->getNickname();
-        Configuration::fromContainer($this->getContainer())['currentNickname'] = $currentNickname;
-
-        Logger::fromContainer($this->getContainer())
-            ->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
-
-        $variables = $incomingIrcMessage->getVariables();
-        $currentSettings = Configuration::fromContainer($this->getContainer())['serverConfig'] ?? [];
-        Configuration::fromContainer($this->getContainer())['serverConfig'] = array_merge($currentSettings, $variables);
-
-        Logger::fromContainer($this->getContainer())
-            ->debug('Set new server configuration to configuration serverConfig.',
-                [Configuration::fromContainer($this->getContainer())['serverConfig']]);
-
-        EventEmitter::fromContainer($this->getContainer())->emit(
-            'irc.config.updated',
-            [Configuration::fromContainer($this->getContainer())['serverConfig']]
-        );
+    /**
+     * @param QueueItem $queueItem
+     */
+    public function writeQueueItem(QueueItem $queueItem)
+    {
+        if (!$queueItem->isCancelled()) {
+            $this->write($queueItem->getCommandObject());
+        }
     }
 
     /**
@@ -191,22 +109,17 @@ class IrcConnection implements ComponentInterface
     {
         $connectionString = $this->getConnectionDetails()->getAddress() . ':' . $this->getConnectionDetails()->getPort();
         $promise = $connectorInterface->connect($connectionString)
-            ->then(function (ConnectionInterface $connectionInterface) use (&$buffer, $connectionString) {
-                EventEmitter::fromContainer($this->getContainer())
-                    ->emit('stream.created', [Queue::fromContainer($this->getContainer())]);
+            ->then(function (ConnectionInterface $connection) use (&$buffer, $connectionString) {
+                $this->eventEmitter->emit('stream.created');
 
-                $connectionInterface->on('error',
+                $connection->on('error',
                     function ($error) use ($connectionString) {
                         throw new ConnectionException('Connection to ' . $connectionString . ' failed: ' . $error);
                     });
 
-                $connectionInterface->on('data',
-                    function ($data) {
-                        EventEmitter::fromContainer($this->getContainer())
-                            ->emit('stream.data.in', [$data]);
-                    });
+                $connection->on('data', [$this, 'incomingData']);
 
-                return $connectionInterface;
+                return $connection;
             });
 
         $this->connectorPromise = $promise;
@@ -218,14 +131,20 @@ class IrcConnection implements ComponentInterface
      */
     public function close()
     {
-        $promise = $this->connectorPromise->then(function (ConnectionInterface $stream) {
-            Logger::fromContainer($this->getContainer())
-                ->warning('Closing connection...');
-            $stream->close();
-            EventEmitter::fromContainer($this->getContainer())
-                ->emit('stream.closed');
+        $promise = $this->connectorPromise->then(function (ConnectionInterface $connection) {
+            $this->logger->warning('Closing connection...');
+            $connection->close();
+            $this->eventEmitter->emit('stream.closed');
         });
 
         return $promise;
+    }
+
+    /**
+     * @return ConnectionDetails
+     */
+    public function getConnectionDetails(): ConnectionDetails
+    {
+        return $this->connectionDetails;
     }
 }

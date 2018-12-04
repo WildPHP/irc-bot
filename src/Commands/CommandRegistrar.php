@@ -11,13 +11,9 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Commands\Command;
 use WildPHP\Commands\CommandProcessor;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
-class CommandRegistrar implements ComponentInterface
+class CommandRegistrar
 {
-    use ComponentTrait;
-
     /**
      * @var CommandProcessor
      */

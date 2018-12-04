@@ -8,13 +8,8 @@
 
 namespace WildPHP\Core;
 
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
-
-class EventEmitter extends \Evenement\EventEmitter implements ComponentInterface
+class EventEmitter extends \Evenement\EventEmitter
 {
-    use ComponentTrait;
-
     /**
      * Puts a listener first in the listener array.
      *

@@ -8,17 +8,8 @@
 
 namespace WildPHP\Core\Connection\Capabilities;
 
-
-use WildPHP\Core\ComponentContainer;
-
 interface CapabilityInterface
 {
-    /**
-     * CapabilityInterface constructor.
-     * @param ComponentContainer $container
-     */
-    public function __construct(ComponentContainer $container);
-
     /**
      * @return bool
      */

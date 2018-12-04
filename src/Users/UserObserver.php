@@ -9,13 +9,11 @@
 namespace WildPHP\Core\Users;
 
 
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use WildPHP\Core\Channels\ChannelModes;
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Core\Database\Database;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\StateException;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Nick;
@@ -23,45 +21,56 @@ use WildPHP\Messages\RPL\EndOfNames;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\WhosPcRpl;
 
-class UserObserver extends BaseModule
+class UserObserver
 {
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+
+    /**
+     * @var Database
+     */
+    private $database;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * BaseModule constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param Database $database
+     * @param LoggerInterface $logger
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(EventEmitterInterface $eventEmitter, Database $database, LoggerInterface $logger)
     {
-        $this->setContainer($container);
 
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.join', [$this, 'processUserJoin']);
+        $eventEmitter->on('irc.line.in.join', [$this, 'processUserJoin']);
+        $eventEmitter->on('irc.line.in.nick', [$this, 'processUserNickChange']);
 
         // 353: RPL_NAMREPLY
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.353', [$this, 'processNamesReply']);
+        $eventEmitter->on('irc.line.in.353', [$this, 'processNamesReply']);
 
         // 366: RPL_ENDOFNAMES
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.366', [$this, 'sendInitialWhoxMessage']);
+        $eventEmitter->on('irc.line.in.366', [$this, 'sendInitialWhoxMessage']);
 
         // 354: RPL_WHOSPCRPL
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.354', [$this, 'processWhoxReply']);
+        $eventEmitter->on('irc.line.in.354', [$this, 'processWhoxReply']);
 
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.nick', [$this, 'processUserNickChange']);
+        $this->eventEmitter = $eventEmitter;
+        $this->database = $database;
+        $this->logger = $logger;
     }
 
     /**
      * @param JOIN $joinMessage
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processUserJoin(JOIN $joinMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         if (!$db->has('users', ['nickname' => $joinMessage->getNickname()])) {
             $prefix = $joinMessage->getPrefix();
@@ -72,7 +81,7 @@ class UserObserver extends BaseModule
                 'irc_account' => $joinMessage->getIrcAccount(),
             ]);
 
-            Logger::fromContainer($this->getContainer())->debug('Added user', [
+            $this->logger->debug('Added user', [
                 'reason' => 'join',
                 'nickname' => $joinMessage->getNickname(),
                 'username' => $prefix->getUsername(),
@@ -84,12 +93,11 @@ class UserObserver extends BaseModule
 
     /**
      * @param NamReply $ircMessage
-     * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      */
     public function processNamesReply(NamReply $ircMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
         $nicknames = $ircMessage->getNicknames();
 
         $modePrefixes = ($result = $db->get('server_config', ['value'],
@@ -122,16 +130,16 @@ class UserObserver extends BaseModule
                 ]);
             }
 
-            Logger::fromContainer($this->getContainer())->debug('Modified or created user',
+            $this->logger->debug('Modified or created user',
                 ['reason' => 'rpl_namreply', 'nickname' => $nickname, 'modes' => $modes]);
         }
     }
 
     /**
      * @param EndOfNames $ircMessage
-     * @param Queue $queue
+     * @param QueueInterface $queue
      */
-    public function sendInitialWhoxMessage(EndOfNames $ircMessage, Queue $queue)
+    public function sendInitialWhoxMessage(EndOfNames $ircMessage, QueueInterface $queue)
     {
         $channel = $ircMessage->getChannel();
         $queue->who($channel, '%nuhaf');
@@ -139,13 +147,12 @@ class UserObserver extends BaseModule
 
     /**
      * @param WhosPcRpl $ircMessage
-     * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      * @throws UserNotFoundException
      */
     public function processWhoxReply(WhosPcRpl $ircMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         if (!$db->has('users', ['nickname' => $ircMessage->getNickname()])) {
             throw new StateException('RPL_WHOSPCRPL received but user was not found... Impossible!');
@@ -158,18 +165,17 @@ class UserObserver extends BaseModule
         $user->setIrcAccount($ircMessage->getAccountname());
         User::toDatabase($db, $user);
 
-        Logger::fromContainer($this->getContainer())->debug('Modified user',
+        $this->logger->debug('Modified user',
             array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray()));
     }
 
     /**
      * @param NICK $nickMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processUserNickChange(NICK $nickMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $userID = $db->get('users', ['id'], ['nickname' => $nickMessage->getNickname()]);
 
@@ -181,29 +187,9 @@ class UserObserver extends BaseModule
             'nickname' => $nickMessage->getNewNickname()
         ], ['id' => $userID]);
 
-        Logger::fromContainer($this->getContainer())->debug('Updated user nickname', [
+        $this->logger->debug('Updated user nickname', [
             'oldNickname' => $nickMessage->getNickname(),
             'nickname' => $nickMessage->getNewNickname()
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            Logger::class,
-            Database::class,
-            EventEmitter::class
-        ];
     }
 }

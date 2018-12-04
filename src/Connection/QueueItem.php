@@ -21,7 +21,7 @@ class QueueItem
     /**
      * @var int
      */
-    protected $time;
+    protected $scheduledTime;
 
     /**
      * @var bool
@@ -37,7 +37,7 @@ class QueueItem
     public function __construct(OutgoingMessageInterface $command, int $time)
     {
         $this->setCommandObject($command);
-        $this->setTime($time);
+        $this->setScheduledTime($time);
     }
 
     /**
@@ -61,23 +61,23 @@ class QueueItem
      */
     public function itemShouldBeTriggered(): bool
     {
-        return time() >= $this->getTime();
+        return time() >= $this->getScheduledTime();
     }
 
     /**
      * @return int
      */
-    public function getTime(): int
+    public function getScheduledTime(): int
     {
-        return $this->time;
+        return $this->scheduledTime;
     }
 
     /**
-     * @param int $time
+     * @param int $scheduledTime
      */
-    public function setTime(int $time)
+    public function setScheduledTime(int $scheduledTime)
     {
-        $this->time = $time;
+        $this->scheduledTime = $scheduledTime;
     }
 
     /**

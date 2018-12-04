@@ -9,64 +9,94 @@
 
 namespace WildPHP\Core\Commands;
 
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use WildPHP\Commands\CommandParser;
+use WildPHP\Commands\CommandProcessor;
 use WildPHP\Commands\Exceptions\CommandNotFoundException;
 use WildPHP\Commands\Exceptions\InvalidParameterCountException;
 use WildPHP\Commands\Exceptions\NoApplicableStrategiesException;
 use WildPHP\Commands\Exceptions\ParseException;
+use WildPHP\Commands\Exceptions\ValidationException;
 use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Channels\ChannelNotFoundException;
-use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
+use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Core\Database\Database;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\StateException;
 use WildPHP\Core\Users\User;
 use WildPHP\Core\Users\UserNotFoundException;
 use WildPHP\Messages\Privmsg;
 
-class CommandRunner extends BaseModule
+class CommandRunner
 {
-    use ContainerTrait;
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
+     * @var Database
+     */
+    private $database;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var CommandProcessor
+     */
+    private $commandProcessor;
 
     /**
      * CommandRunner constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param Configuration $configuration
+     * @param CommandProcessor $commandProcessor
+     * @param Database $database
+     * @param LoggerInterface $logger
      */
-    public function __construct(ComponentContainer $container)
-    {
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
-        $this->setContainer($container);
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        Configuration $configuration,
+        CommandProcessor $commandProcessor,
+        Database $database,
+        LoggerInterface $logger
+    ) {
+        $eventEmitter->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
+
+        $this->eventEmitter = $eventEmitter;
+        $this->configuration = $configuration;
+        $this->database = $database;
+        $this->logger = $logger;
+        $this->commandProcessor = $commandProcessor;
     }
 
     /**
      * @param PRIVMSG $privmsg
-     * @param Queue $queue
+     * @param QueueInterface $queue
+     * @throws ChannelNotFoundException
      * @throws StateException
-     * @throws \WildPHP\Commands\Exceptions\ValidationException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws UserNotFoundException
+     * @throws ValidationException
      */
-    public function parseAndRunCommand(PRIVMSG $privmsg, Queue $queue)
+    public function parseAndRunCommand(PRIVMSG $privmsg, QueueInterface $queue)
     {
-        $prefix = Configuration::fromContainer($this->getContainer())['prefix'];
-        $commandProcessor = CommandRegistrar::fromContainer($this->getContainer())->getProcessor();
+        $prefix = $this->configuration['prefix'];
+        $commandProcessor = $this->commandProcessor;
 
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
-        try {
-            $channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
-            $user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
-        } catch (ChannelNotFoundException | UserNotFoundException $e) {
-            Logger::fromContainer($this->getContainer())->warn("State mismatch");
-            return;
-        }
+        $channel = Channel::fromDatabase($db, ['name' => $privmsg->getChannel()]);
+        $user = User::fromDatabase($db, ['nickname' => $privmsg->getNickname()]);
 
         $message = $privmsg->getMessage();
 
@@ -74,10 +104,10 @@ class CommandRunner extends BaseModule
             $parsedMessage = CommandParser::parseFromString($message, $prefix);
             $processedCommand = $commandProcessor->process($parsedMessage);
         } catch (CommandNotFoundException | ParseException $e) {
-            Logger::fromContainer($this->getContainer())->debug("Message not a command");
+            $this->logger->debug("Message not a command");
             return;
         } catch (NoApplicableStrategiesException | InvalidParameterCountException $e) {
-            Logger::fromContainer($this->getContainer())->debug('No valid strategies found.');
+            $this->logger->debug('No valid strategies found.');
             $queue->privmsg($channel->getName(),
                 'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $parsedMessage->getCommand() . ' for usage instructions and make sure that your ' .
                 'parameters match the given requirements.');
@@ -85,13 +115,11 @@ class CommandRunner extends BaseModule
             return;
         }
 
-        EventEmitter::fromContainer($this->getContainer())
-            ->emit('irc.command', [
+        $this->eventEmitter->emit('irc.command', [
                 $processedCommand->getCommand(),
                 $channel,
                 $user,
-                $processedCommand->getArguments(),
-                $this->getContainer()
+                $processedCommand->getArguments()
             ]);
 
         call_user_func(
@@ -99,29 +127,7 @@ class CommandRunner extends BaseModule
             $channel,
             $user,
             $processedCommand->getConvertedParameters(),
-            $this->getContainer(),
             $processedCommand->getCommand()
         );
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            Configuration::class,
-            CommandRegistrar::class,
-            EventEmitter::class,
-            Logger::class
-        ];
     }
 }

@@ -9,11 +9,8 @@
 
 namespace WildPHP\Core\Modules;
 
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Users\User;
 use Yoshi2889\Container\ComponentTrait;
 
 abstract class BaseModule implements ModuleInterface
@@ -32,28 +29,4 @@ abstract class BaseModule implements ModuleInterface
      * @return array
      */
     abstract public static function getDependentModules(): array;
-
-    /**
-     * @param array $checks
-     * @param Channel $source
-     * @param User $user
-     *
-     * @return bool
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    protected function doChecks(array $checks, Channel $source, User $user)
-    {
-        foreach ($checks as $string => $check) {
-            if (!$check) {
-                continue;
-            }
-
-            Queue::fromContainer($this->getContainer())
-                ->privmsg($source->getName(), $user->getNickname() . ': ' . $string);
-
-            return false;
-        }
-
-        return true;
-    }
 }

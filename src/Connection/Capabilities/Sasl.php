@@ -9,21 +9,15 @@
 
 namespace WildPHP\Core\Connection\Capabilities;
 
-use Evenement\EventEmitterTrait;
-use WildPHP\Core\ComponentContainer;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Messages\Authenticate;
 use WildPHP\Messages\Generics\IncomingMessage;
 
 class Sasl implements CapabilityInterface
 {
-    use ContainerTrait;
-    use EventEmitterTrait;
-
     /**
      * @var bool
      */
@@ -52,76 +46,81 @@ class Sasl implements CapabilityInterface
         '906' => 'ERR_SASLABORTED',
         '907' => 'ERR_SASLALREADY'
     ];
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var Configuration
+     */
+    private $configuration;
 
     /**
      * SASL constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param Configuration $configuration
+     * @param CapabilityHandler $capabilityHandler
+     * @param EventEmitterInterface $eventEmitter
+     * @param LoggerInterface $logger
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(Configuration $configuration, CapabilityHandler $capabilityHandler, EventEmitterInterface $eventEmitter, LoggerInterface $logger)
     {
-        if (!Configuration::fromContainer($container)->offsetExists('sasl') ||
-            empty(Configuration::fromContainer($container)['sasl']['username']) ||
-            empty(Configuration::fromContainer($container)['sasl']['password'])
+        if (!$configuration->offsetExists('sasl') ||
+            empty($configuration['sasl']['username']) ||
+            empty($configuration['sasl']['password'])
         ) {
-            Logger::fromContainer($container)
-                ->info('[SASL] Not initialized because no credentials were provided.');
+            $logger->info('[SASL] Not initialized because no credentials were provided.');
             $this->complete = true;
 
             return;
         }
 
-        CapabilityHandler::fromContainer($container)
-            ->requestCapability('sasl');
+        $capabilityHandler->requestCapability('sasl');
 
-        EventEmitter::fromContainer($container)
-            ->on('irc.cap.acknowledged.sasl', [$this, 'sendAuthenticationMechanism']);
-        EventEmitter::fromContainer($container)
-            ->on('irc.cap.notAcknowledged.sasl', [$this, 'completeSasl']);
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
+        $eventEmitter->on('irc.cap.acknowledged.sasl', [$this, 'sendAuthenticationMechanism']);
+        $eventEmitter->on('irc.cap.notAcknowledged.sasl', [$this, 'completeSasl']);
+        $eventEmitter->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
 
         // Map all numeric SASL responses to either the success or error handler:
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in', [$this, 'handleResponse']);
+        $eventEmitter->on('irc.line.in', [$this, 'handleResponse']);
 
-        Logger::fromContainer($container)
-            ->debug('[SASL] Initialized, awaiting server response.');
+        $logger->debug('[SASL] Initialized, awaiting server response.');
 
-        $this->setContainer($container);
+        $this->eventEmitter = $eventEmitter;
+        $this->logger = $logger;
+        $this->configuration = $configuration;
     }
 
     /**
-     * @param Queue $queue
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param QueueInterface $queue
      */
-    public function sendAuthenticationMechanism(Queue $queue)
+    public function sendAuthenticationMechanism(QueueInterface $queue)
     {
         $queue->authenticate('PLAIN');
-        Logger::fromContainer($this->getContainer())
-            ->debug('[SASL] Authentication mechanism requested, awaiting server response.');
+        $this->logger->debug('[SASL] Authentication mechanism requested, awaiting server response.');
     }
 
     /**
      * @param Authenticate $message
-     * @param Queue $queue
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param QueueInterface $queue
      */
-    public function sendCredentials(Authenticate $message, Queue $queue)
+    public function sendCredentials(Authenticate $message, QueueInterface $queue)
     {
         if ($message->getResponse() != '+') {
             return;
         }
 
-        $username = Configuration::fromContainer($this->getContainer())['sasl']['username'];
-        $password = Configuration::fromContainer($this->getContainer())['sasl']['password'];
+        $username = $this->configuration['sasl']['username'];
+        $password = $this->configuration['sasl']['password'];
 
         $credentials = $this->generateCredentialString($username, $password);
         $queue->authenticate($credentials);
 
-        Logger::fromContainer($this->getContainer())
-            ->debug('[SASL] Sent authentication details, awaiting response from server.');
+        $this->logger->debug('[SASL] Sent authentication details, awaiting response from server.');
     }
 
     /**
@@ -137,7 +136,6 @@ class Sasl implements CapabilityInterface
 
     /**
      * @param IncomingMessage $message
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function handleResponse(IncomingMessage $message)
     {
@@ -148,23 +146,18 @@ class Sasl implements CapabilityInterface
         }
 
         // This event has to fit on the events used in CapabilityHandler.
-        Logger::fromContainer($this->getContainer())
-            ->info('[SASL] Authentication ended with code ' . $code . ' (' . $this->saslCodes[$code] . ')');
+        $this->logger->info('[SASL] Authentication ended with code ' . $code . ' (' . $this->saslCodes[$code] . ')');
 
         $this->completeSasl();
     }
 
     /**
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @return void
      */
     public function completeSasl()
     {
-        Logger::fromContainer($this->getContainer())
-            ->info('[SASL] Ended.');
-
-        EventEmitter::fromContainer($this->getContainer())
-            ->removeListener('irc.line.in', [$this, 'handleResponse']);
-
+        $this->logger->info('[SASL] Ended.');
+        $this->eventEmitter->removeListener('irc.line.in', [$this, 'handleResponse']);
         $this->complete = true;
     }
 

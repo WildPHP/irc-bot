@@ -8,13 +8,11 @@
 
 namespace WildPHP\Core\Channels;
 
-use WildPHP\Core\ComponentContainer;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Core\Database\Database;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
 use WildPHP\Core\StateException;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Kick;
@@ -22,85 +20,104 @@ use WildPHP\Messages\Part;
 use WildPHP\Messages\Quit;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\Topic;
-use WildPHP\Messages\RPL\Welcome;
 
-class ChannelObserver extends BaseModule
+class ChannelObserver
 {
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var Database
+     */
+    private $database;
+
+    /**
+     * @var QueueInterface
+     */
+    private $queue;
+
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+
     /**
      * BaseModule constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param Configuration $configuration
+     * @param LoggerInterface $logger
+     * @param Database $database
+     * @param QueueInterface $queue
      */
-    public function __construct(ComponentContainer $container)
-    {
-        $this->setContainer($container);
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        Configuration $configuration,
+        LoggerInterface $logger,
+        Database $database,
+        QueueInterface $queue
+    ) {
+        $eventEmitter->on('irc.line.in.join', [$this, 'createChannel']);
+        $eventEmitter->on('irc.line.in.join', [$this, 'processChannelJoin']);
+        $eventEmitter->on('irc.line.in.kick', [$this, 'processUserKick']);
+        $eventEmitter->on('irc.line.in.part', [$this, 'processUserPart']);
+        $eventEmitter->on('irc.line.in.quit', [$this, 'processUserQuit']);
 
         // 001: RPL_WELCOME
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.001', [$this, 'joinInitialChannels']);
-
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.join', [$this, 'createChannel']);
-
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.join', [$this, 'processChannelJoin']);
+        $eventEmitter->on('irc.line.in.001', [$this, 'joinInitialChannels']);
 
         // 332: RPL_TOPIC
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.332', [$this, 'processTopic']);
+        $eventEmitter->on('irc.line.in.332', [$this, 'processTopic']);
 
         // 353: RPL_NAMREPLY
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.353', [$this, 'processNamesReply']);
+        $eventEmitter->on('irc.line.in.353', [$this, 'processNamesReply']);
 
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.kick', [$this, 'processUserKick']);
-
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.part', [$this, 'processUserPart']);
-
-        EventEmitter::fromContainer($container)->on(
-            'irc.line.in.quit', [$this, 'processUserQuit']);
+        $this->eventEmitter = $eventEmitter;
+        $this->logger = $logger;
+        $this->database = $database;
+        $this->queue = $queue;
+        $this->configuration = $configuration;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param Welcome $incomingIrcMessage
-     * @param Queue $queue
-     * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function joinInitialChannels(Welcome $incomingIrcMessage, Queue $queue)
+    public function joinInitialChannels()
     {
-        $channels = Configuration::fromContainer($this->getContainer())['channels'];
+        $channels = $this->configuration['channels'];
 
         if (empty($channels)) {
             return;
         }
 
         $chunks = array_chunk($channels, 3);
-        $queue->setFloodControl(true);
+        $this->queue->setFloodControl(true);
 
         foreach ($chunks as $chunk) {
-            $queue->join($chunk);
+            $this->queue->join($chunk);
         }
 
-        Logger::fromContainer($this->getContainer())
-            ->debug('Queued initial channel join.',
-                [
-                    'count' => count($channels),
-                    'channels' => $channels
-                ]);
+        $this->logger->debug('Queued initial channel join.',
+            [
+                'count' => count($channels),
+                'channels' => $channels
+            ]);
     }
 
     /**
      * @param JOIN $joinMessage
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function createChannel(JOIN $joinMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         foreach ($joinMessage->getChannels() as $channel) {
             if (!$db->has('channels', ['name' => $channel])) {
@@ -110,7 +127,7 @@ class ChannelObserver extends BaseModule
 
                 $channelID = $db->id();
 
-                Logger::fromContainer($this->getContainer())->debug('Created new channel', [
+                $this->logger->debug('Created new channel', [
                     'id' => $channelID,
                     'name' => $channel
                 ]);
@@ -121,11 +138,10 @@ class ChannelObserver extends BaseModule
     /**
      * @param JOIN $joinMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processChannelJoin(JOIN $joinMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $row = $db->get('users', ['id'], ['nickname' => $joinMessage->getNickname()]);
 
@@ -144,7 +160,7 @@ class ChannelObserver extends BaseModule
 
             $db->insert('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Creating user relationship', [
+            $this->logger->debug('Creating user relationship', [
                 'reason' => 'join',
                 'userID' => $userID,
                 'nickname' => $joinMessage->getNickname(),
@@ -157,11 +173,10 @@ class ChannelObserver extends BaseModule
     /**
      * @param Topic $topicMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processTopic(Topic $topicMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $row = $db->get('channels', ['id'], ['name' => $topicMessage->getChannel()]);
 
@@ -175,7 +190,7 @@ class ChannelObserver extends BaseModule
             'topic' => $topicMessage->getMessage()
         ], ['id' => $channelID]);
 
-        Logger::fromContainer($this->getContainer())->debug('Updated topic', [
+        $this->logger->debug('Updated topic', [
             'channel' => $topicMessage->getChannel(),
             'topic' => $topicMessage->getMessage()
         ]);
@@ -183,12 +198,11 @@ class ChannelObserver extends BaseModule
 
     /**
      * @param NamReply $ircMessage
-     * @throws \Yoshi2889\Container\NotFoundException
      * @throws StateException
      */
     public function processNamesReply(NamReply $ircMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
         $nicknames = $ircMessage->getNicknames();
 
         $modePrefixes = ($result = $db->get('server_config', ['value'],
@@ -198,7 +212,7 @@ class ChannelObserver extends BaseModule
             $nickname = '';
             ChannelModes::extractUserModesFromNickname($modePrefixes, $nicknameWithMode, $nickname);
 
-            Logger::fromContainer($this->getContainer())->debug('Adding user to channel',
+            $this->logger->debug('Adding user to channel',
                 ['reason' => 'rpl_namreply', 'nickname' => $nickname, 'channel' => $ircMessage->getChannel()]);
 
             $channelID = $db->get('channels', ['id'], ['name' => $ircMessage->getChannel()])['id'];
@@ -215,7 +229,7 @@ class ChannelObserver extends BaseModule
 
             $db->insert('user_channel_relationships', ['channel_id' => $channelID, 'user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Creating user relationship', [
+            $this->logger->debug('Creating user relationship', [
                 'reason' => 'rpl_namreply',
                 'userID' => $userID,
                 'nickname' => $nickname,
@@ -228,11 +242,10 @@ class ChannelObserver extends BaseModule
     /**
      * @param KICK $kickMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processUserKick(KICK $kickMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $userID = $db->get('users', ['id'], ['nickname' => $kickMessage->getNickname()])['id'];
 
@@ -247,7 +260,7 @@ class ChannelObserver extends BaseModule
         }
 
         $db->delete('user_channel_relationships', ['user_id' => $userID, 'channel_id' => $channelID]);
-        Logger::fromContainer($this->getContainer())->debug('Deleted user relationship', [
+        $this->logger->debug('Deleted user relationship', [
             'nickname' => $kickMessage->getNickname(),
             'channel' => $kickMessage->getChannel()
         ]);
@@ -256,7 +269,7 @@ class ChannelObserver extends BaseModule
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels',
+            $this->logger->debug('Deleted user from state because they are no longer in any mutual channels',
                 [
                     'nickname' => $kickMessage->getNickname()
                 ]);
@@ -266,11 +279,10 @@ class ChannelObserver extends BaseModule
     /**
      * @param PART $partMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processUserPart(PART $partMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $userID = $db->get('users', ['id'], ['nickname' => $partMessage->getNickname()])['id'];
 
@@ -286,7 +298,7 @@ class ChannelObserver extends BaseModule
             }
 
             $db->delete('user_channel_relationships', ['user_id' => $userID, 'channel_id' => $channelID]);
-            Logger::fromContainer($this->getContainer())->debug('Deleted user relationship', [
+            $this->logger->debug('Deleted user relationship', [
                 'nickname' => $partMessage->getNickname(),
                 'channel' => $channel
             ]);
@@ -296,7 +308,7 @@ class ChannelObserver extends BaseModule
             $db->delete('mode_relations', ['user_id' => $userID]);
             $db->delete('users', ['user_id' => $userID]);
 
-            Logger::fromContainer($this->getContainer())->debug('Deleted user from state because they are no longer in any mutual channels',
+            $this->logger->debug('Deleted user from state because they are no longer in any mutual channels',
                 [
                     'nickname' => $partMessage->getNickname()
                 ]);
@@ -306,11 +318,10 @@ class ChannelObserver extends BaseModule
     /**
      * @param QUIT $quitMessage
      * @throws StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function processUserQuit(QUIT $quitMessage)
     {
-        $db = Database::fromContainer($this->getContainer());
+        $db = $this->database;
 
         $userID = $db->get('users', ['id'], ['nickname' => $quitMessage->getNickname()])['id'];
 
@@ -322,29 +333,8 @@ class ChannelObserver extends BaseModule
         $db->delete('mode_relations', ['user_id' => $userID]);
         $db->delete('users', ['user_id' => $userID]);
 
-        Logger::fromContainer($this->getContainer())->debug('Removed user from state', [
+        $this->logger->debug('Removed user from state', [
             'nickname' => $quitMessage->getNickname()
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            EventEmitter::class,
-            Database::class,
-            Logger::class,
-            Queue::class,
-        ];
     }
 }

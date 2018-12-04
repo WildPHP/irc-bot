@@ -9,10 +9,8 @@
 
 namespace WildPHP\Core\Connection;
 
-use Evenement\EventEmitter;
+use Evenement\EventEmitterInterface;
 use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
 /**
  * Class Queue
@@ -43,9 +41,8 @@ use Yoshi2889\Container\ComponentTrait;
  * @method QueueItem whowas(string[] | string $nicknames, int $count = 0, string $server = '')
  *
  */
-class Queue extends EventEmitter implements QueueInterface, ComponentInterface
+class Queue implements QueueInterface
 {
-    use ComponentTrait;
 
     /**
      * An explanation of how this works.
@@ -88,6 +85,21 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     protected $floodControlEnabled = false;
 
     /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
+
+    /**
+     * Queue constructor.
+     * @param EventEmitterInterface $eventEmitter
+     */
+    public function __construct(EventEmitterInterface $eventEmitter)
+    {
+        $this->eventEmitter = $eventEmitter;
+    }
+
+
+    /**
      * @param QueueItem $item
      *
      * @return bool
@@ -124,7 +136,7 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     /**
      * @return QueueItem[]
      */
-    public function flush(): array
+    public function getDueItems(): array
     {
         $expired = [];
         foreach ($this->messageQueue as $index => $queueItem) {
@@ -137,6 +149,26 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
         }
 
         return $expired;
+    }
+
+    /**
+     * @param QueueItem[] $queueItems
+     */
+    public function processQueueItems(array $queueItems)
+    {
+        /** @var QueueItem $item */
+        foreach ($queueItems as $item) {
+            $verb = strtolower($item->getCommandObject()::getVerb());
+            $this->eventEmitter->emit('irc.line.out', [$item]);
+            $this->eventEmitter->emit('irc.line.out.' . $verb, [$item]);
+        }
+    }
+
+    public function processQueueItem(QueueItem $queueItem)
+    {
+        $verb = strtolower($queueItem->getCommandObject()::getVerb());
+        $this->eventEmitter->emit('irc.line.out', [$queueItem]);
+        $this->eventEmitter->emit('irc.line.out.' . $verb, [$queueItem]);
     }
 
     /**
@@ -171,24 +203,31 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
      */
     public function insertMessage(OutgoingMessageInterface $command): QueueItem
     {
-        $time = $this->calculateNextMessageTime();
+        $time = $this->calculateNextMessageTimestamp();
         $item = new QueueItem($command, $time);
         $this->scheduleItem($item);
         return $item;
     }
 
     /**
+     * @param QueueItem $item
+     */
+    public function scheduleItem(QueueItem $item)
+    {
+        $this->messageQueue[] = $item;
+    }
+
+    /**
      * @return int
      */
-    public function calculateNextMessageTime(): int
+    public function calculateNextMessageTimestamp(): int
     {
         // If the queue is empty, this message can be sent immediately. Do not bother calculating.
         if ($this->count() < $this->floodControlMessageThreshold || !$this->isFloodControlEnabled()) {
             return time();
         }
 
-        $numItems = $this->count();
-        $numItems = $numItems - $this->floodControlMessageThreshold;
+        $numItems = $this->count() - $this->floodControlMessageThreshold;
         $messagePairs = (int) round($numItems / $this->messagesPerSecond, 0, PHP_ROUND_HALF_DOWN);
 
         // For every message pair, we add the specified delay.
@@ -211,13 +250,5 @@ class Queue extends EventEmitter implements QueueInterface, ComponentInterface
     public function isFloodControlEnabled(): bool
     {
         return $this->floodControlEnabled;
-    }
-
-    /**
-     * @param QueueItem $item
-     */
-    public function scheduleItem(QueueItem $item)
-    {
-        $this->messageQueue[] = $item;
     }
 }
