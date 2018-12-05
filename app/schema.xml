@@ -1,0 +1,136 @@
+<!--
+  ~ Copyright 2018 The WildPHP Team
+  ~
+  ~ You should have received a copy of the MIT license with the project.
+  ~ See the LICENSE file for more information.
+  -->
+
+<database name="persistent" defaultIdMethod="native"
+          namespace="WildPHP\Core\Entities"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd" >
+    <table name="user" phpName="IrcUser">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="nickname" type="varchar" size="128" required="true"/>
+        <column name="username" type="varchar" size="128"/>
+        <column name="realname" type="varchar" size="128"/>
+        <column name="hostname" type="varchar" size="128"/>
+        <column name="irc_account" type="varchar" size="128"/>
+        <column name="last_seen" type="timestamp"/>
+    </table>
+    <table name="channel" phpName="IrcChannel">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="128" required="true" />
+        <column name="topic" type="varchar" size="128" />
+        <column name="created_time" type="timestamp" />
+        <column name="created_by" type="varchar" size="128" />
+        <column name="modes" type="varchar" size="128" />
+    </table>
+    <table name="user_channel" isCrossRef="true">
+        <column name="user_id" type="integer" primaryKey="true" required="true"/>
+        <column name="channel_id" type="integer" primaryKey="true" required="true"/>
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="channel">
+            <reference local="channel_id" foreign="id"/>
+        </foreign-key>
+    </table>
+    <table name="user_mode_channel">
+        <column name="user_id" type="integer" required="true"/>
+        <column name="channel_id" type="integer" required="true"/>
+        <column name="mode" type="varchar" size="1" required="true"/>
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="channel">
+            <reference local="channel_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="group" phpName="Group">
+        <column name="id" type="integer" primaryKey="true" required="true" />
+        <column name="name" type="varchar" size="50" required="true" />
+    </table>
+    <table name="user_group" isCrossRef="true">
+        <column name="user_irc_account" type="varchar" size="128" primaryKey="true" required="true" />
+        <column name="group_id" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="group">
+            <reference local="group_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="mode_group" phpName="ModeGroup">
+        <column name="id" type="integer" primaryKey="true" required="true" />
+        <column name="mode" type="varchar" size="1" required="true" />
+    </table>
+    <table name="user_mode_group" isCrossRef="true">
+        <column name="user_irc_account" type="varchar" size="128" primaryKey="true" required="true" />
+        <column name="mode_group_id" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="mode_group">
+            <reference local="mode_group_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="policy" phpName="Policy">
+        <column name="name" type="varchar" size="20" primaryKey="true" required="true"/>
+        <column name="description" type="varchar" size="128" required="true"/>
+    </table>
+
+    <!-- User policy definitions. -->
+    <table name="user_policy" isCrossRef="true">
+        <column name="user_irc_account" type="varchar" size="128" primaryKey="true" required="true" />
+        <column name="policy_name" type="varchar" size="20" primaryKey="true" required="true" />
+        <foreign-key foreignTable="policy">
+            <reference local="policy_name" foreign="name"/>
+        </foreign-key>
+    </table>
+    <table name="user_policy_channel_restriction" phpName="UserPolicyRestriction">
+        <column name="user_irc_account" type="varchar" size="128" primaryKey="true" required="true" />
+        <column name="policy_name" type="varchar" size="20" primaryKey="true" required="true" />
+        <column name="channel_id" type="integer" primaryKey="true" required="true"/>
+        <foreign-key foreignTable="user_policy">
+            <reference local="user_irc_account" foreign="user_irc_account"/>
+            <reference local="policy_name" foreign="policy_name"/>
+        </foreign-key>
+        <foreign-key foreignTable="channel">
+            <reference local="channel_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Group policy definitions -->
+    <table name="group_policy" isCrossRef="true">
+        <column name="group_id" type="integer" primaryKey="true" required="true" />
+        <column name="policy_name" type="varchar" size="20" primaryKey="true" required="true" />
+        <foreign-key foreignTable="group">
+            <reference local="group_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="policy">
+            <reference local="policy_name" foreign="name"/>
+        </foreign-key>
+    </table>
+    <table name="group_policy_channel_restriction" phpName="GroupPolicyRestriction">
+        <column name="group_id" type="integer" primaryKey="true" required="true" />
+        <column name="policy_name" type="varchar" size="20" primaryKey="true" required="true" />
+        <column name="channel_id" type="integer" primaryKey="true" required="true"/>
+        <foreign-key foreignTable="group_policy">
+            <reference local="group_id" foreign="group_id"/>
+            <reference local="policy_name" foreign="policy_name"/>
+        </foreign-key>
+        <foreign-key foreignTable="channel">
+            <reference local="channel_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Mode group policy definitions -->
+    <table name="mode_group_policy" isCrossRef="true">
+        <column name="mode_group_id" type="integer" primaryKey="true" required="true" />
+        <column name="policy_name" type="varchar" size="20" primaryKey="true" required="true" />
+        <foreign-key foreignTable="mode_group">
+            <reference local="mode_group_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="policy">
+            <reference local="policy_name" foreign="name"/>
+        </foreign-key>
+    </table>
+</database>

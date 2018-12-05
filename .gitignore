@@ -12,3 +12,4 @@ state.sqlite
 cloverCoverage.xml
 
 /.idea
+/propel/persistent.sql
