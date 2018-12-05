@@ -16,3 +16,14 @@ build:
                       coverage:
                           file: 'cloverCoverage'
                           format: 'clover'
+
+filter:
+  dependency_paths:
+    - "propel/"
+  excluded_paths:
+    - "app/"
+    - "config/"
+    - "bin/"
+    - "storage/"
+    - "tests/"
+    - "vendor/"
