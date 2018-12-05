@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Observers\ConnectorFactory;
+use WildPHP\Core\Connection\ConnectorFactory;
 
 class ConnectorFactoryTest extends TestCase
 {

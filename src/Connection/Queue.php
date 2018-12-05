@@ -158,7 +158,7 @@ class Queue implements QueueInterface
     {
         /** @var QueueItem $item */
         foreach ($queueItems as $item) {
-            $verb = strtolower($item->getCommandObject()::getVerb());
+            $verb = strtolower($item->getCommandObject()::getVerb()) ?? '';
             $this->eventEmitter->emit('irc.line.out', [$item]);
             $this->eventEmitter->emit('irc.line.out.' . $verb, [$item]);
         }

@@ -7,16 +7,15 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Observers\ConnectionDetails;
+use WildPHP\Core\Connection\ConnectionDetails;
 
 class ConnectionDetailsTest extends TestCase
 {
 	public function testGetSetUsername()
 	{
 		$username = 'Test';
-		
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setUsername($username);
+
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($username, $connectionDetails->getUsername());
 	}
 
@@ -24,8 +23,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$hostname = 'Test';
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setHostname($hostname);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($hostname, $connectionDetails->getHostname());
 	}
 
@@ -33,8 +31,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$realname = 'Test';
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setRealname($realname);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($realname, $connectionDetails->getRealname());
 	}
 
@@ -42,17 +39,15 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$password = 'Test';
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setPassword($password);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($password, $connectionDetails->getPassword());
 	}
 
 	public function testGetSetPort()
 	{
-		$port = 1234;
+		$port = 9999;
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setPort($port);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($port, $connectionDetails->getPort());
 	}
 
@@ -60,8 +55,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$address = 'Test';
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setAddress($address);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($address, $connectionDetails->getAddress());
 	}
 
@@ -69,8 +63,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$wantedNickname = 'Test';
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setWantedNickname($wantedNickname);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
 		self::assertEquals($wantedNickname, $connectionDetails->getWantedNickname());
 	}
 
@@ -78,8 +71,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$secure = true;
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setSecure($secure);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test', true);
 		self::assertEquals($secure, $connectionDetails->getSecure());
 	}
 
@@ -87,8 +79,7 @@ class ConnectionDetailsTest extends TestCase
 	{
 		$options = ['test'];
 
-		$connectionDetails = new ConnectionDetails();
-		$connectionDetails->setContextOptions($options);
+		$connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test', true, $options);
 		self::assertEquals($options, $connectionDetails->getContextOptions());
 	}
 }
