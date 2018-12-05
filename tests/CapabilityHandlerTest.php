@@ -8,12 +8,12 @@
 
 use PHPUnit\Framework\TestCase;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\CapabilityHandler;
-use WildPHP\Core\Connection\IRCMessages\CAP;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\QueueItem;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Observers\CapabilityHandler;
+use WildPHP\Core\Observers\IRCMessages\CAP;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\QueueItem;
 
 class CapabilityHandlerTest extends TestCase
 {

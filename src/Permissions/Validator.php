@@ -10,53 +10,41 @@
 namespace WildPHP\Core\Permissions;
 
 use Evenement\EventEmitterInterface;
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Database\Database;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Entities\Group;
+use WildPHP\Core\Entities\GroupPolicyQuery;
+use WildPHP\Core\Entities\GroupPolicyRestrictionQuery;
+use WildPHP\Core\Entities\IrcChannel;
+use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Entities\ModeGroup;
+use WildPHP\Core\Entities\ModeGroupPolicyQuery;
+use WildPHP\Core\Entities\ModeGroupQuery;
+use WildPHP\Core\Entities\UserGroupQuery;
+use WildPHP\Core\Entities\UserPolicyQuery;
+use WildPHP\Core\Entities\UserPolicyRestrictionQuery;
 use WildPHP\Messages\RPL\ISupport;
-use Yoshi2889\Collections\Collection;
 
 class Validator
 {
-    /**
-     * @var array
-     */
-    protected $modes = [];
-
     /**
      * @var string
      */
     protected $owner = '';
 
     /**
-     * @var PermissionGroupCollection
-     */
-    protected $permissionGroupCollection;
-
-    /**
-     * @var Database
-     */
-    private $database;
-
-    /**
      * Validator constructor.
      *
      * @param EventEmitterInterface $eventEmitter
-     * @param PermissionGroupCollection $collection
-     * @param Database $database
      * @param string $owner
      */
-    public function __construct(EventEmitterInterface $eventEmitter, PermissionGroupCollection $collection, Database $database, string $owner)
+    public function __construct(EventEmitterInterface $eventEmitter, string $owner)
     {
         $eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
-
-        $this->permissionGroupCollection = $collection;
         $this->setOwner($owner);
-        $this->database = $database;
     }
 
     /**
      * @param ISupport $ircMessage
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function createModeGroups(ISupport $ircMessage)
     {
@@ -67,74 +55,171 @@ class Validator
         }
 
         $modes = str_split($out[1]);
-        $this->modes = $modes;
 
-        foreach ($this->modes as $mode) {
-            if ($this->permissionGroupCollection->offsetExists($mode)) {
+        foreach ($modes as $mode) {
+            if (ModeGroupQuery::create()->findOneByMode($mode) != null) {
                 continue;
             }
 
-            $permGroup = new PermissionGroup();
-            $permGroup->setModeGroup(true);
-            $this->permissionGroupCollection->offsetSet($mode, $permGroup);
+            $modeGroup = new ModeGroup();
+            $modeGroup->setMode($mode);
+            $modeGroup->save();
         }
     }
 
     /**
-     * @param string $permissionName
-     * @param User $user
-     * @param Channel|null $channel
+     * @param string $policy
+     * @param IrcUser $user
+     * @param IrcChannel $channel
      *
      * @return string|false String with reason on success; boolean false otherwise.
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function isAllowedTo(string $permissionName, User $user, ?Channel $channel = null)
+    public function isAllowedTo(string $policy, IrcUser $user, IrcChannel $channel)
     {
-        $db = $this->database;
-
         // The order to check in:
         // 0. Is bot owner (has all perms)
-        // 1. User OP in channel
-        // 2. User Voice in channel
+        // 1. User in mode group with permission
+        // 2. User is individually allowed
         // 3. User in other group with permission
-        if ($user->getIrcAccount() == $this->getOwner()) {
-            return 'owner';
+        if ($this->isBotOwner($user)) {
+            return AllowedBy::BOT_OWNER;
         }
 
-        if (!empty($channel)) {
-            $rows = $db->select('mode_relations', ['mode'],
-                ['user_id' => $user->getId(), 'channel_id' => $channel->getId()]);
+        if ($this->channelModeAllows($policy, $user, $channel)) {
+            return AllowedBy::CHANNEL_MODE;
+        }
 
-            foreach ($rows as $row) {
-                /** @var PermissionGroup $permissionGroup */
-                $permissionGroup = $this->getPermissionGroupCollection()->offsetGet($row['mode']);
+        // save some needless processing, without a valid irc account further validation will fail
+        if (!self::userHasValidIrcAccount($user)) {
+            return AllowedBy::NONE;
+        }
 
-                if ($permissionGroup->hasPermission($permissionName)) {
-                    return $row['mode'];
-                }
+        if ($this->ircAccountAllowsInChannel($policy, $user, $channel)) {
+            return AllowedBy::IRC_ACCOUNT;
+        }
+
+        $userGroups = UserGroupQuery::create()->findByUserIrcAccount($user->getIrcAccount());
+
+        foreach ($userGroups as $group) {
+            if ($this->groupAllowsInChannel($policy, $group, $channel)) {
+                return AllowedBy::GROUP;
             }
         }
 
-        $channelName = !empty($channel) ? $channel->getName() : '';
+        return AllowedBy::NONE;
+    }
 
-        /** @var Collection $groups */
-        $groups = $this->permissionGroupCollection
-            ->filter(function ($item) use ($user) {
-                /** @var PermissionGroup $item */
-                if ($item->isModeGroup()) {
-                    return false;
-                }
+    /**
+     * @param IrcUser $user
+     * @return bool
+     */
+    public function isBotOwner(IrcUser $user): bool
+    {
+        return $user->getIrcAccount() == $this->getOwner();
+    }
 
-                return $item->getUserCollection()->contains($user->getIrcAccount());
-            });
-
-        foreach ((array)$groups as $name => $group) {
-            /** @var PermissionGroup $group */
-            if ($group->hasPermission($permissionName, $channelName)) {
-                return (string)$name;
-            }
+    /**
+     * @param string $policy
+     * @param IrcUser $user
+     * @return bool
+     */
+    public function ircAccountAllows(string $policy, IrcUser $user): bool
+    {
+        if (!self::userHasValidIrcAccount($user)) {
+            return false;
         }
 
-        return false;
+        return UserPolicyQuery::create()
+                ->filterByUserIrcAccount($user->getIrcAccount())
+                ->filterByPolicyName($policy)
+                ->findOne() != null;
+    }
+
+    /**
+     * @param string $policy
+     * @param IrcUser $user
+     * @param IrcChannel $channel
+     * @return bool
+     */
+    public function ircAccountAllowsInChannel(string $policy, IrcUser $user, IrcChannel $channel): bool
+    {
+        if (!$this->ircAccountAllows($policy, $user)) {
+            return false;
+        }
+
+        return UserPolicyRestrictionQuery::create()
+                ->filterByUserIrcAccount($user->getIrcAccount())
+                ->filterByPolicyName($policy)
+                ->filterByChannelId($channel->getId())
+                ->findOne() != null;
+    }
+
+    /**
+     * @param string $policy
+     * @param Group $group
+     * @return bool
+     */
+    public function groupAllows(string $policy, Group $group): bool
+    {
+        return GroupPolicyQuery::create()
+                ->filterByGroupId($group->getId())
+                ->filterByPolicyName($policy)
+                ->findOne() != null;
+    }
+
+    /**
+     * @param string $policy
+     * @param Group $group
+     * @param IrcChannel $channel
+     * @return bool
+     */
+    public function groupAllowsInChannel(string $policy, Group $group, IrcChannel $channel): bool
+    {
+        if (!$this->groupAllows($policy, $group)) {
+            return false;
+        }
+
+        return GroupPolicyRestrictionQuery::create()
+            ->filterByGroupId($group->getId())
+            ->filterByPolicyName($policy)
+            ->filterByChannelId($channel->getId())
+            ->findOne() != null;
+    }
+
+    /**
+     * @param string $policy
+     * @param IrcUser $user
+     * @param IrcChannel $channel
+     * @return bool
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function channelModeAllows(string $policy, IrcUser $user, IrcChannel $channel): bool
+    {
+        $userModes = $channel->findModesForUser($user);
+
+        if (empty($userModes)) {
+            return false;
+        }
+
+        $validGroupIDs = ModeGroupQuery::create()
+            ->select('id')
+            ->filterByMode($userModes)
+            ->find();
+
+        if (empty($validGroupIDs)) {
+            return false;
+        }
+
+        return ModeGroupPolicyQuery::create()
+                ->filterByModeGroupId($validGroupIDs)
+                ->filterByPolicyName($policy)
+                ->findOne() != null;
+    }
+
+    public static function userHasValidIrcAccount(IrcUser $user)
+    {
+        return !empty($user->getIrcAccount()) && !in_array($user->getIrcAccount(), ['*', '0']);
     }
 
     /**
@@ -151,29 +236,5 @@ class Validator
     public function setOwner(string $owner)
     {
         $this->owner = $owner;
-    }
-
-    /**
-     * @return PermissionGroupCollection
-     */
-    public function getPermissionGroupCollection(): PermissionGroupCollection
-    {
-        return $this->permissionGroupCollection;
-    }
-
-    /**
-     * @param PermissionGroupCollection $permissionGroupCollection
-     */
-    public function setPermissionGroupCollection(PermissionGroupCollection $permissionGroupCollection)
-    {
-        $this->permissionGroupCollection = $permissionGroupCollection;
-    }
-
-    /**
-     * @return array
-     */
-    public function getModes(): array
-    {
-        return $this->modes;
     }
 }

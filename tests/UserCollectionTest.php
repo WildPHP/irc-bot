@@ -7,8 +7,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
+use WildPHP\Core\Observers\User;
+use WildPHP\Core\Observers\UserCollection;
 
 class UserCollectionTest extends TestCase
 {

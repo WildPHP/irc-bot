@@ -13,7 +13,7 @@ use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
 
-class NicknameHandler
+class AlternativeNicknameHandler
 {
 
     protected $nicknames = [];

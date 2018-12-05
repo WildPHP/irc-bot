@@ -7,10 +7,10 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\IRCMessages\PING;
-use WildPHP\Core\Connection\PingPongHandler;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Observers\IRCMessages\PING;
+use WildPHP\Core\Observers\PingPongHandler;
+use WildPHP\Core\Observers\Queue;
 
 class PingPongHandlerTest extends TestCase
 {

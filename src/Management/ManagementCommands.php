@@ -13,30 +13,41 @@ namespace WildPHP\Core\Management;
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandRegistrar;
-use WildPHP\Core\Commands\JoinedChannelParameter;
-use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Commands\Parameters\ChannelParameter;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Database\Database;
-use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Connection\QueueInterface;
+use WildPHP\Core\Entities\IrcChannel;
+use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Permissions\AllowedBy;
+use WildPHP\Core\Permissions\Validator;
 
-class ManagementCommands extends BaseModule
+class ManagementCommands
 {
-    use ContainerTrait;
+    /**
+     * @var QueueInterface
+     */
+    private $queue;
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+    /**
+     * @var Validator
+     */
+    private $validator;
 
     /**
      * ManagementCommands constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandRegistrar $registrar
+     * @param QueueInterface $queue
+     * @param Configuration $configuration
+     * @param Validator $validator
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(CommandRegistrar $registrar, QueueInterface $queue, Configuration $configuration, Validator $validator)
     {
-        CommandRegistrar::fromContainer($container)->register('join',
+        $registrar->register('join',
             new Command(
                 [$this, 'joinCommand'],
                 new ParameterStrategy(1, 5, [
@@ -48,19 +59,19 @@ class ManagementCommands extends BaseModule
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('part',
+        $registrar->register('part',
             new Command(
                 [$this, 'partCommand'],
                 new ParameterStrategy(0, 5, [
-                    'channel1' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel2' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel3' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel4' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel5' => new JoinedChannelParameter(Database::fromContainer($container))
+                    'channel1' => new ChannelParameter(),
+                    'channel2' => new ChannelParameter(),
+                    'channel3' => new ChannelParameter(),
+                    'channel4' => new ChannelParameter(),
+                    'channel5' => new ChannelParameter()
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('quit',
+        $registrar->register('quit',
             new Command(
                 [$this, 'quitCommand'],
                 new ParameterStrategy(0, -1, [
@@ -68,7 +79,7 @@ class ManagementCommands extends BaseModule
                 ], true)
             ));
 
-        CommandRegistrar::fromContainer($container)->register('nick',
+        $registrar->register('nick',
             new Command(
                 [$this, 'nickCommand'],
                 new ParameterStrategy(0, -1, [
@@ -76,56 +87,64 @@ class ManagementCommands extends BaseModule
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('clearqueue',
+        $registrar->register('clearqueue',
             new Command(
                 [$this, 'clearqueueCommand'],
                 new ParameterStrategy(0, 0)
             ));
 
-        $this->setContainer($container);
+        $this->queue = $queue;
+        $this->configuration = $configuration;
+        $this->validator = $validator;
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
-     * @param Channel $source
-     * @param User $user
+     * @param IrcChannel $source
+     * @param IrcUser $user
      * @param $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function quitCommand(Channel $source, User $user, $args, ComponentContainer $container)
+    public function quitCommand(IrcChannel $source, IrcUser $user, $args)
     {
+        if (!$this->validator->isAllowedTo('quit', $user, $source)) {
+            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'quit'));
+            return;
+        }
+
         $message = implode(' ', $args);
 
         if (empty($message)) {
             $message = 'Quit command given by ' . $user->getNickname();
         }
 
-        Queue::fromContainer($container)
+        $this->queue
             ->quit($message);
     }
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param $channels
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param IrcChannel $source
+     * @param IrcUser $user
+     * @param array $channels
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function joinCommand(Channel $source, User $user, $channels, ComponentContainer $container)
+    public function joinCommand(IrcChannel $source, IrcUser $user, array $channels)
     {
+        if (!$this->validator->isAllowedTo('join', $user, $source)) {
+            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'join'));
+            return;
+        }
+
         $validChannels = $this->validateChannels($channels);
 
         if (!empty($validChannels)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->join($validChannels);
         }
 
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->privmsg($user->getNickname(),
                     'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
                         $diff));
@@ -138,12 +157,11 @@ class ManagementCommands extends BaseModule
      * @param array $channels
      *
      * @return array
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     protected function validateChannels(array $channels): array
     {
         $validChannels = [];
-        $serverChannelPrefix = Configuration::fromContainer($this->getContainer())['serverConfig']['chantypes'];
+        $serverChannelPrefix = $this->configuration['serverConfig']['chantypes'];
 
         foreach ($channels as $channel) {
             if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix) {
@@ -157,23 +175,22 @@ class ManagementCommands extends BaseModule
     }
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param $channels
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param IrcChannel $source
+     * @param IrcUser $user
+     * @param IrcChannel[] $channels
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
+    public function partCommand(IrcChannel $source, IrcUser $user, $channels)
     {
+        if (!$this->validator->isAllowedTo('part', $user, $source)) {
+            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'part'));
+            return;
+        }
+
         if (empty($channels)) {
             $channels = [$source];
         }
 
-        /**
-         * @var int $index
-         * @var Channel $channel
-         */
         foreach ($channels as $index => $channel) {
             $channels[$index] = $channel->getName();
         }
@@ -181,14 +198,14 @@ class ManagementCommands extends BaseModule
         $validChannels = $this->validateChannels($channels);
 
         if (!empty($validChannels)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->part($validChannels);
         }
 
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->privmsg($user->getNickname(),
                     'Did not part the following channels because they do not follow proper formatting: ' . implode(', ',
                         $diff));
@@ -198,52 +215,38 @@ class ManagementCommands extends BaseModule
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param Channel $source
-     * @param User $user
+     * @param IrcChannel $source
+     * @param IrcUser $user
      * @param array $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function nickCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+    public function nickCommand(IrcChannel $source, IrcUser $user, array $args)
     {
+        if (!$this->validator->isAllowedTo('nick', $user, $source)) {
+            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'nick'));
+            return;
+        }
+
         // TODO: Validate
-        Queue::fromContainer($container)->nick($args['newNickname']);
+        $this->queue->nick($args['newNickname']);
     }
 
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param array $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param IrcChannel $source
+     * @param IrcUser $user
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function clearqueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+    public function clearqueueCommand(IrcChannel $source, IrcUser $user)
     {
-        Queue::fromContainer($container)->clear();
-        Queue::fromContainer($container)->privmsg($source->getName(),
+        if (!$this->validator->isAllowedTo('clearqueue', $user, $source)) {
+            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'clearqueue'));
+            return;
+        }
+
+        $this->queue->clear();
+        $this->queue->privmsg($source->getName(),
             $user->getNickname() . ': Message queue cleared.');
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            CommandRegistrar::class,
-            Queue::class,
-            Database::class
-        ];
     }
 }

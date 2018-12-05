@@ -8,20 +8,20 @@
 
 use PHPUnit\Framework\TestCase;
 use ValidationClosures\Types;
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
-use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
 use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\NeonBackend;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Management\ManagementCommands;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
+use WildPHP\Core\Observers\Channel;
+use WildPHP\Core\Observers\ChannelCollection;
+use WildPHP\Core\Observers\ChannelModes;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\User;
+use WildPHP\Core\Observers\UserCollection;
 use Yoshi2889\Collections\Collection;
 
 class ManagementCommandsTest extends TestCase

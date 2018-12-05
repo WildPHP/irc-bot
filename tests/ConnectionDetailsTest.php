@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\ConnectionDetails;
+use WildPHP\Core\Observers\ConnectionDetails;
 
 class ConnectionDetailsTest extends TestCase
 {

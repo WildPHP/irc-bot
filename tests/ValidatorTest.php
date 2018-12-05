@@ -32,7 +32,7 @@ class ValidatorTest extends TestCase
 		$modeDefinitions = '(ov)@+';
 		$expectedModes = ['o', 'v'];
 
-		$rpl_isupport = new \WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT();
+		$rpl_isupport = new \WildPHP\Core\Observers\IRCMessages\RPL_ISUPPORT();
 		$rpl_isupport->setVariables(['prefix' => $modeDefinitions]);
 
 		$validator->createModeGroups($rpl_isupport);
@@ -43,7 +43,7 @@ class ValidatorTest extends TestCase
 	public function testOwnerHasPermission()
 	{
 		$validator = $this->initValidator();
-		$user = new \WildPHP\Core\Users\User('nickname', '', '', 'TestUser');
+		$user = new \WildPHP\Core\Observers\User('nickname', '', '', 'TestUser');
 
 		self::assertEquals('owner', $validator->isAllowedTo('test', $user));
 	}
@@ -51,17 +51,17 @@ class ValidatorTest extends TestCase
 	public function testHasModePermission()
 	{
 		$modeDefinitions = '(ov)@+';
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($modeDefinitions);
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
-		$channel = new \WildPHP\Core\Channels\Channel('#testChannel', $userCollection, $channelModes);
+		$channelModes = new \WildPHP\Core\Observers\ChannelModes($modeDefinitions);
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
+		$channel = new \WildPHP\Core\Observers\Channel('#testChannel', $userCollection, $channelModes);
 
-		$user = new \WildPHP\Core\Users\User('SomeNickname', '', '', 'ircAccount');
+		$user = new \WildPHP\Core\Observers\User('SomeNickname', '', '', 'ircAccount');
 		$userCollection->append($user);
 
 		$channelModes->addUserToMode('o', $user);
 
 		// Fake an RPL_ISUPPORT message.
-		$rpl_isupport = new \WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT();
+		$rpl_isupport = new \WildPHP\Core\Observers\IRCMessages\RPL_ISUPPORT();
 		$rpl_isupport->setVariables(['prefix' => $modeDefinitions]);
 
 		$validator = $this->initValidator();
@@ -79,11 +79,11 @@ class ValidatorTest extends TestCase
 	public function testHasPermission()
 	{
 		$modeDefinitions = '';
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($modeDefinitions);
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
-		$channel = new \WildPHP\Core\Channels\Channel('#testChannel', $userCollection, $channelModes);
+		$channelModes = new \WildPHP\Core\Observers\ChannelModes($modeDefinitions);
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
+		$channel = new \WildPHP\Core\Observers\Channel('#testChannel', $userCollection, $channelModes);
 
-		$user = new \WildPHP\Core\Users\User('SomeNickname', '', '', 'ircAccount');
+		$user = new \WildPHP\Core\Observers\User('SomeNickname', '', '', 'ircAccount');
 		$userCollection->append($user);
 
 		$validator = $this->initValidator();
@@ -103,17 +103,17 @@ class ValidatorTest extends TestCase
 	public function testHasCascadedPermission()
 	{
 		$modeDefinitions = '(ov)@+';
-		$channelModes = new \WildPHP\Core\Channels\ChannelModes($modeDefinitions);
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
-		$channel = new \WildPHP\Core\Channels\Channel('#testChannel', $userCollection, $channelModes);
+		$channelModes = new \WildPHP\Core\Observers\ChannelModes($modeDefinitions);
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
+		$channel = new \WildPHP\Core\Observers\Channel('#testChannel', $userCollection, $channelModes);
 
-		$user = new \WildPHP\Core\Users\User('SomeNickname', '', '', 'ircAccount');
+		$user = new \WildPHP\Core\Observers\User('SomeNickname', '', '', 'ircAccount');
 		$userCollection->append($user);
 
 		$channelModes->addUserToMode('o', $user);
 
 		// Fake an RPL_ISUPPORT message.
-		$rpl_isupport = new \WildPHP\Core\Connection\IRCMessages\RPL_ISUPPORT();
+		$rpl_isupport = new \WildPHP\Core\Observers\IRCMessages\RPL_ISUPPORT();
 		$rpl_isupport->setVariables(['prefix' => $modeDefinitions]);
 
 		$validator = $this->initValidator();

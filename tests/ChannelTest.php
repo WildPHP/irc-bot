@@ -18,14 +18,14 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Channels\Channel;
+use WildPHP\Core\Observers\Channel;
 
 class ChannelTest extends TestCase
 {
 
 	public function testGetSetChannelName()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 
 		$name = '#someChannel';
 		$channel = new Channel($name, $userCollection);
@@ -35,7 +35,7 @@ class ChannelTest extends TestCase
 
 	public function testGetSetChannelTopic()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 		$channel = new Channel('#someChannel', $userCollection);
 
 		$topic = 'This is a test topic';
@@ -46,7 +46,7 @@ class ChannelTest extends TestCase
 
 	public function testGetSetChannelDescription()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 		$channel = new Channel('#someChannel', $userCollection);
 
 		$topic = 'This is a test topic';
@@ -57,7 +57,7 @@ class ChannelTest extends TestCase
 
 	public function testGetSetCreatedBy()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 		$channel = new Channel('#someChannel', $userCollection);
 		
 		$createdBy = 'SomeUser';
@@ -68,7 +68,7 @@ class ChannelTest extends TestCase
 
 	public function testGetSetCreatedTime()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 		$channel = new Channel('#someChannel', $userCollection);
 		
 		$createdTime = 100;
@@ -79,7 +79,7 @@ class ChannelTest extends TestCase
 
 	public function testGetSetUserCollection()
 	{
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
 		$channel = new Channel('#someChannel', $userCollection);
 
 		static::assertSame($userCollection, $channel->getUserCollection());

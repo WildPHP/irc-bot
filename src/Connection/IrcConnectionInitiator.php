@@ -10,6 +10,7 @@ namespace WildPHP\Core\Connection;
 
 
 use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 
 class IrcConnectionInitiator
@@ -28,41 +29,79 @@ class IrcConnectionInitiator
      * @var LoopInterface
      */
     private $loop;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
 
     /**
      * IrcConnectionInitiator constructor.
+     * @param LoggerInterface $logger
      * @param EventEmitterInterface $eventEmitter
      * @param QueueInterface $queue
      * @param IrcConnectionInterface $connection
      * @param LoopInterface $loop
      */
-    public function __construct(EventEmitterInterface $eventEmitter, QueueInterface $queue, IrcConnectionInterface $connection, LoopInterface $loop)
+    public function __construct(LoggerInterface $logger, EventEmitterInterface $eventEmitter, QueueInterface $queue, IrcConnectionInterface $connection, LoopInterface $loop)
     {
-        $eventEmitter->on('stream.created', [$this, 'sendInitialConnectionDetails']);
+        $eventEmitter->on('stream.created', [$this, 'initiateConnection']);
 
         $this->queue = $queue;
         $this->connection = $connection;
         $this->loop = $loop;
+        $this->logger = $logger;
+        $this->eventEmitter = $eventEmitter;
     }
 
     /**
-     * @param QueueInterface $queue
+     * @param IrcConnectionInterface $ircConnection
+     * @return void
      */
-    public function initiateConnection(QueueInterface $queue)
+    function startConnection(IrcConnectionInterface $ircConnection)
     {
-        $this->loop->addPeriodicTimer(1, [$this, 'flushQueue']);
+        $connectionDetails = $ircConnection->getConnectionDetails();
 
+        $promise = $ircConnection->connect(
+            ConnectorFactory::create(
+                $this->loop,
+                $connectionDetails->getSecure(),
+                $connectionDetails->getContextOptions()
+            )
+        );
+
+        $promise->then(null, function (\Throwable $e) {
+            $this->logger->error('An error occurred in the IRC connection:', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            $this->eventEmitter->emit('stream.error');
+        });
+
+        $this->eventEmitter->on('stream.closed', [$this->loop, 'stop']);
+        $this->eventEmitter->on('stream.error', [$this->loop, 'stop']);
+    }
+
+    /**
+     * @return void
+     */
+    public function initiateConnection()
+    {
         $connectionDetails = $this->connection->getConnectionDetails();
         if (!empty($connectionDetails->getPassword())) {
-            $queue->pass($connectionDetails->getPassword());
+            $this->queue->pass($connectionDetails->getPassword());
         }
 
-        $queue->user(
+        $this->queue->user(
             $connectionDetails->getUsername(),
             $connectionDetails->getHostname(),
             $connectionDetails->getAddress(),
             $connectionDetails->getRealname()
         );
-        $queue->nick($connectionDetails->getWantedNickname());
+        $this->queue->nick($connectionDetails->getWantedNickname());
     }
 }

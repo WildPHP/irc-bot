@@ -172,22 +172,22 @@ class CapabilityHandler
      * @param CAP $incomingIrcMessage
      * @param QueueInterface $queue
      */
-    public function responseRouter(CAP $incomingIrcMessage, QueueInterface $queue)
+    public function responseRouter(CAP $incomingIrcMessage)
     {
         $command = $incomingIrcMessage->getCommand();
         $capabilities = $incomingIrcMessage->getCapabilities();
 
         switch ($command) {
             case 'LS':
-                $this->updateAvailableCapabilities($capabilities, $queue);
+                $this->updateAvailableCapabilities($capabilities);
                 break;
 
             case 'ACK':
-                $this->updateAcknowledgedCapabilities($capabilities, $queue);
+                $this->updateAcknowledgedCapabilities($capabilities);
                 break;
 
             case 'NAK':
-                $this->updateNotAcknowledgedCapabilities($capabilities, $queue);
+                $this->updateNotAcknowledgedCapabilities($capabilities);
                 break;
         }
     }
@@ -196,7 +196,7 @@ class CapabilityHandler
      * @param array $capabilities
      * @param QueueInterface $queue
      */
-    protected function updateAvailableCapabilities(array $capabilities, QueueInterface $queue)
+    protected function updateAvailableCapabilities(array $capabilities)
     {
         $this->availableCapabilities = $capabilities;
 
@@ -217,27 +217,27 @@ class CapabilityHandler
                 ]);
         }
 
-        $this->eventEmitter->emit('irc.cap.ls', [$capabilities, $queue]);
+        $this->eventEmitter->emit('irc.cap.ls', [$capabilities]);
     }
 
     /**
      * @param string[] $capabilities
      * @param QueueInterface $queue
      */
-    public function updateAcknowledgedCapabilities(array $capabilities, QueueInterface $queue)
+    public function updateAcknowledgedCapabilities(array $capabilities)
     {
         $ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
         $this->acknowledgedCapabilities = $ackCapabilities;
 
         foreach ($ackCapabilities as $capability) {
-            $this->eventEmitter->emit('irc.cap.acknowledged.' . $capability, [$queue]);
+            $this->eventEmitter->emit('irc.cap.acknowledged.' . $capability);
 
             if (in_array($capability, $this->queuedCapabilities)) {
                 unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.acknowledged', [$ackCapabilities, $queue]);
+        $this->eventEmitter->emit('irc.cap.acknowledged', [$ackCapabilities]);
     }
 
     /**
@@ -252,21 +252,21 @@ class CapabilityHandler
      * @param string[] $capabilities
      * @param QueueInterface $queue
      */
-    public function updateNotAcknowledgedCapabilities(array $capabilities, QueueInterface $queue)
+    public function updateNotAcknowledgedCapabilities(array $capabilities)
     {
         $nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(),
             $capabilities)));
         $this->notAcknowledgedCapabilities = $nakCapabilities;
 
         foreach ($nakCapabilities as $capability) {
-            $this->eventEmitter->emit('irc.cap.notAcknowledged.' . $capability, [$queue]);
+            $this->eventEmitter->emit('irc.cap.notAcknowledged.' . $capability);
 
             if (in_array($capability, $this->queuedCapabilities)) {
                 unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.notAcknowledged', [$nakCapabilities, $queue]);
+        $this->eventEmitter->emit('irc.cap.notAcknowledged', [$nakCapabilities]);
     }
 
     /**

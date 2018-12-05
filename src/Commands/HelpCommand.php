@@ -12,12 +12,10 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Commands\Command;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Logger\Logger;
 use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Observers\Queue;
 
 class HelpCommand extends BaseModule
 {

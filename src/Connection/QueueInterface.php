@@ -13,7 +13,7 @@ use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
 /**
  * Class Queue
- * @package WildPHP\Core\Connection
+ * @package WildPHP\Core\Observers
  *
  * Magic methods below
  * @method QueueItem authenticate(string $response)
@@ -66,7 +66,11 @@ interface QueueInterface
      */
     public function processQueueItems(array $queueItems);
 
-    public function processQueueItem(QueueItem $queueItem);
+    /**
+     * @param QueueItem $queueItem
+     * @return void
+     */
+    public function processQueueItem(QueueItem $queueItem): void;
 
     /**
      * @param bool $enabled
@@ -94,4 +98,9 @@ interface QueueInterface
      * @return bool
      */
     public function isFloodControlEnabled(): bool;
+
+    /**
+     * @return void
+     */
+    public function clear(): void;
 }

@@ -7,7 +7,7 @@
  */
 
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Observers;
 
 
 use Evenement\EventEmitterInterface;
@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Messages\RPL\ISupport;
 
-class ServerConfigUpdater
+class ServerConfigObserver
 {
     /**
      * @var LoggerInterface

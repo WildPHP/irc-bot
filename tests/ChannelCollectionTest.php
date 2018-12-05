@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Channels\ChannelCollection;
+use WildPHP\Core\Observers\ChannelCollection;
 
 class ChannelCollectionTest extends TestCase
 {
@@ -15,7 +15,7 @@ class ChannelCollectionTest extends TestCase
 	{
 		$channelCollection = new ChannelCollection();
 
-		$channel = new \WildPHP\Core\Channels\Channel('#test', new \WildPHP\Core\Users\UserCollection(), new \WildPHP\Core\Channels\ChannelModes(''));
+		$channel = new \WildPHP\Core\Observers\Channel('#test', new \WildPHP\Core\Observers\UserCollection(), new \WildPHP\Core\Observers\ChannelModes(''));
 		$channelCollection->append($channel);
 
 		self::assertFalse($channelCollection->containsChannelName('#testing'));
@@ -26,7 +26,7 @@ class ChannelCollectionTest extends TestCase
 	{
 		$channelCollection = new ChannelCollection();
 
-		$channel = new \WildPHP\Core\Channels\Channel('#test', new \WildPHP\Core\Users\UserCollection(), new \WildPHP\Core\Channels\ChannelModes(''));
+		$channel = new \WildPHP\Core\Observers\Channel('#test', new \WildPHP\Core\Observers\UserCollection(), new \WildPHP\Core\Observers\ChannelModes(''));
 		$channelCollection->append($channel);
 
 		self::assertFalse($channelCollection->findByChannelName('#testing'));

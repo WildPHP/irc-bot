@@ -18,7 +18,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\TextFormatter;
+use WildPHP\Core\Observers\TextFormatter;
 
 class TextFormatterTest extends TestCase
 {

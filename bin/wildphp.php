@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2017 The WildPHP Team
+ * Copyright 2018 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -27,8 +27,4 @@ if (version_compare(PHP_VERSION, '7.1.0', '<'))
 	echo 'Please use PHP 7.1.0 or later.';
 	exit(129);
 }
-require('vendor/autoload.php');
-define('WPHP_ROOT_DIR', __DIR__ . '/');
-define('WPHP_VERSION', '3.0.0');
-
-include(WPHP_ROOT_DIR . 'src/bootstrap.php');
+include(dirname(__DIR__) . '/app/bootstrap.php');

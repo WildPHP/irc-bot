@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\UserPrefix;
+use WildPHP\Core\Observers\UserPrefix;
 
 class UserPrefixTest extends TestCase
 {

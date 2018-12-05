@@ -60,14 +60,20 @@ class Sasl implements CapabilityInterface
     private $configuration;
 
     /**
+     * @var QueueInterface
+     */
+    private $queue;
+
+    /**
      * SASL constructor.
      *
+     * @param QueueInterface $queue
      * @param Configuration $configuration
      * @param CapabilityHandler $capabilityHandler
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      */
-    public function __construct(Configuration $configuration, CapabilityHandler $capabilityHandler, EventEmitterInterface $eventEmitter, LoggerInterface $logger)
+    public function __construct(QueueInterface $queue, Configuration $configuration, CapabilityHandler $capabilityHandler, EventEmitterInterface $eventEmitter, LoggerInterface $logger)
     {
         if (!$configuration->offsetExists('sasl') ||
             empty($configuration['sasl']['username']) ||
@@ -93,14 +99,15 @@ class Sasl implements CapabilityInterface
         $this->eventEmitter = $eventEmitter;
         $this->logger = $logger;
         $this->configuration = $configuration;
+        $this->queue = $queue;
     }
 
     /**
      * @param QueueInterface $queue
      */
-    public function sendAuthenticationMechanism(QueueInterface $queue)
+    public function sendAuthenticationMechanism()
     {
-        $queue->authenticate('PLAIN');
+        $this->queue->authenticate('PLAIN');
         $this->logger->debug('[SASL] Authentication mechanism requested, awaiting server response.');
     }
 
@@ -108,7 +115,7 @@ class Sasl implements CapabilityInterface
      * @param Authenticate $message
      * @param QueueInterface $queue
      */
-    public function sendCredentials(Authenticate $message, QueueInterface $queue)
+    public function sendCredentials(Authenticate $message)
     {
         if ($message->getResponse() != '+') {
             return;
@@ -118,7 +125,7 @@ class Sasl implements CapabilityInterface
         $password = $this->configuration['sasl']['password'];
 
         $credentials = $this->generateCredentialString($username, $password);
-        $queue->authenticate($credentials);
+        $this->queue->authenticate($credentials);
 
         $this->logger->debug('[SASL] Sent authentication details, awaiting response from server.');
     }

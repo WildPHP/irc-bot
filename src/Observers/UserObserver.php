@@ -6,15 +6,16 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Users;
+namespace WildPHP\Core\Observers;
 
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Connection\QueueInterface;
-use WildPHP\Core\Database\Database;
-use WildPHP\Core\StateException;
+use WildPHP\Core\Connection\UserModeParser;
+use WildPHP\Core\Entities\Base\IrcChannelQuery;
+use WildPHP\Core\Entities\Base\IrcUserQuery;
+use WildPHP\Core\Entities\UserModeChannel;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Nick;
 use WildPHP\Messages\RPL\EndOfNames;
@@ -29,23 +30,23 @@ class UserObserver
     private $eventEmitter;
 
     /**
-     * @var Database
-     */
-    private $database;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
+     * @var QueueInterface
+     */
+    private $queue;
+
+    /**
      * BaseModule constructor.
      *
      * @param EventEmitterInterface $eventEmitter
-     * @param Database $database
      * @param LoggerInterface $logger
+     * @param QueueInterface $queue
      */
-    public function __construct(EventEmitterInterface $eventEmitter, Database $database, LoggerInterface $logger)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, QueueInterface $queue)
     {
 
         $eventEmitter->on('irc.line.in.join', [$this, 'processUserJoin']);
@@ -61,26 +62,26 @@ class UserObserver
         $eventEmitter->on('irc.line.in.354', [$this, 'processWhoxReply']);
 
         $this->eventEmitter = $eventEmitter;
-        $this->database = $database;
         $this->logger = $logger;
+        $this->queue = $queue;
     }
 
     /**
      * @param JOIN $joinMessage
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function processUserJoin(JOIN $joinMessage)
     {
-        $db = $this->database;
+        $user = IrcUserQuery::create()->filterByNickname($joinMessage->getNickname())->findOneOrCreate();
 
-        if (!$db->has('users', ['nickname' => $joinMessage->getNickname()])) {
-            $prefix = $joinMessage->getPrefix();
-            $db->insert('users', [
-                'nickname' => $joinMessage->getNickname(),
-                'username' => $prefix->getUsername(),
-                'hostname' => $prefix->getHostname(),
-                'irc_account' => $joinMessage->getIrcAccount(),
-            ]);
+        $prefix = $joinMessage->getPrefix();
+        $user->setNickname($joinMessage->getNickname());
+        $user->setUsername($prefix->getUsername());
+        $user->setHostname($prefix->getHostname());
+        $user->setIrcAccount($joinMessage->getIrcAccount());
+        $user->save();
 
+        if ($user->isNew())
             $this->logger->debug('Added user', [
                 'reason' => 'join',
                 'nickname' => $joinMessage->getNickname(),
@@ -88,46 +89,37 @@ class UserObserver
                 'hostname' => $prefix->getHostname(),
                 'irc_account' => $joinMessage->getIrcAccount()
             ]);
-        }
+        else
+            $this->logger->debug('Updated existing user', [
+                'reason' => 'join',
+                'nickname' => $joinMessage->getNickname(),
+                'username' => $prefix->getUsername(),
+                'hostname' => $prefix->getHostname(),
+                'irc_account' => $joinMessage->getIrcAccount()
+            ]);
     }
 
     /**
      * @param NamReply $ircMessage
-     * @throws StateException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function processNamesReply(NamReply $ircMessage)
     {
-        $db = $this->database;
         $nicknames = $ircMessage->getNicknames();
-
-        $modePrefixes = ($result = $db->get('server_config', ['value'],
-            ['key' => 'PREFIX'])) ? $result['value'] : '(ohv)@%+';
 
         foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
-            $modes = ChannelModes::extractUserModesFromNickname($modePrefixes, $nicknameWithMode, $nickname);
+            $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
 
-            if (!$db->has('users', ['nickname' => $nickname])) {
-                $db->insert('users', [
-                    'nickname' => $nickname
-                ]);
-                $userID = $db->id();
-            } else {
-                $userID = $db->get('users', ['id'], ['nickname' => $nickname])['id'];
-            }
-
-            if (!$db->has('channels', ['name' => $ircMessage->getChannel()])) {
-                throw new StateException('Channel not found, but RPL_NAMES received; state mismatch!');
-            }
-
-            $channelID = $db->get('channels', ['id'], ['name' => $ircMessage->getChannel()])['id'];
+            $user = IrcUserQuery::create()->filterByNickname($nickname)->findOneOrCreate();
+            $channel = IrcChannelQuery::create()->findOneByName($ircMessage->getChannel());
 
             foreach ($modes as $mode) {
-                $db->insert('mode_relations', [
-                    'user_id' => $userID,
-                    'channel_id' => $channelID,
-                    'mode' => $mode
-                ]);
+                $userChannelMode = new UserModeChannel();
+                $userChannelMode->setIrcUser($user);
+                $userChannelMode->setIrcChannel($channel);
+                $userChannelMode->setMode($mode);
+                $userChannelMode->save();
             }
 
             $this->logger->debug('Modified or created user',
@@ -137,33 +129,25 @@ class UserObserver
 
     /**
      * @param EndOfNames $ircMessage
-     * @param QueueInterface $queue
      */
-    public function sendInitialWhoxMessage(EndOfNames $ircMessage, QueueInterface $queue)
+    public function sendInitialWhoxMessage(EndOfNames $ircMessage)
     {
         $channel = $ircMessage->getChannel();
-        $queue->who($channel, '%nuhaf');
+        $this->queue->who($channel, '%nuhaf');
     }
 
     /**
      * @param WhosPcRpl $ircMessage
-     * @throws StateException
-     * @throws UserNotFoundException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function processWhoxReply(WhosPcRpl $ircMessage)
     {
-        $db = $this->database;
-
-        if (!$db->has('users', ['nickname' => $ircMessage->getNickname()])) {
-            throw new StateException('RPL_WHOSPCRPL received but user was not found... Impossible!');
-        }
-
-        $user = User::fromDatabase($db, ['nickname' => $ircMessage->getNickname()]);
+        $user = IrcUserQuery::create()->filterByNickname($ircMessage->getNickname())->findOneOrCreate();
         $user->setNickname($ircMessage->getNickname());
         $user->setUsername($ircMessage->getUsername());
         $user->setHostname($ircMessage->getHostname());
         $user->setIrcAccount($ircMessage->getAccountname());
-        User::toDatabase($db, $user);
+        $user->save();
 
         $this->logger->debug('Modified user',
             array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray()));
@@ -171,21 +155,19 @@ class UserObserver
 
     /**
      * @param NICK $nickMessage
-     * @throws StateException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function processUserNickChange(NICK $nickMessage)
     {
-        $db = $this->database;
+        $user = IrcUserQuery::create()->findOneByNickname($nickMessage->getNickname());
+        $user->setNickname($nickMessage->getNewNickname());
+        $user->save();
 
-        $userID = $db->get('users', ['id'], ['nickname' => $nickMessage->getNickname()]);
-
-        if (!$userID) {
-            throw new StateException('Nick change detected but I have no idea who this user is... Help!');
-        }
-
-        $db->update('users', [
-            'nickname' => $nickMessage->getNewNickname()
-        ], ['id' => $userID]);
+        $this->eventEmitter->emit('user.nick', [
+            $user,
+            $nickMessage->getNickname(),
+            $nickMessage->getNewNickname()
+        ]);
 
         $this->logger->debug('Updated user nickname', [
             'oldNickname' => $nickMessage->getNickname(),

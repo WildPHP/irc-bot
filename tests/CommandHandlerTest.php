@@ -8,22 +8,22 @@
 
 use PHPUnit\Framework\TestCase;
 use ValidationClosures\Types;
-use WildPHP\Core\Channels\Channel;
-use WildPHP\Core\Channels\ChannelCollection;
-use WildPHP\Core\Channels\ChannelModes;
 use WildPHP\Core\Commands\Command;
-use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\Commands\CommandHelp;
+use WildPHP\Core\Commands\CommandRunner;
 use WildPHP\Core\Commands\ParameterStrategy;
 use WildPHP\Core\ComponentContainer;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\NeonBackend;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Logger\Logger;
+use WildPHP\Core\Observers\Channel;
+use WildPHP\Core\Observers\ChannelCollection;
+use WildPHP\Core\Observers\ChannelModes;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\User;
+use WildPHP\Core\Observers\UserCollection;
 use WildPHP\Core\Permissions\PermissionGroupCollection;
 use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserCollection;
 
 class CommandHandlerTest extends TestCase
 {
@@ -124,50 +124,50 @@ class CommandHandlerTest extends TestCase
 			'test'
 		));
 
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!test');
 		$privmsg->setNickname('Test');
 
 		self::expectOutputString('Hello world!');
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// Too many arguments
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2 ing');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!test2 ing');
 		$privmsg->setNickname('Test');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// No permission
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!test2');
 		$privmsg->setNickname('Testing');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// No command.
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', 'test2');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', 'test2');
 		$privmsg->setNickname('Test');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// Nonexisting command.
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!testing');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!testing');
 		$privmsg->setNickname('Test');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// Only prefix
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!');
 		$privmsg->setNickname('Test');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// Channel doesn't exist in collection.
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#testing', '!test2');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#testing', '!test2');
 		$privmsg->setNickname('Test');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));
 
 		// User doesn't exist in collection.
-		$privmsg = new \WildPHP\Core\Connection\IRCMessages\PRIVMSG('#test', '!test2');
+		$privmsg = new \WildPHP\Core\Observers\IRCMessages\PRIVMSG('#test', '!test2');
 		$privmsg->setNickname('Foo');
 
 		$commandHandler->parseAndRunCommand($privmsg, Queue::fromContainer($this->componentContainer));

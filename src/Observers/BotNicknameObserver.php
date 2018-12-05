@@ -6,15 +6,15 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Users;
+namespace WildPHP\Core\Observers;
 
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Entities\IrcUser;
 
-class BotNicknameMonitor
+class BotNicknameObserver
 {
     /**
      * @var Configuration
@@ -41,16 +41,12 @@ class BotNicknameMonitor
         $this->logger = $logger;
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
-     * @param Channel $channel
-     * @param User $user
+     * @param IrcUser $user
      * @param string $oldNickname
      * @param string $newNickname
      */
-    public function monitorBotNickname(Channel $channel, User $user, string $oldNickname, string $newNickname)
+    public function monitorBotNickname(IrcUser $user, string $oldNickname, string $newNickname)
     {
         if ($oldNickname != $this->configuration['currentNickname']) {
             return;

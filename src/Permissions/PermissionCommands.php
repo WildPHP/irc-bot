@@ -12,12 +12,12 @@ namespace WildPHP\Core\Permissions;
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Observers\Channel;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\User;
 
 class PermissionCommands extends BaseModule
 {
@@ -38,7 +38,7 @@ class PermissionCommands extends BaseModule
             new Command(
                 [$this, 'allowCommand'],
                 new ParameterStrategy(2, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'permission' => new StringParameter()
                 ])
             ));
@@ -47,7 +47,7 @@ class PermissionCommands extends BaseModule
             new Command(
                 [$this, 'denyCommand'],
                 new ParameterStrategy(2, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'permission' => new StringParameter()
                 ])
             ));
@@ -56,7 +56,7 @@ class PermissionCommands extends BaseModule
             new Command(
                 [$this, 'lspermsCommand'],
                 new ParameterStrategy(1, 1, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                    'group' => new GroupParameter($permissionGroupCollection)
                 ])
             ));
 

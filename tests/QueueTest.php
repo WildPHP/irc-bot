@@ -19,7 +19,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\Queue;
+use WildPHP\Core\Observers\Queue;
 
 class QueueTest extends TestCase
 {
@@ -30,7 +30,7 @@ class QueueTest extends TestCase
         $queue = new Queue();
         static::assertEquals(0, $queue->count());
         
-        $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+        $dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
         $queue->insertMessage($dummyCommand);
         
         static::assertEquals(1, $queue->count());
@@ -41,7 +41,7 @@ class QueueTest extends TestCase
 		$queue = new Queue();
 		static::assertEquals(0, $queue->count());
 
-		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
 		$queueItem = $queue->insertMessage($dummyCommand);
 
 		static::assertEquals(1, $queue->count());
@@ -57,7 +57,7 @@ class QueueTest extends TestCase
 		$queue = new Queue();
 		static::assertEquals(0, $queue->count());
 
-		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
 		$queue->insertMessage($dummyCommand);
 
 		static::assertEquals(1, $queue->count());
@@ -73,7 +73,7 @@ class QueueTest extends TestCase
 		$queue = new Queue();
 		static::assertEquals(0, $queue->count());
 
-		$dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		$dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
 		$queue->insertMessage($dummyCommand);
 
 		static::assertEquals(1, $queue->count());
@@ -95,7 +95,7 @@ class QueueTest extends TestCase
 
         for ($i = 1; $i <= 10; $i++)
         {
-            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+            $dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
 
@@ -119,7 +119,7 @@ class QueueTest extends TestCase
 
         for ($i = 1; $i <= 10; $i++)
         {
-            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+            $dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
 
@@ -136,7 +136,7 @@ class QueueTest extends TestCase
 
         for ($i = 1; $i <= 3; $i++)
         {
-            $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+            $dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
             $queue->insertMessage($dummyCommand);
         }
         $queue->flush();
@@ -147,7 +147,7 @@ class QueueTest extends TestCase
 	    $queue->setFloodControl();
 	    for ($i = 1; $i <= 50; $i++)
 	    {
-		    $dummyCommand = new \WildPHP\Core\Connection\IRCMessages\RAW('test');
+		    $dummyCommand = new \WildPHP\Core\Observers\IRCMessages\RAW('test');
 		    $queue->insertMessage($dummyCommand);
 	    }
 
@@ -164,7 +164,7 @@ class QueueTest extends TestCase
 		$queueItem = $queue->raw('Test');
 		self::assertEquals(1, $queue->count());
 		
-		$expectedQueueItem = new \WildPHP\Core\Connection\QueueItem(new \WildPHP\Core\Connection\IRCMessages\RAW('Test'), time());
+		$expectedQueueItem = new \WildPHP\Core\Observers\QueueItem(new \WildPHP\Core\Observers\IRCMessages\RAW('Test'), time());
 		self::assertEquals($expectedQueueItem, $queueItem);
     }
 }

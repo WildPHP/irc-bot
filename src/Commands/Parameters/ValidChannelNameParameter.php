@@ -6,7 +6,7 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Channels;
+namespace WildPHP\Core\Commands\Parameters;
 
 use WildPHP\Commands\Parameters\Parameter;
 

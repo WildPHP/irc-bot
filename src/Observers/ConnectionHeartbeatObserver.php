@@ -7,14 +7,16 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
+use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Messages\Ping;
 
-class ConnectionHeartbeatHandler
+class ConnectionHeartbeatObserver
 {
 
     /**
@@ -62,9 +64,9 @@ class ConnectionHeartbeatHandler
     private $logger;
 
     /**
-     * @var string
+     * @var Configuration
      */
-    private $serverHostname;
+    private $configuration;
 
     /**
      * PingPongHandler constructor.
@@ -73,9 +75,9 @@ class ConnectionHeartbeatHandler
      * @param QueueInterface $queue
      * @param LoggerInterface $logger
      * @param LoopInterface $loop
-     * @param string $serverHostname
+     * @param Configuration $configuration
      */
-    public function __construct(EventEmitterInterface $eventEmitter, QueueInterface $queue, LoggerInterface $logger, LoopInterface $loop, string $serverHostname)
+    public function __construct(EventEmitterInterface $eventEmitter, QueueInterface $queue, LoggerInterface $logger, LoopInterface $loop, Configuration $configuration)
     {
         $eventEmitter->on('irc.line.in', [$this, 'updateLastMessageReceived']);
         $eventEmitter->on('irc.line.in.ping', [$this, 'respondPong']);
@@ -86,7 +88,7 @@ class ConnectionHeartbeatHandler
         $this->eventEmitter = $eventEmitter;
         $this->queue = $queue;
         $this->logger = $logger;
-        $this->serverHostname = $serverHostname;
+        $this->configuration = $configuration;
     }
 
     public function updateLastMessageReceived()
@@ -134,7 +136,9 @@ class ConnectionHeartbeatHandler
     protected function sendPing()
     {
         $this->logger->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
-        $this->queue->ping($this->serverHostname);
+
+        $serverHostname = $this->configuration['serverConfig']['hostname'];
+        $this->queue->ping($serverHostname);
         $this->hasSentPing = true;
     }
 

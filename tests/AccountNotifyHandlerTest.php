@@ -7,26 +7,26 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\Capabilities\AccountNotifyHandler;
+use WildPHP\Core\Observers\Capabilities\AccountNotifyHandler;
 
 class AccountNotifyHandlerTest extends TestCase
 {
 	public function testUpdateUserIrcAccount()
 	{
 		$componentContainer = new \WildPHP\Core\ComponentContainer();
-		$channelCollection = new \WildPHP\Core\Channels\ChannelCollection();
+		$channelCollection = new \WildPHP\Core\Observers\ChannelCollection();
 		$componentContainer->add($channelCollection);
 		$componentContainer->add(new \WildPHP\Core\EventEmitter());
-		$userCollection = new \WildPHP\Core\Users\UserCollection();
-		$channelCollection->append(new \WildPHP\Core\Channels\Channel('#test', $userCollection, new \WildPHP\Core\Channels\ChannelModes('')));
-		$user = new \WildPHP\Core\Users\User('Test');
+		$userCollection = new \WildPHP\Core\Observers\UserCollection();
+		$channelCollection->append(new \WildPHP\Core\Observers\Channel('#test', $userCollection, new \WildPHP\Core\Observers\ChannelModes('')));
+		$user = new \WildPHP\Core\Observers\User('Test');
 		$userCollection->append($user);
 
 		$account = new \WildPHP\Messages\Account('ing');
 		$account->setPrefix(new \WildPHP\Messages\Generics\Prefix('Test'));
 
 		$accountNotifyHandler = new AccountNotifyHandler($componentContainer);
-		$accountNotifyHandler->updateUserIrcAccount($account, new \WildPHP\Core\Connection\Queue());
+		$accountNotifyHandler->updateUserIrcAccount($account, new \WildPHP\Core\Observers\Queue());
 
 		self::assertEquals('ing', $user->getIrcAccount());
 	}

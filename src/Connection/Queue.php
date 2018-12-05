@@ -14,7 +14,7 @@ use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
 /**
  * Class Queue
- * @package WildPHP\Core\Connection
+ * @package WildPHP\Core\Observers
  *
  * Magic methods below
  * @method QueueItem authenticate(string $response)
@@ -128,7 +128,7 @@ class Queue implements QueueInterface
         return true;
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->messageQueue = [];
     }
@@ -164,7 +164,7 @@ class Queue implements QueueInterface
         }
     }
 
-    public function processQueueItem(QueueItem $queueItem)
+    public function processQueueItem(QueueItem $queueItem): void
     {
         $verb = strtolower($queueItem->getCommandObject()::getVerb());
         $this->eventEmitter->emit('irc.line.out', [$queueItem]);

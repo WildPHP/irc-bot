@@ -7,7 +7,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Users\BotStateManager;
+use WildPHP\Core\Observers\BotStateManager;
 
 class BotStateManagerTest extends TestCase
 {
@@ -32,16 +32,16 @@ class BotStateManagerTest extends TestCase
 	{
 		$botStateManager = new BotStateManager($this->container);
 		
-		$channel = new \WildPHP\Core\Channels\Channel('#test', new \WildPHP\Core\Users\UserCollection(), new \WildPHP\Core\Channels\ChannelModes(''));
-		$user = new \WildPHP\Core\Users\User('Test');
+		$channel = new \WildPHP\Core\Observers\Channel('#test', new \WildPHP\Core\Observers\UserCollection(), new \WildPHP\Core\Observers\ChannelModes(''));
+		$user = new \WildPHP\Core\Observers\User('Test');
 		$oldNickname = 'Test';
 		$newNickname = 'Testing';
 		$botStateManager->monitorOwnNickname($channel, $user, $oldNickname, $newNickname);
 		
 		self::assertEquals('Testing', \WildPHP\Core\Configuration\Configuration::fromContainer($this->container)['currentNickname']);
 
-		$channel = new \WildPHP\Core\Channels\Channel('#test', new \WildPHP\Core\Users\UserCollection(), new \WildPHP\Core\Channels\ChannelModes(''));
-		$user = new \WildPHP\Core\Users\User('Test');
+		$channel = new \WildPHP\Core\Observers\Channel('#test', new \WildPHP\Core\Observers\UserCollection(), new \WildPHP\Core\Channels\ChannelModes(''));
+		$user = new \WildPHP\Core\Observers\User('Test');
 		$oldNickname = 'Test';
 		$newNickname = 'Testing123';
 		$botStateManager->monitorOwnNickname($channel, $user, $oldNickname, $newNickname);

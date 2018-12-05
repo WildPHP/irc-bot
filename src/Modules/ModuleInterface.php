@@ -8,17 +8,10 @@
 
 namespace WildPHP\Core\Modules;
 
-use Yoshi2889\Container\ComponentInterface;
-
-interface ModuleInterface extends ComponentInterface
+interface ModuleInterface
 {
     /**
      * @return string
      */
-    public static function getSupportedVersionConstraint(): string;
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array;
+    public static function getSupportedVersionConstraint();
 }

@@ -12,15 +12,15 @@ namespace WildPHP\Core\Permissions;
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Commands\JoinedChannelParameter;
 use WildPHP\Core\Commands\UserParameter;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Observers\Channel;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\User;
 
 class PermissionGroupCommands extends BaseModule
 {
@@ -75,15 +75,16 @@ class PermissionGroupCommands extends BaseModule
             new Command(
                 [$this, 'delgroupCommand'],
                 new ParameterStrategy(1, 1, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                    'group' => new GroupParameter($permissionGroupCollection)
                 ])
             ));
 
+        /** @noinspection PhpUndefinedClassInspection */
         CommandRegistrar::fromContainer($container)->register('linkgroup',
             new Command(
                 [$this, 'linkgroupCommand'],
                 new ParameterStrategy(1, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'channel' => new JoinedChannelParameter(Database::fromContainer($container))
                 ])
             ));
@@ -92,7 +93,7 @@ class PermissionGroupCommands extends BaseModule
             new Command(
                 [$this, 'unlinkgroupCommand'],
                 new ParameterStrategy(1, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'channel' => new JoinedChannelParameter(Database::fromContainer($container))
                 ])
             ));
@@ -101,7 +102,7 @@ class PermissionGroupCommands extends BaseModule
             new Command(
                 [$this, 'groupinfoCommand'],
                 new ParameterStrategy(1, 1, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                    'group' => new GroupParameter($permissionGroupCollection)
                 ])
             ));
 

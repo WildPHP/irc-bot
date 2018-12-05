@@ -12,14 +12,14 @@ namespace WildPHP\Core\Permissions;
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
 use WildPHP\Core\Database\Database;
 use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
-use WildPHP\Core\Users\UserNotFoundException;
+use WildPHP\Core\Observers\Channel;
+use WildPHP\Core\Observers\Queue;
+use WildPHP\Core\Observers\User;
+use WildPHP\Core\Observers\UserNotFoundException;
 
 class PermissionMembersCommands extends BaseModule
 {
@@ -40,7 +40,7 @@ class PermissionMembersCommands extends BaseModule
             new Command(
                 [$this, 'lsmembersCommand'],
                 new ParameterStrategy(1, 1, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection)
+                    'group' => new GroupParameter($permissionGroupCollection)
                 ])
             ));
 
@@ -48,7 +48,7 @@ class PermissionMembersCommands extends BaseModule
             new Command(
                 [$this, 'addmemberCommand'],
                 new ParameterStrategy(2, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'nickname' => new StringParameter()
                 ])
             ));
@@ -57,7 +57,7 @@ class PermissionMembersCommands extends BaseModule
             new Command(
                 [$this, 'delmemberCommand'],
                 new ParameterStrategy(2, 2, [
-                    'group' => new ExistingPermissionGroupParameter($permissionGroupCollection),
+                    'group' => new GroupParameter($permissionGroupCollection),
                     'nickname' => new StringParameter()
                 ])
             ));
@@ -100,7 +100,7 @@ class PermissionMembersCommands extends BaseModule
      * @param $args
      * @param ComponentContainer $container
      * @throws \WildPHP\Core\StateException
-     * @throws \WildPHP\Core\Users\UserNotFoundException
+     * @throws \WildPHP\Core\Observers\UserNotFoundException
      * @throws \Yoshi2889\Container\NotFoundException
      */
     public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
