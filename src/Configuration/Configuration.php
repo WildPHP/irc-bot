@@ -12,13 +12,9 @@ namespace WildPHP\Core\Configuration;
 use ValidationClosures\Types;
 use ValidationClosures\Utils;
 use Yoshi2889\Collections\Collection;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
-class Configuration extends Collection implements ComponentInterface
+class Configuration extends Collection
 {
-    use ComponentTrait;
-
     /**
      * @var ConfigurationBackendInterface
      */
