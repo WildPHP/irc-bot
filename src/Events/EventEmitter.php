@@ -6,7 +6,7 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core;
+namespace WildPHP\Core\Events;
 
 class EventEmitter extends \Evenement\EventEmitter
 {

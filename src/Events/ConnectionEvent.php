@@ -11,5 +11,21 @@ namespace WildPHP\Core\Events;
 
 class ConnectionEvent
 {
+    /**
+     * @var null|string
+     */
+    private $data;
 
+    public function __construct(?string $data = null)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
 }

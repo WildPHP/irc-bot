@@ -11,5 +11,21 @@ namespace WildPHP\Core\Events;
 
 class CapabilityEvent
 {
+    /**
+     * @var array
+     */
+    private $affectedCapabilities;
 
+    public function __construct(array $affectedCapabilities)
+    {
+        $this->affectedCapabilities = $affectedCapabilities;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAffectedCapabilities(): array
+    {
+        return $this->affectedCapabilities;
+    }
 }
