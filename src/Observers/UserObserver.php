@@ -12,11 +12,11 @@ namespace WildPHP\Core\Observers;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Connection\UserModeParser;
-use WildPHP\Core\Entities\Base\IrcChannelQuery;
-use WildPHP\Core\Entities\Base\IrcUserQuery;
-use WildPHP\Core\Entities\UserModeChannel;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Events\NicknameChangedEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Nick;
 use WildPHP\Messages\RPL\EndOfNames;
@@ -39,6 +39,14 @@ class UserObserver
      * @var IrcMessageQueue
      */
     private $queue;
+    /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
+    /**
+     * @var IrcChannelStorageInterface
+     */
+    private $channelStorage;
 
     /**
      * BaseModule constructor.
@@ -46,82 +54,87 @@ class UserObserver
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
+     * @param IrcUserStorageInterface $userStorage
+     * @param IrcChannelStorageInterface $channelStorage
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue)
-    {
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        IrcMessageQueue $queue,
+        IrcUserStorageInterface $userStorage,
+        IrcChannelStorageInterface $channelStorage
+    ) {
 
-        $eventEmitter->on('irc.line.in.join', [$this, 'processUserJoin']);
-        $eventEmitter->on('irc.line.in.nick', [$this, 'processUserNickChange']);
+        $eventEmitter->on('irc.msg.in.join', [$this, 'processUserJoin']);
+        $eventEmitter->on('irc.msg.in.nick', [$this, 'processUserNickChange']);
 
         // 353: RPL_NAMREPLY
-        $eventEmitter->on('irc.line.in.353', [$this, 'processNamesReply']);
+        $eventEmitter->on('irc.msg.in.353', [$this, 'processNamesReply']);
 
         // 366: RPL_ENDOFNAMES
-        $eventEmitter->on('irc.line.in.366', [$this, 'sendInitialWhoxMessage']);
+        $eventEmitter->on('irc.msg.in.366', [$this, 'sendInitialWhoxMessage']);
 
         // 354: RPL_WHOSPCRPL
-        $eventEmitter->on('irc.line.in.354', [$this, 'processWhoxReply']);
+        $eventEmitter->on('irc.msg.in.354', [$this, 'processWhoxReply']);
 
         $this->eventEmitter = $eventEmitter;
         $this->logger = $logger;
         $this->queue = $queue;
+        $this->userStorage = $userStorage;
+        $this->channelStorage = $channelStorage;
     }
 
     /**
-     * @param JOIN $joinMessage
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserJoin(JOIN $joinMessage)
+    public function processUserJoin(IncomingIrcMessageEvent $ircMessageEvent)
     {
-        $user = IrcUserQuery::create()->filterByNickname($joinMessage->getNickname())->findOneOrCreate();
+        /** @var Join $joinMessage */
+        $joinMessage = $ircMessageEvent->getIncomingMessage();
+
+        $user = $this->userStorage->getOrCreateOneByNickname($joinMessage->getNickname());
 
         $prefix = $joinMessage->getPrefix();
-        $user->setNickname($joinMessage->getNickname());
         $user->setUsername($prefix->getUsername());
         $user->setHostname($prefix->getHostname());
         $user->setIrcAccount($joinMessage->getIrcAccount());
-        $user->save();
+        $this->userStorage->store($user);
 
-        if ($user->isNew())
-            $this->logger->debug('Added user', [
-                'reason' => 'join',
-                'nickname' => $joinMessage->getNickname(),
-                'username' => $prefix->getUsername(),
-                'hostname' => $prefix->getHostname(),
-                'irc_account' => $joinMessage->getIrcAccount()
-            ]);
-        else
-            $this->logger->debug('Updated existing user', [
-                'reason' => 'join',
-                'nickname' => $joinMessage->getNickname(),
-                'username' => $prefix->getUsername(),
-                'hostname' => $prefix->getHostname(),
-                'irc_account' => $joinMessage->getIrcAccount()
-            ]);
+        $this->logger->debug('Updated user', [
+            'reason' => 'join',
+            'id' => $user->getId(),
+            'nickname' => $joinMessage->getNickname(),
+            'username' => $prefix->getUsername(),
+            'hostname' => $prefix->getHostname(),
+            'irc_account' => $joinMessage->getIrcAccount()
+        ]);
     }
 
     /**
-     * @param NamReply $ircMessage
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processNamesReply(NamReply $ircMessage)
+    public function processNamesReply(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        /** @var NamReply $ircMessage */
+        $ircMessage = $ircMessageEvent->getIncomingMessage();
+
         $nicknames = $ircMessage->getNicknames();
 
         foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
             $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
 
-            $user = IrcUserQuery::create()->filterByNickname($nickname)->findOneOrCreate();
-            $channel = IrcChannelQuery::create()->findOneByName($ircMessage->getChannel());
+            $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
+            $channel = $this->channelStorage->getOneByName($ircMessage->getChannel());
 
-            foreach ($modes as $mode) {
+            // TODO: REIMPLEMENT THIS
+            /*foreach ($modes as $mode) {
                 $userChannelMode = new UserModeChannel();
                 $userChannelMode->setIrcUser($user);
                 $userChannelMode->setIrcChannel($channel);
                 $userChannelMode->setMode($mode);
                 $userChannelMode->save();
-            }
+            }*/
 
             $this->logger->debug('Modified or created user',
                 ['reason' => 'rpl_namreply', 'nickname' => $nickname, 'modes' => $modes]);
@@ -129,40 +142,47 @@ class UserObserver
     }
 
     /**
-     * @param EndOfNames $ircMessage
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function sendInitialWhoxMessage(EndOfNames $ircMessage)
+    public function sendInitialWhoxMessage(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        /** @var EndOfNames $ircMessage */
+        $ircMessage = $ircMessageEvent->getIncomingMessage();
+
         $channel = $ircMessage->getChannel();
         $this->queue->who($channel, '%nuhaf');
     }
 
     /**
-     * @param WhosPcRpl $ircMessage
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processWhoxReply(WhosPcRpl $ircMessage)
+    public function processWhoxReply(IncomingIrcMessageEvent $ircMessageEvent)
     {
-        $user = IrcUserQuery::create()->filterByNickname($ircMessage->getNickname())->findOneOrCreate();
+        /** @var WhosPcRpl $ircMessage */
+        $ircMessage = $ircMessageEvent->getIncomingMessage();
+
+        $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
         $user->setNickname($ircMessage->getNickname());
         $user->setUsername($ircMessage->getUsername());
         $user->setHostname($ircMessage->getHostname());
         $user->setIrcAccount($ircMessage->getAccountname());
-        $user->save();
+        $this->userStorage->store($user);
 
         $this->logger->debug('Modified user',
             array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray()));
     }
 
     /**
-     * @param NICK $nickMessage
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserNickChange(NICK $nickMessage)
+    public function processUserNickChange(IncomingIrcMessageEvent $ircMessageEvent)
     {
-        $user = IrcUserQuery::create()->findOneByNickname($nickMessage->getNickname());
+        /** @var Nick $nickMessage */
+        $nickMessage = $ircMessageEvent->getIncomingMessage();
+
+        $user = $this->userStorage->getOneByNickname($nickMessage->getNickname());
         $user->setNickname($nickMessage->getNewNickname());
-        $user->save();
+        $this->userStorage->store($user);
 
         $this->eventEmitter->emit('user.nick', new NicknameChangedEvent(
             $user,

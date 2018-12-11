@@ -9,7 +9,7 @@
 return [
     \WildPHP\Core\Connection\MessageParser::class,
     \WildPHP\Core\Observers\ConnectionHeartbeatObserver::class,
-    \WildPHP\Core\Observers\BotNicknameObserver::class,
+    //\WildPHP\Core\Observers\BotNicknameObserver::class,
     \WildPHP\Core\Observers\ServerConfigObserver::class,
     \WildPHP\Core\Connection\AlternativeNicknameHandler::class,
     \WildPHP\Core\Connection\MessageLogger::class,

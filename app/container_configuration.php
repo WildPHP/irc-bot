@@ -20,10 +20,17 @@ use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\Permissions\Validator;
+use WildPHP\Core\Storage\IrcChannelDatabaseStorage;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserDatabaseStorage;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use function DI\create;
 
 return [
     EventEmitterInterface::class => create(EventEmitter::class),
+    IrcChannelStorageInterface::class => \DI\autowire(IrcChannelDatabaseStorage::class),
+    IrcUserStorageInterface::class => \DI\autowire(IrcUserDatabaseStorage::class),
 
     LoggerInterface::class => function () {
         $logger = new Logger('wildphp');
@@ -36,8 +43,8 @@ return [
         return Factory::create();
     },
 
-    \WildPHP\Core\Permissions\Validator::class => function (EventEmitterInterface $eventEmitter, Configuration $configuration) {
-        return new \WildPHP\Core\Permissions\Validator($eventEmitter, $configuration['owner']);
+    Validator::class => function (EventEmitterInterface $eventEmitter, Configuration $configuration) {
+        return new Validator($eventEmitter, $configuration['owner']);
     },
 
     Configuration::class => function (LoggerInterface $logger) {

@@ -11,6 +11,7 @@ use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IrcConnectionInitiator;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Modules\ModuleFactory;
+use WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface;
 
 require('../vendor/autoload.php');
 define('WPHP_ROOT_DIR', dirname(__DIR__));
@@ -23,8 +24,7 @@ $builder->addDefinitions(__DIR__ . '/container_configuration.php');
 $container = $builder->build();
 
 $configuration = $container->get(Configuration::class);
-$container->set(\WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface::class,
-    $configuration['storage']['provider']);
+$container->set(DatabaseStorageProviderInterface::class, $configuration['storage']['provider']);
 
 $coreModules = include(__DIR__ . '/core_modules.php');
 $modules = $configuration['modules'] ?? [];

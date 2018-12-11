@@ -9,17 +9,18 @@
 namespace WildPHP\Core\Commands\Parameters;
 
 use WildPHP\Commands\Parameters\Parameter;
-use WildPHP\Core\Entities\IrcChannelQuery;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
 
 class ChannelParameter extends Parameter
 {
     /**
      * ChannelParameter constructor.
+     * @param IrcChannelStorageInterface $channelStorage
      */
-    public function __construct()
+    public function __construct(IrcChannelStorageInterface $channelStorage)
     {
-        parent::__construct(function (string $value) {
-            $channel = IrcChannelQuery::create()->findOneByName($value);
+        parent::__construct(function (string $value) use ($channelStorage) {
+            $channel = $channelStorage->getOneByName($value);
 
             if ($channel == null)
                 return false;

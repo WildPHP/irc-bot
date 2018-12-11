@@ -187,7 +187,7 @@ class ConnectionDetails
             $connectionInfo['port'],
             $connectionInfo['realname'],
             $connectionInfo['password'] ?? '',
-            $connectionInfo['nickname'],
+            $connectionInfo['nickname'][0],
             $connectionInfo['secure'] ?? false,
             $connectionInfo['options'] ?? []
         );

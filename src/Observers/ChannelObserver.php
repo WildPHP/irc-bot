@@ -9,18 +9,14 @@
 namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
-use Propel\Runtime\Exception\PropelException;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Entities\IrcChannel;
-use WildPHP\Core\Entities\IrcChannelQuery;
-use WildPHP\Core\Entities\IrcUserQuery;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Join;
-use WildPHP\Messages\Kick;
-use WildPHP\Messages\Part;
-use WildPHP\Messages\Quit;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\Topic;
 
@@ -47,27 +43,41 @@ class ChannelObserver
     private $configuration;
 
     /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
+
+    /**
+     * @var IrcChannelStorageInterface
+     */
+    private $channelStorage;
+
+    /**
      * BaseModule constructor.
      *
      * @param EventEmitterInterface $eventEmitter
      * @param Configuration $configuration
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
+     * @param IrcUserStorageInterface $userStorage
+     * @param IrcChannelStorageInterface $channelStorage
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         LoggerInterface $logger,
-        IrcMessageQueue $queue
+        IrcMessageQueue $queue,
+        IrcUserStorageInterface $userStorage,
+        IrcChannelStorageInterface $channelStorage
     ) {
-        $eventEmitter->on('irc.line.in.join', [$this, 'createChannel']);
-        $eventEmitter->on('irc.line.in.join', [$this, 'processChannelJoin']);
-        $eventEmitter->on('irc.line.in.kick', [$this, 'processUserKick']);
-        $eventEmitter->on('irc.line.in.part', [$this, 'processUserPart']);
-        $eventEmitter->on('irc.line.in.quit', [$this, 'processUserQuit']);
+        $eventEmitter->on('irc.msg.in.join', [$this, 'createChannel']);
+        $eventEmitter->on('irc.msg.in.join', [$this, 'processChannelJoin']);
+        $eventEmitter->on('irc.msg.in.kick', [$this, 'processUserKick']);
+        $eventEmitter->on('irc.msg.in.part', [$this, 'processUserPart']);
+        $eventEmitter->on('irc.msg.in.quit', [$this, 'processUserQuit']);
 
         // 001: RPL_WELCOME
-        $eventEmitter->on('irc.line.in.001', [$this, 'joinInitialChannels']);
+        $eventEmitter->on('irc.msg.in.001', [$this, 'joinInitialChannels']);
 
         // 332: RPL_TOPIC
         $eventEmitter->on('irc.line.in.332', [$this, 'processTopic']);
@@ -79,15 +89,16 @@ class ChannelObserver
         $this->logger = $logger;
         $this->queue = $queue;
         $this->configuration = $configuration;
+        $this->userStorage = $userStorage;
+        $this->channelStorage = $channelStorage;
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
+     * @return void
      */
-    public function joinInitialChannels()
+    public function joinInitialChannels(): void
     {
-        $channels = $this->configuration['channels'];
+        $channels = $this->configuration['connection']['channels'];
 
         if (empty($channels)) {
             return;
@@ -107,18 +118,20 @@ class ChannelObserver
     }
 
     /**
-     * @param JOIN $joinMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function createChannel(JOIN $joinMessage)
+    public function createChannel(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        /** @var Join $joinMessage */
+        $joinMessage = $ircMessageEvent->getIncomingMessage();
+
         foreach ($joinMessage->getChannels() as $channelName) {
-            if (IrcChannelQuery::create()->findOneByName($channelName) == null) {
-                $channel = new IrcChannel();
-                $channel->setName($channelName);
-                $channel->save();
+            if ($this->channelStorage->getOneByName($channelName) == null) {
+                $channel = new IrcChannel($channelName);
+                $this->channelStorage->store($channel);
 
                 $this->logger->debug('Created new channel', [
+                    'id' => $channel->getId(),
                     'name' => $channel->getName()
                 ]);
             }
@@ -126,12 +139,12 @@ class ChannelObserver
     }
 
     /**
-     * @param JOIN $joinMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processChannelJoin(JOIN $joinMessage)
+    public function processChannelJoin(IncomingIrcMessageEvent $ircMessageEvent)
     {
-        $user = IrcUserQuery::create()->findOneByNickname($joinMessage->getNickname());
+        // TODO: REIMPLEMENT THIS
+        /*$user = IrcUserQuery::create()->findOneByNickname($joinMessage->getNickname());
 
         foreach ($joinMessage->getChannels() as $channelName) {
             $channel = IrcChannelQuery::create()->findOneByName($channelName);
@@ -145,18 +158,20 @@ class ChannelObserver
                 'channelID' => $channel->getId(),
                 'channel' => $channel->getName()
             ]);
-        }
+        }*/
     }
 
     /**
-     * @param Topic $topicMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processTopic(Topic $topicMessage)
+    public function processTopic(IncomingIrcMessageEvent $ircMessageEvent)
     {
-        $channel = IrcChannelQuery::create()->findOneByName($topicMessage->getChannel());
+        /** @var Topic $topicMessage */
+        $topicMessage = $ircMessageEvent->getIncomingMessage();
+
+        $channel = $this->channelStorage->getOneByName($topicMessage->getChannel());
         $channel->setTopic($topicMessage->getMessage());
-        $channel->save();
+        $this->channelStorage->store($channel);
 
         $this->logger->debug('Updated topic', [
             'channel' => $topicMessage->getChannel(),
@@ -166,11 +181,11 @@ class ChannelObserver
 
     /**
      * @param NamReply $ircMessage
-     * @throws PropelException
      */
     public function processNamesReply(NamReply $ircMessage)
     {
-        $nicknames = $ircMessage->getNicknames();
+        // TODO: REIMPLEMENT THIS
+        /*$nicknames = $ircMessage->getNicknames();
 
         $channel = IrcChannelQuery::create()->findOneByName($ircMessage->getChannel());
 
@@ -195,15 +210,16 @@ class ChannelObserver
             ]);
         }
 
-        $channel->save();
+        $channel->save();*/
     }
 
     /**
-     * @param KICK $kickMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserKick(KICK $kickMessage)
+    public function processUserKick(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        // TODO: REIMPLEMENT THIS
+        /*
         $user = IrcUserQuery::create()->findOneByNickname($kickMessage->getNickname());
         $channel = IrcChannelQuery::create()->findOneByName($kickMessage->getChannel());
         $channel->removeIrcUser($user);
@@ -214,14 +230,16 @@ class ChannelObserver
             'nickname' => $kickMessage->getNickname(),
             'channel' => $kickMessage->getChannel()
         ]);
+        */
     }
 
     /**
-     * @param PART $partMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserPart(PART $partMessage)
+    public function processUserPart(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        // TODO: REIMPLEMENT THIS
+        /*
         $user = IrcUserQuery::create()->findOneByNickname($partMessage->getNickname());
 
         foreach ($partMessage->getChannels() as $channel) {
@@ -235,14 +253,16 @@ class ChannelObserver
                 'channel' => $channel
             ]);
         }
+        */
     }
 
     /**
-     * @param QUIT $quitMessage
-     * @throws PropelException
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserQuit(QUIT $quitMessage)
+    public function processUserQuit(IncomingIrcMessageEvent $ircMessageEvent)
     {
+        // TODO: REIMPLEMENT THIS
+        /*
         $user = IrcUserQuery::create()->findOneByNickname($quitMessage->getNickname());
         $user->getIrcChannels()->clear();
         $user->save();
@@ -251,5 +271,6 @@ class ChannelObserver
             'reason' => 'quit',
             'nickname' => $quitMessage->getNickname()
         ]);
+        */
     }
 }

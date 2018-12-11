@@ -11,7 +11,7 @@ namespace WildPHP\Core\Connection\Capabilities;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Entities\Base\IrcUserQuery;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Account;
 
 class AccountNotifyHandler
@@ -21,29 +21,38 @@ class AccountNotifyHandler
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
 
     /**
      * AccountNotifyHandler constructor.
      *
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
+     * @param IrcUserStorageInterface $userStorage
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger)
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        IrcUserStorageInterface $userStorage
+    )
     {
         $eventEmitter->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
         $this->logger = $logger;
+        $this->userStorage = $userStorage;
     }
 
     /**
      * @param ACCOUNT $ircMessage
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function updateUserIrcAccount(ACCOUNT $ircMessage)
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
-        $user = IrcUserQuery::create()->findOneByNickname($nickname);
+        $user = $this->userStorage->getOneByNickname($nickname);
         $user->setIrcAccount($ircMessage->getAccountName());
-        $user->save();
+        $this->userStorage->store($user);
 
         $this->logger->debug('Updated IRC account', [
             'reason' => 'account_notify',

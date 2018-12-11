@@ -9,17 +9,18 @@
 namespace WildPHP\Core\Commands\Parameters;
 
 use WildPHP\Commands\Parameters\Parameter;
-use WildPHP\Core\Entities\IrcUserQuery;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 
 class UserParameter extends Parameter
 {
     /**
      * UserParameter constructor.
+     * @param IrcUserStorageInterface $userStorage
      */
-    public function __construct()
+    public function __construct(IrcUserStorageInterface $userStorage)
     {
-        parent::__construct(function (string $value) {
-            $user = IrcUserQuery::create()->findOneByNickname($value);
+        parent::__construct(function (string $value) use ($userStorage) {
+            $user = $userStorage->getOneByNickname($value);
 
             if ($user == null)
                 return false;

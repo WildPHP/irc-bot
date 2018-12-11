@@ -19,9 +19,9 @@ use WildPHP\Commands\Exceptions\NoApplicableStrategiesException;
 use WildPHP\Commands\Exceptions\ParseException;
 use WildPHP\Commands\Exceptions\ValidationException;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Entities\IrcChannelQuery;
-use WildPHP\Core\Entities\IrcUserQuery;
 use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Privmsg;
 
 class CommandRunner
@@ -49,6 +49,14 @@ class CommandRunner
      * @var IrcMessageQueue
      */
     private $queue;
+    /**
+     * @var IrcChannelStorageInterface
+     */
+    private $channelStorage;
+    /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
 
     /**
      * CommandRunner constructor.
@@ -58,13 +66,17 @@ class CommandRunner
      * @param CommandProcessor $commandProcessor
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
+     * @param IrcChannelStorageInterface $channelStorage
+     * @param IrcUserStorageInterface $userStorage
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         CommandProcessor $commandProcessor,
         LoggerInterface $logger,
-        IrcMessageQueue $queue
+        IrcMessageQueue $queue,
+        IrcChannelStorageInterface $channelStorage,
+        IrcUserStorageInterface $userStorage
     ) {
         $eventEmitter->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
 
@@ -73,6 +85,8 @@ class CommandRunner
         $this->logger = $logger;
         $this->commandProcessor = $commandProcessor;
         $this->queue = $queue;
+        $this->channelStorage = $channelStorage;
+        $this->userStorage = $userStorage;
     }
 
     /**
@@ -108,15 +122,15 @@ class CommandRunner
             return;
         }
 
-        $channel = IrcChannelQuery::create()->findOneByName($privmsg->getChannel());
-        $user = IrcUserQuery::create()->findOneByNickname($privmsg->getNickname());
+        $channel = $this->channelStorage->getOneByName($privmsg->getChannel());
+        $user = $this->userStorage->getOneByNickname($privmsg->getNickname());
 
         $this->eventEmitter->emit('irc.command', [
-                $processedCommand->getCommand(),
-                $channel,
-                $user,
-                $processedCommand->getArguments()
-            ]);
+            $processedCommand->getCommand(),
+            $channel,
+            $user,
+            $processedCommand->getArguments()
+        ]);
 
         call_user_func(
             $processedCommand->getCallback(),
