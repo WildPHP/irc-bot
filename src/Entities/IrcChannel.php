@@ -106,4 +106,30 @@ class IrcChannel
     {
         $this->modes = $modes;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'topic' => $this->getTopic(),
+            'modes' => $this->getModes()
+        ];
+    }
+
+    /**
+     * @param array $previousState
+     * @return IrcChannel
+     */
+    public static function fromArray(array $previousState): IrcChannel
+    {
+        $name = $previousState['name'] ?? '';
+        $id = $previousState['id'] ?? 0;
+        $topic = $previousState['topic'] ?? '';
+        $modes = (array) $previousState['modes'] ?? [];
+        return new IrcChannel($name, $id, $topic, $modes);
+    }
 }

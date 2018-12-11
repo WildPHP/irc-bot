@@ -8,15 +8,12 @@
 
 namespace WildPHP\Core\Storage;
 
-
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface;
 
 class IrcUserDatabaseStorage implements IrcUserStorageInterface
 {
-    public static const TABLE = 'users';
-
     /**
      * @var DatabaseStorageProviderInterface
      */
@@ -29,6 +26,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     public function __construct(DatabaseStorageProviderInterface $databaseStorageProvider)
     {
         $this->databaseStorageProvider = $databaseStorageProvider;
+        $databaseStorageProvider->addKnownTableName('users');
     }
 
     /**
@@ -36,7 +34,33 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function store(IrcUser $user): void
     {
-        // TODO: Implement store() method.
+        if ($user->getId() != 0 && !$this->databaseStorageProvider->has('users', ['id' => $user->getId()])) {
+            $this->update($user);
+            return;
+        }
+
+        $this->insert($user);
+    }
+
+    /**
+     * @param IrcUser $user
+     * @return int ID of the newly inserted row
+     */
+    private function insert(IrcUser $user): int
+    {
+        $array = $user->toArray();
+        unset($array['id']);
+        $id = $this->databaseStorageProvider->insert('users', $array);
+        $user->setId($id);
+        return $id;
+    }
+
+    /**
+     * @param IrcUser $user
+     */
+    private function update(IrcUser $user): void
+    {
+        $this->databaseStorageProvider->update('users', ['id' => $user->getId()], $user->toArray());
     }
 
     /**
@@ -44,7 +68,8 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function delete(IrcUser $user): void
     {
-        // TODO: Implement delete() method.
+        $this->databaseStorageProvider->delete('users', ['id' => $user->getId()]);
+        $user->setId(0);
     }
 
     /**
@@ -53,7 +78,12 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function getOne(int $id): ?IrcUser
     {
-        // TODO: Implement getOne() method.
+        $result = $this->databaseStorageProvider->selectFirst('users', [], ['id' => $id]);
+
+        if ($result === null)
+            return null;
+
+        return IrcUser::fromArray($result);
     }
 
     /**
@@ -62,7 +92,12 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function getOneByNickname(string $nickname): ?IrcUser
     {
-        // TODO: Implement getOneByNickname() method.
+        $result = $this->databaseStorageProvider->selectFirst('users', [], ['nickname' => $nickname]);
+
+        if ($result === null)
+            return null;
+
+        return IrcUser::fromArray($result);
     }
 
     /**
