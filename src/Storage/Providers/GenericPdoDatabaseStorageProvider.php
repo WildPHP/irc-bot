@@ -38,7 +38,8 @@ class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterf
             $this->prepareJoinStatement($joins),
             $this->prepareWhereStatement($where)
         );
-        $result = $this->pdo->prepare($query, array_values($where));
+        $result = $this->pdo->prepare($query);
+        $result->execute(array_values($where));
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
     }
