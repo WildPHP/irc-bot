@@ -1,14 +1,11 @@
-logs/*
-config.neon
+/logs/
+config.php
 php_errors
 composer.phar
 
 /vendor/
 /storage/*
 !/storage/.empty
-/modules/
-/tgstorage/
 cloverCoverage.xml
 
 /.idea
-/propel/persistent.sql

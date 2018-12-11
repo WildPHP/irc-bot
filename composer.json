@@ -6,28 +6,22 @@
   "require": {
     "php": ">=7.1.0",
 
-    "nette/neon": "^2",
     "react/event-loop": "^1.0",
     "react/socket": "^1.0",
     "evenement/evenement": "^3.0",
     "yoshi2889/collections": "^0.1",
-    "yoshi2889/container": "^0.1",
     "yoshi2889/validation-closures": "^0.2",
     "monolog/monolog": "^1.23.0",
-    "composer/semver": "^1.4",
-    "propel/propel": "~2.0@dev",
     "php-di/php-di": "^6.0",
     "wildphp/command-parser": "^0.1",
     "wildphp/irc-messages": "dev-master",
 
     "ext-pdo": "*",
-    "ext-posix": "*",
-    "ocramius/proxy-manager": "^2.2"
+    "ext-posix": "*"
   },
   "autoload": {
     "psr-4": {
-      "WildPHP\\Core\\": "src/",
-      "WildPHP\\Modules\\": "modules/"
+      "WildPHP\\Core\\": "src/"
     }
   },
   "authors": [
