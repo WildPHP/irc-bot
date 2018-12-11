@@ -11,7 +11,7 @@ namespace WildPHP\Core\Storage\Providers;
 
 use WildPHP\Core\Storage\StorageException;
 
-class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterface
+abstract class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterface
 {
     /**
      * @var \PDO
