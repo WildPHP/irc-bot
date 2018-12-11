@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Configuration\NeonBackend;
+use WildPHP\Core\Configuration\PhpBackend;
 use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
@@ -41,12 +41,17 @@ return [
     },
 
     Configuration::class => function (LoggerInterface $logger) {
-        $file = WPHP_ROOT_DIR . '/config/config.neon';
+        $file = WPHP_ROOT_DIR . '/config/config.php';
         $logger->info('Reading configuration file ' . $file);
-        $neonBackend = new NeonBackend($file);
+        $phpBackend = new PhpBackend($file);
 
-        $configuration = new Configuration($neonBackend);
-        $configuration['rootdir'] = WPHP_ROOT_DIR;
+        $configuration = new Configuration($phpBackend);
+        $configuration['directories'] = [
+            'root' => WPHP_ROOT_DIR,
+            'config' => WPHP_ROOT_DIR . '/config',
+            'storage' => WPHP_ROOT_DIR . '/storage',
+        ];
+        $configuration['version'] = WPHP_VERSION;
 
         return $configuration;
     },

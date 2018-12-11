@@ -9,20 +9,22 @@
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IrcConnectionInitiator;
-use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Connection\IrcConnectionInterface;
-use WildPHP\Core\Permissions\Validator;
+use WildPHP\Core\Modules\ModuleFactory;
 
 require('../vendor/autoload.php');
-require('../propel/config.php');
 define('WPHP_ROOT_DIR', dirname(__DIR__));
 define('WPHP_VERSION', '3.0.0');
+
+$configuration = require_once(WPHP_ROOT_DIR . '/config/config.php');
 
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions(__DIR__ . '/container_configuration.php');
 $container = $builder->build();
 
 $configuration = $container->get(Configuration::class);
+$container->set(\WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface::class,
+    $configuration['storage']['provider']);
 
 $coreModules = include(__DIR__ . '/core_modules.php');
 $modules = $configuration['modules'] ?? [];

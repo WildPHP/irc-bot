@@ -11,5 +11,5 @@ namespace WildPHP\Core\Configuration;
 
 class ConfigurationBackends
 {
-    const NEON = 'WildPHP\Core\Configuration\NeonBackend';
+    const PHP = 'WildPHP\Core\Configuration\PhpBackend';
 }
