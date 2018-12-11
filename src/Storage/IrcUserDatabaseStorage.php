@@ -10,6 +10,12 @@ namespace WildPHP\Core\Storage;
 
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Storage\Providers\Database\DeleteQuery;
+use WildPHP\Core\Storage\Providers\Database\ExistsQuery;
+use WildPHP\Core\Storage\Providers\Database\InsertQuery;
+use WildPHP\Core\Storage\Providers\Database\QueryHelper;
+use WildPHP\Core\Storage\Providers\Database\SelectQuery;
+use WildPHP\Core\Storage\Providers\Database\UpdateQuery;
 use WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface;
 
 class IrcUserDatabaseStorage implements IrcUserStorageInterface
@@ -26,7 +32,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     public function __construct(DatabaseStorageProviderInterface $databaseStorageProvider)
     {
         $this->databaseStorageProvider = $databaseStorageProvider;
-        $databaseStorageProvider->addKnownTableName('users');
+        QueryHelper::addKnownTableName('users');
     }
 
     /**
@@ -34,7 +40,8 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function store(IrcUser $user): void
     {
-        if ($user->getId() != 0 && !$this->databaseStorageProvider->has('users', ['id' => $user->getId()])) {
+        if ($user->getId() > 0 && $this->databaseStorageProvider->has(new ExistsQuery('users',
+                ['id' => $user->getId()]))) {
             $this->update($user);
             return;
         }
@@ -50,7 +57,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     {
         $array = $user->toArray();
         unset($array['id']);
-        $id = $this->databaseStorageProvider->insert('users', $array);
+        $id = $this->databaseStorageProvider->insert(new InsertQuery('users', $array));
         $user->setId($id);
         return $id;
     }
@@ -60,7 +67,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     private function update(IrcUser $user): void
     {
-        $this->databaseStorageProvider->update('users', ['id' => $user->getId()], $user->toArray());
+        $this->databaseStorageProvider->update(new UpdateQuery('users', ['id' => $user->getId()], $user->toArray()));
     }
 
     /**
@@ -68,7 +75,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function delete(IrcUser $user): void
     {
-        $this->databaseStorageProvider->delete('users', ['id' => $user->getId()]);
+        $this->databaseStorageProvider->delete(new DeleteQuery('users', ['id' => $user->getId()]));
         $user->setId(0);
     }
 
@@ -78,7 +85,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function getOne(int $id): ?IrcUser
     {
-        $result = $this->databaseStorageProvider->selectFirst('users', [], ['id' => $id]);
+        $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('users', [], ['id' => $id]));
 
         if ($result === null)
             return null;
@@ -92,7 +99,7 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function getOneByNickname(string $nickname): ?IrcUser
     {
-        $result = $this->databaseStorageProvider->selectFirst('users', [], ['nickname' => $nickname]);
+        $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('users', [], ['nickname' => $nickname]));
 
         if ($result === null)
             return null;
@@ -107,7 +114,13 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
      */
     public function getOneByProperty(string $property, $value): ?IrcUser
     {
-        // TODO: Implement getOneByProperty() method.
+        $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('users', [], [$property => $value]));
+
+        if ($result === null) {
+            return null;
+        }
+
+        return IrcUser::fromArray($result);
     }
 
     /**
@@ -126,5 +139,20 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     public function getRelatedChannelsByNickname(string $nickname): array
     {
         // TODO: Implement getRelatedChannelsByNickname() method.
+    }
+
+    /**
+     * @param string $nickname
+     * @return IrcUser
+     */
+    public function getOrCreateOneByNickname(string $nickname): IrcUser
+    {
+        $user = $this->getOneByNickname($nickname);
+        if ($user === null) {
+            $user = new IrcUser($nickname);
+            $this->store($user);
+        }
+
+        return $user;
     }
 }

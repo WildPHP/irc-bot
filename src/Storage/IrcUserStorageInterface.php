@@ -36,6 +36,12 @@ interface IrcUserStorageInterface
     public function getOneByNickname(string $nickname): ?IrcUser;
 
     /**
+     * @param string $nickname
+     * @return IrcUser
+     */
+    public function getOrCreateOneByNickname(string $nickname): IrcUser;
+
+    /**
      * @param string $property
      * @param $value
      * @return null|IrcUser

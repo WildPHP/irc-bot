@@ -8,6 +8,12 @@
 
 namespace WildPHP\Core\Storage\Providers;
 
+use WildPHP\Core\Storage\Providers\Database\DeleteQuery;
+use WildPHP\Core\Storage\Providers\Database\ExistsQuery;
+use WildPHP\Core\Storage\Providers\Database\InsertQuery;
+use WildPHP\Core\Storage\Providers\Database\SelectQuery;
+use WildPHP\Core\Storage\Providers\Database\UpdateQuery;
+
 /**
  * Interface DatabaseStorageProviderInterface
  * @package WildPHP\Core\Storage\Providers
@@ -15,54 +21,38 @@ namespace WildPHP\Core\Storage\Providers;
 interface DatabaseStorageProviderInterface
 {
     /**
-     * @param string $table
-     * @param array $where
-     * @param array $joins
+     * @param SelectQuery $query
      * @return array
      */
-    public function select(string $table, array $where = [], array $joins = []): array;
+    public function select(SelectQuery $query): array;
 
     /**
-     * @param string $table
-     * @param array $columns
-     * @param array $where
-     * @param array $joins
+     * @param SelectQuery $query
      * @return array|null
      */
-    public function selectFirst(string $table, array $columns = [], array $where = [], array $joins = []): ?array;
+    public function selectFirst(SelectQuery $query): ?array;
 
     /**
-     * @param string $table
-     * @param array $where
-     * @param array $newValues
+     * @param UpdateQuery $query
      * @return mixed
      */
-    public function update(string $table, array $where, array $newValues);
+    public function update(UpdateQuery $query);
 
     /**
-     * @param string $table
-     * @param array $values
+     * @param InsertQuery $query
      * @return string
      */
-    public function insert(string $table, array $values): string;
+    public function insert(InsertQuery $query): string;
 
     /**
-     * @param string $table
-     * @param array $where
+     * @param DeleteQuery $query
      * @return mixed
      */
-    public function delete(string $table, array $where);
+    public function delete(DeleteQuery $query);
 
     /**
-     * @param string $table
-     * @param array $where
+     * @param ExistsQuery $query
      * @return bool
      */
-    public function has(string $table, array $where): bool;
-
-    /**
-     * @param string $tableName
-     * @return mixed
-     */
-    public function addKnownTableName(string $tableName);
+    public function has(ExistsQuery $query): bool;
 }

@@ -37,6 +37,12 @@ interface IrcChannelStorageInterface
     public function getOneByName(string $name): ?IrcChannel;
 
     /**
+     * @param string $name
+     * @return IrcChannel
+     */
+    public function getOrCreateOneByName(string $name): IrcChannel;
+
+    /**
      * @param int $channelId
      * @return IrcUser[]
      */

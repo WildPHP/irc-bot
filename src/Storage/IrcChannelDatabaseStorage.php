@@ -10,6 +10,12 @@ namespace WildPHP\Core\Storage;
 
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Storage\Providers\Database\DeleteQuery;
+use WildPHP\Core\Storage\Providers\Database\ExistsQuery;
+use WildPHP\Core\Storage\Providers\Database\InsertQuery;
+use WildPHP\Core\Storage\Providers\Database\QueryHelper;
+use WildPHP\Core\Storage\Providers\Database\SelectQuery;
+use WildPHP\Core\Storage\Providers\Database\UpdateQuery;
 use WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface;
 
 class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
@@ -26,7 +32,7 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
     public function __construct(DatabaseStorageProviderInterface $databaseStorageProvider)
     {
         $this->databaseStorageProvider = $databaseStorageProvider;
-        $databaseStorageProvider->addKnownTableName('channels');
+        QueryHelper::addKnownTableName('channels');
     }
 
     /**
@@ -34,7 +40,8 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
      */
     public function store(IrcChannel $channel): void
     {
-        if ($channel->getId() != 0 && !$this->databaseStorageProvider->has('channels', ['id' => $channel->getId()])) {
+        if ($channel->getId() > 0 && $this->databaseStorageProvider->has(new ExistsQuery('channels',
+                ['id' => $channel->getId()]))) {
             $this->update($channel);
             return;
         }
@@ -50,7 +57,7 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
     {
         $array = $channel->toArray();
         unset($array['id']);
-        $id = $this->databaseStorageProvider->insert('channels', $array);
+        $id = $this->databaseStorageProvider->insert(new InsertQuery('channels', $array));
         $channel->setId($id);
         return $id;
     }
@@ -60,7 +67,8 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
      */
     private function update(IrcChannel $channel): void
     {
-        $this->databaseStorageProvider->update('channels', ['id' => $channel->getId()], $channel->toArray());
+        $this->databaseStorageProvider->update(new UpdateQuery('channels', ['id' => $channel->getId()],
+            $channel->toArray()));
     }
 
     /**
@@ -68,7 +76,7 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
      */
     public function delete(IrcChannel $channel): void
     {
-        $this->databaseStorageProvider->delete('channels', ['id' => $channel->getId()]);
+        $this->databaseStorageProvider->delete(new DeleteQuery('channels', ['id' => $channel->getId()]));
         $channel->setId(0);
     }
 
@@ -78,7 +86,7 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
      */
     public function getOne(int $id): ?IrcChannel
     {
-        $result = $this->databaseStorageProvider->selectFirst('channels', [], ['id' => $id]);
+        $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('channels', [], ['id' => $id]));
 
         if ($result === null)
             return null;
@@ -92,12 +100,27 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
      */
     public function getOneByName(string $name): ?IrcChannel
     {
-        $result = $this->databaseStorageProvider->selectFirst('channels', [], ['name' => $name]);
+        $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('channels', [], ['name' => $name]));
 
         if ($result === null)
             return null;
 
         return IrcChannel::fromArray($result);
+    }
+
+    /**
+     * @param string $name
+     * @return IrcChannel
+     */
+    public function getOrCreateOneByName(string $name): IrcChannel
+    {
+        $channel = $this->getOneByName($name);
+        if ($channel === null) {
+            $channel = new IrcChannel($name);
+            $this->store($channel);
+        }
+
+        return $channel;
     }
 
     /**

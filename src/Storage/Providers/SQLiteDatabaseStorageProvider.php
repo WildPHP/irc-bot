@@ -8,6 +8,7 @@
 
 namespace WildPHP\Core\Storage\Providers;
 
+use PDO;
 use WildPHP\Core\Storage\StorageException;
 
 class SQLiteDatabaseStorageProvider extends GenericPdoDatabaseStorageProvider
@@ -24,5 +25,6 @@ class SQLiteDatabaseStorageProvider extends GenericPdoDatabaseStorageProvider
         }
 
         $this->pdo = new \PDO('sqlite:' . $databaseFile);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 }
