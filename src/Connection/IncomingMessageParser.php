@@ -64,8 +64,8 @@ class IncomingMessageParser
         try {
             $castIrcMessage = MessageCaster::castMessage($ircMessage);
             $ircMessage = $castIrcMessage;
-            $this->eventEmitter->emit('irc.msg.in', new IncomingIrcMessageEvent($ircMessage));
-            $this->eventEmitter->emit('irc.msg.in.' . $verb, new IncomingIrcMessageEvent($ircMessage));
+            $this->eventEmitter->emit('irc.msg.in', [new IncomingIrcMessageEvent($ircMessage)]);
+            $this->eventEmitter->emit('irc.msg.in.' . $verb, [new IncomingIrcMessageEvent($ircMessage)]);
         } catch (CastException $exception) {
             $this->logger->debug(sprintf('Received message with verb %s but it could not be cast to an implemented message type. This message is not supported!',
                 $verb));

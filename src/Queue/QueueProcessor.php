@@ -99,8 +99,8 @@ class QueueProcessor
             $this->ircConnection->write($outgoingMessage);
 
             $event = new OutgoingIrcMessageEvent($outgoingMessage);
-            $this->eventEmitter->emit('irc.msg.out', $event);
-            $this->eventEmitter->emit('irc.msg.out.' . strtolower($outgoingMessage::getVerb()), $event);
+            $this->eventEmitter->emit('irc.msg.out', [$event]);
+            $this->eventEmitter->emit('irc.msg.out.' . strtolower($outgoingMessage::getVerb()), [$event]);
         }
     }
 }

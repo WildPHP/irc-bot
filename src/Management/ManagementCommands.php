@@ -20,12 +20,12 @@ use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Permissions\AllowedBy;
 use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Queue\QueueInterface;
+use WildPHP\Core\Queue\IrcMessageQueue;
 
 class ManagementCommands
 {
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
     /**
@@ -41,11 +41,16 @@ class ManagementCommands
      * ManagementCommands constructor.
      *
      * @param CommandRegistrar $registrar
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      * @param Configuration $configuration
      * @param Validator $validator
      */
-    public function __construct(CommandRegistrar $registrar, QueueInterface $queue, Configuration $configuration, Validator $validator)
+    public function __construct(
+        CommandRegistrar $registrar,
+        IrcMessageQueue $queue,
+        Configuration $configuration,
+        Validator $validator
+    )
     {
         $registrar->register('join',
             new Command(

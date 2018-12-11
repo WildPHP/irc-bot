@@ -235,7 +235,7 @@ class CapabilityHandler
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.acknowledged', new CapabilityEvent($ackCapabilities));
+        $this->eventEmitter->emit('irc.cap.acknowledged', [new CapabilityEvent($ackCapabilities)]);
     }
 
     /**
@@ -263,7 +263,7 @@ class CapabilityHandler
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.notAcknowledged', new CapabilityEvent($nakCapabilities));
+        $this->eventEmitter->emit('irc.cap.notAcknowledged', [new CapabilityEvent($nakCapabilities)]);
     }
 
     /**
