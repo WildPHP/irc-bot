@@ -24,6 +24,15 @@ interface DatabaseStorageProviderInterface
 
     /**
      * @param string $table
+     * @param array $columns
+     * @param array $where
+     * @param array $joins
+     * @return array|null
+     */
+    public function selectFirst(string $table, array $columns = [], array $where = [], array $joins = []): ?array;
+
+    /**
+     * @param string $table
      * @param array $where
      * @param array $newValues
      * @return mixed
@@ -33,7 +42,7 @@ interface DatabaseStorageProviderInterface
     /**
      * @param string $table
      * @param array $values
-     * @return int
+     * @return string
      */
     public function insert(string $table, array $values): string;
 
@@ -43,4 +52,17 @@ interface DatabaseStorageProviderInterface
      * @return mixed
      */
     public function delete(string $table, array $where);
+
+    /**
+     * @param string $table
+     * @param array $where
+     * @return bool
+     */
+    public function has(string $table, array $where): bool;
+
+    /**
+     * @param string $tableName
+     * @return mixed
+     */
+    public function addKnownTableName(string $tableName);
 }
