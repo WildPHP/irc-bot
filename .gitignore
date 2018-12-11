@@ -1,5 +1,5 @@
 /logs/
-config.php
+/config/config.php
 php_errors
 composer.phar
 
