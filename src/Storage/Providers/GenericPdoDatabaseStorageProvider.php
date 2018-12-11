@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection SyntaxError */
+
 /**
  * Copyright 2018 The WildPHP Team
  *
@@ -27,18 +28,33 @@ class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterf
      * @param array $columns
      * @param array $where
      * @param array $joins
-     * @return array
+     * @param int $limit
+     * @return string
      * @throws StorageException
      */
-    public function select(string $table, array $columns = [], array $where = [], array $joins = []): array
+    public function prepareSelectQuery(string $table, array $columns = [], array $where = [], array $joins = [], int $limit = -1)
     {
-        $query = sprintf('SELECT %s FROM %s %s %s',
+        return sprintf('SELECT %s FROM %s %s %s %s',
             $this->prepareColumnNames($columns),
             $this->prepareTableName($table),
             $this->prepareJoinStatement($joins),
-            $this->prepareWhereStatement($where)
+            $this->prepareWhereStatement($where),
+            $limit > 0 ? 'LIMIT ' . $limit : ''
         );
-        $result = $this->pdo->prepare($query);
+    }
+
+    /**
+     * @param string $table
+     * @param array $columns
+     * @param array $where
+     * @param array $joins
+     * @param int $limit
+     * @return array
+     * @throws StorageException
+     */
+    public function select(string $table, array $columns = [], array $where = [], array $joins = [], int $limit = -1): array
+    {
+        $result = $this->pdo->prepare($this->prepareSelectQuery($table, $columns, $where, $joins, $limit));
         $result->execute(array_values($where));
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
@@ -49,50 +65,92 @@ class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterf
      * @param array $columns
      * @param array $where
      * @param array $joins
-     * @return array
+     * @return null|array
      * @throws StorageException
      */
-    public function selectFirst(string $table, array $columns = [], array $where = [], array $joins = []): array
+    public function selectFirst(string $table, array $columns = [], array $where = [], array $joins = []): ?array
     {
-        $query = sprintf('SELECT %s FROM %s %s %s LIMIT 1',
-            $this->prepareColumnNames($columns),
+        return $this->select($table, $columns, $where, $joins, 1)[0] ?? null;
+    }
+
+    /**
+     * @param string $table
+     * @param array $where
+     * @return bool
+     * @throws StorageException
+     */
+    public function has(string $table, array $where): bool
+    {
+        $query = sprintf('SELECT EXISTS(SELECT 1 FROM %s %s LIMIT 1)',
             $this->prepareTableName($table),
-            $this->prepareJoinStatement($joins),
             $this->prepareWhereStatement($where)
         );
-        $statement = $this->pdo->prepare($query);
-        $statement->execute(array_values($where));
-
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        $result = $this->pdo->prepare($query);
+        $result->execute(array_values($where));
+        return $result->fetchColumn() == true;
     }
 
     /**
      * @param string $table
      * @param array $where
      * @param array $newValues
-     * @return mixed
+     * @return string
+     * @throws StorageException
      */
-    public function update(string $table, array $where, array $newValues)
+    public function prepareUpdateQuery(string $table, array $where, array $newValues): string
     {
-        // TODO: Implement update() method.
+        $setQuery = [];
+        foreach ($newValues as $column => $value) {
+            $setQuery[] = $this->prepareColumnName($column) . ' = ?';
+        }
+
+        return sprintf('UPDATE %s SET %s %s',
+            $this->prepareTableName($table),
+            implode(', ', $setQuery),
+            $this->prepareWhereStatement($where)
+        );
+    }
+
+    /**
+     * @param string $table
+     * @param array $where
+     * @param array $newValues
+     * @return int Number of affected rows
+     * @throws StorageException
+     */
+    public function update(string $table, array $where, array $newValues): int
+    {
+        $result = $this->pdo->prepare($this->prepareUpdateQuery($table, $where, $newValues));
+        $result->execute(array_merge(array_values($newValues), array_values($where)));
+
+        return $result->rowCount();
     }
 
     /**
      * @param string $table
      * @param array $values
-     * @return int
+     * @return string
+     * @throws StorageException
+     */
+    public function prepareInsertQuery(string $table, array $values)
+    {
+        $valueQuery = implode(', ', str_split(str_repeat('?', count($values))));
+
+        return sprintf('INSERT INTO %s (%s) VALUES (%s)',
+            $this->prepareTableName($table),
+            implode(', ', $this->prepareColumnNames(array_keys($values))),
+            $valueQuery);
+    }
+
+    /**
+     * @param string $table
+     * @param array $values
+     * @return string
      * @throws StorageException
      */
     public function insert(string $table, array $values): string
     {
-        $valueQuery = implode(', ', str_split(str_repeat('?', count($values))));
-
-        $query = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-            $this->prepareTableName($table),
-            $this->prepareColumnNames(array_keys($values)),
-            $valueQuery);
-
-        $statement = $this->pdo->prepare($query);
+        $statement = $this->pdo->prepare($this->prepareInsertQuery($table, $values));
         $statement->execute(array_values($values));
 
         return $this->pdo->lastInsertId();
@@ -101,35 +159,59 @@ class GenericPdoDatabaseStorageProvider implements DatabaseStorageProviderInterf
     /**
      * @param string $table
      * @param array $where
-     * @return mixed
+     * @return string
      * @throws StorageException
      */
-    public function delete(string $table, array $where)
+    public function prepareDeleteQuery(string $table, array $where)
     {
-        $query = sprintf('DELETE FROM %s %s',
+        return sprintf('DELETE FROM %s %s',
             $this->prepareTableName($table),
             $this->prepareWhereStatement($where)
         );
-        $statement = $this->pdo->prepare($query);
+    }
+
+    /**
+     * @param string $table
+     * @param array $where
+     * @return int Number of affected rows
+     * @throws StorageException
+     */
+    public function delete(string $table, array $where): int
+    {
+        $statement = $this->pdo->prepare($this->prepareDeleteQuery($table, $where));
         $statement->execute(array_values($where));
+
+        return $statement->rowCount();
+    }
+
+    /**
+     * @param string $column
+     * @return string
+     */
+    private function prepareColumnName(string $column): string
+    {
+        if (preg_match('/^\".+\"$/', $column) === 0)
+            return $column;
+
+        return '"' . $column . '"';
+
     }
 
     /**
      * @param array $columns
-     * @return string
+     * @return array
      */
-    private function prepareColumnNames(array $columns): string
+    private function prepareColumnNames(array $columns): array
     {
         if (empty($columns)) {
-            return '*';
+            return ['*'];
         }
 
-        $statements = [];
-        foreach ($columns as $column) {
-            $statements[] = $this->pdo->quote($column);
+        foreach ($columns as $key => $column) {
+            $columns[$key] = $this->prepareColumnName($column);
         }
 
-        return implode(',', $statements);
+        return $columns;
     }
 
     /**
