@@ -28,10 +28,7 @@
     "psr-4": {
       "WildPHP\\Core\\": "src/",
       "WildPHP\\Modules\\": "modules/"
-    },
-    "classmap": [
-      "propel/"
-    ]
+    }
   },
   "authors": [
     {
