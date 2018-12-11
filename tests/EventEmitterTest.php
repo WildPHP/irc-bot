@@ -6,7 +6,7 @@
  * See the LICENSE file for more information.
  */
 
-use WildPHP\Core\EventEmitter;
+use WildPHP\Core\Events\EventEmitter;
 
 class EventEmitterTest extends \PHPUnit\Framework\TestCase
 {
