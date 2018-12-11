@@ -12,9 +12,9 @@ namespace WildPHP\Core\Connection\Capabilities;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\QueueInterface;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Authenticate;
-use WildPHP\Messages\Generics\IncomingMessage;
+use WildPHP\Messages\Interfaces\IncomingMessageInterface;
 
 class Sasl implements CapabilityInterface
 {
@@ -60,20 +60,26 @@ class Sasl implements CapabilityInterface
     private $configuration;
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
     /**
      * SASL constructor.
      *
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      * @param Configuration $configuration
      * @param CapabilityHandler $capabilityHandler
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      */
-    public function __construct(QueueInterface $queue, Configuration $configuration, CapabilityHandler $capabilityHandler, EventEmitterInterface $eventEmitter, LoggerInterface $logger)
+    public function __construct(
+        IrcMessageQueue $queue,
+        Configuration $configuration,
+        CapabilityHandler $capabilityHandler,
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger
+    )
     {
         if (!$configuration->offsetExists('sasl') ||
             empty($configuration['sasl']['username']) ||
@@ -103,7 +109,6 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @param QueueInterface $queue
      */
     public function sendAuthenticationMechanism()
     {
@@ -113,7 +118,6 @@ class Sasl implements CapabilityInterface
 
     /**
      * @param Authenticate $message
-     * @param QueueInterface $queue
      */
     public function sendCredentials(Authenticate $message)
     {
@@ -142,9 +146,9 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @param IncomingMessage $message
+     * @param IncomingMessageInterface $message
      */
-    public function handleResponse(IncomingMessage $message)
+    public function handleResponse(IncomingMessageInterface $message)
     {
         $code = $message->getVerb();
 

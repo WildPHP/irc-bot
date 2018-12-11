@@ -13,7 +13,9 @@ use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\QueueInterface;
+use WildPHP\Core\Connection\IrcConnectionInterface;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Ping;
 
 class ConnectionHeartbeatObserver
@@ -54,7 +56,7 @@ class ConnectionHeartbeatObserver
     private $eventEmitter;
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -67,20 +69,32 @@ class ConnectionHeartbeatObserver
      * @var Configuration
      */
     private $configuration;
+    /**
+     * @var IrcConnectionInterface
+     */
+    private $ircConnection;
 
     /**
      * PingPongHandler constructor.
      *
      * @param EventEmitterInterface $eventEmitter
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      * @param LoggerInterface $logger
      * @param LoopInterface $loop
      * @param Configuration $configuration
+     * @param IrcConnectionInterface $ircConnection
      */
-    public function __construct(EventEmitterInterface $eventEmitter, QueueInterface $queue, LoggerInterface $logger, LoopInterface $loop, Configuration $configuration)
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        IrcMessageQueue $queue,
+        LoggerInterface $logger,
+        LoopInterface $loop,
+        Configuration $configuration,
+        IrcConnectionInterface $ircConnection
+    )
     {
-        $eventEmitter->on('irc.line.in', [$this, 'updateLastMessageReceived']);
-        $eventEmitter->on('irc.line.in.ping', [$this, 'respondPong']);
+        $eventEmitter->on('irc.msg.in', [$this, 'updateLastMessageReceived']);
+        $eventEmitter->on('irc.msg.in.ping', [$this, 'respondPong']);
         $loop->addPeriodicTimer($this->loopInterval, [$this, 'connectionHeartbeat']);
 
         $this->updateLastMessageReceived();
@@ -89,6 +103,7 @@ class ConnectionHeartbeatObserver
         $this->queue = $queue;
         $this->logger = $logger;
         $this->configuration = $configuration;
+        $this->ircConnection = $ircConnection;
     }
 
     public function updateLastMessageReceived()
@@ -127,7 +142,7 @@ class ConnectionHeartbeatObserver
     {
         $this->logger->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
         $this->queue->quit('No vital signs detected, closing link...');
-        $this->eventEmitter->emit('irc.force.close');
+        $this->ircConnection->close();
     }
 
     /**
@@ -143,10 +158,12 @@ class ConnectionHeartbeatObserver
     }
 
     /**
-     * @param PING $pingMessage
+     * @param IncomingIrcMessageEvent $event
      */
-    public function respondPong(PING $pingMessage)
+    public function respondPong(IncomingIrcMessageEvent $event)
     {
+        /** @var Ping $pingMessage */
+        $pingMessage = $event->getIncomingMessage();
         $this->queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
     }
 

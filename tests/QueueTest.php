@@ -19,8 +19,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\Connection\QueueItem;
+use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Queue\IrcMessageQueueItem;
 use WildPHP\Messages\Privmsg;
 use WildPHP\Messages\Raw;
 
@@ -30,8 +30,7 @@ class QueueTest extends TestCase
 
 	public function testQueueAddItem()
     {
-        $eventEmitter = new \WildPHP\Core\EventEmitter();
-        $queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
         static::assertEquals(0, $queue->count());
         
         $dummyCommand = new Raw('test');
@@ -42,8 +41,7 @@ class QueueTest extends TestCase
 
 	public function testQueueRemoveItem()
 	{
-	    $eventEmitter = new \WildPHP\Core\EventEmitter();
-		$queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
 		static::assertEquals(0, $queue->count());
 
 		$dummyCommand = new Raw('test');
@@ -59,8 +57,7 @@ class QueueTest extends TestCase
 
 	public function testQueueRemoveItemByIndex()
 	{
-	    $eventEmitter = new \WildPHP\Core\EventEmitter();
-		$queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
 		static::assertEquals(0, $queue->count());
 
 		$dummyCommand = new Raw('test');
@@ -76,8 +73,7 @@ class QueueTest extends TestCase
 
 	public function testQueueClear()
 	{
-	    $eventEmitter = new \WildPHP\Core\EventEmitter();
-		$queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
 		static::assertEquals(0, $queue->count());
 
 		$dummyCommand = new Raw('test');
@@ -92,8 +88,7 @@ class QueueTest extends TestCase
 
     public function testCalculateTimeWithoutFloodControl()
     {
-        $eventEmitter = new \WildPHP\Core\EventEmitter();
-        $queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
         $queue->setFloodControl(false);
         static::assertEquals(0, $queue->count());
 
@@ -115,8 +110,7 @@ class QueueTest extends TestCase
 
     public function testCalculateTime()
     {
-        $eventEmitter = new \WildPHP\Core\EventEmitter();
-        $queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
         $queue->setFloodControl(true);
         static::assertEquals(0, $queue->count());
 
@@ -140,8 +134,7 @@ class QueueTest extends TestCase
 
     public function testQueueRun()
     {
-        $eventEmitter = new \WildPHP\Core\EventEmitter();
-        $queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
         static::assertEquals(0, $queue->count());
 
         for ($i = 1; $i <= 3; $i++)
@@ -150,7 +143,7 @@ class QueueTest extends TestCase
             $queue->insertMessage($dummyCommand);
         }
         $dueItems = $queue->getDueItems();
-        $queue->processQueueItems($dueItems);
+        $queue->processItems($dueItems);
 
         static::assertEquals(0, $queue->count());
 
@@ -164,20 +157,19 @@ class QueueTest extends TestCase
 
 	    static::assertEquals(50, $queue->count());
         $dueItems = $queue->getDueItems();
-        $queue->processQueueItems($dueItems);
+        $queue->processItems($dueItems);
 	    
 	    static::assertEquals(44, $queue->count());
     }
 
 	public function testInitializeMessage()
 	{
-	    $eventEmitter = new \WildPHP\Core\EventEmitter();
-		$queue = new Queue($eventEmitter);
+        $queue = new IrcMessageQueue();
 		
 		$queueItem = $queue->raw('Test');
 		self::assertEquals(1, $queue->count());
-		
-		$expectedQueueItem = new QueueItem(new Raw('Test'), time());
+
+        $expectedQueueItem = new IrcMessageQueueItem(new Raw('Test'), time());
 		self::assertEquals($expectedQueueItem, $queueItem);
     }
 }

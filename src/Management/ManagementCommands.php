@@ -16,11 +16,11 @@ use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Commands\Parameters\ChannelParameter;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Permissions\AllowedBy;
 use WildPHP\Core\Permissions\Validator;
+use WildPHP\Core\Queue\QueueInterface;
 
 class ManagementCommands
 {

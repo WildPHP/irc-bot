@@ -12,6 +12,7 @@ namespace WildPHP\Core\Connection;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Queue\IrcMessageQueue;
 
 class AlternativeNicknameHandler
 {
@@ -33,7 +34,7 @@ class AlternativeNicknameHandler
      */
     private $ircConnection;
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -44,14 +45,14 @@ class AlternativeNicknameHandler
      * @param Configuration $configuration
      * @param LoggerInterface $logger
      * @param IrcConnectionInterface $ircConnection
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         LoggerInterface $logger,
         IrcConnectionInterface $ircConnection,
-        QueueInterface $queue
+        IrcMessageQueue $queue
     ) {
         if (empty($configuration['alternativeNicknames'])) {
             return;

@@ -27,10 +27,6 @@ class PermissionMembersCommands extends BaseModule
      * PermissionCommands constructor.
      *
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function __construct(ComponentContainer $container)
     {
@@ -70,7 +66,6 @@ class PermissionMembersCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function lsmembersCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -99,9 +94,7 @@ class PermissionMembersCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \WildPHP\Core\StateException
      * @throws \WildPHP\Core\Observers\UserNotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function addmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -142,8 +135,6 @@ class PermissionMembersCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \WildPHP\Core\StateException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function delmemberCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {

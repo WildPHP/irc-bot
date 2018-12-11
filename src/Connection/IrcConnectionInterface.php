@@ -26,11 +26,6 @@ interface IrcConnectionInterface
     public function incomingData(string $data);
 
     /**
-     * @param QueueItem $queueItem
-     */
-    public function writeQueueItem(QueueItem $queueItem);
-
-    /**
      * @param ConnectorInterface $connectorInterface
      *
      * @return \React\Promise\PromiseInterface

@@ -11,11 +11,12 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Connection\QueueInterface;
 use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Entities\Base\IrcChannelQuery;
 use WildPHP\Core\Entities\Base\IrcUserQuery;
 use WildPHP\Core\Entities\UserModeChannel;
+use WildPHP\Core\Events\NicknameChangedEvent;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Nick;
 use WildPHP\Messages\RPL\EndOfNames;
@@ -35,7 +36,7 @@ class UserObserver
     private $logger;
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -44,9 +45,9 @@ class UserObserver
      *
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, QueueInterface $queue)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue)
     {
 
         $eventEmitter->on('irc.line.in.join', [$this, 'processUserJoin']);
@@ -163,11 +164,11 @@ class UserObserver
         $user->setNickname($nickMessage->getNewNickname());
         $user->save();
 
-        $this->eventEmitter->emit('user.nick', [
+        $this->eventEmitter->emit('user.nick', new NicknameChangedEvent(
             $user,
             $nickMessage->getNickname(),
             $nickMessage->getNewNickname()
-        ]);
+        ));
 
         $this->logger->debug('Updated user nickname', [
             'oldNickname' => $nickMessage->getNickname(),

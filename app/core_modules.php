@@ -17,11 +17,11 @@ return [
     \WildPHP\Core\Observers\UserObserver::class,
     \WildPHP\Core\Observers\ChannelObserver::class,
     \WildPHP\Core\Commands\CommandRunner::class,
-    \WildPHP\Core\Connection\QueueProcessor::class,
+    \WildPHP\Core\Queue\QueueProcessor::class,
     \WildPHP\Core\Connection\IncomingMessageParser::class,
     //\WildPHP\Core\Commands\HelpCommand::class,
     //\WildPHP\Core\Permissions\PermissionGroupCommands::class,
     //\WildPHP\Core\Permissions\PermissionCommands::class,
     //\WildPHP\Core\Permissions\PermissionMembersCommands::class,
-    \WildPHP\Core\Management\ManagementCommands::class
+    //\WildPHP\Core\Management\ManagementCommands::class
 ];

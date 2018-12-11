@@ -11,7 +11,8 @@ namespace WildPHP\Core\Connection\Capabilities;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Connection\QueueInterface;
+use WildPHP\Core\Events\CapabilityEvent;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Cap;
 
 class CapabilityHandler
@@ -51,7 +52,7 @@ class CapabilityHandler
     private $logger;
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -65,9 +66,9 @@ class CapabilityHandler
      *
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, QueueInterface $queue)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue)
     {
         $eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
         $eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
@@ -170,7 +171,6 @@ class CapabilityHandler
 
     /**
      * @param CAP $incomingIrcMessage
-     * @param QueueInterface $queue
      */
     public function responseRouter(CAP $incomingIrcMessage)
     {
@@ -194,7 +194,6 @@ class CapabilityHandler
 
     /**
      * @param array $capabilities
-     * @param QueueInterface $queue
      */
     protected function updateAvailableCapabilities(array $capabilities)
     {
@@ -222,7 +221,6 @@ class CapabilityHandler
 
     /**
      * @param string[] $capabilities
-     * @param QueueInterface $queue
      */
     public function updateAcknowledgedCapabilities(array $capabilities)
     {
@@ -237,7 +235,7 @@ class CapabilityHandler
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.acknowledged', [$ackCapabilities]);
+        $this->eventEmitter->emit('irc.cap.acknowledged', new CapabilityEvent($ackCapabilities));
     }
 
     /**
@@ -250,7 +248,6 @@ class CapabilityHandler
 
     /**
      * @param string[] $capabilities
-     * @param QueueInterface $queue
      */
     public function updateNotAcknowledgedCapabilities(array $capabilities)
     {
@@ -266,7 +263,7 @@ class CapabilityHandler
             }
         }
 
-        $this->eventEmitter->emit('irc.cap.notAcknowledged', [$nakCapabilities]);
+        $this->eventEmitter->emit('irc.cap.notAcknowledged', new CapabilityEvent($nakCapabilities));
     }
 
     /**

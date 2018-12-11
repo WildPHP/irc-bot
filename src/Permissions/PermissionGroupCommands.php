@@ -28,16 +28,6 @@ class PermissionGroupCommands extends BaseModule
      * PermissionCommands constructor.
      *
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function __construct(ComponentContainer $container)
     {
@@ -114,7 +104,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function validateCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -145,8 +134,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function lsgroupsCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -163,9 +150,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function creategroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -193,8 +177,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function delgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -221,7 +203,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function linkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -253,7 +234,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function unlinkgroupCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -287,7 +267,6 @@ class PermissionGroupCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function groupinfoCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {

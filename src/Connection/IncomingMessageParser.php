@@ -11,8 +11,9 @@ namespace WildPHP\Core\Connection;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Messages\Exceptions\CastException;
-use WildPHP\Messages\Generics\IncomingMessage;
+use WildPHP\Messages\Generics\IrcMessage;
 use WildPHP\Messages\Utility\MessageCaster;
 
 class IncomingMessageParser
@@ -56,18 +57,19 @@ class IncomingMessageParser
         $parsedLine = MessageParser::parseLine($line);
         $args = $parsedLine->args;
         array_shift($args);
-        $ircMessage = new IncomingMessage($parsedLine->prefix, $parsedLine->verb, $args);
+        $ircMessage = new IrcMessage($parsedLine->prefix, $parsedLine->verb, $args);
 
         $verb = strtolower($ircMessage->getVerb());
-        $this->eventEmitter->emit('irc.line.in', [$ircMessage]);
 
         try {
             $castIrcMessage = MessageCaster::castMessage($ircMessage);
             $ircMessage = $castIrcMessage;
+            $this->eventEmitter->emit('irc.msg.in', new IncomingIrcMessageEvent($ircMessage));
+            $this->eventEmitter->emit('irc.msg.in.' . $verb, new IncomingIrcMessageEvent($ircMessage));
         } catch (CastException $exception) {
+            $this->logger->debug(sprintf('Received message with verb %s but it could not be cast to an implemented message type. This message is not supported!',
+                $verb));
         }
-
-        $this->eventEmitter->emit('irc.line.in.' . $verb, [$ircMessage]);
     }
 
     /**

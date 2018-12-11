@@ -25,10 +25,6 @@ class PermissionCommands extends BaseModule
      * PermissionCommands constructor.
      *
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function __construct(ComponentContainer $container)
     {
@@ -68,7 +64,6 @@ class PermissionCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function allowCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -96,7 +91,6 @@ class PermissionCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function denyCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -124,7 +118,6 @@ class PermissionCommands extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function lspermsCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {

@@ -16,13 +16,13 @@ use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcChannelQuery;
 use WildPHP\Core\Entities\IrcUserQuery;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Kick;
 use WildPHP\Messages\Part;
 use WildPHP\Messages\Quit;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\Topic;
-use WildPHP\Core\Connection\QueueInterface;
 
 class ChannelObserver
 {
@@ -37,7 +37,7 @@ class ChannelObserver
     private $logger;
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -52,13 +52,13 @@ class ChannelObserver
      * @param EventEmitterInterface $eventEmitter
      * @param Configuration $configuration
      * @param LoggerInterface $logger
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         LoggerInterface $logger,
-        QueueInterface $queue
+        IrcMessageQueue $queue
     ) {
         $eventEmitter->on('irc.line.in.join', [$this, 'createChannel']);
         $eventEmitter->on('irc.line.in.join', [$this, 'processChannelJoin']);
@@ -94,7 +94,6 @@ class ChannelObserver
         }
 
         $chunks = array_chunk($channels, 3);
-        $this->queue->setFloodControl(true);
 
         foreach ($chunks as $chunk) {
             $this->queue->join($chunk);

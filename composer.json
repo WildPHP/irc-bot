@@ -18,7 +18,7 @@
     "propel/propel": "~2.0@dev",
     "php-di/php-di": "^6.0",
     "wildphp/command-parser": "^0.1",
-    "wildphp/irc-messages": "^0.1",
+    "wildphp/irc-messages": "dev-master",
 
     "ext-pdo": "*",
     "ext-posix": "*",

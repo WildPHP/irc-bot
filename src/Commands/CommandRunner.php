@@ -21,7 +21,7 @@ use WildPHP\Commands\Exceptions\ValidationException;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Entities\IrcChannelQuery;
 use WildPHP\Core\Entities\IrcUserQuery;
-use WildPHP\Core\Connection\QueueInterface;
+use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Privmsg;
 
 class CommandRunner
@@ -46,7 +46,7 @@ class CommandRunner
      */
     private $commandProcessor;
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -57,14 +57,14 @@ class CommandRunner
      * @param Configuration $configuration
      * @param CommandProcessor $commandProcessor
      * @param LoggerInterface $logger
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         CommandProcessor $commandProcessor,
         LoggerInterface $logger,
-        QueueInterface $queue
+        IrcMessageQueue $queue
     ) {
         $eventEmitter->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
 

@@ -12,12 +12,13 @@ namespace WildPHP\Core\Connection;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
+use WildPHP\Core\Queue\IrcMessageQueue;
 
 class IrcConnectionInitiator
 {
 
     /**
-     * @var QueueInterface
+     * @var IrcMessageQueue
      */
     private $queue;
 
@@ -42,11 +43,17 @@ class IrcConnectionInitiator
      * IrcConnectionInitiator constructor.
      * @param LoggerInterface $logger
      * @param EventEmitterInterface $eventEmitter
-     * @param QueueInterface $queue
+     * @param IrcMessageQueue $queue
      * @param IrcConnectionInterface $connection
      * @param LoopInterface $loop
      */
-    public function __construct(LoggerInterface $logger, EventEmitterInterface $eventEmitter, QueueInterface $queue, IrcConnectionInterface $connection, LoopInterface $loop)
+    public function __construct(
+        LoggerInterface $logger,
+        EventEmitterInterface $eventEmitter,
+        IrcMessageQueue $queue,
+        IrcConnectionInterface $connection,
+        LoopInterface $loop
+    )
     {
         $eventEmitter->on('stream.created', [$this, 'initiateConnection']);
 

@@ -16,11 +16,10 @@ use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Configuration\NeonBackend;
-use WildPHP\Core\Connection\QueueInterface;
-use WildPHP\Core\EventEmitter;
 use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
+use WildPHP\Core\Events\EventEmitter;
 use function DI\create;
 
 return [
@@ -35,10 +34,6 @@ return [
 
     LoopInterface::class => function () {
         return Factory::create();
-    },
-
-    QueueInterface::class => function (EventEmitterInterface $eventEmitter) {
-        return new \WildPHP\Core\Connection\Queue($eventEmitter);
     },
 
     \WildPHP\Core\Permissions\Validator::class => function (EventEmitterInterface $eventEmitter, Configuration $configuration) {

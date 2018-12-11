@@ -23,8 +23,6 @@ class HelpCommand extends BaseModule
      * HelpCommand constructor.
      *
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function __construct(ComponentContainer $container)
     {
@@ -52,8 +50,6 @@ class HelpCommand extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function lscommandsCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {
@@ -76,7 +72,6 @@ class HelpCommand extends BaseModule
      * @param User $user
      * @param $args
      * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     public function helpCommand(Channel $source, User $user, $args, ComponentContainer $container)
     {

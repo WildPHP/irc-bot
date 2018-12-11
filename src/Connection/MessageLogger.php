@@ -10,6 +10,7 @@ namespace WildPHP\Core\Connection;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use WildPHP\Core\Events\OutgoingIrcMessageEvent;
 use WildPHP\Messages\Privmsg;
 
 class MessageLogger
@@ -26,7 +27,7 @@ class MessageLogger
     public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger)
     {
         $eventEmitter->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
-        $eventEmitter->on('irc.line.out', [$this, 'logOutgoingPrivmsg']);
+        $eventEmitter->on('irc.msg.out.privmsg', [$this, 'logOutgoingPrivmsg']);
 
         $this->logger = $logger;
     }
@@ -44,11 +45,11 @@ class MessageLogger
     }
 
     /**
-     * @param QueueItem $message
+     * @param OutgoingIrcMessageEvent $event
      */
-    public function logOutgoingPrivmsg(QueueItem $message)
+    public function logOutgoingPrivmsg(OutgoingIrcMessageEvent $event)
     {
-        $command = $message->getCommandObject();
+        $command = $event->getOutgoingMessage();
 
         if (!($command instanceof PRIVMSG)) {
             return;

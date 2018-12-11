@@ -41,13 +41,12 @@ class IrcConnection implements IrcConnectionInterface
 
     /**
      * @param EventEmitterInterface $eventEmitter
+     * @param LoggerInterface $logger
      * @param ConnectionDetails $connectionDetails
      */
     public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, ConnectionDetails $connectionDetails)
     {
-        $eventEmitter->on('irc.line.in.error', [$this, 'close']);
-        $eventEmitter->on('irc.line.out', [$this, 'writeQueueItem']);
-        $eventEmitter->on('irc.force.close', [$this, 'close']);
+        $eventEmitter->on('irc.msg.in.error', [$this, 'close']);
 
         $this->connectionDetails = $connectionDetails;
         $this->eventEmitter = $eventEmitter;
@@ -91,16 +90,6 @@ class IrcConnection implements IrcConnectionInterface
     }
 
     /**
-     * @param QueueItem $queueItem
-     */
-    public function writeQueueItem(QueueItem $queueItem)
-    {
-        if (!$queueItem->isCancelled()) {
-            $this->write($queueItem->getCommandObject());
-        }
-    }
-
-    /**
      * @param ConnectorInterface $connectorInterface
      *
      * @return \React\Promise\PromiseInterface
@@ -109,7 +98,7 @@ class IrcConnection implements IrcConnectionInterface
     {
         $connectionString = $this->getConnectionDetails()->getAddress() . ':' . $this->getConnectionDetails()->getPort();
         $promise = $connectorInterface->connect($connectionString)
-            ->then(function (ConnectionInterface $connection) use (&$buffer, $connectionString) {
+            ->then(function (ConnectionInterface $connection) use ($connectionString) {
                 $this->eventEmitter->emit('stream.created');
 
                 $connection->on('error',
