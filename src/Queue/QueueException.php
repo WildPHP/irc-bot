@@ -6,10 +6,10 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Events;
+namespace WildPHP\Core\Queue;
 
 
-class IrcMessageEvent
+class QueueException extends \Exception
 {
 
 }
