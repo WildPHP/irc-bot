@@ -47,6 +47,7 @@ return [
         //    'tcp' => [
         //        'bindto' => '192.168.1.11'
         //    ]
+        //]
     ],
 
     # Storage driver used for persistent storage
@@ -58,7 +59,7 @@ return [
     # - MySQL: \WildPHP\Core\Storage\Providers\MySQLDatabaseStorageProvider
     # - FlatFile (NOT RECOMMENDED): \WildPHP\Core\Storage\Providers\FlatFileStorageProvider
     'storage' => [
-        'driver' => new SQLiteDatabaseStorageProvider('../storage/persistent.sqlite')
+        'provider' => new SQLiteDatabaseStorageProvider('../storage/persistent.sqlite')
     ],
 
     # Command prefix used for command parsing.
