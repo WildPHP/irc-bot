@@ -9,7 +9,7 @@
 return [
     \WildPHP\Core\Connection\MessageParser::class,
     \WildPHP\Core\Observers\ConnectionHeartbeatObserver::class,
-    //\WildPHP\Core\Observers\BotNicknameObserver::class,
+    \WildPHP\Core\Observers\BotNicknameObserver::class,
     \WildPHP\Core\Observers\ServerConfigObserver::class,
     \WildPHP\Core\Connection\AlternativeNicknameHandler::class,
     \WildPHP\Core\Connection\MessageLogger::class,
@@ -19,6 +19,7 @@ return [
     \WildPHP\Core\Commands\CommandRunner::class,
     \WildPHP\Core\Queue\QueueProcessor::class,
     \WildPHP\Core\Connection\IncomingMessageParser::class,
+    \WildPHP\Core\Connection\Capabilities\CapabilityHandler::class,
     //\WildPHP\Core\Commands\HelpCommand::class,
     //\WildPHP\Core\Permissions\PermissionGroupCommands::class,
     //\WildPHP\Core\Permissions\PermissionCommands::class,

@@ -23,7 +23,7 @@ interface QueueItemInterface
     public function cancel(): void;
 
     /**
-     * @return void
+     * @return OutgoingMessageInterface
      */
     public function getOutgoingMessage(): OutgoingMessageInterface;
 }

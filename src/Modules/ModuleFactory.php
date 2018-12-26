@@ -49,7 +49,7 @@ class ModuleFactory
     /**
      * @param string $entryClassName
      *
-     * @return ModuleInterface
+     * @return object
      * @throws ModuleInitializationException
      */
     public function initializeModule(string $entryClassName)

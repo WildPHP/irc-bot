@@ -12,7 +12,7 @@ namespace WildPHP\Core\Observers;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Events\NicknameChangedEvent;
 
 class BotNicknameObserver
 {
@@ -42,21 +42,19 @@ class BotNicknameObserver
     }
 
     /**
-     * @param IrcUser $user
-     * @param string $oldNickname
-     * @param string $newNickname
+     * @param NicknameChangedEvent $event
      */
-    public function monitorBotNickname(IrcUser $user, string $oldNickname, string $newNickname)
+    public function monitorBotNickname(NicknameChangedEvent $event)
     {
-        if ($oldNickname != $this->configuration['currentNickname']) {
+        if ($event->getOldNickname() != $this->configuration['currentNickname']) {
             return;
         }
 
-        $this->configuration['currentNickname'] = $newNickname;
+        $this->configuration['currentNickname'] = $event->getNewNickname();
 
         $this->logger->debug('Updated current nickname for bot', [
-            'oldNickname' => $oldNickname,
-            'newNickname' => $newNickname
+            'oldNickname' => $event->getOldNickname(),
+            'newNickname' => $event->getNewNickname()
         ]);
     }
 }

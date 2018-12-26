@@ -18,9 +18,11 @@ use WildPHP\Core\Commands\Parameters\ChannelParameter;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
+use WildPHP\Core\Events\CommandEvent;
 use WildPHP\Core\Permissions\AllowedBy;
 use WildPHP\Core\Permissions\Validator;
 use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
 
 class ManagementCommands
 {
@@ -44,12 +46,14 @@ class ManagementCommands
      * @param IrcMessageQueue $queue
      * @param Configuration $configuration
      * @param Validator $validator
+     * @param IrcChannelStorageInterface $channelStorage
      */
     public function __construct(
         CommandRegistrar $registrar,
         IrcMessageQueue $queue,
         Configuration $configuration,
-        Validator $validator
+        Validator $validator,
+        IrcChannelStorageInterface $channelStorage
     )
     {
         $registrar->register('join',
@@ -68,11 +72,11 @@ class ManagementCommands
             new Command(
                 [$this, 'partCommand'],
                 new ParameterStrategy(0, 5, [
-                    'channel1' => new ChannelParameter(),
-                    'channel2' => new ChannelParameter(),
-                    'channel3' => new ChannelParameter(),
-                    'channel4' => new ChannelParameter(),
-                    'channel5' => new ChannelParameter()
+                    'channel1' => new ChannelParameter($channelStorage),
+                    'channel2' => new ChannelParameter($channelStorage),
+                    'channel3' => new ChannelParameter($channelStorage),
+                    'channel4' => new ChannelParameter($channelStorage),
+                    'channel5' => new ChannelParameter($channelStorage)
                 ])
             ));
 
@@ -107,7 +111,6 @@ class ManagementCommands
      * @param IrcChannel $source
      * @param IrcUser $user
      * @param $args
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function quitCommand(IrcChannel $source, IrcUser $user, $args)
     {
@@ -127,17 +130,15 @@ class ManagementCommands
     }
 
     /**
-     * @param IrcChannel $source
-     * @param IrcUser $user
-     * @param array $channels
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param CommandEvent $event
      */
-    public function joinCommand(IrcChannel $source, IrcUser $user, array $channels)
+    public function joinCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('join', $user, $source)) {
-            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'join'));
+        if (!$this->validator->isAllowedTo('join', $event->getUser(), $event->getChannel())) {
+            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'join'));
             return;
         }
+        $channels = $event->getParameters();
 
         $validChannels = $this->validateChannels($channels);
 
@@ -149,14 +150,11 @@ class ManagementCommands
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            $this->queue
-                ->privmsg($user->getNickname(),
-                    'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
-                        $diff));
+            $this->queue->privmsg($event->getUser()->getNickname(),
+                'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
+                    $diff));
         }
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param array $channels
@@ -180,20 +178,17 @@ class ManagementCommands
     }
 
     /**
-     * @param IrcChannel $source
-     * @param IrcUser $user
-     * @param IrcChannel[] $channels
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param CommandEvent $event
      */
-    public function partCommand(IrcChannel $source, IrcUser $user, $channels)
+    public function partCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('part', $user, $source)) {
-            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'part'));
+        if (!$this->validator->isAllowedTo('part', $event->getUser(), $event->getChannel())) {
+            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'part'));
             return;
         }
 
         if (empty($channels)) {
-            $channels = [$source];
+            $channels = [$event->getChannel()];
         }
 
         foreach ($channels as $index => $channel) {
@@ -211,7 +206,7 @@ class ManagementCommands
 
         if (!empty($diff)) {
             $this->queue
-                ->privmsg($user->getNickname(),
+                ->privmsg($event->getUser()->getNickname(),
                     'Did not part the following channels because they do not follow proper formatting: ' . implode(', ',
                         $diff));
         }
@@ -220,38 +215,33 @@ class ManagementCommands
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param IrcChannel $source
-     * @param IrcUser $user
-     * @param array $args
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param CommandEvent $event
      */
-    public function nickCommand(IrcChannel $source, IrcUser $user, array $args)
+    public function nickCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('nick', $user, $source)) {
-            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'nick'));
+        if (!$this->validator->isAllowedTo('nick', $event->getUser(), $event->getChannel())) {
+            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'nick'));
             return;
         }
 
         // TODO: Validate
-        $this->queue->nick($args['newNickname']);
+        $this->queue->nick($event->getParameters()['newNickname']);
     }
 
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param IrcChannel $source
-     * @param IrcUser $user
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param CommandEvent $event
      */
-    public function clearqueueCommand(IrcChannel $source, IrcUser $user)
+    public function clearqueueCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('clearqueue', $user, $source)) {
-            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'clearqueue'));
+        if (!$this->validator->isAllowedTo('clearqueue', $event->getUser(), $event->getChannel())) {
+            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'clearqueue'));
             return;
         }
 
         $this->queue->clear();
-        $this->queue->privmsg($source->getName(),
-            $user->getNickname() . ': Message queue cleared.');
+        $this->queue->privmsg($event->getChannel()->getName(),
+            $event->getUser()->getNickname() . ': Message queue cleared.');
     }
 }

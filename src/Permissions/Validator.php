@@ -10,17 +10,12 @@
 namespace WildPHP\Core\Permissions;
 
 use Evenement\EventEmitterInterface;
-use WildPHP\Core\Entities\Group;
-use WildPHP\Core\Entities\GroupPolicyQuery;
-use WildPHP\Core\Entities\GroupPolicyRestrictionQuery;
+use WildPHP\Core\Entities\ModeGroup;
+use WildPHP\Core\Entities\PermissionGroup;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
-use WildPHP\Core\Entities\ModeGroup;
-use WildPHP\Core\Entities\ModeGroupPolicyQuery;
-use WildPHP\Core\Entities\ModeGroupQuery;
-use WildPHP\Core\Entities\UserGroupQuery;
-use WildPHP\Core\Entities\UserPolicyQuery;
-use WildPHP\Core\Entities\UserPolicyRestrictionQuery;
+use WildPHP\Core\Storage\PermissionGroupStorageInterface;
+use WildPHP\Core\Storage\PolicyStorageInterface;
 use WildPHP\Messages\RPL\ISupport;
 
 class Validator
@@ -31,20 +26,37 @@ class Validator
     protected $owner = '';
 
     /**
+     * @var PolicyStorageInterface
+     */
+    private $policyStorage;
+    /**
+     * @var PermissionGroupStorageInterface
+     */
+    private $groupStorage;
+
+    /**
      * Validator constructor.
      *
      * @param EventEmitterInterface $eventEmitter
      * @param string $owner
+     * @param PolicyStorageInterface $policyStorage
+     * @param PermissionGroupStorageInterface $groupStorage
      */
-    public function __construct(EventEmitterInterface $eventEmitter, string $owner)
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        string $owner,
+        PolicyStorageInterface $policyStorage,
+        PermissionGroupStorageInterface $groupStorage,
+        )
     {
         $eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
         $this->setOwner($owner);
+        $this->policyStorage = $policyStorage;
+        $this->groupStorage = $groupStorage;
     }
 
     /**
      * @param ISupport $ircMessage
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function createModeGroups(ISupport $ircMessage)
     {
@@ -61,8 +73,7 @@ class Validator
                 continue;
             }
 
-            $modeGroup = new ModeGroup();
-            $modeGroup->setMode($mode);
+            $modeGroup = new ModeGroup($mode);
             $modeGroup->save();
         }
     }
@@ -73,7 +84,6 @@ class Validator
      * @param IrcChannel $channel
      *
      * @return string|false String with reason on success; boolean false otherwise.
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function isAllowedTo(string $policy, IrcUser $user, IrcChannel $channel)
     {
@@ -192,7 +202,6 @@ class Validator
      * @param IrcUser $user
      * @param IrcChannel $channel
      * @return bool
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function channelModeAllows(string $policy, IrcUser $user, IrcChannel $channel): bool
     {

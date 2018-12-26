@@ -19,6 +19,7 @@ use WildPHP\Commands\Exceptions\NoApplicableStrategiesException;
 use WildPHP\Commands\Exceptions\ParseException;
 use WildPHP\Commands\Exceptions\ValidationException;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Events\CommandEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
@@ -125,19 +126,14 @@ class CommandRunner
         $channel = $this->channelStorage->getOneByName($privmsg->getChannel());
         $user = $this->userStorage->getOneByNickname($privmsg->getNickname());
 
-        $this->eventEmitter->emit('irc.command', [
+        $event = new CommandEvent(
             $processedCommand->getCommand(),
             $channel,
             $user,
             $processedCommand->getArguments()
-        ]);
-
-        call_user_func(
-            $processedCommand->getCallback(),
-            $channel,
-            $user,
-            $processedCommand->getConvertedParameters(),
-            $processedCommand->getCommand()
         );
+
+        $this->eventEmitter->emit('irc.command', $event);
+        call_user_func($processedCommand->getCallback(), $event);
     }
 }

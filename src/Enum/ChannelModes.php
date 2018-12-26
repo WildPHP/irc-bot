@@ -8,7 +8,6 @@
 
 namespace WildPHP\Core\Enum;
 
-
 class ChannelModes extends Enum
 {
     public static const PREFIX_OWNER = '~';
