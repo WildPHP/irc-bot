@@ -74,11 +74,7 @@ class CapabilityHandler
         $eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
         $eventEmitter->on('irc.line.in', [$this, 'tryEndNegotiation']);
 
-        $this->requestCapability('extended-join');
-        $this->requestCapability('account-notify');
-        $this->requestCapability('multi-prefix');
-
-        $this->initializeCapabilityHandlers();
+        //$this->initializeCapabilityHandlers();
 
         $logger->debug('[CapabilityHandler] Capability negotiation started.');
         $queue->cap('LS');
@@ -86,6 +82,10 @@ class CapabilityHandler
         $this->logger = $logger;
         $this->queue = $queue;
         $this->eventEmitter = $eventEmitter;
+
+        $this->requestCapability('extended-join');
+        $this->requestCapability('account-notify');
+        $this->requestCapability('multi-prefix');
     }
 
     /**
