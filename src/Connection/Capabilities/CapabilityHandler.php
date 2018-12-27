@@ -10,8 +10,12 @@
 namespace WildPHP\Core\Connection\Capabilities;
 
 use Evenement\EventEmitterInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
 use WildPHP\Core\Events\CapabilityEvent;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Cap;
 
@@ -22,29 +26,22 @@ class CapabilityHandler
      * Array of built-in capability handlers
      * @var string[]
      */
-    protected $capabilities = [
-        Sasl::class
+    private $capabilityHandlers = [
+        'account-notify' => AccountNotifyHandler::class,
+        'extended-join' => ExtendedJoinHandler::class,
+        'multi-prefix' => MultiPrefixHandler::class,
+        'sasl' => Sasl::class
     ];
 
     /**
      * @var array
      */
-    protected $availableCapabilities = [];
+    private $availableCapabilities = [];
 
     /**
-     * @var array
+     * @var Deferred[]
      */
-    protected $queuedCapabilities = [];
-
-    /**
-     * @var array
-     */
-    protected $acknowledgedCapabilities = [];
-
-    /**
-     * @var array
-     */
-    protected $notAcknowledgedCapabilities = [];
+    private $queuedCapabilities = [];
 
     /**
      * @var LoggerInterface
@@ -62,43 +59,55 @@ class CapabilityHandler
     private $eventEmitter;
 
     /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * CapabilityHandler constructor.
      *
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
+     * @param ContainerInterface $container
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue, ContainerInterface $container)
     {
-        $eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
-        $eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
-        $eventEmitter->on('irc.line.in', [$this, 'tryEndNegotiation']);
-
-        //$this->initializeCapabilityHandlers();
-
-        $logger->debug('[CapabilityHandler] Capability negotiation started.');
-        $queue->cap('LS');
+        $eventEmitter->on('stream.created', [$this, 'initialize']);
+        $eventEmitter->on('irc.msg.in.cap', [$this, 'responseRouter']);
+        $eventEmitter->on('irc.cap.ls.final', [$this, 'initializeCapabilityHandlers']);
 
         $this->logger = $logger;
         $this->queue = $queue;
         $this->eventEmitter = $eventEmitter;
+        $this->container = $container;
+    }
 
-        $this->requestCapability('extended-join');
-        $this->requestCapability('account-notify');
-        $this->requestCapability('multi-prefix');
+    public function initialize()
+    {
+        $this->logger->debug('[CapabilityHandler] Capability negotiation started.');
+        $this->queue->cap('LS');
     }
 
     /**
      * @return void
-     * @todo Dependency injection.
      */
     public function initializeCapabilityHandlers()
     {
-        foreach ($this->capabilities as $capability) {
-            /** @var CapabilityInterface $capability */
-            $capability = new $capability();
-            $capabilities = $capability->getCapabilities();
-            $this->requestCapabilities($capabilities);
+        foreach ($this->capabilityHandlers as $capability => $handler) {
+            if (!in_array($capability, $this->availableCapabilities)) {
+                $this->logger->debug('Skipping handler for capability ' . $capability . ' because it is not available.');
+                unset($this->capabilityHandlers[$capability]);
+                continue;
+            }
+
+            $promise = $this->requestCapability($capability);
+
+            /** @var CapabilityInterface $handlerObject */
+            $handlerObject = $this->container->get($handler);
+            $handlerObject->setRequestPromise($promise);
+            $handlerObject->onFinished([$this, 'tryEndNegotiation']);
+            $this->capabilityHandlers[$capability] = $handlerObject;
         }
     }
 
@@ -115,48 +124,16 @@ class CapabilityHandler
     /**
      * @param string $capability
      *
-     * @return bool
+     * @return \React\Promise\Promise|PromiseInterface
      */
     public function requestCapability(string $capability)
     {
-        if ($this->isCapabilityAcknowledged($capability) || in_array($capability, $this->queuedCapabilities)) {
-            return false;
-        }
+        $deferred = new Deferred();
+        $this->logger->debug('Capability requested', ['capability' => $capability]);
+        $this->queue->cap('REQ', [$capability]);
+        $this->queuedCapabilities[$capability] = $deferred;
 
-        $this->logger->debug('Capability queued for request on next flush.', ['capability' => $capability]);
-
-        $this->queuedCapabilities[] = $capability;
-        return true;
-    }
-
-    /**
-     * @param string $capability
-     *
-     * @return bool
-     */
-    public function isCapabilityAcknowledged(string $capability): bool
-    {
-        return in_array($capability, $this->acknowledgedCapabilities);
-    }
-
-    /**
-     */
-    public function flushRequestQueue()
-    {
-        if (empty($this->queuedCapabilities)) {
-            return;
-        }
-
-        $capabilities = $this->queuedCapabilities;
-        foreach ($capabilities as $key => $capability) {
-            if (!$this->isCapabilityAvailable($capability)) {
-                unset($capabilities[$key]);
-            }
-        }
-
-        $this->logger->debug('Sending capability request.', ['queuedCapabilities' => $capabilities]);
-
-        $this->queue->cap('REQ', $capabilities);
+        return $deferred->promise();
     }
 
     /**
@@ -170,32 +147,36 @@ class CapabilityHandler
     }
 
     /**
-     * @param CAP $incomingIrcMessage
+     * @param IncomingIrcMessageEvent $event
      */
-    public function responseRouter(CAP $incomingIrcMessage)
+    public function responseRouter(IncomingIrcMessageEvent $event)
     {
+        /** @var Cap $incomingIrcMessage */
+        $incomingIrcMessage = $event->getIncomingMessage();
+
         $command = $incomingIrcMessage->getCommand();
         $capabilities = $incomingIrcMessage->getCapabilities();
 
         switch ($command) {
             case 'LS':
-                $this->updateAvailableCapabilities($capabilities);
+                $this->updateAvailableCapabilities($capabilities, $incomingIrcMessage->isFinalMessage());
                 break;
 
             case 'ACK':
-                $this->updateAcknowledgedCapabilities($capabilities);
+                $this->resolveCapabilityHandlers($capabilities);
                 break;
 
             case 'NAK':
-                $this->updateNotAcknowledgedCapabilities($capabilities);
+                $this->rejectCapabilityHandlers($capabilities);
                 break;
         }
     }
 
     /**
      * @param array $capabilities
+     * @param bool $finalMessage
      */
-    protected function updateAvailableCapabilities(array $capabilities)
+    protected function updateAvailableCapabilities(array $capabilities, bool $finalMessage)
     {
         $this->availableCapabilities = $capabilities;
 
@@ -204,74 +185,38 @@ class CapabilityHandler
                 'availableCapabilities' => $capabilities
             ]);
 
-        foreach ($this->queuedCapabilities as $key => $capability) {
-            if (in_array($capability, $capabilities)) {
-                continue;
-            }
+        $event = new CapabilityEvent($capabilities);
+        $this->eventEmitter->emit('irc.cap.ls', [$event]);
 
-            unset($this->queuedCapabilities[$key]);
-            $this->logger->debug('Removed requested capability from the queue because server does not support it.',
-                [
-                    'capability' => $capability
-                ]);
-        }
-
-        $this->eventEmitter->emit('irc.cap.ls', [$capabilities]);
+        if ($finalMessage)
+            $this->eventEmitter->emit('irc.cap.ls.final', [$event]);
     }
 
     /**
      * @param string[] $capabilities
      */
-    public function updateAcknowledgedCapabilities(array $capabilities)
+    public function resolveCapabilityHandlers(array $capabilities)
     {
-        $ackCapabilities = array_filter(array_unique(array_merge($this->getAcknowledgedCapabilities(), $capabilities)));
-        $this->acknowledgedCapabilities = $ackCapabilities;
-
-        foreach ($ackCapabilities as $capability) {
-            $this->eventEmitter->emit('irc.cap.acknowledged.' . $capability);
-
-            if (in_array($capability, $this->queuedCapabilities)) {
-                unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
+        var_dump($capabilities);
+        foreach ($capabilities as $capability) {
+            $this->logger->debug('Capability ' . $capability . ' resolved.');
+            if (array_key_exists($capability, $this->queuedCapabilities)) {
+                $this->queuedCapabilities[$capability]->resolve();
             }
         }
-
-        $this->eventEmitter->emit('irc.cap.acknowledged', [new CapabilityEvent($ackCapabilities)]);
-    }
-
-    /**
-     * @return array
-     */
-    public function getAcknowledgedCapabilities(): array
-    {
-        return $this->acknowledgedCapabilities;
     }
 
     /**
      * @param string[] $capabilities
      */
-    public function updateNotAcknowledgedCapabilities(array $capabilities)
+    public function rejectCapabilityHandlers(array $capabilities)
     {
-        $nakCapabilities = array_filter(array_unique(array_merge($this->getNotAcknowledgedCapabilities(),
-            $capabilities)));
-        $this->notAcknowledgedCapabilities = $nakCapabilities;
-
-        foreach ($nakCapabilities as $capability) {
-            $this->eventEmitter->emit('irc.cap.notAcknowledged.' . $capability);
-
-            if (in_array($capability, $this->queuedCapabilities)) {
-                unset($this->queuedCapabilities[array_search($capability, $this->queuedCapabilities)]);
+        foreach ($capabilities as $capability) {
+            $this->logger->debug('Capability ' . $capability . ' rejected.');
+            if (array_key_exists($capability, $this->queuedCapabilities)) {
+                $this->queuedCapabilities[$capability]->reject();
             }
         }
-
-        $this->eventEmitter->emit('irc.cap.notAcknowledged', [new CapabilityEvent($nakCapabilities)]);
-    }
-
-    /**
-     * @return array
-     */
-    public function getNotAcknowledgedCapabilities(): array
-    {
-        return $this->notAcknowledgedCapabilities;
     }
 
     /**
@@ -296,13 +241,16 @@ class CapabilityHandler
     public function canEndNegotiation(): bool
     {
         /** @var CapabilityInterface $capability */
-        foreach ($this->capabilities as $capability) {
+        foreach ($this->capabilityHandlers as $string => $capability) {
+            $this->logger->debug('State of capability ' . $string . ': ' . ($capability->finished() ? 'finished' : 'not finished'));
             if (!$capability->finished()) {
                 return false;
             }
         }
 
-        return empty($this->queuedCapabilities);
+        $this->logger->debug('All capabilities are ready.');
+
+        return true;
     }
 
     /**

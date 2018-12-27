@@ -11,32 +11,24 @@ namespace WildPHP\Core\Connection\Capabilities;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use React\Promise\PromiseInterface;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
+use WildPHP\Core\Events\UnsupportedIncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Authenticate;
-use WildPHP\Messages\Interfaces\IncomingMessageInterface;
 
 class Sasl implements CapabilityInterface
 {
     /**
      * @var bool
      */
-    protected $isAuthenticated = false;
-
-    /**
-     * @var bool
-     */
-    protected $failed = false;
-
-    /**
-     * @var bool
-     */
-    protected $complete = false;
+    private $complete = false;
 
     /**
      * @var array
      */
-    protected $saslCodes = [
+    private $saslCodes = [
         '903' => 'RPL_SASLSUCCESS',
         '908' => 'RPL_SASLMECHS',
 
@@ -46,14 +38,17 @@ class Sasl implements CapabilityInterface
         '906' => 'ERR_SASLABORTED',
         '907' => 'ERR_SASLALREADY'
     ];
+
     /**
      * @var EventEmitterInterface
      */
     private $eventEmitter;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var Configuration
      */
@@ -65,43 +60,25 @@ class Sasl implements CapabilityInterface
     private $queue;
 
     /**
+     * @var callable
+     */
+    private $callback;
+
+    /**
      * SASL constructor.
      *
      * @param IrcMessageQueue $queue
      * @param Configuration $configuration
-     * @param CapabilityHandler $capabilityHandler
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      */
     public function __construct(
         IrcMessageQueue $queue,
         Configuration $configuration,
-        CapabilityHandler $capabilityHandler,
         EventEmitterInterface $eventEmitter,
         LoggerInterface $logger
     )
     {
-        if (!$configuration->offsetExists('sasl') ||
-            empty($configuration['sasl']['username']) ||
-            empty($configuration['sasl']['password'])
-        ) {
-            $logger->info('[SASL] Not initialized because no credentials were provided.');
-            $this->complete = true;
-
-            return;
-        }
-
-        $capabilityHandler->requestCapability('sasl');
-
-        $eventEmitter->on('irc.cap.acknowledged.sasl', [$this, 'sendAuthenticationMechanism']);
-        $eventEmitter->on('irc.cap.notAcknowledged.sasl', [$this, 'completeSasl']);
-        $eventEmitter->on('irc.line.in.authenticate', [$this, 'sendCredentials']);
-
-        // Map all numeric SASL responses to either the success or error handler:
-        $eventEmitter->on('irc.line.in', [$this, 'handleResponse']);
-
-        $logger->debug('[SASL] Initialized, awaiting server response.');
-
         $this->eventEmitter = $eventEmitter;
         $this->logger = $logger;
         $this->configuration = $configuration;
@@ -110,23 +87,40 @@ class Sasl implements CapabilityInterface
 
     /**
      */
-    public function sendAuthenticationMechanism()
+    public function initialize()
     {
+        if (empty($this->configuration['connection']['sasl']) ||
+            empty($this->configuration['connection']['sasl']['username']) ||
+            empty($this->configuration['connection']['sasl']['password'])
+        ) {
+            $this->logger->info('[SASL] Not used because no credentials were provided.');
+            $this->completeSasl();
+
+            return;
+        }
+
+        $this->eventEmitter->on('irc.msg.in.authenticate', [$this, 'sendCredentials']);
+
+        // Map all numeric SASL responses to either the success or error handler:
+        $this->eventEmitter->on('irc.msg.in.unsupported', [$this, 'handleResponse']);
+
         $this->queue->authenticate('PLAIN');
         $this->logger->debug('[SASL] Authentication mechanism requested, awaiting server response.');
     }
 
     /**
-     * @param Authenticate $message
+     * @param IncomingIrcMessageEvent $event
      */
-    public function sendCredentials(Authenticate $message)
+    public function sendCredentials(IncomingIrcMessageEvent $event)
     {
+        /** @var Authenticate $message */
+        $message = $event->getIncomingMessage();
         if ($message->getResponse() != '+') {
             return;
         }
 
-        $username = $this->configuration['sasl']['username'];
-        $password = $this->configuration['sasl']['password'];
+        $username = $this->configuration['connection']['sasl']['username'];
+        $password = $this->configuration['connection']['sasl']['password'];
 
         $credentials = $this->generateCredentialString($username, $password);
         $this->queue->authenticate($credentials);
@@ -146,10 +140,11 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @param IncomingMessageInterface $message
+     * @param UnsupportedIncomingIrcMessageEvent $event
      */
-    public function handleResponse(IncomingMessageInterface $message)
+    public function handleResponse(UnsupportedIncomingIrcMessageEvent $event)
     {
+        $message = $event->getMessage();
         $code = $message->getVerb();
 
         if (!array_key_exists($code, $this->saslCodes)) {
@@ -168,8 +163,9 @@ class Sasl implements CapabilityInterface
     public function completeSasl()
     {
         $this->logger->info('[SASL] Ended.');
-        $this->eventEmitter->removeListener('irc.line.in', [$this, 'handleResponse']);
+        $this->eventEmitter->removeListener('irc.msg.in.unsupported', [$this, 'handleResponse']);
         $this->complete = true;
+        ($this->callback)();
     }
 
     /**
@@ -181,10 +177,20 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @return array
+     * @param PromiseInterface $promise
+     * @return void
      */
-    public function getCapabilities(): array
+    public function setRequestPromise(PromiseInterface $promise)
     {
-        return ['sasl'];
+        $promise->then([$this, 'initialize'], [$this, 'completeSasl']);
+    }
+
+    /**
+     * @param callable $callback
+     * @return void
+     */
+    public function onFinished(callable $callback)
+    {
+        $this->callback = $callback;
     }
 }

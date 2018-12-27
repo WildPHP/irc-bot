@@ -8,10 +8,10 @@
 
 namespace WildPHP\Core\Connection;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
+use WildPHP\Core\Events\UnsupportedIncomingIrcMessageEvent;
 use WildPHP\Messages\Exceptions\CastException;
 use WildPHP\Messages\Generics\IrcMessage;
 use WildPHP\Messages\Utility\MessageCaster;
@@ -69,6 +69,8 @@ class IncomingMessageParser
         } catch (CastException $exception) {
             $this->logger->debug(sprintf('Received message with verb %s but it could not be cast to an implemented message type. This message is not supported!',
                 $verb));
+
+            $this->eventEmitter->emit('irc.msg.in.unsupported', [new UnsupportedIncomingIrcMessageEvent($ircMessage)]);
         }
     }
 

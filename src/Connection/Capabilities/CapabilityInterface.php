@@ -8,15 +8,24 @@
 
 namespace WildPHP\Core\Connection\Capabilities;
 
+use React\Promise\PromiseInterface;
+
 interface CapabilityInterface
 {
+    /**
+     * @param PromiseInterface $promise
+     * @return void
+     */
+    public function setRequestPromise(PromiseInterface $promise);
+
+    /**
+     * @param callable $callback
+     * @return void
+     */
+    public function onFinished(callable $callback);
+
     /**
      * @return bool
      */
     public function finished(): bool;
-
-    /**
-     * @return array
-     */
-    public function getCapabilities(): array;
 }

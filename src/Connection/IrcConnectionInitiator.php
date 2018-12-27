@@ -55,7 +55,7 @@ class IrcConnectionInitiator
         LoopInterface $loop
     )
     {
-        $eventEmitter->on('stream.created', [$this, 'initiateConnection']);
+        $eventEmitter->on('irc.cap.end', [$this, 'initiateConnection']);
 
         $this->queue = $queue;
         $this->connection = $connection;
