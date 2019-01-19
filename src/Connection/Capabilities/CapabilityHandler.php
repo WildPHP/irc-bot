@@ -87,11 +87,11 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
      */
     public function initializeCapabilityHandlers()
     {
-        foreach ($this->capabilities as $capability) {
+        foreach ($this->capabilities as $ck=>$capability) {
             /** @var CapabilityInterface $capability */
-            $capability = new $capability($this->getContainer());
-            $capabilities = $capability->getCapabilities();
-            $this->requestCapabilities($capabilities);
+            $this->capabilities[$ck] = new $capability($this->getContainer());
+            if ( !$this->capabilities[$ck]->finished() )
+                $this->requestCapabilities($this->capabilities[$ck]->getCapabilities());
         }
     }
 
