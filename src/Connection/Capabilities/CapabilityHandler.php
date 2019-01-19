@@ -66,6 +66,8 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
         $eventEmitter->on('irc.line.in.cap', [$this, 'responseRouter']);
         $eventEmitter->on('irc.cap.ls', [$this, 'flushRequestQueue']);
         $eventEmitter->on('irc.line.in', [$this, 'tryEndNegotiation']);
+        $eventEmitter->on('irc.cap.noneRequested', [$this, 'tryEndNegotiation']);
+
         $this->setContainer($container);
 
         $this->requestCapability('extended-join');
@@ -139,6 +141,8 @@ class CapabilityHandler extends BaseModule implements ComponentInterface
     public function flushRequestQueue()
     {
         if (empty($this->queuedCapabilities)) {
+             EventEmitter::fromContainer($this->getContainer())
+                ->emit('irc.cap.noneRequested');
             return;
         }
 
