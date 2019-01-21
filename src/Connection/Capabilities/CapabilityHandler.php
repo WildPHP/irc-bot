@@ -197,7 +197,6 @@ class CapabilityHandler
      */
     public function resolveCapabilityHandlers(array $capabilities)
     {
-        var_dump($capabilities);
         foreach ($capabilities as $capability) {
             $this->logger->debug('Capability ' . $capability . ' resolved.');
             if (array_key_exists($capability, $this->queuedCapabilities)) {

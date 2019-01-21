@@ -61,11 +61,6 @@ class ModuleFactory
             throw new ModuleInitializationException('The given class does not exist.');
         }
 
-        /*var_dump($entryClassName);
-        if ($this->container->has($entryClassName)) {
-            throw new ModuleInitializationException('Cannot initialize modules twice!');
-        }*/
-
         try {
             $object = $this->container->get($entryClassName);
         } catch (\Throwable $exception) {

@@ -46,7 +46,7 @@ class Validator
         EventEmitterInterface $eventEmitter,
         string $owner,
         PolicyStorageInterface $policyStorage,
-        PermissionGroupStorageInterface $groupStorage,
+        PermissionGroupStorageInterface $groupStorage
         )
     {
         $eventEmitter->on('irc.line.in.005', [$this, 'createModeGroups']);
