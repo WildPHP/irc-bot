@@ -19,8 +19,6 @@ use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Events\CommandEvent;
-use WildPHP\Core\Permissions\AllowedBy;
-use WildPHP\Core\Permissions\Validator;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 
@@ -34,10 +32,6 @@ class ManagementCommands
      * @var Configuration
      */
     private $configuration;
-    /**
-     * @var Validator
-     */
-    private $validator;
 
     /**
      * ManagementCommands constructor.
@@ -45,14 +39,12 @@ class ManagementCommands
      * @param CommandRegistrar $registrar
      * @param IrcMessageQueue $queue
      * @param Configuration $configuration
-     * @param Validator $validator
      * @param IrcChannelStorageInterface $channelStorage
      */
     public function __construct(
         CommandRegistrar $registrar,
         IrcMessageQueue $queue,
         Configuration $configuration,
-        Validator $validator,
         IrcChannelStorageInterface $channelStorage
     )
     {
@@ -104,7 +96,6 @@ class ManagementCommands
 
         $this->queue = $queue;
         $this->configuration = $configuration;
-        $this->validator = $validator;
     }
 
     /**
@@ -114,11 +105,6 @@ class ManagementCommands
      */
     public function quitCommand(IrcChannel $source, IrcUser $user, $args)
     {
-        if (!$this->validator->isAllowedTo('quit', $user, $source)) {
-            $this->queue->privmsg($source->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'quit'));
-            return;
-        }
-
         $message = implode(' ', $args);
 
         if (empty($message)) {
@@ -134,10 +120,6 @@ class ManagementCommands
      */
     public function joinCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('join', $event->getUser(), $event->getChannel())) {
-            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'join'));
-            return;
-        }
         $channels = $event->getParameters();
 
         $validChannels = $this->validateChannels($channels);
@@ -182,11 +164,6 @@ class ManagementCommands
      */
     public function partCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('part', $event->getUser(), $event->getChannel())) {
-            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'part'));
-            return;
-        }
-
         if (empty($channels)) {
             $channels = [$event->getChannel()];
         }
@@ -219,11 +196,6 @@ class ManagementCommands
      */
     public function nickCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('nick', $event->getUser(), $event->getChannel())) {
-            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'nick'));
-            return;
-        }
-
         // TODO: Validate
         $this->queue->nick($event->getParameters()['newNickname']);
     }
@@ -235,11 +207,6 @@ class ManagementCommands
      */
     public function clearqueueCommand(CommandEvent $event)
     {
-        if (!$this->validator->isAllowedTo('clearqueue', $event->getUser(), $event->getChannel())) {
-            $this->queue->privmsg($event->getChannel()->getName(), sprintf(AllowedBy::DENIED_MESSAGE, 'clearqueue'));
-            return;
-        }
-
         $this->queue->clear();
         $this->queue->privmsg($event->getChannel()->getName(),
             $event->getUser()->getNickname() . ': Message queue cleared.');

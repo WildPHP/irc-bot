@@ -20,7 +20,7 @@ class ValidChannelNameParameter extends Parameter
     public function __construct(string $prefix)
     {
         parent::__construct(function ($value) use ($prefix) {
-            return Channel::isValidName($value, $prefix);
+            return substr($value, 0, strlen($prefix)) == $prefix;
         });
     }
 }
