@@ -16,8 +16,6 @@ use WildPHP\Commands\ParameterStrategy;
 use WildPHP\Core\Commands\CommandRegistrar;
 use WildPHP\Core\Commands\Parameters\ChannelParameter;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Entities\IrcChannel;
-use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Events\CommandEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
