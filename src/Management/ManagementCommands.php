@@ -88,7 +88,7 @@ class ManagementCommands
 
         $registrar->register('clearqueue',
             new Command(
-                [$this, 'clearqueueCommand'],
+                [$this, 'clearQueueCommand'],
                 new ParameterStrategy(0, 0)
             ));
 
@@ -198,7 +198,7 @@ class ManagementCommands
     /**
      * @param CommandEvent $event
      */
-    public function clearqueueCommand(CommandEvent $event): void
+    public function clearQueueCommand(CommandEvent $event): void
     {
         $this->queue->clear();
         $this->queue->privmsg($event->getChannel()->getName(),
