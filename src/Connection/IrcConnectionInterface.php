@@ -16,7 +16,7 @@ interface IrcConnectionInterface
     /**
      * @param string $data
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function write(string $data): PromiseInterface;
 
@@ -28,14 +28,14 @@ interface IrcConnectionInterface
     /**
      * @param ConnectorInterface $connectorInterface
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
-    public function connect(ConnectorInterface $connectorInterface): \React\Promise\PromiseInterface;
+    public function connect(ConnectorInterface $connectorInterface): PromiseInterface;
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
-    public function close(): \React\Promise\PromiseInterface;
+    public function close(): PromiseInterface;
 
     /**
      * @return ConnectionDetails
