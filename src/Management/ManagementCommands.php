@@ -103,7 +103,7 @@ class ManagementCommands
      * @param IrcUser $user
      * @param $args
      */
-    public function quitCommand(IrcChannel $source, IrcUser $user, $args)
+    public function quitCommand(IrcChannel $source, IrcUser $user, $args): void
     {
         $message = implode(' ', $args);
 
@@ -118,7 +118,7 @@ class ManagementCommands
     /**
      * @param CommandEvent $event
      */
-    public function joinCommand(CommandEvent $event)
+    public function joinCommand(CommandEvent $event): void
     {
         $channels = $event->getParameters();
 
@@ -149,7 +149,7 @@ class ManagementCommands
         $serverChannelPrefix = $this->configuration['serverConfig']['chantypes'];
 
         foreach ($channels as $channel) {
-            if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix) {
+            if (strpos($channel, $serverChannelPrefix) !== 0) {
                 continue;
             }
 
@@ -162,7 +162,7 @@ class ManagementCommands
     /**
      * @param CommandEvent $event
      */
-    public function partCommand(CommandEvent $event)
+    public function partCommand(CommandEvent $event): void
     {
         if (empty($channels)) {
             $channels = [$event->getChannel()];
@@ -194,7 +194,7 @@ class ManagementCommands
     /**
      * @param CommandEvent $event
      */
-    public function nickCommand(CommandEvent $event)
+    public function nickCommand(CommandEvent $event): void
     {
         // TODO: Validate
         $this->queue->nick($event->getParameters()['newNickname']);
@@ -205,7 +205,7 @@ class ManagementCommands
     /**
      * @param CommandEvent $event
      */
-    public function clearqueueCommand(CommandEvent $event)
+    public function clearqueueCommand(CommandEvent $event): void
     {
         $this->queue->clear();
         $this->queue->privmsg($event->getChannel()->getName(),

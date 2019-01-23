@@ -21,6 +21,6 @@ class Authenticator
         PermissionInterface $permission,
         SubjectInterface $subject = null
     ): bool {
-        return $role->hasPermission($permission) && ($subject != null ? $subject->hasRole($role) : true);
+        return $role->hasPermission($permission) && ($subject !== null ? $subject->hasRole($role) : true);
     }
 }

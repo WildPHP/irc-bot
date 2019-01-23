@@ -11,7 +11,7 @@ namespace WildPHP\Core\Entities;
 
 class IrcChannel
 {
-    private $id = 0;
+    private $id;
     /**
      * @var string
      */
@@ -129,7 +129,7 @@ class IrcChannel
         $name = $previousState['name'] ?? '';
         $id = $previousState['id'] ?? 0;
         $topic = $previousState['topic'] ?? '';
-        $modes = (array) $previousState['modes'] ?? [];
+        $modes = (array) ($previousState['modes'] ?? []);
         return new IrcChannel($name, $id, $topic, $modes);
     }
 }

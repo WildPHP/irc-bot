@@ -33,7 +33,7 @@ class UserModeParser
 
         foreach ($parts as $key => $part) {
             if (!array_key_exists($part, self::$prefixMap)) {
-                $remainders = join('', $parts);
+                $remainders = implode('', $parts);
                 break;
             }
 

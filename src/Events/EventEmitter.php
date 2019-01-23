@@ -18,7 +18,7 @@ class EventEmitter extends \Evenement\EventEmitter
      *
      * @return $this
      */
-    public function first(string $event, callable $listener)
+    public function first(string $event, callable $listener): self
     {
         if (!isset($this->listeners[$event])) {
             $this->listeners[$event] = [];

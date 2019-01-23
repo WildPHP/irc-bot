@@ -21,7 +21,7 @@ abstract class Enum
     /**
      * @var null|array
      */
-    private static $cacheArray = null;
+    private static $cacheArray;
 
     /**
      * @return array
@@ -29,11 +29,11 @@ abstract class Enum
      */
     public static function toArray(): array
     {
-        if (self::$cacheArray == null) {
+        if (self::$cacheArray === null) {
             self::$cacheArray = [];
         }
 
-        $calledClass = get_called_class();
+        $calledClass = static::class;
 
         if (!array_key_exists($calledClass, self::$cacheArray)) {
             $reflect = new ReflectionClass($calledClass);

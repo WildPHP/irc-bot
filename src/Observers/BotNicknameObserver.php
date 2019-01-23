@@ -44,9 +44,9 @@ class BotNicknameObserver
     /**
      * @param NicknameChangedEvent $event
      */
-    public function monitorBotNickname(NicknameChangedEvent $event)
+    public function monitorBotNickname(NicknameChangedEvent $event): void
     {
-        if ($event->getOldNickname() != $this->configuration['currentNickname']) {
+        if ($event->getOldNickname() !== $this->configuration['currentNickname']) {
             return;
         }
 

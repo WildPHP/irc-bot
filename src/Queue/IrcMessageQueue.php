@@ -70,7 +70,7 @@ class IrcMessageQueue implements QueueInterface
      */
     public function dequeue(QueueItemInterface $queueItem): void
     {
-        unset($this->messageQueue[array_search($queueItem, $this->messageQueue)]);
+        unset($this->messageQueue[array_search($queueItem, $this->messageQueue, true)]);
     }
 
     /**

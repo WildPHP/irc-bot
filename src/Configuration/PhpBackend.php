@@ -19,7 +19,7 @@ class PhpBackend implements ConfigurationBackendInterface
     /**
      * @var array
      */
-    private $configuration = [];
+    private $configuration;
 
     /**
      * NeonBackend constructor.
@@ -33,7 +33,7 @@ class PhpBackend implements ConfigurationBackendInterface
         }
 
         $this->configFile = $configFile;
-        $this->configuration = include($configFile);
+        $this->configuration = include $configFile;
     }
 
     /**

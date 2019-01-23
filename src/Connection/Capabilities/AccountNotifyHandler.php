@@ -15,7 +15,7 @@ use React\Promise\PromiseInterface;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Account;
 
-class AccountNotifyHandler extends RequestOnlyHandler implements CapabilityInterface
+class AccountNotifyHandler extends RequestOnlyHandler
 {
     /**
      * @var LoggerInterface
@@ -52,11 +52,17 @@ class AccountNotifyHandler extends RequestOnlyHandler implements CapabilityInter
 
     /**
      * @param ACCOUNT $ircMessage
+     * @throws \RuntimeException
      */
-    public function updateUserIrcAccount(ACCOUNT $ircMessage)
+    public function updateUserIrcAccount(ACCOUNT $ircMessage): void
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
         $user = $this->userStorage->getOneByNickname($nickname);
+
+        if ($user === null) {
+            throw new \RuntimeException('No user found while one was expected');
+        }
+
         $user->setIrcAccount($ircMessage->getAccountName());
         $this->userStorage->store($user);
 
@@ -72,7 +78,7 @@ class AccountNotifyHandler extends RequestOnlyHandler implements CapabilityInter
      * @param PromiseInterface $promise
      * @return void
      */
-    public function setRequestPromise(PromiseInterface $promise)
+    public function setRequestPromise(PromiseInterface $promise): void
     {
         parent::setRequestPromise($promise);
         $promise->then(function () {

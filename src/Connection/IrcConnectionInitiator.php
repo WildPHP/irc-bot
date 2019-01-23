@@ -68,7 +68,7 @@ class IrcConnectionInitiator
      * @param IrcConnectionInterface $ircConnection
      * @return void
      */
-    function startConnection(IrcConnectionInterface $ircConnection)
+    public function startConnection(IrcConnectionInterface $ircConnection): void
     {
         $connectionDetails = $ircConnection->getConnectionDetails();
 
@@ -96,7 +96,7 @@ class IrcConnectionInitiator
     /**
      * @return void
      */
-    public function initiateConnection()
+    public function initiateConnection(): void
     {
         $connectionDetails = $this->connection->getConnectionDetails();
         if (!empty($connectionDetails->getPassword())) {

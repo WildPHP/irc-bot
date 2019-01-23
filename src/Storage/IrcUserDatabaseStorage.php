@@ -87,8 +87,9 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     {
         $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('users', [], ['id' => $id]));
 
-        if ($result === null)
+        if ($result === null) {
             return null;
+        }
 
         return IrcUser::fromArray($result);
     }
@@ -101,8 +102,9 @@ class IrcUserDatabaseStorage implements IrcUserStorageInterface
     {
         $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('users', [], ['nickname' => $nickname]));
 
-        if ($result === null)
+        if ($result === null) {
             return null;
+        }
 
         return IrcUser::fromArray($result);
     }

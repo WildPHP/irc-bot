@@ -28,7 +28,7 @@ class Sasl implements CapabilityInterface
     /**
      * @var array
      */
-    private $saslCodes = [
+    public static $saslCodes = [
         '903' => 'RPL_SASLSUCCESS',
         '908' => 'RPL_SASLMECHS',
 
@@ -87,7 +87,7 @@ class Sasl implements CapabilityInterface
 
     /**
      */
-    public function initialize()
+    public function initialize(): void
     {
         if (empty($this->configuration['connection']['sasl']) ||
             empty($this->configuration['connection']['sasl']['username']) ||
@@ -111,11 +111,11 @@ class Sasl implements CapabilityInterface
     /**
      * @param IncomingIrcMessageEvent $event
      */
-    public function sendCredentials(IncomingIrcMessageEvent $event)
+    public function sendCredentials(IncomingIrcMessageEvent $event): void
     {
         /** @var Authenticate $message */
         $message = $event->getIncomingMessage();
-        if ($message->getResponse() != '+') {
+        if ($message->getResponse() !== '+') {
             return;
         }
 
@@ -134,7 +134,7 @@ class Sasl implements CapabilityInterface
      *
      * @return string
      */
-    protected function generateCredentialString(string $username, string $password)
+    protected function generateCredentialString(string $username, string $password): string
     {
         return base64_encode($username . "\0" . $username . "\0" . $password);
     }
@@ -142,17 +142,17 @@ class Sasl implements CapabilityInterface
     /**
      * @param UnsupportedIncomingIrcMessageEvent $event
      */
-    public function handleResponse(UnsupportedIncomingIrcMessageEvent $event)
+    public function handleResponse(UnsupportedIncomingIrcMessageEvent $event): void
     {
         $message = $event->getMessage();
         $code = $message->getVerb();
 
-        if (!array_key_exists($code, $this->saslCodes)) {
+        if (!array_key_exists($code, self::$saslCodes)) {
             return;
         }
 
         // This event has to fit on the events used in CapabilityHandler.
-        $this->logger->info('[SASL] Authentication ended with code ' . $code . ' (' . $this->saslCodes[$code] . ')');
+        $this->logger->info('[SASL] Authentication ended with code ' . $code . ' (' . self::$saslCodes[$code] . ')');
 
         $this->completeSasl();
     }
@@ -160,7 +160,7 @@ class Sasl implements CapabilityInterface
     /**
      * @return void
      */
-    public function completeSasl()
+    public function completeSasl(): void
     {
         $this->logger->info('[SASL] Ended.');
         $this->eventEmitter->removeListener('irc.msg.in.unsupported', [$this, 'handleResponse']);
@@ -180,7 +180,7 @@ class Sasl implements CapabilityInterface
      * @param PromiseInterface $promise
      * @return void
      */
-    public function setRequestPromise(PromiseInterface $promise)
+    public function setRequestPromise(PromiseInterface $promise): void
     {
         $promise->then([$this, 'initialize'], [$this, 'completeSasl']);
     }
@@ -189,7 +189,7 @@ class Sasl implements CapabilityInterface
      * @param callable $callback
      * @return void
      */
-    public function onFinished(callable $callback)
+    public function onFinished(callable $callback): void
     {
         $this->callback = $callback;
     }

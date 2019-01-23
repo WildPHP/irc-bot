@@ -49,7 +49,7 @@ class ServerConfigObserver
     /**
      * @param ISupport $incomingIrcMessage
      */
-    public function updateServerInformation(ISupport $incomingIrcMessage)
+    public function updateServerInformation(ISupport $incomingIrcMessage): void
     {
         $hostname = $incomingIrcMessage->getServer();
         $this->configuration['serverConfig']['hostname'] = $hostname;

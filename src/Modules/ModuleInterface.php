@@ -13,5 +13,5 @@ interface ModuleInterface
     /**
      * @return string
      */
-    public static function getSupportedVersionConstraint();
+    public static function getSupportedVersionConstraint(): string;
 }

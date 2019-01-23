@@ -59,7 +59,7 @@ abstract class GenericPdoDatabaseStorageProvider implements DatabaseStorageProvi
     {
         $result = $this->pdo->prepare($query->toString());
         $result->execute(array_values($query->getWhere()));
-        return $result->fetchColumn() == 1;
+        return $result->fetchColumn() === 1;
     }
 
     /**

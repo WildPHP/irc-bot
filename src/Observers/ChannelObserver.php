@@ -85,11 +85,9 @@ class ChannelObserver
         // 353: RPL_NAMREPLY
         $eventEmitter->on('irc.line.in.353', [$this, 'processNamesReply']);
 
-        $this->eventEmitter = $eventEmitter;
         $this->logger = $logger;
         $this->queue = $queue;
         $this->configuration = $configuration;
-        $this->userStorage = $userStorage;
         $this->channelStorage = $channelStorage;
     }
 
@@ -120,13 +118,13 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function createChannel(IncomingIrcMessageEvent $ircMessageEvent)
+    public function createChannel(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var Join $joinMessage */
         $joinMessage = $ircMessageEvent->getIncomingMessage();
 
         foreach ($joinMessage->getChannels() as $channelName) {
-            if ($this->channelStorage->getOneByName($channelName) == null) {
+            if ($this->channelStorage->getOneByName($channelName) === null) {
                 $channel = new IrcChannel($channelName);
                 $this->channelStorage->store($channel);
 
@@ -141,7 +139,7 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processChannelJoin(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processChannelJoin(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         // TODO: REIMPLEMENT THIS
         /*$user = IrcUserQuery::create()->findOneByNickname($joinMessage->getNickname());
@@ -164,12 +162,17 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processTopic(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processTopic(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var Topic $topicMessage */
         $topicMessage = $ircMessageEvent->getIncomingMessage();
 
         $channel = $this->channelStorage->getOneByName($topicMessage->getChannel());
+
+        if ($channel === null) {
+            throw new \RuntimeException('No channel found while one was expected');
+        }
+
         $channel->setTopic($topicMessage->getMessage());
         $this->channelStorage->store($channel);
 
@@ -182,7 +185,7 @@ class ChannelObserver
     /**
      * @param NamReply $ircMessage
      */
-    public function processNamesReply(NamReply $ircMessage)
+    public function processNamesReply(NamReply $ircMessage): void
     {
         // TODO: REIMPLEMENT THIS
         /*$nicknames = $ircMessage->getNicknames();
@@ -216,7 +219,7 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserKick(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processUserKick(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         // TODO: REIMPLEMENT THIS
         /*
@@ -236,7 +239,7 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserPart(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processUserPart(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         // TODO: REIMPLEMENT THIS
         /*
@@ -259,7 +262,7 @@ class ChannelObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserQuit(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processUserQuit(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         // TODO: REIMPLEMENT THIS
         /*

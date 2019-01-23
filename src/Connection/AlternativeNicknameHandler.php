@@ -78,7 +78,7 @@ class AlternativeNicknameHandler
         $this->queue = $queue;
     }
 
-    public function deregisterListeners()
+    public function deregisterListeners(): void
     {
         $this->eventEmitter->removeListener('irc.line.in.431', [$this, 'chooseAlternateNickname']);
         $this->eventEmitter->removeListener('irc.line.in.432', [$this, 'chooseAlternateNickname']);
@@ -91,7 +91,7 @@ class AlternativeNicknameHandler
     /**
      * @return void
      */
-    public function chooseAlternateNickname()
+    public function chooseAlternateNickname(): void
     {
         if (empty($this->tryNicknames)) {
             $this->tryNicknames = $this->nicknames;

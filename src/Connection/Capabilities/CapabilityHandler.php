@@ -83,7 +83,7 @@ class CapabilityHandler
         $this->container = $container;
     }
 
-    public function initialize()
+    public function initialize(): void
     {
         $this->logger->debug('[CapabilityHandler] Capability negotiation started.');
         $this->queue->cap('LS');
@@ -92,10 +92,10 @@ class CapabilityHandler
     /**
      * @return void
      */
-    public function initializeCapabilityHandlers()
+    public function initializeCapabilityHandlers(): void
     {
         foreach ($this->capabilityHandlers as $capability => $handler) {
-            if (!in_array($capability, $this->availableCapabilities)) {
+            if (!in_array($capability, $this->availableCapabilities, true)) {
                 $this->logger->debug('Skipping handler for capability ' . $capability . ' because it is not available.');
                 unset($this->capabilityHandlers[$capability]);
                 continue;
@@ -114,7 +114,7 @@ class CapabilityHandler
     /**
      * @param array $capabilities
      */
-    public function requestCapabilities(array $capabilities)
+    public function requestCapabilities(array $capabilities): void
     {
         foreach ($capabilities as $capability) {
             $this->requestCapability($capability);
@@ -143,13 +143,13 @@ class CapabilityHandler
      */
     public function isCapabilityAvailable(string $capability): bool
     {
-        return in_array($capability, $this->availableCapabilities);
+        return in_array($capability, $this->availableCapabilities, true);
     }
 
     /**
      * @param IncomingIrcMessageEvent $event
      */
-    public function responseRouter(IncomingIrcMessageEvent $event)
+    public function responseRouter(IncomingIrcMessageEvent $event): void
     {
         /** @var Cap $incomingIrcMessage */
         $incomingIrcMessage = $event->getIncomingMessage();
@@ -176,7 +176,7 @@ class CapabilityHandler
      * @param array $capabilities
      * @param bool $finalMessage
      */
-    protected function updateAvailableCapabilities(array $capabilities, bool $finalMessage)
+    protected function updateAvailableCapabilities(array $capabilities, bool $finalMessage): void
     {
         $this->availableCapabilities = $capabilities;
 
@@ -188,14 +188,15 @@ class CapabilityHandler
         $event = new CapabilityEvent($capabilities);
         $this->eventEmitter->emit('irc.cap.ls', [$event]);
 
-        if ($finalMessage)
+        if ($finalMessage) {
             $this->eventEmitter->emit('irc.cap.ls.final', [$event]);
+        }
     }
 
     /**
      * @param string[] $capabilities
      */
-    public function resolveCapabilityHandlers(array $capabilities)
+    public function resolveCapabilityHandlers(array $capabilities): void
     {
         foreach ($capabilities as $capability) {
             $this->logger->debug('Capability ' . $capability . ' resolved.');
@@ -208,7 +209,7 @@ class CapabilityHandler
     /**
      * @param string[] $capabilities
      */
-    public function rejectCapabilityHandlers(array $capabilities)
+    public function rejectCapabilityHandlers(array $capabilities): void
     {
         foreach ($capabilities as $capability) {
             $this->logger->debug('Capability ' . $capability . ' rejected.');

@@ -56,7 +56,7 @@ class IrcConnection implements IrcConnectionInterface
     /**
      * @param string $data
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function write(string $data): PromiseInterface
     {
@@ -84,7 +84,7 @@ class IrcConnection implements IrcConnectionInterface
     /**
      * @param string $data
      */
-    public function incomingData(string $data)
+    public function incomingData(string $data): void
     {
         $this->eventEmitter->emit('stream.data.in', [$data]);
     }
@@ -92,9 +92,9 @@ class IrcConnection implements IrcConnectionInterface
     /**
      * @param ConnectorInterface $connectorInterface
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
-    public function connect(ConnectorInterface $connectorInterface)
+    public function connect(ConnectorInterface $connectorInterface): PromiseInterface
     {
         $connectionString = $this->getConnectionDetails()->getAddress() . ':' . $this->getConnectionDetails()->getPort();
         $promise = $connectorInterface->connect($connectionString)
@@ -116,9 +116,9 @@ class IrcConnection implements IrcConnectionInterface
     }
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
-    public function close()
+    public function close(): PromiseInterface
     {
         $promise = $this->connectorPromise->then(function (ConnectionInterface $connection) {
             $this->logger->warning('Closing connection...');

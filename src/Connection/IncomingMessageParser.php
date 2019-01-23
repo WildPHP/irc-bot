@@ -52,7 +52,7 @@ class IncomingMessageParser
      * @param string $line
      * @throws \ReflectionException
      */
-    public function parseIncomingIrcLine(string $line)
+    public function parseIncomingIrcLine(string $line): void
     {
         $parsedLine = MessageParser::parseLine($line);
         $args = $parsedLine->args;
@@ -77,7 +77,7 @@ class IncomingMessageParser
     /**
      * @param string $data
      */
-    public function convertDataToLines(string $data)
+    public function convertDataToLines(string $data): void
     {
         // Prepend the buffer, first.
         $data = $this->buffer . $data;

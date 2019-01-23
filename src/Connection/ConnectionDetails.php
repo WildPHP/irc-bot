@@ -169,15 +169,17 @@ class ConnectionDetails
      */
     public static function fromConfiguration(\WildPHP\Core\Configuration\Configuration $configuration): ConnectionDetails
     {
-        if (!array_key_exists('connection', $configuration))
+        if (!array_key_exists('connection', $configuration)) {
             throw new \InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
+        }
 
         $connectionInfo = $configuration['connection'];
         $mandatoryKeys = ['username', 'server', 'port', 'realname', 'nickname'];
 
         foreach ($mandatoryKeys as $key) {
-            if (!array_key_exists($key, $connectionInfo))
+            if (!array_key_exists($key, $connectionInfo)) {
                 throw new \InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromConfiguration');
+            }
         }
 
         return new ConnectionDetails(

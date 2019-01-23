@@ -88,8 +88,9 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
     {
         $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('channels', [], ['id' => $id]));
 
-        if ($result === null)
+        if ($result === null) {
             return null;
+        }
 
         return IrcChannel::fromArray($result);
     }
@@ -102,8 +103,9 @@ class IrcChannelDatabaseStorage implements IrcChannelStorageInterface
     {
         $result = $this->databaseStorageProvider->selectFirst(new SelectQuery('channels', [], ['name' => $name]));
 
-        if ($result === null)
+        if ($result === null) {
             return null;
+        }
 
         return IrcChannel::fromArray($result);
     }

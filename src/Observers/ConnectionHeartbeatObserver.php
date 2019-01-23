@@ -99,14 +99,13 @@ class ConnectionHeartbeatObserver
 
         $this->updateLastMessageReceived();
 
-        $this->eventEmitter = $eventEmitter;
         $this->queue = $queue;
         $this->logger = $logger;
         $this->configuration = $configuration;
         $this->ircConnection = $ircConnection;
     }
 
-    public function updateLastMessageReceived()
+    public function updateLastMessageReceived(): void
     {
         $this->lastMessageReceived = time();
         $this->hasSentPing = false;
@@ -115,7 +114,7 @@ class ConnectionHeartbeatObserver
     /**
      * @return void
      */
-    public function connectionHeartbeat()
+    public function connectionHeartbeat(): void
     {
         $currentTime = time();
 
@@ -138,7 +137,7 @@ class ConnectionHeartbeatObserver
     /**
      * @return void
      */
-    protected function forceDisconnect()
+    protected function forceDisconnect(): void
     {
         $this->logger->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
         $this->queue->quit('No vital signs detected, closing link...');
@@ -148,7 +147,7 @@ class ConnectionHeartbeatObserver
     /**
      * @return void
      */
-    protected function sendPing()
+    protected function sendPing(): void
     {
         $this->logger->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
 
@@ -160,7 +159,7 @@ class ConnectionHeartbeatObserver
     /**
      * @param IncomingIrcMessageEvent $event
      */
-    public function respondPong(IncomingIrcMessageEvent $event)
+    public function respondPong(IncomingIrcMessageEvent $event): void
     {
         /** @var Ping $pingMessage */
         $pingMessage = $event->getIncomingMessage();

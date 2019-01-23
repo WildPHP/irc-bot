@@ -39,7 +39,7 @@ class ModuleFactory
      * @param array $entryClassNames
      * @throws ModuleInitializationException
      */
-    public function initializeModules(array $entryClassNames)
+    public function initializeModules(array $entryClassNames): void
     {
         foreach ($entryClassNames as $entryClassName) {
             $this->initializeModule($entryClassName);

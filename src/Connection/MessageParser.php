@@ -27,7 +27,7 @@ class MessageParser
             $tags = _substr($parv[$index], 1);
             $index++;
             foreach (explode(';', $tags) as $item) {
-                list($k, $v) = explode('=', $item, 2);
+                [$k, $v] = explode('=', $item, 2);
                 if ($v === null) {
                     $self->tags[$k] = true;
                 } else {
@@ -66,7 +66,7 @@ class MessageParser
             $index++;
         }
 
-        if ($index < $arv_count && $line[$index][0] == '@') {
+        if ($index < $arv_count && $line[$index][0] === '@') {
             $parv[] = $line[$index];
             $index++;
             while ($index < $arv_count && $line[$index] === '') {
@@ -74,7 +74,7 @@ class MessageParser
             }
         }
 
-        if ($index < $arv_count && $line[$index][0] == ':') {
+        if ($index < $arv_count && $line[$index][0] === ':') {
             $parv[] = $line[$index];
             $index++;
             while ($index < $arv_count && $line[$index] === '') {
@@ -83,11 +83,11 @@ class MessageParser
         }
 
         while ($index < $arv_count) {
-            if ($line[$index] === '') {
-                ;
-            } elseif ($line[$index][0] === ':') {
+            if ($line[$index][0] === ':') {
                 break;
-            } else {
+            }
+
+            if ($line[$index] !== '') {
                 $parv[] = $line[$index];
             }
             $index++;

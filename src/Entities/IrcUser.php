@@ -13,7 +13,7 @@ class IrcUser
     /**
      * @var int
      */
-    private $id = 0;
+    private $id;
 
     /**
      * @var string

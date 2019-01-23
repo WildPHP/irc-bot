@@ -11,5 +11,5 @@ namespace WildPHP\Core\Configuration;
 
 class ConfigurationBackends
 {
-    const PHP = 'WildPHP\Core\Configuration\PhpBackend';
+    public const PHP = PhpBackend::class;
 }

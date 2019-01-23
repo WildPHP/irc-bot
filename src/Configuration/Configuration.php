@@ -18,7 +18,7 @@ class Configuration extends Collection
     /**
      * @var ConfigurationBackendInterface
      */
-    protected $backend = null;
+    protected $backend;
 
     /**
      * Configuration constructor.

@@ -35,7 +35,7 @@ class MessageLogger
     /**
      * @param PRIVMSG $incoming
      */
-    public function logIncomingPrivmsg(PRIVMSG $incoming)
+    public function logIncomingPrivmsg(PRIVMSG $incoming): void
     {
         $nickname = $incoming->getNickname();
         $channel = $incoming->getChannel();
@@ -47,7 +47,7 @@ class MessageLogger
     /**
      * @param OutgoingIrcMessageEvent $event
      */
-    public function logOutgoingPrivmsg(OutgoingIrcMessageEvent $event)
+    public function logOutgoingPrivmsg(OutgoingIrcMessageEvent $event): void
     {
         $command = $event->getOutgoingMessage();
 

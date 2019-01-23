@@ -94,7 +94,7 @@ class CommandRunner
      * @param PRIVMSG $privmsg
      * @throws ValidationException
      */
-    public function parseAndRunCommand(PRIVMSG $privmsg)
+    public function parseAndRunCommand(PRIVMSG $privmsg): void
     {
         $prefix = $this->configuration['prefix'];
         $commandProcessor = $this->commandProcessor;
@@ -112,7 +112,7 @@ class CommandRunner
 
             $processedCommand = $commandProcessor->process($parsedMessage);
         } catch (CommandNotFoundException | ParseException $e) {
-            $this->logger->debug("Message not a command");
+            $this->logger->debug('Message not a command');
             return;
         } catch (NoApplicableStrategiesException | InvalidParameterCountException $e) {
             $this->logger->debug('No valid strategies found.');

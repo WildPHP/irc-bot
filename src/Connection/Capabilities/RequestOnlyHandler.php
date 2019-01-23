@@ -24,7 +24,7 @@ class RequestOnlyHandler implements CapabilityInterface
      * @param PromiseInterface $promise
      * @return void
      */
-    public function setRequestPromise(PromiseInterface $promise)
+    public function setRequestPromise(PromiseInterface $promise): void
     {
         $closure = function () {
             $this->finished = true;
@@ -46,7 +46,7 @@ class RequestOnlyHandler implements CapabilityInterface
      * @param callable $callback
      * @return void
      */
-    public function onFinished(callable $callback)
+    public function onFinished(callable $callback): void
     {
         $this->callback = $callback;
     }

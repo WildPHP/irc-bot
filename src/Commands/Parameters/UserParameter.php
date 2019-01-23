@@ -22,8 +22,9 @@ class UserParameter extends Parameter
         parent::__construct(function (string $value) use ($userStorage) {
             $user = $userStorage->getOneByNickname($value);
 
-            if ($user == null)
+            if ($user === null) {
                 return false;
+            }
 
             return $user;
         });

@@ -87,7 +87,7 @@ class UserObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserJoin(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processUserJoin(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var Join $joinMessage */
         $joinMessage = $ircMessageEvent->getIncomingMessage();
@@ -113,7 +113,7 @@ class UserObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processNamesReply(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processNamesReply(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var NamReply $ircMessage */
         $ircMessage = $ircMessageEvent->getIncomingMessage();
@@ -144,7 +144,7 @@ class UserObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function sendInitialWhoxMessage(IncomingIrcMessageEvent $ircMessageEvent)
+    public function sendInitialWhoxMessage(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var EndOfNames $ircMessage */
         $ircMessage = $ircMessageEvent->getIncomingMessage();
@@ -156,7 +156,7 @@ class UserObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processWhoxReply(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processWhoxReply(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var WhosPcRpl $ircMessage */
         $ircMessage = $ircMessageEvent->getIncomingMessage();
@@ -175,12 +175,17 @@ class UserObserver
     /**
      * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processUserNickChange(IncomingIrcMessageEvent $ircMessageEvent)
+    public function processUserNickChange(IncomingIrcMessageEvent $ircMessageEvent): void
     {
         /** @var Nick $nickMessage */
         $nickMessage = $ircMessageEvent->getIncomingMessage();
 
         $user = $this->userStorage->getOneByNickname($nickMessage->getNickname());
+
+        if ($user === null) {
+            throw new \RuntimeException('No user found while one was expected');
+        }
+
         $user->setNickname($nickMessage->getNewNickname());
         $this->userStorage->store($user);
 

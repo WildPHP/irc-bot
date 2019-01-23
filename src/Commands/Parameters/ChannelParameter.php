@@ -22,8 +22,9 @@ class ChannelParameter extends Parameter
         parent::__construct(function (string $value) use ($channelStorage) {
             $channel = $channelStorage->getOneByName($value);
 
-            if ($channel == null)
+            if ($channel === null) {
                 return false;
+            }
 
             return $channel;
         });

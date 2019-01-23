@@ -70,13 +70,14 @@ class QueueProcessor
         $this->eventEmitter = $eventEmitter;
     }
 
-    public function processDueItems()
+    public function processDueItems(): void
     {
         /** @var QueueItemInterface[] $items */
         $items = $this->queue->toArray();
         $amountToProcess = $this->messagesPerSecondAfterBurst;
 
         // Use up our burst if we haven't used it and
+        /** @noinspection NotOptimalIfConditionsInspection */
         if (count($items) > $this->burstTrigger && !$this->usedBurst) {
             $amountToProcess = $this->burstAmount;
             $this->usedBurst = true;
@@ -85,12 +86,14 @@ class QueueProcessor
         $itemsToProcess = array_slice($items, 0, $amountToProcess);
 
         // Reset the burst flag when the queue is now empty
+        /** @noinspection NotOptimalIfConditionsInspection */
         if (count($items) === 0 && $this->usedBurst) {
             $this->usedBurst = false;
         }
 
-        if (empty($itemsToProcess))
+        if (empty($itemsToProcess)) {
             return;
+        }
 
         foreach ($itemsToProcess as $queueItem)
         {

@@ -16,13 +16,13 @@ interface CapabilityInterface
      * @param PromiseInterface $promise
      * @return void
      */
-    public function setRequestPromise(PromiseInterface $promise);
+    public function setRequestPromise(PromiseInterface $promise): void;
 
     /**
      * @param callable $callback
      * @return void
      */
-    public function onFinished(callable $callback);
+    public function onFinished(callable $callback): void;
 
     /**
      * @return bool

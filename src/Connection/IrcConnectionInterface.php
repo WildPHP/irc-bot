@@ -23,19 +23,19 @@ interface IrcConnectionInterface
     /**
      * @param string $data
      */
-    public function incomingData(string $data);
+    public function incomingData(string $data): void;
 
     /**
      * @param ConnectorInterface $connectorInterface
      *
      * @return \React\Promise\PromiseInterface
      */
-    public function connect(ConnectorInterface $connectorInterface);
+    public function connect(ConnectorInterface $connectorInterface): \React\Promise\PromiseInterface;
 
     /**
      * @return \React\Promise\PromiseInterface
      */
-    public function close();
+    public function close(): \React\Promise\PromiseInterface;
 
     /**
      * @return ConnectionDetails
