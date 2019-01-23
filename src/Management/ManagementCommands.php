@@ -99,20 +99,12 @@ class ManagementCommands
     }
 
     /**
-     * @param IrcChannel $source
-     * @param IrcUser $user
-     * @param $args
+     * @param CommandEvent $event
      */
-    public function quitCommand(IrcChannel $source, IrcUser $user, $args): void
+    public function quitCommand(CommandEvent $event): void
     {
-        $message = implode(' ', $args);
-
-        if (empty($message)) {
-            $message = 'Quit command given by ' . $user->getNickname();
-        }
-
-        $this->queue
-            ->quit($message);
+        $message = $event->getParameters()['message'] ?? 'Quit command given by ' . $event->getUser()->getNickname();
+        $this->queue->quit($message);
     }
 
     /**
@@ -164,8 +156,11 @@ class ManagementCommands
      */
     public function partCommand(CommandEvent $event): void
     {
-        if (empty($channels)) {
+        if (empty($event->getParameters()['channels'])) {
             $channels = [$event->getChannel()];
+        }
+        else {
+            $channels = $event->getParameters()['channels'];
         }
 
         foreach ($channels as $index => $channel) {
