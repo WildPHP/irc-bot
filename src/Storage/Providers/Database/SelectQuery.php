@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -56,6 +56,7 @@ class SelectQuery implements QueryInterface
     public function toString(): string
     {
         $limit = $this->getLimit() > 0 ? 'LIMIT ' . $this->getLimit() : '';
+        /** @noinspection SyntaxError */
         return sprintf('SELECT %s FROM %s %s %s %s',
             implode(', ', QueryHelper::prepareColumnNames($this->getColumns())),
             QueryHelper::prepareTableName($this->getTable()),

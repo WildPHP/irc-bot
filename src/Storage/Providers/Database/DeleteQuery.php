@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -37,6 +37,7 @@ class DeleteQuery implements QueryInterface
      */
     public function toString(): string
     {
+        /** @noinspection SyntaxError */
         return sprintf('DELETE FROM %s %s',
             QueryHelper::prepareTableName($this->getTable()),
             QueryHelper::prepareWhereStatement($this->getWhere())
