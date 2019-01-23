@@ -116,9 +116,7 @@ class CommandRunner
             return;
         } catch (NoApplicableStrategiesException | InvalidParameterCountException $e) {
             $this->logger->debug('No valid strategies found.');
-            $this->queue->privmsg($privmsg->getChannel(),
-                'Invalid arguments. Please check ' . $prefix . 'cmdhelp ' . $parsedMessage->getCommand() . ' for usage instructions and make sure that your ' .
-                'parameters match the given requirements.');
+            $this->queue->privmsg($privmsg->getChannel(), 'Invalid arguments.');
 
             return;
         }
