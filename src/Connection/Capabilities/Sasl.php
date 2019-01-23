@@ -29,14 +29,13 @@ class Sasl implements CapabilityInterface
      * @var array
      */
     public static $saslCodes = [
-        '903' => 'RPL_SASLSUCCESS',
-        '908' => 'RPL_SASLMECHS',
-
-        '902' => 'ERR_NICKLOCKED',
-        '904' => 'ERR_SASLFAIL',
-        '905' => 'ERR_SASLTOOLONG',
-        '906' => 'ERR_SASLABORTED',
-        '907' => 'ERR_SASLALREADY'
+        902 => 'ERR_NICKLOCKED',
+        903 => 'RPL_SASLSUCCESS',
+        904 => 'ERR_SASLFAIL',
+        905 => 'ERR_SASLTOOLONG',
+        906 => 'ERR_SASLABORTED',
+        907 => 'ERR_SASLALREADY',
+        908 => 'RPL_SASLMECHS'
     ];
 
     /**
