@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2019 The WildPHP Team
  *
@@ -99,7 +100,7 @@ class QueueProcessor
         {
             $this->queue->dequeue($queueItem);
             $outgoingMessage = $queueItem->getOutgoingMessage();
-            $this->ircConnection->write($outgoingMessage);
+            $this->ircConnection->write($outgoingMessage->__toString());
 
             $event = new OutgoingIrcMessageEvent($outgoingMessage);
             $this->eventEmitter->emit('irc.msg.out', [$event]);
