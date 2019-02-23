@@ -15,18 +15,12 @@ use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
-use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\Topic;
 
 class ChannelObserver
 {
-    /**
-     * @var EventEmitterInterface
-     */
-    private $eventEmitter;
-
     /**
      * @var LoggerInterface
      */
@@ -43,11 +37,6 @@ class ChannelObserver
     private $configuration;
 
     /**
-     * @var IrcUserStorageInterface
-     */
-    private $userStorage;
-
-    /**
      * @var IrcChannelStorageInterface
      */
     private $channelStorage;
@@ -59,7 +48,6 @@ class ChannelObserver
      * @param Configuration $configuration
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
-     * @param IrcUserStorageInterface $userStorage
      * @param IrcChannelStorageInterface $channelStorage
      */
     public function __construct(
@@ -67,7 +55,6 @@ class ChannelObserver
         Configuration $configuration,
         LoggerInterface $logger,
         IrcMessageQueue $queue,
-        IrcUserStorageInterface $userStorage,
         IrcChannelStorageInterface $channelStorage
     ) {
         $eventEmitter->on('irc.msg.in.join', [$this, 'createChannel']);

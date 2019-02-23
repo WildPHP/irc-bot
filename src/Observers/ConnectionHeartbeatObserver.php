@@ -51,11 +51,6 @@ class ConnectionHeartbeatObserver
     protected $hasSentPing = false;
 
     /**
-     * @var EventEmitterInterface
-     */
-    private $eventEmitter;
-
-    /**
      * @var IrcMessageQueue
      */
     private $queue;
@@ -69,6 +64,7 @@ class ConnectionHeartbeatObserver
      * @var Configuration
      */
     private $configuration;
+
     /**
      * @var IrcConnectionInterface
      */

@@ -39,10 +39,12 @@ class UserObserver
      * @var IrcMessageQueue
      */
     private $queue;
+
     /**
      * @var IrcUserStorageInterface
      */
     private $userStorage;
+
     /**
      * @var IrcChannelStorageInterface
      */
@@ -189,11 +191,11 @@ class UserObserver
         $user->setNickname($nickMessage->getNewNickname());
         $this->userStorage->store($user);
 
-        $this->eventEmitter->emit('user.nick', new NicknameChangedEvent(
+        $this->eventEmitter->emit('user.nick', [new NicknameChangedEvent(
             $user,
             $nickMessage->getNickname(),
             $nickMessage->getNewNickname()
-        ));
+        )]);
 
         $this->logger->debug('Updated user nickname', [
             'oldNickname' => $nickMessage->getNickname(),
