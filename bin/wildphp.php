@@ -9,7 +9,7 @@
 
 error_reporting(E_ALL);
 
-if (php_sapi_name() != 'cli')
+if (PHP_SAPI !== 'cli')
 {
 	echo 'WildPHP must be run from the terminal!';
 	exit(127);
@@ -21,10 +21,10 @@ if (function_exists('posix_getuid') && posix_getuid() === 0)
 	exit(128);
 }
 
-if (version_compare(PHP_VERSION, '7.1.0', '<'))
+if (PHP_VERSION_ID < 70100)
 {
 	echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
 	echo 'Please use PHP 7.1.0 or later.';
 	exit(129);
 }
-include(dirname(__DIR__) . '/app/bootstrap.php');
+include dirname(__DIR__) . '/app/bootstrap.php';

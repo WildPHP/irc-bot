@@ -11,22 +11,20 @@ use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Connection\IrcConnectionInitiator;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Modules\ModuleFactory;
-use WildPHP\Core\Storage\Providers\DatabaseStorageProviderInterface;
+use WildPHP\Core\Storage\Providers\StorageProviderInterface;
 
-require('../vendor/autoload.php');
+require '../vendor/autoload.php';
 define('WPHP_ROOT_DIR', dirname(__DIR__));
 define('WPHP_VERSION', '3.0.0');
-
-$configuration = require_once(WPHP_ROOT_DIR . '/config/config.php');
 
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions(__DIR__ . '/container_configuration.php');
 $container = $builder->build();
 
 $configuration = $container->get(Configuration::class);
-$container->set(DatabaseStorageProviderInterface::class, $configuration['storage']['provider']);
+$container->set(StorageProviderInterface::class, $configuration['storage']['provider']);
 
-$coreModules = include(__DIR__ . '/core_modules.php');
+$coreModules = include __DIR__ . '/core_modules.php';
 $modules = $configuration['modules'] ?? [];
 $modules = array_merge($modules, $coreModules);
 

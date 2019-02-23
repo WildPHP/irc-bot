@@ -20,17 +20,21 @@ use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\EventEmitter;
-use WildPHP\Core\Permissions\Validator;
-use WildPHP\Core\Storage\IrcChannelDatabaseStorage;
-use WildPHP\Core\Storage\IrcChannelStorageInterface;
-use WildPHP\Core\Storage\IrcUserDatabaseStorage;
-use WildPHP\Core\Storage\IrcUserStorageInterface;
 use function DI\create;
+use function DI\autowire;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
+use WildPHP\Core\Storage\Providers\StorageProviderInterface;
 
 return [
     EventEmitterInterface::class => create(EventEmitter::class),
-    IrcChannelStorageInterface::class => \DI\autowire(IrcChannelDatabaseStorage::class),
-    IrcUserStorageInterface::class => \DI\autowire(IrcUserDatabaseStorage::class),
+
+    StorageProviderInterface::class => function (Configuration $configuration) {
+        return $configuration['storage']['provider'];
+    },
+
+    IrcUserStorageInterface::class => autowire(\WildPHP\Core\Storage\IrcUserStorage::class),
+    IrcChannelStorageInterface::class => autowire(\WildPHP\Core\Storage\IrcChannelStorage::class),
 
     LoggerInterface::class => function () {
         $logger = new Logger('wildphp');
@@ -43,10 +47,6 @@ return [
         return Factory::create();
     },
 
-    Validator::class => function (EventEmitterInterface $eventEmitter, Configuration $configuration) {
-        return new Validator($eventEmitter, $configuration['owner']);
-    },
-
     Configuration::class => function (LoggerInterface $logger) {
         $file = WPHP_ROOT_DIR . '/config/config.php';
         $logger->info('Reading configuration file ' . $file);
@@ -55,8 +55,7 @@ return [
         $configuration = new Configuration($phpBackend);
         $configuration['directories'] = [
             'root' => WPHP_ROOT_DIR,
-            'config' => WPHP_ROOT_DIR . '/config',
-            'storage' => WPHP_ROOT_DIR . '/storage',
+            'config' => WPHP_ROOT_DIR . '/config'
         ];
         $configuration['version'] = WPHP_VERSION;
 
