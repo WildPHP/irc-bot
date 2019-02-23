@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -9,69 +9,80 @@
 namespace WildPHP\Core\Connection\Capabilities;
 
 
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Database\Database;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
+use React\Promise\PromiseInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Account;
 
-class AccountNotifyHandler extends BaseModule
+class AccountNotifyHandler extends RequestOnlyHandler
 {
-    use ContainerTrait;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
+
+    /**
+     * @var EventEmitterInterface
+     */
+    private $eventEmitter;
 
     /**
      * AccountNotifyHandler constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param LoggerInterface $logger
+     * @param IrcUserStorageInterface $userStorage
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        IrcUserStorageInterface $userStorage
+    )
     {
-        EventEmitter::fromContainer($container)->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
-        $this->setContainer($container);
+        $this->logger = $logger;
+        $this->userStorage = $userStorage;
+        $this->eventEmitter = $eventEmitter;
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param ACCOUNT $ircMessage
-     * @throws \WildPHP\Core\StateException
-     * @throws \WildPHP\Core\Users\UserNotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @throws \RuntimeException
      */
-    public function updateUserIrcAccount(ACCOUNT $ircMessage)
+    public function updateUserIrcAccount(ACCOUNT $ircMessage): void
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
-        $db = Database::fromContainer($this->getContainer());
+        $user = $this->userStorage->getOneByNickname($nickname);
 
-        $user = User::fromDatabase($db, ['nickname' => $nickname]);
-        Logger::fromContainer($this->getContainer())->debug('Updated irc account for userid ' . $user->getId());
+        if ($user === null) {
+            throw new \RuntimeException('No user found while one was expected');
+        }
+
         $user->setIrcAccount($ircMessage->getAccountName());
+        $this->userStorage->store($user);
 
-        User::toDatabase($db, $user);
+        $this->logger->debug('Updated IRC account', [
+            'reason' => 'account_notify',
+            'userID' => $user->getId(),
+            'nickname' => $user->getNickname(),
+            'new_ircAccount' => $user->getIrcAccount()
+        ]);
     }
 
     /**
-     * @return string
+     * @param PromiseInterface $promise
+     * @return void
      */
-    public static function getSupportedVersionConstraint(): string
+    public function setRequestPromise(PromiseInterface $promise): void
     {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            EventEmitter::class,
-            Database::class,
-            Logger::class
-        ];
+        parent::setRequestPromise($promise);
+        $promise->then(function () {
+            $this->eventEmitter->on('irc.line.in.account', [$this, 'updateUserIrcAccount']);
+        });
     }
 }

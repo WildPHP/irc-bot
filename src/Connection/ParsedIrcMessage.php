@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -15,14 +15,17 @@ class ParsedIrcMessage
      * @var array
      */
     public $tags = [];
+
     /**
      * @var string
      */
     public $prefix = '';
+
     /**
      * @var string
      */
     public $verb = '';
+
     /**
      * @var array
      */

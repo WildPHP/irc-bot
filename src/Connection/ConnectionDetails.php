@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -57,19 +57,46 @@ class ConnectionDetails
     protected $contextOptions = [];
 
     /**
+     * ConnectionDetails constructor.
+     * @param string $username
+     * @param string $hostname
+     * @param string $address
+     * @param int $port
+     * @param string $realname
+     * @param string $password
+     * @param string $wantedNickname
+     * @param bool $secure
+     * @param array $contextOptions
+     */
+    public function __construct(
+        string $username,
+        string $hostname,
+        string $address,
+        int $port,
+        string $realname,
+        string $password,
+        string $wantedNickname,
+        bool $secure = false,
+        array $contextOptions = []
+    ) {
+        $this->username = $username;
+        $this->hostname = $hostname;
+        $this->address = $address;
+        $this->port = $port;
+        $this->realname = $realname;
+        $this->password = $password;
+        $this->wantedNickname = $wantedNickname;
+        $this->secure = $secure;
+        $this->contextOptions = $contextOptions;
+    }
+
+
+    /**
      * @return string
      */
     public function getUsername(): string
     {
         return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(string $username)
-    {
-        $this->username = $username;
     }
 
     /**
@@ -81,27 +108,11 @@ class ConnectionDetails
     }
 
     /**
-     * @param string $hostname
-     */
-    public function setHostname(string $hostname)
-    {
-        $this->hostname = $hostname;
-    }
-
-    /**
      * @return string
      */
     public function getAddress(): string
     {
         return $this->address;
-    }
-
-    /**
-     * @param string $address
-     */
-    public function setAddress(string $address)
-    {
-        $this->address = $address;
     }
 
     /**
@@ -113,27 +124,11 @@ class ConnectionDetails
     }
 
     /**
-     * @param int $port
-     */
-    public function setPort(int $port)
-    {
-        $this->port = $port;
-    }
-
-    /**
      * @return string
      */
     public function getRealname(): string
     {
         return $this->realname;
-    }
-
-    /**
-     * @param string $realname
-     */
-    public function setRealname(string $realname)
-    {
-        $this->realname = $realname;
     }
 
     /**
@@ -145,27 +140,11 @@ class ConnectionDetails
     }
 
     /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
-    /**
      * @return string
      */
     public function getWantedNickname(): string
     {
         return $this->wantedNickname;
-    }
-
-    /**
-     * @param string $wantedNickname
-     */
-    public function setWantedNickname(string $wantedNickname)
-    {
-        $this->wantedNickname = $wantedNickname;
     }
 
     /**
@@ -177,14 +156,6 @@ class ConnectionDetails
     }
 
     /**
-     * @param bool $secure
-     */
-    public function setSecure(bool $secure)
-    {
-        $this->secure = $secure;
-    }
-
-    /**
      * @return array
      */
     public function getContextOptions(): array
@@ -193,10 +164,34 @@ class ConnectionDetails
     }
 
     /**
-     * @param array $contextOptions
+     * @param \WildPHP\Core\Configuration\Configuration $configuration
+     * @return ConnectionDetails
      */
-    public function setContextOptions(array $contextOptions)
+    public static function fromConfiguration(\WildPHP\Core\Configuration\Configuration $configuration): ConnectionDetails
     {
-        $this->contextOptions = $contextOptions;
+        if (!array_key_exists('connection', $configuration)) {
+            throw new \InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
+        }
+
+        $connectionInfo = $configuration['connection'];
+        $mandatoryKeys = ['username', 'server', 'port', 'realname', 'nickname'];
+
+        foreach ($mandatoryKeys as $key) {
+            if (!array_key_exists($key, $connectionInfo)) {
+                throw new \InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromConfiguration');
+            }
+        }
+
+        return new ConnectionDetails(
+            $connectionInfo['username'],
+            gethostname(),
+            $connectionInfo['server'],
+            $connectionInfo['port'],
+            $connectionInfo['realname'],
+            $connectionInfo['password'] ?? '',
+            $connectionInfo['nickname'][0],
+            $connectionInfo['secure'] ?? false,
+            $connectionInfo['options'] ?? []
+        );
     }
 }

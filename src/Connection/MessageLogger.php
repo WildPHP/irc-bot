@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -8,60 +8,48 @@
 
 namespace WildPHP\Core\Connection;
 
-
-use WildPHP\Core\ComponentContainer;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\EventEmitter;
-use WildPHP\Core\Logger\Logger;
-use WildPHP\Core\Modules\ModuleInterface;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
+use WildPHP\Core\Events\OutgoingIrcMessageEvent;
 use WildPHP\Messages\Privmsg;
-use Yoshi2889\Container\ComponentTrait;
 
-class MessageLogger implements ModuleInterface
+class MessageLogger
 {
-    use ContainerTrait;
-    use ComponentTrait;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param EventEmitterInterface $eventEmitter
+     * @param LoggerInterface $logger
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger)
     {
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
+        $eventEmitter->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
+        $eventEmitter->on('irc.msg.out.privmsg', [$this, 'logOutgoingPrivmsg']);
 
-        EventEmitter::fromContainer($container)
-            ->on('irc.line.out', [$this, 'logOutgoingPrivmsg']);
-
-        $this->setContainer($container);
+        $this->logger = $logger;
     }
 
     /**
      * @param PRIVMSG $incoming
-     * @throws \Yoshi2889\Container\NotFoundException
      */
-    public function logIncomingPrivmsg(PRIVMSG $incoming)
+    public function logIncomingPrivmsg(PRIVMSG $incoming): void
     {
         $nickname = $incoming->getNickname();
         $channel = $incoming->getChannel();
         $message = $incoming->getMessage();
 
-        $toLog = 'INC: [' . $channel . '] <' . $nickname . '> ' . $message;
-
-        Logger::fromContainer($this->getContainer())
-            ->info($toLog);
+        $this->logger->info('INC: [' . $channel . '] <' . $nickname . '> ' . $message);
     }
 
     /**
-     * @param QueueItem $message
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param OutgoingIrcMessageEvent $event
      */
-    public function logOutgoingPrivmsg(QueueItem $message, ComponentContainer $container)
+    public function logOutgoingPrivmsg(OutgoingIrcMessageEvent $event): void
     {
-        $command = $message->getCommandObject();
+        $command = $event->getOutgoingMessage();
 
         if (!($command instanceof PRIVMSG)) {
             return;
@@ -70,16 +58,6 @@ class MessageLogger implements ModuleInterface
         $channel = $command->getChannel();
         $msg = $command->getMessage();
 
-        $toLog = 'OUT: [' . $channel . '] ' . $msg;
-        Logger::fromContainer($container)
-            ->info($toLog);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
+        $this->logger->info('OUT: [' . $channel . '] ' . $msg);
     }
 }

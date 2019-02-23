@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -11,13 +11,9 @@ namespace WildPHP\Core\Commands;
 
 use WildPHP\Commands\Command;
 use WildPHP\Commands\CommandProcessor;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
-class CommandRegistrar implements ComponentInterface
+class CommandRegistrar
 {
-    use ComponentTrait;
-
     /**
      * @var CommandProcessor
      */

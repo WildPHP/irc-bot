@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -12,17 +12,13 @@ namespace WildPHP\Core\Configuration;
 use ValidationClosures\Types;
 use ValidationClosures\Utils;
 use Yoshi2889\Collections\Collection;
-use Yoshi2889\Container\ComponentInterface;
-use Yoshi2889\Container\ComponentTrait;
 
-class Configuration extends Collection implements ComponentInterface
+class Configuration extends Collection
 {
-    use ComponentTrait;
-
     /**
      * @var ConfigurationBackendInterface
      */
-    protected $backend = null;
+    protected $backend;
 
     /**
      * Configuration constructor.

@@ -25,8 +25,8 @@ class ConfigurationTest extends TestCase
 {
 	public function testNeonBackend()
 	{
-		$path = dirname(__FILE__) . '/testconfig.neon';
-		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend($path);
+        $path = dirname(__FILE__) . '/testconfig.php';
+        $neonBackend = new \WildPHP\Core\Configuration\PhpBackend($path);
 		static::assertEquals($path, $neonBackend->getConfigFile());
 
 		$allEntries = $neonBackend->getAllEntries();
@@ -35,16 +35,15 @@ class ConfigurationTest extends TestCase
 
 	public function testNeonBackendFileDoesNotExist()
 	{
-		$path = dirname(__FILE__) . '/nonexistingfile.neon';
-		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend($path);
-		
-		$this->expectException(\RuntimeException::class);
-		$neonBackend->getAllEntries();
+        $path = dirname(__FILE__) . '/nonexistingfile.php';
+
+        $this->expectException(\RuntimeException::class);
+        $neonBackend = new \WildPHP\Core\Configuration\PhpBackend($path);
 	}
 	
 	public function testConfigurationStorage()
 	{
-		$neonBackend = new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon');
+        $neonBackend = new \WildPHP\Core\Configuration\PhpBackend(dirname(__FILE__) . '/testconfig.php');
 		$configurationStorage = new Configuration($neonBackend);
 		self::assertEquals($neonBackend, $configurationStorage->getBackend());
 
@@ -56,7 +55,7 @@ class ConfigurationTest extends TestCase
 
 	public function testPutConfigurationStorage()
 	{
-		$configurationStorage = new Configuration(new \WildPHP\Core\Configuration\NeonBackend(dirname(__FILE__) . '/testconfig.neon'));
+        $configurationStorage = new Configuration(new \WildPHP\Core\Configuration\PhpBackend(dirname(__FILE__) . '/testconfig.php'));
 
 		$configurationStorage['testmore'] = 'Test';
 		$expected = 'Test';

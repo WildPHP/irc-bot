@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018 The WildPHP Team
+ * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -13,30 +13,40 @@ namespace WildPHP\Core\Management;
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;
-use WildPHP\Core\Channels\Channel;
 use WildPHP\Core\Commands\CommandRegistrar;
-use WildPHP\Core\Commands\JoinedChannelParameter;
-use WildPHP\Core\ComponentContainer;
+use WildPHP\Core\Commands\Parameters\ChannelParameter;
 use WildPHP\Core\Configuration\Configuration;
-use WildPHP\Core\Connection\Queue;
-use WildPHP\Core\ContainerTrait;
-use WildPHP\Core\Database\Database;
-use WildPHP\Core\Modules\BaseModule;
-use WildPHP\Core\Users\User;
+use WildPHP\Core\Events\CommandEvent;
+use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Storage\IrcChannelStorageInterface;
 
-class ManagementCommands extends BaseModule
+class ManagementCommands
 {
-    use ContainerTrait;
+    /**
+     * @var IrcMessageQueue
+     */
+    private $queue;
+    /**
+     * @var Configuration
+     */
+    private $configuration;
 
     /**
      * ManagementCommands constructor.
      *
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandRegistrar $registrar
+     * @param IrcMessageQueue $queue
+     * @param Configuration $configuration
+     * @param IrcChannelStorageInterface $channelStorage
      */
-    public function __construct(ComponentContainer $container)
+    public function __construct(
+        CommandRegistrar $registrar,
+        IrcMessageQueue $queue,
+        Configuration $configuration,
+        IrcChannelStorageInterface $channelStorage
+    )
     {
-        CommandRegistrar::fromContainer($container)->register('join',
+        $registrar->register('join',
             new Command(
                 [$this, 'joinCommand'],
                 new ParameterStrategy(1, 5, [
@@ -48,19 +58,19 @@ class ManagementCommands extends BaseModule
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('part',
+        $registrar->register('part',
             new Command(
                 [$this, 'partCommand'],
                 new ParameterStrategy(0, 5, [
-                    'channel1' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel2' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel3' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel4' => new JoinedChannelParameter(Database::fromContainer($container)),
-                    'channel5' => new JoinedChannelParameter(Database::fromContainer($container))
+                    'channel1' => new ChannelParameter($channelStorage),
+                    'channel2' => new ChannelParameter($channelStorage),
+                    'channel3' => new ChannelParameter($channelStorage),
+                    'channel4' => new ChannelParameter($channelStorage),
+                    'channel5' => new ChannelParameter($channelStorage)
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('quit',
+        $registrar->register('quit',
             new Command(
                 [$this, 'quitCommand'],
                 new ParameterStrategy(0, -1, [
@@ -68,7 +78,7 @@ class ManagementCommands extends BaseModule
                 ], true)
             ));
 
-        CommandRegistrar::fromContainer($container)->register('nick',
+        $registrar->register('nick',
             new Command(
                 [$this, 'nickCommand'],
                 new ParameterStrategy(0, -1, [
@@ -76,77 +86,60 @@ class ManagementCommands extends BaseModule
                 ])
             ));
 
-        CommandRegistrar::fromContainer($container)->register('clearqueue',
+        $registrar->register('clearqueue',
             new Command(
-                [$this, 'clearqueueCommand'],
+                [$this, 'clearQueueCommand'],
                 new ParameterStrategy(0, 0)
             ));
 
-        $this->setContainer($container);
-    }
-
-    /** @noinspection PhpUnusedParameterInspection */
-
-    /**
-     * @param Channel $source
-     * @param User $user
-     * @param $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     */
-    public function quitCommand(Channel $source, User $user, $args, ComponentContainer $container)
-    {
-        $message = implode(' ', $args);
-
-        if (empty($message)) {
-            $message = 'Quit command given by ' . $user->getNickname();
-        }
-
-        Queue::fromContainer($container)
-            ->quit($message);
+        $this->queue = $queue;
+        $this->configuration = $configuration;
     }
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param $channels
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandEvent $event
      */
-    public function joinCommand(Channel $source, User $user, $channels, ComponentContainer $container)
+    public function quitCommand(CommandEvent $event): void
     {
+        $message = $event->getParameters()['message'] ?? 'Quit command given by ' . $event->getUser()->getNickname();
+        $this->queue->quit($message);
+    }
+
+    /**
+     * @param CommandEvent $event
+     */
+    public function joinCommand(CommandEvent $event): void
+    {
+        $channels = $event->getParameters();
+
         $validChannels = $this->validateChannels($channels);
 
         if (!empty($validChannels)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->join($validChannels);
         }
 
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            Queue::fromContainer($container)
-                ->privmsg($user->getNickname(),
-                    'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
-                        $diff));
+            $this->queue->privmsg($event->getUser()->getNickname(),
+                'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
+                    $diff));
         }
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param array $channels
      *
      * @return array
-     * @throws \Yoshi2889\Container\NotFoundException
      */
     protected function validateChannels(array $channels): array
     {
         $validChannels = [];
-        $serverChannelPrefix = Configuration::fromContainer($this->getContainer())['serverConfig']['chantypes'];
+        $serverChannelPrefix = $this->configuration['serverConfig']['chantypes'];
 
         foreach ($channels as $channel) {
-            if (substr($channel, 0, strlen($serverChannelPrefix)) != $serverChannelPrefix) {
+            if (strpos($channel, $serverChannelPrefix) !== 0) {
                 continue;
             }
 
@@ -157,23 +150,17 @@ class ManagementCommands extends BaseModule
     }
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param $channels
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandEvent $event
      */
-    public function partCommand(Channel $source, User $user, $channels, ComponentContainer $container)
+    public function partCommand(CommandEvent $event): void
     {
-        if (empty($channels)) {
-            $channels = [$source];
+        if (empty($event->getParameters()['channels'])) {
+            $channels = [$event->getChannel()];
+        }
+        else {
+            $channels = $event->getParameters()['channels'];
         }
 
-        /**
-         * @var int $index
-         * @var Channel $channel
-         */
         foreach ($channels as $index => $channel) {
             $channels[$index] = $channel->getName();
         }
@@ -181,15 +168,15 @@ class ManagementCommands extends BaseModule
         $validChannels = $this->validateChannels($channels);
 
         if (!empty($validChannels)) {
-            Queue::fromContainer($container)
+            $this->queue
                 ->part($validChannels);
         }
 
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            Queue::fromContainer($container)
-                ->privmsg($user->getNickname(),
+            $this->queue
+                ->privmsg($event->getUser()->getNickname(),
                     'Did not part the following channels because they do not follow proper formatting: ' . implode(', ',
                         $diff));
         }
@@ -198,52 +185,23 @@ class ManagementCommands extends BaseModule
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param array $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandEvent $event
      */
-    public function nickCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+    public function nickCommand(CommandEvent $event): void
     {
         // TODO: Validate
-        Queue::fromContainer($container)->nick($args['newNickname']);
+        $this->queue->nick($event->getParameters()['newNickname']);
     }
 
     /** @noinspection PhpUnusedParameterInspection */
 
     /**
-     * @param Channel $source
-     * @param User $user
-     * @param array $args
-     * @param ComponentContainer $container
-     * @throws \Yoshi2889\Container\NotFoundException
-     * @throws \Yoshi2889\Container\NotFoundException
+     * @param CommandEvent $event
      */
-    public function clearqueueCommand(Channel $source, User $user, array $args, ComponentContainer $container)
+    public function clearQueueCommand(CommandEvent $event): void
     {
-        Queue::fromContainer($container)->clear();
-        Queue::fromContainer($container)->privmsg($source->getName(),
-            $user->getNickname() . ': Message queue cleared.');
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDependentModules(): array
-    {
-        return [
-            CommandRegistrar::class,
-            Queue::class,
-            Database::class
-        ];
+        $this->queue->clear();
+        $this->queue->privmsg($event->getChannel()->getName(),
+            $event->getUser()->getNickname() . ': Message queue cleared.');
     }
 }

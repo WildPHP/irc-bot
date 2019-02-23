@@ -1,18 +1,33 @@
 build:
+  environment:
+    php:
+      version: "7.1"
+
   nodes:
-      analysis:
-          tests:
-              override:
-                  - php-scrutinizer-run
-      tests-and-coverage:
-          environment:
-              php: 7.1
-              postgresql: false
-              redis: false
-          tests:
-              override:
-                  -
-                      command: 'vendor/bin/phpunit --coverage-clover=cloverCoverage'
-                      coverage:
-                          file: 'cloverCoverage'
-                          format: 'clover'
+    tests:
+      tests:
+        override:
+        -
+          command: vendor/bin/phpunit --coverage-clover /tmp/coverage.xml
+          coverage:
+            file: /tmp/coverage.xml
+            format: clover
+
+    analysis:
+      tests:
+        override:
+          -
+            command: phpcs-run
+            use_website_config: true
+
+filter:
+  dependency_paths:
+    - "propel/"
+
+  excluded_paths:
+    - "app/"
+    - "config/"
+    - "bin/"
+    - "storage/"
+    - "tests/"
+    - "vendor/"
