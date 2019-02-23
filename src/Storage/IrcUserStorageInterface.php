@@ -8,7 +8,6 @@
 
 namespace WildPHP\Core\Storage;
 
-use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 
 interface IrcUserStorageInterface
@@ -22,6 +21,18 @@ interface IrcUserStorageInterface
      * @param IrcUser $user
      */
     public function delete(IrcUser $user): void;
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function has(int $id): bool;
+
+    /**
+     * @param IrcUser $user
+     * @return bool
+     */
+    public function contains(IrcUser $user): bool;
 
     /**
      * @param int $id
@@ -42,21 +53,25 @@ interface IrcUserStorageInterface
     public function getOrCreateOneByNickname(string $nickname): IrcUser;
 
     /**
-     * @param string $property
-     * @param $value
+     * @param string $hostname
      * @return null|IrcUser
      */
-    public function getOneByProperty(string $property, $value): ?IrcUser;
+    public function getOneByHostname(string $hostname): ?IrcUser;
 
     /**
-     * @param int $userId
-     * @return IrcChannel[]
+     * @param string $username
+     * @return null|IrcUser
      */
-    public function getRelatedChannels(int $userId): array;
+    public function getOneByUsername(string $username): ?IrcUser;
 
     /**
-     * @param string $nickname
-     * @return IrcChannel[]
+     * @param string $ircAccount
+     * @return null|IrcUser
      */
-    public function getRelatedChannelsByNickname(string $nickname): array;
+    public function getOneByIrcAccount(string $ircAccount): ?IrcUser;
+
+    /**
+     * @return IrcUser[]
+     */
+    public function getAll(): array;
 }

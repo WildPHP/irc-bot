@@ -10,7 +10,6 @@ namespace WildPHP\Core\Storage;
 
 
 use WildPHP\Core\Entities\IrcChannel;
-use WildPHP\Core\Entities\IrcUser;
 
 interface IrcChannelStorageInterface
 {
@@ -23,6 +22,18 @@ interface IrcChannelStorageInterface
      * @param IrcChannel $channel
      */
     public function delete(IrcChannel $channel): void;
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function has(int $id): bool;
+
+    /**
+     * @param IrcChannel $channel
+     * @return bool
+     */
+    public function contains(IrcChannel $channel): bool;
 
     /**
      * @param int $id
@@ -43,14 +54,7 @@ interface IrcChannelStorageInterface
     public function getOrCreateOneByName(string $name): IrcChannel;
 
     /**
-     * @param int $channelId
-     * @return IrcUser[]
+     * @return IrcChannel[]
      */
-    public function getRelatedUsers(int $channelId): array;
-
-    /**
-     * @param string $channelName
-     * @return IrcUser[]
-     */
-    public function getRelatedUsersByChannelName(string $channelName): array;
+    public function getAll(): array;
 }
