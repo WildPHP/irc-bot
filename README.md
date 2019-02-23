@@ -18,10 +18,10 @@ No web server is required, only a working PHP installation.
 In order to run WildPHP, we ask a few things from your system. Notably:
 
 - A PHP version equal to or higher than **7.1.0**.
-- **SSH** or other local access to the system you plan on running WildPHP on.
-	- WildPHP does **NOT** run on services where you can host your website. Do not ask for support for doing so.
-- WildPHP has been tested to work on **Linux** and **Windows**. Other platforms are supported but not guaranteed to work.
-- For the best experience, we recommend using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
+- Command-line access to the system you plan on running WildPHP on.
+	- WildPHP will **NOT** run inside a web server like Apache or Nginx. Do not ask for support for doing so.
+- WildPHP has been tested to work on **Linux** and **macOS**. Other platforms are not supported and not guaranteed to work.
+- For the best experience, we recommend either using the included **systemd** service (adjust it to your needs) or using **[tmux](https://en.wikipedia.org/wiki/Tmux)** or **[screen](https://en.wikipedia.org/wiki/GNU_Screen)** to allow the bot to run in the background.
 
 ## IRC Community & Support
 If you need help or just want to idle in the IRC channel join us at
@@ -39,17 +39,21 @@ To install the latest development build, you need [Composer](https://getcomposer
 
 This will pull all Composer dependencies required to run the bot.
 
+**Please note that the bot may be unstable and that it might not even start. Please file a bug if you encounter an issue!**
+
 ### Configuration
 
-Copy the example configuration file and edit it to suit you. It uses the [Neon](http://ne-on.org/) syntax (borrowed from [Nette Framework](http://nette.org/en/)). It is similar to yaml but less strict and much faster to parse.
+Copy the example configuration file and edit it to suit your needs. Carefully read the comments.
 
-    $ cp config.neon.sample config.neon
+    $ cp config/config.sample.php config/config.php
 
 ## Running the bot
 
-While you can run the bot in the terminal it is best to run it in [tmux](https://en.wikipedia.org/wiki/Tmux) or [screen](https://en.wikipedia.org/wiki/GNU_Screen) so that it can run in background.
+While you can run the bot in a terminal it is best to run it in [tmux](https://en.wikipedia.org/wiki/Tmux) or [screen](https://en.wikipedia.org/wiki/GNU_Screen) so that it can run in background.
 
-    $ php wildphp.php
+    $ php bin/wildphp.php
+    
+Alternatively, a `systemd` service is included. Edit it (carefully read the comments), then drop it in `/etc/systemd/system/`. Issue a `systemctl daemon-reload` afterwards and you should be able to use the service.
 
 ## Contributors
 
