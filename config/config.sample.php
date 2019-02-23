@@ -51,15 +51,13 @@ return [
     ],
 
     # Storage driver used for persistent storage
-    # SQLite is used by default, but for bots in large networks it might be faster to use the MySQL storage provider.
     # Available configuration options depend on the chosen provider.
     #
     # Available providers:
-    # - SQLite (default): \WildPHP\Core\Storage\Providers\SQLiteDatabaseStorageProvider
-    # - MySQL: \WildPHP\Core\Storage\Providers\MySQLDatabaseStorageProvider
-    # - FlatFile (NOT RECOMMENDED): \WildPHP\Core\Storage\Providers\FlatFileStorageProvider
+    # - JSON (default): \WildPHP\Core\Storage\Providers\JsonStorageProvider
+    # - SQLite: \WildPHP\Core\Storage\Providers\SQLiteDatabaseStorageProvider
     'storage' => [
-        'provider' => new SQLiteDatabaseStorageProvider('../storage/persistent.sqlite')
+        'provider' => new \WildPHP\Core\Storage\Providers\JsonStorageProvider(WPHP_ROOT_DIR . '/storage')
     ],
 
     # Command prefix used for command parsing.
