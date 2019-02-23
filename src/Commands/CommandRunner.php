@@ -131,7 +131,7 @@ class CommandRunner
             $processedCommand->getArguments()
         );
 
-        $this->eventEmitter->emit('irc.command', $event);
+        $this->eventEmitter->emit('irc.command', [$event]);
         call_user_func($processedCommand->getCallback(), $event);
     }
 }
