@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Management;
 
-
 use WildPHP\Commands\Command;
 use WildPHP\Commands\Parameters\StringParameter;
 use WildPHP\Commands\ParameterStrategy;

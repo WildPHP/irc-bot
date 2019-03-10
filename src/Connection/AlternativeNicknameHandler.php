@@ -107,12 +107,4 @@ class AlternativeNicknameHandler
         $nickname = array_shift($this->nicknames);
         $this->queue->nick($nickname);
     }
-
-    /**
-     * @return string
-     */
-    public static function getSupportedVersionConstraint(): string
-    {
-        return WPHP_VERSION;
-    }
 }
