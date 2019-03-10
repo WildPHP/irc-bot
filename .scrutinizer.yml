@@ -4,7 +4,7 @@ build:
       version: "7.1"
 
   nodes:
-    tests:
+    tests-and-coverage:
       tests:
         override:
         -
@@ -16,14 +16,9 @@ build:
     analysis:
       tests:
         override:
-          -
-            command: phpcs-run
-            use_website_config: true
+          - php-scrutinizer-run
 
 filter:
-  dependency_paths:
-    - "propel/"
-
   excluded_paths:
     - "app/"
     - "config/"
