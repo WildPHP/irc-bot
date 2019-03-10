@@ -266,8 +266,7 @@ class JsonStorageProvider implements StorageProviderInterface
             file_put_contents($file, '{}');
         }
 
-        $cache = $this->cache[$database];
-        $data = json_encode($cache);
+        $data = $this->cache[$database];
 
         $this->writeFile($file, $data);
     }

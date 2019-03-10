@@ -25,7 +25,7 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     private $database;
 
-    public function __construct(StorageProviderInterface $storageProvider, string $database = 'channels')
+    public function __construct(StorageProviderInterface $storageProvider, string $database = 'users')
     {
         $this->storageProvider = $storageProvider;
         $this->database = $database;
@@ -194,6 +194,6 @@ class IrcUserStorage implements IrcUserStorageInterface
             return;
         }
 
-        $user->setId((int) max(array_keys($this->getAll())) + 1);
+        $user->setId((int) @max(array_keys($this->getAll())) + 1);
     }
 }
