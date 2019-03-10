@@ -9,17 +9,25 @@ After=networking.target
 
 [Service]
 # Change this to point to your wildphp.php, absolute paths!
-ExecStart=/usr/bin/php /path/to/WildPHP/wildphp.php
+ExecStart=/usr/bin/php /opt/wildphp/wildphp.php
 
 # Change this to point to the directory your wildphp.php is in. Absolute paths!
-WorkingDirectory=/path/to/WildPHP
+WorkingDirectory=/opt/wildphp
 
 # Change this to the user with which WildPHP should run; must be someone with write access to the directory and its contents,
 # and preferably should be as unprivileged as possible.
-User=osmc
+User=wildphp
 
 # Restart the bot on failure; change to always if you want to restart the bot with the !quit command.
 Restart=on-failure
+
+# These options sandbox the WildPHP process. Recommended to not change these.
+# These defaults assume WildPHP lives in /opt/wildphp.
+ReadWritePaths=/opt/wildphp
+ProtectSystem=strict
+PrivateDevices=true
+ProtectHome=true
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
