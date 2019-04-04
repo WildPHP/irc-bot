@@ -44,8 +44,7 @@ class JsonStorageProvider implements StorageProviderInterface
 
         if (!empty($entity->getId())) {
             $cache[$entity->getId()] = $entity->getData();
-        }
-        else {
+        } else {
             $cache[] = $entity->getData();
         }
 
@@ -149,7 +148,7 @@ class JsonStorageProvider implements StorageProviderInterface
     {
         $this->openDatabase($database);
 
-        $entries = (array) $this->cache[$database];
+        $entries = (array)$this->cache[$database];
         $matches = [];
 
         foreach ($entries as $id => $entry) {
@@ -159,7 +158,7 @@ class JsonStorageProvider implements StorageProviderInterface
 
             $matchCount = 0;
             foreach ($criteria as $key => $value) {
-                if (array_key_exists($key, $entry) && $entry[$key] === (string) $value) {
+                if (array_key_exists($key, $entry) && $entry[$key] === (string)$value) {
                     $matchCount++;
                 }
             }

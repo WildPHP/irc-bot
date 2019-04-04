@@ -34,8 +34,11 @@ class BotNicknameObserver
      * @param EventEmitterInterface $eventEmitter
      * @param LoggerInterface $logger
      */
-    public function __construct(Configuration $configuration, EventEmitterInterface $eventEmitter, LoggerInterface $logger)
-    {
+    public function __construct(
+        Configuration $configuration,
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger
+    ) {
         $eventEmitter->on('user.nick', [$this, 'monitorBotNickname']);
 
         $this->configuration = $configuration;

@@ -20,7 +20,7 @@ class ValidChannelNameParameter extends Parameter
      */
     public function __construct(string $prefix)
     {
-        parent::__construct(function ($value) use ($prefix) {
+        parent::__construct(static function ($value) use ($prefix) {
             return strpos($value, $prefix) === 0;
         });
     }

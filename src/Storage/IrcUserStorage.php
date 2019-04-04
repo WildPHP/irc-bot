@@ -194,6 +194,6 @@ class IrcUserStorage implements IrcUserStorageInterface
             return;
         }
 
-        $user->setId((int) @max(array_keys($this->getAll())) + 1);
+        $user->setId((int)@max(array_keys($this->getAll())) + 1);
     }
 }

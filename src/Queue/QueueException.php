@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Queue;
 
 
-class QueueException extends \Exception
+use Exception;
+
+class QueueException extends Exception
 {
 
 }

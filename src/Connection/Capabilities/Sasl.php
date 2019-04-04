@@ -77,8 +77,7 @@ class Sasl implements CapabilityInterface
         Configuration $configuration,
         EventEmitterInterface $eventEmitter,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->eventEmitter = $eventEmitter;
         $this->logger = $logger;
         $this->configuration = $configuration;

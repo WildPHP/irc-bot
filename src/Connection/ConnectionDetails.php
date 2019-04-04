@@ -10,6 +10,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Connection;
 
 
+use InvalidArgumentException;
+use WildPHP\Core\Configuration\Configuration;
+
 class ConnectionDetails
 {
     /**
@@ -165,13 +168,13 @@ class ConnectionDetails
     }
 
     /**
-     * @param \WildPHP\Core\Configuration\Configuration $configuration
+     * @param Configuration $configuration
      * @return ConnectionDetails
      */
-    public static function fromConfiguration(\WildPHP\Core\Configuration\Configuration $configuration): ConnectionDetails
+    public static function fromConfiguration(Configuration $configuration): ConnectionDetails
     {
         if (!array_key_exists('connection', $configuration)) {
-            throw new \InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
+            throw new InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
         }
 
         $connectionInfo = $configuration['connection'];
@@ -179,7 +182,7 @@ class ConnectionDetails
 
         foreach ($mandatoryKeys as $key) {
             if (!array_key_exists($key, $connectionInfo)) {
-                throw new \InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromConfiguration');
+                throw new InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromConfiguration');
             }
         }
 

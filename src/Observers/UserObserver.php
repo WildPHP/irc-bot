@@ -12,6 +12,7 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Events\NicknameChangedEvent;
@@ -186,17 +187,19 @@ class UserObserver
         $user = $this->userStorage->getOneByNickname($nickMessage->getNickname());
 
         if ($user === null) {
-            throw new \RuntimeException('No user found while one was expected');
+            throw new RuntimeException('No user found while one was expected');
         }
 
         $user->setNickname($nickMessage->getNewNickname());
         $this->userStorage->store($user);
 
-        $this->eventEmitter->emit('user.nick', [new NicknameChangedEvent(
-            $user,
-            $nickMessage->getNickname(),
-            $nickMessage->getNewNickname()
-        )]);
+        $this->eventEmitter->emit('user.nick', [
+            new NicknameChangedEvent(
+                $user,
+                $nickMessage->getNickname(),
+                $nickMessage->getNewNickname()
+            )
+        ]);
 
         $this->logger->debug('Updated user nickname', [
             'oldNickname' => $nickMessage->getNickname(),

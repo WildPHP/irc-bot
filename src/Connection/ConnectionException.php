@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Connection;
 
 
-class ConnectionException extends \Exception
+use Exception;
+
+class ConnectionException extends Exception
 {
 
 }

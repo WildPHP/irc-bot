@@ -13,6 +13,7 @@ namespace WildPHP\Core\Connection;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
+use Throwable;
 use WildPHP\Core\Queue\IrcMessageQueue;
 
 class IrcConnectionInitiator
@@ -54,8 +55,7 @@ class IrcConnectionInitiator
         IrcMessageQueue $queue,
         IrcConnectionInterface $connection,
         LoopInterface $loop
-    )
-    {
+    ) {
         $eventEmitter->on('irc.cap.end', [$this, 'initiateConnection']);
 
         $this->queue = $queue;
@@ -81,7 +81,7 @@ class IrcConnectionInitiator
             )
         );
 
-        $promise->then(null, function (\Throwable $e) {
+        $promise->then(null, function (Throwable $e) {
             $this->logger->error('An error occurred in the IRC connection:', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),

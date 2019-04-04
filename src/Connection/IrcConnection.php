@@ -45,8 +45,11 @@ class IrcConnection implements IrcConnectionInterface
      * @param LoggerInterface $logger
      * @param ConnectionDetails $connectionDetails
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, ConnectionDetails $connectionDetails)
-    {
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        ConnectionDetails $connectionDetails
+    ) {
         $eventEmitter->on('irc.msg.in.error', [$this, 'close']);
 
         $this->connectionDetails = $connectionDetails;
@@ -65,9 +68,9 @@ class IrcConnection implements IrcConnectionInterface
             $pieces = explode("\r", str_replace("\n", "\r", $data));
 
             $this->logger->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
-                    [
-                        'pieces' => $pieces
-                    ]);
+                [
+                    'pieces' => $pieces
+                ]);
 
             $data = $pieces[0] . "\r\n";
         }
@@ -103,7 +106,7 @@ class IrcConnection implements IrcConnectionInterface
                 $this->eventEmitter->emit('stream.created');
 
                 $connection->on('error',
-                    function ($error) use ($connectionString) {
+                    static function ($error) use ($connectionString) {
                         throw new ConnectionException('Connection to ' . $connectionString . ' failed: ' . $error);
                     });
 

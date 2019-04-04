@@ -11,6 +11,7 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
@@ -158,7 +159,7 @@ class ChannelObserver
         $channel = $this->channelStorage->getOneByName($topicMessage->getChannel());
 
         if ($channel === null) {
-            throw new \RuntimeException('No channel found while one was expected');
+            throw new RuntimeException('No channel found while one was expected');
         }
 
         $channel->setTopic($topicMessage->getMessage());

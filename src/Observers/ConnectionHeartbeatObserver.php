@@ -88,8 +88,7 @@ class ConnectionHeartbeatObserver
         LoopInterface $loop,
         Configuration $configuration,
         IrcConnectionInterface $ircConnection
-    )
-    {
+    ) {
         $eventEmitter->on('irc.msg.in', [$this, 'updateLastMessageReceived']);
         $eventEmitter->on('irc.msg.in.ping', [$this, 'respondPong']);
         $loop->addPeriodicTimer($this->loopInterval, [$this, 'connectionHeartbeat']);

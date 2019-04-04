@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace WildPHP\Core\Enum;
 
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * Class Enum
@@ -26,7 +27,7 @@ abstract class Enum
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function toArray(): array
     {

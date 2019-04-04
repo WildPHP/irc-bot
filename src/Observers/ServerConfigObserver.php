@@ -39,8 +39,11 @@ class ServerConfigObserver
      * @param LoggerInterface $logger
      * @param Configuration $configuration
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, Configuration $configuration)
-    {
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        Configuration $configuration
+    ) {
         $eventEmitter->on('irc.line.in.005', [$this, 'updateServerInformation']);
         $this->logger = $logger;
         $this->configuration = $configuration;
@@ -66,7 +69,7 @@ class ServerConfigObserver
         $this->configuration['serverConfig'] = array_merge($currentSettings, $variables);
 
         $this->logger->debug('Set new server configuration to configuration serverConfig.',
-                [$this->configuration['serverConfig']]);
+            [$this->configuration['serverConfig']]);
 
         $this->eventEmitter->emit(
             'irc.config.updated',

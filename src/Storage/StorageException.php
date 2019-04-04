@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Storage;
 
 
-class StorageException extends \Exception
+use Exception;
+
+class StorageException extends Exception
 {
 
 }

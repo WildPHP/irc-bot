@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
+use RuntimeException;
+
 /**
  * Class Queue
  * @package WildPHP\Core\Observers
@@ -101,7 +103,7 @@ class IrcMessageQueue implements QueueInterface
         $class = '\\WildPHP\\Messages\\' . ucfirst($name);
 
         if (!class_exists($class)) {
-            throw new \RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
+            throw new RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
         }
 
         $object = new $class(...$arguments);

@@ -44,8 +44,7 @@ class ManagementCommands
         IrcMessageQueue $queue,
         Configuration $configuration,
         IrcChannelStorageInterface $channelStorage
-    )
-    {
+    ) {
         $registrar->register('join',
             new Command(
                 [$this, 'joinCommand'],
@@ -156,8 +155,7 @@ class ManagementCommands
     {
         if (empty($event->getParameters()['channels'])) {
             $channels = [$event->getChannel()];
-        }
-        else {
+        } else {
             $channels = $event->getParameters()['channels'];
         }
 

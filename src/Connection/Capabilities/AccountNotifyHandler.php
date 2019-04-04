@@ -13,6 +13,7 @@ namespace WildPHP\Core\Connection\Capabilities;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\Promise\PromiseInterface;
+use RuntimeException;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Account;
 
@@ -44,8 +45,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
         EventEmitterInterface $eventEmitter,
         LoggerInterface $logger,
         IrcUserStorageInterface $userStorage
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->userStorage = $userStorage;
         $this->eventEmitter = $eventEmitter;
@@ -53,7 +53,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
 
     /**
      * @param ACCOUNT $ircMessage
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function updateUserIrcAccount(ACCOUNT $ircMessage): void
     {
@@ -61,7 +61,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
         $user = $this->userStorage->getOneByNickname($nickname);
 
         if ($user === null) {
-            throw new \RuntimeException('No user found while one was expected');
+            throw new RuntimeException('No user found while one was expected');
         }
 
         $user->setIrcAccount($ircMessage->getAccountName());

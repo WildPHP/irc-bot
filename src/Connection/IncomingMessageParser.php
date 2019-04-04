@@ -11,6 +11,7 @@ namespace WildPHP\Core\Connection;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Events\UnsupportedIncomingIrcMessageEvent;
 use WildPHP\Messages\Exceptions\CastException;
@@ -51,7 +52,7 @@ class IncomingMessageParser
 
     /**
      * @param string $line
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function parseIncomingIrcLine(string $line): void
     {

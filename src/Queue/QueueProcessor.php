@@ -63,8 +63,7 @@ class QueueProcessor
         LoopInterface $loop,
         IrcConnectionInterface $ircConnection,
         EventEmitterInterface $eventEmitter
-    )
-    {
+    ) {
         $loop->addPeriodicTimer(1, [$this, 'processDueItems']);
         $this->queue = $queue;
         $this->ircConnection = $ircConnection;
@@ -96,8 +95,7 @@ class QueueProcessor
             return;
         }
 
-        foreach ($itemsToProcess as $queueItem)
-        {
+        foreach ($itemsToProcess as $queueItem) {
             $this->queue->dequeue($queueItem);
             $outgoingMessage = $queueItem->getOutgoingMessage();
             $this->ircConnection->write($outgoingMessage->__toString());

@@ -20,7 +20,7 @@ class UserParameter extends Parameter
      */
     public function __construct(IrcUserStorageInterface $userStorage)
     {
-        parent::__construct(function (string $value) use ($userStorage) {
+        parent::__construct(static function (string $value) use ($userStorage) {
             $user = $userStorage->getOneByNickname($value);
 
             if ($user === null) {

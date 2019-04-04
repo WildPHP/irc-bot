@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Configuration;
 
+use RuntimeException;
+
 class PhpBackend implements ConfigurationBackendInterface
 {
     /**
@@ -30,7 +32,7 @@ class PhpBackend implements ConfigurationBackendInterface
     public function __construct(string $configFile)
     {
         if (!file_exists($configFile)) {
-            throw new \RuntimeException('Could not read configuration file');
+            throw new RuntimeException('Could not read configuration file');
         }
 
         $this->configFile = $configFile;

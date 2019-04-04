@@ -20,7 +20,7 @@ class ChannelParameter extends Parameter
      */
     public function __construct(IrcChannelStorageInterface $channelStorage)
     {
-        parent::__construct(function (string $value) use ($channelStorage) {
+        parent::__construct(static function (string $value) use ($channelStorage) {
             $channel = $channelStorage->getOneByName($value);
 
             if ($channel === null) {

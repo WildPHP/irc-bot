@@ -11,6 +11,7 @@ namespace WildPHP\Core\Modules;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ModuleFactory
 {
@@ -64,7 +65,7 @@ class ModuleFactory
 
         try {
             $object = $this->container->get($entryClassName);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             throw new ModuleInitializationException('An exception occurred when initializing the module', 0,
                 $exception);
         }

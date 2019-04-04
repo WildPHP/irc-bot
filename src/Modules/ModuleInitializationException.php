@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Modules;
 
 
-class ModuleInitializationException extends \Exception
+use Exception;
+
+class ModuleInitializationException extends Exception
 {
 
 }

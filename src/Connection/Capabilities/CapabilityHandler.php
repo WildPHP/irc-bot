@@ -14,6 +14,7 @@ use Evenement\EventEmitterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use React\Promise\Deferred;
+use React\Promise\Promise;
 use React\Promise\PromiseInterface;
 use WildPHP\Core\Events\CapabilityEvent;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
@@ -72,8 +73,12 @@ class CapabilityHandler
      * @param IrcMessageQueue $queue
      * @param ContainerInterface $container
      */
-    public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger, IrcMessageQueue $queue, ContainerInterface $container)
-    {
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        IrcMessageQueue $queue,
+        ContainerInterface $container
+    ) {
         $eventEmitter->on('stream.created', [$this, 'initialize']);
         $eventEmitter->on('irc.msg.in.cap', [$this, 'responseRouter']);
         $eventEmitter->on('irc.cap.ls.final', [$this, 'initializeCapabilityHandlers']);
@@ -125,7 +130,7 @@ class CapabilityHandler
     /**
      * @param string $capability
      *
-     * @return \React\Promise\Promise|PromiseInterface
+     * @return Promise|PromiseInterface
      */
     public function requestCapability(string $capability)
     {
