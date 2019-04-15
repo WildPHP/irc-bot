@@ -64,3 +64,4 @@ php_errors
 /storage/*
 !/storage/.empty
 cloverCoverage.xml
+.php_cs.cache
