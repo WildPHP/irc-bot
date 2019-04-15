@@ -120,10 +120,6 @@ class IrcUserChannelRelationStorage implements IrcUserChannelRelationStorageInte
             return null;
         }
 
-        if (!is_array($entries)) {
-            $entries = [$entries];
-        }
-
         foreach ($entries as $key => $entry) {
             $entries[$key] = IrcUserChannelRelationStorageAdapter::convertToIrcUserChannelRelation($entry);
         }
