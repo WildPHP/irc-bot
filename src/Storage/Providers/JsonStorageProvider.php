@@ -26,6 +26,10 @@ class JsonStorageProvider implements StorageProviderInterface
      */
     private $cache = [];
 
+    /**
+     * JsonStorageProvider constructor.
+     * @param string $baseDirectory
+     */
     public function __construct(string $baseDirectory)
     {
         $this->baseDirectory = $baseDirectory;
@@ -158,7 +162,7 @@ class JsonStorageProvider implements StorageProviderInterface
 
             $matchCount = 0;
             foreach ($criteria as $key => $value) {
-                if (array_key_exists($key, $entry) && $entry[$key] === (string)$value) {
+                if (array_key_exists($key, $entry) && $entry[$key] === $value) {
                     $matchCount++;
                 }
             }

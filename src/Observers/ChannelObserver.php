@@ -13,11 +13,18 @@ use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Entities\IrcChannel;
+use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Join;
+use WildPHP\Messages\Kick;
+use WildPHP\Messages\Part;
+use WildPHP\Messages\Quit;
 use WildPHP\Messages\RPL\NamReply;
 use WildPHP\Messages\RPL\Topic;
 
@@ -44,6 +51,15 @@ class ChannelObserver
     private $channelStorage;
 
     /**
+     * @var IrcUserStorageInterface
+     */
+    private $userStorage;
+    /**
+     * @var IrcUserChannelRelationStorageInterface
+     */
+    private $userChannelRelationStorage;
+
+    /**
      * BaseModule constructor.
      *
      * @param EventEmitterInterface $eventEmitter
@@ -51,13 +67,17 @@ class ChannelObserver
      * @param LoggerInterface $logger
      * @param IrcMessageQueue $queue
      * @param IrcChannelStorageInterface $channelStorage
+     * @param IrcUserStorageInterface $userStorage
+     * @param IrcUserChannelRelationStorageInterface $userChannelRelationStorage
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         LoggerInterface $logger,
         IrcMessageQueue $queue,
-        IrcChannelStorageInterface $channelStorage
+        IrcChannelStorageInterface $channelStorage,
+        IrcUserStorageInterface $userStorage,
+        IrcUserChannelRelationStorageInterface $userChannelRelationStorage
     ) {
         $eventEmitter->on('irc.msg.in.join', [$this, 'createChannel']);
         $eventEmitter->on('irc.msg.in.join', [$this, 'processChannelJoin']);
@@ -78,6 +98,8 @@ class ChannelObserver
         $this->queue = $queue;
         $this->configuration = $configuration;
         $this->channelStorage = $channelStorage;
+        $this->userStorage = $userStorage;
+        $this->userChannelRelationStorage = $userChannelRelationStorage;
     }
 
     /**
@@ -132,22 +154,28 @@ class ChannelObserver
      */
     public function processChannelJoin(IncomingIrcMessageEvent $ircMessageEvent): void
     {
-        // TODO: REIMPLEMENT THIS
-        /*$user = IrcUserQuery::create()->findOneByNickname($joinMessage->getNickname());
+        /** @var Join $ircMessage */
+        $ircMessage = $ircMessageEvent->getIncomingMessage();
+        $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
+        $channels = $ircMessage->getChannels();
 
-        foreach ($joinMessage->getChannels() as $channelName) {
-            $channel = IrcChannelQuery::create()->findOneByName($channelName);
-            $channel->addIrcUser($user);
-            $channel->save();
+        foreach ($channels as $channel) {
+            /** @var IrcChannel $channelObject */
+            $channelObject = $this->channelStorage->getOneByName($channel);
+
+            $relation = $this->userChannelRelationStorage->getOrCreateOne(
+                $user->getUserId(),
+                $channelObject->getChannelId()
+            );
 
             $this->logger->debug('Creating user-channel relationship', [
                 'reason' => 'join',
-                'userID' => $user->getId(),
+                'userID' => $relation->getIrcUserId(),
                 'nickname' => $user->getNickname(),
-                'channelID' => $channel->getId(),
-                'channel' => $channel->getName()
+                'channelID' => $relation->getIrcChannelId(),
+                'channel' => $channel
             ]);
-        }*/
+        }
     }
 
     /**
@@ -174,37 +202,35 @@ class ChannelObserver
     }
 
     /**
-     * @param NamReply $ircMessage
+     * @param IncomingIrcMessageEvent $ircMessageEvent
      */
-    public function processNamesReply(NamReply $ircMessage): void
+    public function processNamesReply(IncomingIrcMessageEvent $ircMessageEvent): void
     {
-        // TODO: REIMPLEMENT THIS
-        /*$nicknames = $ircMessage->getNicknames();
+        /** @var NamReply $ircMessage */
+        $ircMessage = $ircMessageEvent->getIncomingMessage();
+        $nicknames = $ircMessage->getNicknames();
 
-        $channel = IrcChannelQuery::create()->findOneByName($ircMessage->getChannel());
+        $channel = $this->channelStorage->getOrCreateOneByName($ircMessage->getChannel());
 
         foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
-            UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
+            $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
+            $user = $this->userStorage->getOrCreateOneByNickname($nickname);
 
-            $user = IrcUserQuery::create()->findOneByNickname($nickname);
-
-            if ($channel->getIrcUsers()->contains($user)) {
-                return;
-            }
-
-            $channel->addIrcUser($user);
+            $relation = $this->userChannelRelationStorage->getOrCreateOne(
+                $user->getUserId(),
+                $channel->getChannelId(),
+                $modes
+            );
 
             $this->logger->debug('Creating user-channel relationship', [
                 'reason' => 'rpl_namreply',
-                'userID' => $user->getId(),
+                'userID' => $relation->getIrcUserId(),
                 'nickname' => $user->getNickname(),
-                'channelID' => $channel->getId(),
+                'channelID' => $relation->getIrcChannelId(),
                 'channel' => $channel->getName()
             ]);
         }
-
-        $channel->save();*/
     }
 
     /**
@@ -212,19 +238,23 @@ class ChannelObserver
      */
     public function processUserKick(IncomingIrcMessageEvent $ircMessageEvent): void
     {
-        // TODO: REIMPLEMENT THIS
-        /*
-        $user = IrcUserQuery::create()->findOneByNickname($kickMessage->getNickname());
-        $channel = IrcChannelQuery::create()->findOneByName($kickMessage->getChannel());
-        $channel->removeIrcUser($user);
-        $channel->save();
+        /** @var Kick $kickMessage */
+        $kickMessage = $ircMessageEvent->getIncomingMessage();
+
+        /** @var IrcUser $user */
+        $user = $this->userStorage->getOneByNickname($kickMessage->getNickname());
+        /** @var IrcChannel $channel */
+        $channel = $this->channelStorage->getOneByName($kickMessage->getChannel());
+
+        $this->userChannelRelationStorage->delete(
+            $this->userChannelRelationStorage->getOne($user->getUserId(), $channel->getChannelId())
+        );
 
         $this->logger->debug('Removed user-channel relationship', [
             'reason' => 'kick',
             'nickname' => $kickMessage->getNickname(),
             'channel' => $kickMessage->getChannel()
         ]);
-        */
     }
 
     /**
@@ -232,22 +262,26 @@ class ChannelObserver
      */
     public function processUserPart(IncomingIrcMessageEvent $ircMessageEvent): void
     {
-        // TODO: REIMPLEMENT THIS
-        /*
-        $user = IrcUserQuery::create()->findOneByNickname($partMessage->getNickname());
+        /** @var Part $partMessage */
+        $partMessage = $ircMessageEvent->getIncomingMessage();
 
-        foreach ($partMessage->getChannels() as $channel) {
-            $channel = IrcChannelQuery::create()->findOneByName($channel);
-            $channel->removeIrcUser($user);
-            $channel->save();
+        /** @var IrcUser $user */
+        $user = $this->userStorage->getOneByNickname($partMessage->getNickname());
+
+        foreach ($partMessage->getChannels() as $channelName) {
+            /** @var IrcChannel $channel */
+            $channel = $this->channelStorage->getOneByName($channelName);
+
+            $this->userChannelRelationStorage->delete(
+                $this->userChannelRelationStorage->getOne($user->getUserId(), $channel->getChannelId())
+            );
 
             $this->logger->debug('Removed user-channel relationship', [
                 'reason' => 'part',
                 'nickname' => $partMessage->getNickname(),
-                'channel' => $channel
+                'channel' => $channelName
             ]);
         }
-        */
     }
 
     /**
@@ -255,16 +289,19 @@ class ChannelObserver
      */
     public function processUserQuit(IncomingIrcMessageEvent $ircMessageEvent): void
     {
-        // TODO: REIMPLEMENT THIS
-        /*
-        $user = IrcUserQuery::create()->findOneByNickname($quitMessage->getNickname());
-        $user->getIrcChannels()->clear();
-        $user->save();
+        /** @var Quit $quitMessage */
+        $quitMessage = $ircMessageEvent->getIncomingMessage();
 
-        $this->logger->debug('Cleared all user-channel relationships', [
+        /** @var IrcUser $user */
+        $user = $this->userStorage->getOneByNickname($quitMessage->getNickname());
+
+        foreach ($this->userChannelRelationStorage->getByUserId($user->getUserId()) as $relation) {
+            $this->userChannelRelationStorage->delete($relation);
+        }
+
+        $this->logger->debug('Removed all user-channel relationships', [
             'reason' => 'quit',
             'nickname' => $quitMessage->getNickname()
         ]);
-        */
     }
 }

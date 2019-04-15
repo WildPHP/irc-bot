@@ -26,6 +26,8 @@ use function DI\create;
 use function DI\autowire;
 use WildPHP\Core\Storage\IrcChannelStorage;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserChannelRelationStorage;
+use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorage;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
@@ -42,6 +44,7 @@ return [
 
     IrcUserStorageInterface::class => autowire(IrcUserStorage::class),
     IrcChannelStorageInterface::class => autowire(IrcChannelStorage::class),
+    IrcUserChannelRelationStorageInterface::class => autowire(IrcUserChannelRelationStorage::class),
 
     LoggerInterface::class => static function () {
         $logger = new Logger('wildphp');

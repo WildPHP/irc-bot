@@ -13,10 +13,12 @@ use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use WildPHP\Core\Connection\UserModeParser;
+use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Events\NicknameChangedEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Join;
 use WildPHP\Messages\Nick;
@@ -50,6 +52,10 @@ class UserObserver
      * @var IrcChannelStorageInterface
      */
     private $channelStorage;
+    /**
+     * @var IrcUserChannelRelationStorageInterface
+     */
+    private $relationStorage;
 
     /**
      * BaseModule constructor.
@@ -59,13 +65,15 @@ class UserObserver
      * @param IrcMessageQueue $queue
      * @param IrcUserStorageInterface $userStorage
      * @param IrcChannelStorageInterface $channelStorage
+     * @param IrcUserChannelRelationStorageInterface $relationStorage
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         LoggerInterface $logger,
         IrcMessageQueue $queue,
         IrcUserStorageInterface $userStorage,
-        IrcChannelStorageInterface $channelStorage
+        IrcChannelStorageInterface $channelStorage,
+        IrcUserChannelRelationStorageInterface $relationStorage
     ) {
         $eventEmitter->on('irc.msg.in.join', [$this, 'processUserJoin']);
         $eventEmitter->on('irc.msg.in.nick', [$this, 'processUserNickChange']);
@@ -84,6 +92,7 @@ class UserObserver
         $this->queue = $queue;
         $this->userStorage = $userStorage;
         $this->channelStorage = $channelStorage;
+        $this->relationStorage = $relationStorage;
     }
 
     /**
@@ -126,17 +135,11 @@ class UserObserver
             $nickname = '';
             $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
 
-            $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
+            $user = $this->userStorage->getOrCreateOneByNickname($nickname);
+            /** @var IrcChannel $channel */
             $channel = $this->channelStorage->getOneByName($ircMessage->getChannel());
 
-            // TODO: REIMPLEMENT THIS
-            /*foreach ($modes as $mode) {
-                $userChannelMode = new UserModeChannel();
-                $userChannelMode->setIrcUser($user);
-                $userChannelMode->setIrcChannel($channel);
-                $userChannelMode->setMode($mode);
-                $userChannelMode->save();
-            }*/
+            $this->relationStorage->getOrCreateOne($user->getUserId(), $channel->getChannelId());
 
             $this->logger->debug(
                 'Modified or created user',
