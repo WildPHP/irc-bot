@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright 2019 The WildPHP Team
+ *
+ * You should have received a copy of the MIT license with the project.
+ * See the LICENSE file for more information.
+ */
+
 declare(strict_types=1);
 
 /**
@@ -135,7 +142,9 @@ class ConnectionHeartbeatObserver
      */
     protected function forceDisconnect(): void
     {
-        $this->logger->warning('The server has not responded to the last PING command. Is the network down? Closing link.');
+        $this->logger->warning(
+            'The server has not responded to the last PING command. Is the network down? Closing link.'
+        );
         $this->queue->quit('No vital signs detected, closing link...');
         $this->ircConnection->close();
     }
@@ -145,7 +154,10 @@ class ConnectionHeartbeatObserver
      */
     protected function sendPing(): void
     {
-        $this->logger->debug('No message received from the server in the last ' . $this->pingInterval . ' seconds. Sending PING.');
+        $this->logger->debug(sprintf(
+            'No message received from the server in the last %d seconds. Sending PING.',
+            $this->pingInterval
+        ));
 
         $serverHostname = $this->configuration['serverConfig']['hostname'];
         $this->queue->ping($serverHostname);
@@ -160,13 +172,5 @@ class ConnectionHeartbeatObserver
         /** @var Ping $pingMessage */
         $pingMessage = $event->getIncomingMessage();
         $this->queue->pong($pingMessage->getServer1(), $pingMessage->getServer2());
-    }
-
-    /**
-     * @return int
-     */
-    public function getLastMessageReceivedTime(): int
-    {
-        return $this->lastMessageReceived;
     }
 }

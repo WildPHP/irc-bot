@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright 2019 The WildPHP Team
+ *
+ * You should have received a copy of the MIT license with the project.
+ * See the LICENSE file for more information.
+ */
+
 declare(strict_types=1);
 /**
  * Copyright 2018 The WildPHP Team
@@ -15,26 +22,46 @@ use WildPHP\Core\Connection\IncomingMessageParser;
 use WildPHP\Core\Connection\MessageLogger;
 use WildPHP\Core\Connection\MessageParser;
 use WildPHP\Core\Observers\BotNicknameObserver;
-use WildPHP\Core\Observers\ChannelObserver;
 use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
+use WildPHP\Core\Observers\EndOfNamesObserver;
+use WildPHP\Core\Observers\InitialJoinObserver;
+use WildPHP\Core\Observers\JoinObserver;
+use WildPHP\Core\Observers\KickObserver;
+use WildPHP\Core\Observers\NamReplyObserver;
+use WildPHP\Core\Observers\NickObserver;
+use WildPHP\Core\Observers\PartObserver;
+use WildPHP\Core\Observers\QuitObserver;
 use WildPHP\Core\Observers\ServerConfigObserver;
-use WildPHP\Core\Observers\UserObserver;
+use WildPHP\Core\Observers\TopicObserver;
+use WildPHP\Core\Observers\WhosPcRplObserver;
 use WildPHP\Core\Queue\QueueProcessor;
 
 return [
     MessageParser::class,
-    ConnectionHeartbeatObserver::class,
-    BotNicknameObserver::class,
-    ServerConfigObserver::class,
     AlternativeNicknameHandler::class,
     MessageLogger::class,
     AccountNotifyHandler::class,
-    UserObserver::class,
-    ChannelObserver::class,
     CommandRunner::class,
     QueueProcessor::class,
     IncomingMessageParser::class,
     CapabilityHandler::class,
+
+    // observers; please keep in alphabetical order
+    BotNicknameObserver::class,
+    ConnectionHeartbeatObserver::class,
+    EndOfNamesObserver::class,
+    InitialJoinObserver::class,
+    JoinObserver::class,
+    KickObserver::class,
+    NamReplyObserver::class,
+    NickObserver::class,
+    PartObserver::class,
+    QuitObserver::class,
+    ServerConfigObserver::class,
+    TopicObserver::class,
+    WhosPcRplObserver::class,
+
+    // commands; please keep in alphabetical order
     //\WildPHP\Core\Commands\HelpCommand::class,
     //\WildPHP\Core\Permissions\PermissionGroupCommands::class,
     //\WildPHP\Core\Permissions\PermissionCommands::class,
