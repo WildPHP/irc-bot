@@ -1,12 +1,12 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Copyright 2019 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
  */
+
+declare(strict_types=1);
 
 namespace WildPHP\Core\Connection;
 
@@ -51,39 +51,39 @@ class MessageParser
     }
 
     /**
-     * @param string $line
+     * @param string $messageLine
      *
      * @return array
      */
-    public static function split(string $line): array
+    public static function split(string $messageLine): array
     {
-        $line = rtrim($line, "\r\n");
-        $line = explode(' ', $line);
+        $messageLine = rtrim($messageLine, "\r\n");
+        $line = explode(' ', $messageLine);
         $index = 0;
-        $arv_count = count($line);
+        $arvCount = count($line);
         $parv = [];
 
-        while ($index < $arv_count && $line[$index] === '') {
+        while ($index < $arvCount && $line[$index] === '') {
             $index++;
         }
 
-        if ($index < $arv_count && $line[$index][0] === '@') {
+        if ($index < $arvCount && $line[$index][0] === '@') {
             $parv[] = $line[$index];
             $index++;
-            while ($index < $arv_count && $line[$index] === '') {
+            while ($index < $arvCount && $line[$index] === '') {
                 $index++;
             }
         }
 
-        if ($index < $arv_count && $line[$index][0] === ':') {
+        if ($index < $arvCount && $line[$index][0] === ':') {
             $parv[] = $line[$index];
             $index++;
-            while ($index < $arv_count && $line[$index] === '') {
+            while ($index < $arvCount && $line[$index] === '') {
                 $index++;
             }
         }
 
-        while ($index < $arv_count) {
+        while ($index < $arvCount) {
             if ($line[$index][0] === ':') {
                 break;
             }
@@ -94,7 +94,7 @@ class MessageParser
             $index++;
         }
 
-        if ($index < $arv_count) {
+        if ($index < $arvCount) {
             $trailing = implode(' ', array_slice($line, $index));
             $parv[] = _substr($trailing, 1);
         }
