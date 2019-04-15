@@ -23,7 +23,6 @@ use WildPHP\Messages\Cap;
 
 class CapabilityHandler
 {
-
     /**
      * Array of built-in capability handlers
      * @var string[]
@@ -101,9 +100,9 @@ class CapabilityHandler
     public function initializeCapabilityHandlers(): void
     {
         foreach ($this->capabilityHandlers as $capability => $handler) {
-            if (!in_array($capability, $this->availableCapabilities, true)) {
+            if (!$this->isCapabilityAvailable($capability)) {
                 $this->logger->debug(sprintf(
-                    'Skipping handler for capability %s because it is not available.',
+                    '[CapabilityHandler] Skipping handler for capability %s because it is not available.',
                     $capability
                 ));
 
@@ -122,16 +121,6 @@ class CapabilityHandler
     }
 
     /**
-     * @param array $capabilities
-     */
-    public function requestCapabilities(array $capabilities): void
-    {
-        foreach ($capabilities as $capability) {
-            $this->requestCapability($capability);
-        }
-    }
-
-    /**
      * @param string $capability
      *
      * @return Promise|PromiseInterface
@@ -139,7 +128,7 @@ class CapabilityHandler
     public function requestCapability(string $capability)
     {
         $deferred = new Deferred();
-        $this->logger->debug('Capability requested', ['capability' => $capability]);
+        $this->logger->debug('[CapabilityHandler] Capability requested', ['capability' => $capability]);
         $this->queue->cap('REQ', [$capability]);
         $this->queuedCapabilities[$capability] = $deferred;
 
@@ -191,7 +180,7 @@ class CapabilityHandler
         $this->availableCapabilities = $capabilities;
 
         $this->logger->debug(
-            'Updated list of available capabilities.',
+            '[CapabilityHandler] Updated list of available capabilities.',
             [
                 'availableCapabilities' => $capabilities
             ]
@@ -211,7 +200,7 @@ class CapabilityHandler
     public function resolveCapabilityHandlers(array $capabilities): void
     {
         foreach ($capabilities as $capability) {
-            $this->logger->debug('Capability ' . $capability . ' resolved.');
+            $this->logger->debug('[CapabilityHandler] Capability ' . $capability . ' resolved.');
             if (array_key_exists($capability, $this->queuedCapabilities)) {
                 $this->queuedCapabilities[$capability]->resolve();
             }
@@ -224,7 +213,7 @@ class CapabilityHandler
     public function rejectCapabilityHandlers(array $capabilities): void
     {
         foreach ($capabilities as $capability) {
-            $this->logger->debug('Capability ' . $capability . ' rejected.');
+            $this->logger->debug('[CapabilityHandler] Capability ' . $capability . ' rejected.');
             if (array_key_exists($capability, $this->queuedCapabilities)) {
                 $this->queuedCapabilities[$capability]->reject();
             }
@@ -240,7 +229,7 @@ class CapabilityHandler
             return;
         }
 
-        $this->logger->debug('Ending capability negotiation.');
+        $this->logger->debug('[CapabilityHandler] Ending capability negotiation.');
         $this->queue->cap('END');
 
         $this->eventEmitter->emit('irc.cap.end');
@@ -254,22 +243,18 @@ class CapabilityHandler
     {
         /** @var CapabilityInterface $capability */
         foreach ($this->capabilityHandlers as $string => $capability) {
-            $this->logger->debug('State of capability ' . $string . ': ' . ($capability->finished() ? 'finished' : 'not finished'));
+            $this->logger->debug(sprintf(
+                '[CapabilityHandler] State of capability %s: %s',
+                $string,
+                ($capability->finished() ? 'finished' : 'not finished')
+            ));
             if (!$capability->finished()) {
                 return false;
             }
         }
 
-        $this->logger->debug('All capabilities are ready.');
+        $this->logger->debug('[CapabilityHandler] All capabilities are ready.');
 
         return true;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAvailableCapabilities(): array
-    {
-        return $this->availableCapabilities;
     }
 }
