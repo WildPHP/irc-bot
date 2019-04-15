@@ -7,7 +7,6 @@
  */
 
 declare(strict_types=1);
-
 /**
  * Copyright 2019 The WildPHP Team
  *
