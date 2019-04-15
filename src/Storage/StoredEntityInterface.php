@@ -17,9 +17,9 @@ interface StoredEntityInterface
     public function getId(): int;
 
     /**
-     * @param int $id
+     * @param int $entityId
      */
-    public function setId(int $id): void;
+    public function setId(int $entityId): void;
 
     /**
      * @return array

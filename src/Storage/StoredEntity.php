@@ -30,7 +30,7 @@ class StoredEntity implements StoredEntityInterface
     public function __construct(array $data, int $entityId = 0)
     {
         $this->data = $data;
-        $this->id = $entityId;
+        $this->entityId = $entityId;
     }
 
     /**
@@ -62,6 +62,6 @@ class StoredEntity implements StoredEntityInterface
      */
     public function setId(int $entityId): void
     {
-        $this->id = $entityId;
+        $this->entityId = $entityId;
     }
 }
