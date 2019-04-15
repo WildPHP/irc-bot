@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-use WildPHP\Core\Storage\Providers\SQLiteDatabaseStorageProvider;
+use WildPHP\Core\Storage\Providers\JsonStorageProvider;
 
 return [
     'connection' => [
@@ -57,7 +58,7 @@ return [
     # - JSON (default): \WildPHP\Core\Storage\Providers\JsonStorageProvider
     # - SQLite: \WildPHP\Core\Storage\Providers\SQLiteDatabaseStorageProvider
     'storage' => [
-        'provider' => new \WildPHP\Core\Storage\Providers\JsonStorageProvider(WPHP_ROOT_DIR . '/storage')
+        'provider' => new JsonStorageProvider(WPHP_ROOT_DIR . '/storage')
     ],
 
     # Command prefix used for command parsing.

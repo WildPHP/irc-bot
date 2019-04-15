@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Modules;
 
-
 use Exception;
 
 class ModuleException extends Exception
 {
-
 }

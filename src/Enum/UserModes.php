@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Enum;
 
-
 class UserModes extends Enum
 {
     public const IS_BOT = 'B';

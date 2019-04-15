@@ -54,5 +54,4 @@ class ChannelModes extends Enum
     public const SETTING_NO_INVITE = 'V';
     public const SETTING_SECURE_ONLY = 'z';
     public const SETTING_IS_SECURE = 'Z';
-
 }

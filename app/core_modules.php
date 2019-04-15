@@ -7,20 +7,34 @@ declare(strict_types=1);
  * See the LICENSE file for more information.
  */
 
+use WildPHP\Core\Commands\CommandRunner;
+use WildPHP\Core\Connection\AlternativeNicknameHandler;
+use WildPHP\Core\Connection\Capabilities\AccountNotifyHandler;
+use WildPHP\Core\Connection\Capabilities\CapabilityHandler;
+use WildPHP\Core\Connection\IncomingMessageParser;
+use WildPHP\Core\Connection\MessageLogger;
+use WildPHP\Core\Connection\MessageParser;
+use WildPHP\Core\Observers\BotNicknameObserver;
+use WildPHP\Core\Observers\ChannelObserver;
+use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
+use WildPHP\Core\Observers\ServerConfigObserver;
+use WildPHP\Core\Observers\UserObserver;
+use WildPHP\Core\Queue\QueueProcessor;
+
 return [
-    \WildPHP\Core\Connection\MessageParser::class,
-    \WildPHP\Core\Observers\ConnectionHeartbeatObserver::class,
-    \WildPHP\Core\Observers\BotNicknameObserver::class,
-    \WildPHP\Core\Observers\ServerConfigObserver::class,
-    \WildPHP\Core\Connection\AlternativeNicknameHandler::class,
-    \WildPHP\Core\Connection\MessageLogger::class,
-    \WildPHP\Core\Connection\Capabilities\AccountNotifyHandler::class,
-    \WildPHP\Core\Observers\UserObserver::class,
-    \WildPHP\Core\Observers\ChannelObserver::class,
-    \WildPHP\Core\Commands\CommandRunner::class,
-    \WildPHP\Core\Queue\QueueProcessor::class,
-    \WildPHP\Core\Connection\IncomingMessageParser::class,
-    \WildPHP\Core\Connection\Capabilities\CapabilityHandler::class,
+    MessageParser::class,
+    ConnectionHeartbeatObserver::class,
+    BotNicknameObserver::class,
+    ServerConfigObserver::class,
+    AlternativeNicknameHandler::class,
+    MessageLogger::class,
+    AccountNotifyHandler::class,
+    UserObserver::class,
+    ChannelObserver::class,
+    CommandRunner::class,
+    QueueProcessor::class,
+    IncomingMessageParser::class,
+    CapabilityHandler::class,
     //\WildPHP\Core\Commands\HelpCommand::class,
     //\WildPHP\Core\Permissions\PermissionGroupCommands::class,
     //\WildPHP\Core\Permissions\PermissionCommands::class,

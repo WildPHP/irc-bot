@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Storage;
 
-
 use WildPHP\Core\Entities\IrcChannel;
 
 interface IrcChannelStorageInterface
@@ -25,10 +24,10 @@ interface IrcChannelStorageInterface
     public function delete(IrcChannel $channel): void;
 
     /**
-     * @param int $id
+     * @param int $channelId
      * @return bool
      */
-    public function has(int $id): bool;
+    public function has(int $channelId): bool;
 
     /**
      * @param IrcChannel $channel
@@ -37,10 +36,10 @@ interface IrcChannelStorageInterface
     public function contains(IrcChannel $channel): bool;
 
     /**
-     * @param int $id
+     * @param int $channelId
      * @return null|IrcChannel
      */
-    public function getOne(int $id): ?IrcChannel;
+    public function getOne(int $channelId): ?IrcChannel;
 
     /**
      * @param string $name

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Storage;
 
-
 use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
 
@@ -36,7 +35,7 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     public function store(IrcUser $user): void
     {
-        if (empty($user->getId())) {
+        if (empty($user->getUserId())) {
             $this->giveId($user);
         }
 
@@ -49,20 +48,20 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     public function delete(IrcUser $user): void
     {
-        if (empty($user->getId()) || !$this->has($user->getId())) {
+        if (empty($user->getUserId()) || !$this->has($user->getUserId())) {
             throw new StorageException('Cannot delete user without ID or channel which is not stored');
         }
 
-        $this->storageProvider->delete($this->database, ['id' => $user->getId()]);
+        $this->storageProvider->delete($this->database, ['id' => $user->getUserId()]);
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return bool
      */
-    public function has(int $id): bool
+    public function has(int $userId): bool
     {
-        return $this->storageProvider->has($this->database, ['id' => $id]);
+        return $this->storageProvider->has($this->database, ['id' => $userId]);
     }
 
     /**
@@ -75,12 +74,12 @@ class IrcUserStorage implements IrcUserStorageInterface
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return null|IrcUser
      */
-    public function getOne(int $id): ?IrcUser
+    public function getOne(int $userId): ?IrcUser
     {
-        $entity = $this->storageProvider->retrieve($this->database, ['id' => $id]);
+        $entity = $this->storageProvider->retrieve($this->database, ['id' => $userId]);
 
         if ($entity === null) {
             return null;
@@ -190,10 +189,10 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     protected function giveId(IrcUser $user): void
     {
-        if (!empty($user->getId())) {
+        if (!empty($user->getUserId())) {
             return;
         }
 
-        $user->setId((int)@max(array_keys($this->getAll())) + 1);
+        $user->setUserId((int)@max(array_keys($this->getAll())) + 1);
     }
 }

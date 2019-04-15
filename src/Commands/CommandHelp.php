@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Commands;
 
-
 use ValidationClosures\Types;
 use Yoshi2889\Collections\Collection;
 

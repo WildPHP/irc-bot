@@ -66,8 +66,11 @@ class ModuleFactory
         try {
             $object = $this->container->get($entryClassName);
         } catch (Throwable $exception) {
-            throw new ModuleInitializationException('An exception occurred when initializing the module', 0,
-                $exception);
+            throw new ModuleInitializationException(
+                'An exception occurred when initializing the module',
+                0,
+                $exception
+            );
         }
 
         $this->logger->debug('Initialized module', [

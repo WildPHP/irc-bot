@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Events;
 
-
 class IrcLineEvent
 {
-
 }

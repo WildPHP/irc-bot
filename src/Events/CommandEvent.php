@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Events;
 
-
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 
@@ -74,5 +73,4 @@ class CommandEvent
     {
         return $this->parameters;
     }
-
 }

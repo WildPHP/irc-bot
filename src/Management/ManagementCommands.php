@@ -45,7 +45,8 @@ class ManagementCommands
         Configuration $configuration,
         IrcChannelStorageInterface $channelStorage
     ) {
-        $registrar->register('join',
+        $registrar->register(
+            'join',
             new Command(
                 [$this, 'joinCommand'],
                 new ParameterStrategy(1, 5, [
@@ -55,9 +56,11 @@ class ManagementCommands
                     'channel4' => new StringParameter(),
                     'channel5' => new StringParameter()
                 ])
-            ));
+            )
+        );
 
-        $registrar->register('part',
+        $registrar->register(
+            'part',
             new Command(
                 [$this, 'partCommand'],
                 new ParameterStrategy(0, 5, [
@@ -67,29 +70,36 @@ class ManagementCommands
                     'channel4' => new ChannelParameter($channelStorage),
                     'channel5' => new ChannelParameter($channelStorage)
                 ])
-            ));
+            )
+        );
 
-        $registrar->register('quit',
+        $registrar->register(
+            'quit',
             new Command(
                 [$this, 'quitCommand'],
                 new ParameterStrategy(0, -1, [
                     'message' => new StringParameter()
                 ], true)
-            ));
+            )
+        );
 
-        $registrar->register('nick',
+        $registrar->register(
+            'nick',
             new Command(
                 [$this, 'nickCommand'],
                 new ParameterStrategy(0, -1, [
                     'newNickname' => new StringParameter()
                 ])
-            ));
+            )
+        );
 
-        $registrar->register('clearqueue',
+        $registrar->register(
+            'clearqueue',
             new Command(
                 [$this, 'clearQueueCommand'],
                 new ParameterStrategy(0, 0)
-            ));
+            )
+        );
 
         $this->queue = $queue;
         $this->configuration = $configuration;
@@ -121,9 +131,13 @@ class ManagementCommands
         $diff = array_diff($channels, $validChannels);
 
         if (!empty($diff)) {
-            $this->queue->privmsg($event->getUser()->getNickname(),
-                'Did not join the following channels because they do not follow proper formatting: ' . implode(', ',
-                    $diff));
+            $this->queue->privmsg(
+                $event->getUser()->getNickname(),
+                'Did not join the following channels because they do not follow proper formatting: ' . implode(
+                    ', ',
+                    $diff
+                )
+            );
         }
     }
 
@@ -174,9 +188,13 @@ class ManagementCommands
 
         if (!empty($diff)) {
             $this->queue
-                ->privmsg($event->getUser()->getNickname(),
-                    'Did not part the following channels because they do not follow proper formatting: ' . implode(', ',
-                        $diff));
+                ->privmsg(
+                    $event->getUser()->getNickname(),
+                    'Did not part the following channels because they do not follow proper formatting: ' . implode(
+                        ', ',
+                        $diff
+                    )
+                );
         }
     }
 
@@ -199,7 +217,9 @@ class ManagementCommands
     public function clearQueueCommand(CommandEvent $event): void
     {
         $this->queue->clear();
-        $this->queue->privmsg($event->getChannel()->getName(),
-            $event->getUser()->getNickname() . ': Message queue cleared.');
+        $this->queue->privmsg(
+            $event->getChannel()->getName(),
+            $event->getUser()->getNickname() . ': Message queue cleared.'
+        );
     }
 }

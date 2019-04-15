@@ -97,11 +97,13 @@ class ChannelObserver
             $this->queue->join($chunk);
         }
 
-        $this->logger->debug('Queued initial channel join.',
+        $this->logger->debug(
+            'Queued initial channel join.',
             [
                 'count' => count($channels),
                 'channels' => $channels
-            ]);
+            ]
+        );
     }
 
     /**
@@ -118,7 +120,7 @@ class ChannelObserver
                 $this->channelStorage->store($channel);
 
                 $this->logger->debug('Created new channel', [
-                    'id' => $channel->getId(),
+                    'id' => $channel->getChannelId(),
                     'name' => $channel->getName()
                 ]);
             }

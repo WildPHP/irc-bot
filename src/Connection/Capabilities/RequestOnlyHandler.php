@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection\Capabilities;
 
-
 use React\Promise\PromiseInterface;
 
 class RequestOnlyHandler implements CapabilityInterface

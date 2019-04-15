@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Commands;
 
-
 use WildPHP\Commands\Command;
 use WildPHP\Commands\CommandProcessor;
 

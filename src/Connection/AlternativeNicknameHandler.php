@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
@@ -17,7 +16,6 @@ use WildPHP\Core\Queue\IrcMessageQueue;
 
 class AlternativeNicknameHandler
 {
-
     protected $nicknames = [];
     protected $tryNicknames = [];
 

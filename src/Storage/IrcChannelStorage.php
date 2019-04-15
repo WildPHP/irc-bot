@@ -34,7 +34,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     public function store(IrcChannel $channel): void
     {
-        if (empty($channel->getId())) {
+        if (empty($channel->getChannelId())) {
             $this->giveId($channel);
         }
 
@@ -47,20 +47,20 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     public function delete(IrcChannel $channel): void
     {
-        if (empty($channel->getId()) || !$this->has($channel->getId())) {
+        if (empty($channel->getChannelId()) || !$this->has($channel->getChannelId())) {
             throw new StorageException('Cannot delete channel without ID or channel which is not stored');
         }
 
-        $this->storageProvider->delete($this->database, ['id' => $channel->getId()]);
+        $this->storageProvider->delete($this->database, ['id' => $channel->getChannelId()]);
     }
 
     /**
-     * @param int $id
+     * @param int $channelId
      * @return bool
      */
-    public function has(int $id): bool
+    public function has(int $channelId): bool
     {
-        return $this->storageProvider->has($this->database, ['id' => $id]);
+        return $this->storageProvider->has($this->database, ['id' => $channelId]);
     }
 
     /**
@@ -73,12 +73,12 @@ class IrcChannelStorage implements IrcChannelStorageInterface
     }
 
     /**
-     * @param int $id
+     * @param int $channelId
      * @return null|IrcChannel
      */
-    public function getOne(int $id): ?IrcChannel
+    public function getOne(int $channelId): ?IrcChannel
     {
-        $entity = $this->storageProvider->retrieve($this->database, ['id' => $id]);
+        $entity = $this->storageProvider->retrieve($this->database, ['id' => $channelId]);
 
         if ($entity === null) {
             return null;
@@ -143,10 +143,10 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     protected function giveId(IrcChannel $channel): void
     {
-        if (!empty($channel->getId())) {
+        if (!empty($channel->getChannelId())) {
             return;
         }
 
-        $channel->setId((int)@max(array_keys($this->getAll())) + 1);
+        $channel->setChannelId((int)@max(array_keys($this->getAll())) + 1);
     }
 }

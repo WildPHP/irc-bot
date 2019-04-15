@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Events;
 
-
 use WildPHP\Messages\Interfaces\IncomingMessageInterface;
 
 class IncomingIrcMessageEvent

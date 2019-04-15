@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection\Capabilities;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\Promise\PromiseInterface;
@@ -69,7 +68,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
 
         $this->logger->debug('Updated IRC account', [
             'reason' => 'account_notify',
-            'userID' => $user->getId(),
+            'userID' => $user->getUserId(),
             'nickname' => $user->getNickname(),
             'new_ircAccount' => $user->getIrcAccount()
         ]);

@@ -12,6 +12,11 @@ namespace WildPHP\Core\Commands\Parameters;
 use WildPHP\Commands\Parameters\Parameter;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 
+/**
+ * Class ChannelParameter
+ *
+ * @package WildPHP\Core\Commands\Parameters
+ */
 class ChannelParameter extends Parameter
 {
     /**

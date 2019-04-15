@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Entities;
 
-
 class IrcChannel
 {
-    private $id;
+    /**
+     * @var int
+     */
+    private $channelId;
+
     /**
      * @var string
      */
@@ -37,27 +40,26 @@ class IrcChannel
      */
     public function __construct(string $name, int $id = 0, string $topic = '', array $modes = [])
     {
-
         $this->name = $name;
         $this->topic = $topic;
         $this->modes = $modes;
-        $this->id = $id;
+        $this->channelId = $id;
     }
 
     /**
      * @return int
      */
-    public function getId(): int
+    public function getChannelId(): int
     {
-        return $this->id;
+        return $this->channelId;
     }
 
     /**
-     * @param int $id
+     * @param int $channelId
      */
-    public function setId(int $id): void
+    public function setChannelId(int $channelId): void
     {
-        $this->id = $id;
+        $this->channelId = $channelId;
     }
 
     /**
@@ -114,7 +116,7 @@ class IrcChannel
     public function toArray(): array
     {
         return [
-            'id' => $this->getId(),
+            'id' => $this->getChannelId(),
             'name' => $this->getName(),
             'topic' => $this->getTopic(),
             'modes' => $this->getModes()

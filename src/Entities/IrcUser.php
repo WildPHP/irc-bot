@@ -14,7 +14,7 @@ class IrcUser
     /**
      * @var int
      */
-    private $id;
+    private $userId;
 
     /**
      * @var string
@@ -34,44 +34,44 @@ class IrcUser
     /**
      * @var string
      */
-    private $irc_account;
+    private $ircAccount;
 
     /**
      * IrcUser constructor.
      * @param string $nickname
-     * @param int $id
+     * @param int $userId
      * @param string $hostname
      * @param string $username
-     * @param string $irc_account
+     * @param string $ircAccount
      */
     public function __construct(
         string $nickname,
-        $id = 0,
+        $userId = 0,
         string $hostname = '',
         string $username = '',
-        string $irc_account = ''
+        string $ircAccount = ''
     ) {
         $this->nickname = $nickname;
         $this->hostname = $hostname;
         $this->username = $username;
-        $this->irc_account = $irc_account;
-        $this->id = $id;
+        $this->ircAccount = $ircAccount;
+        $this->userId = $userId;
     }
 
     /**
      * @return int
      */
-    public function getId(): int
+    public function getUserId(): int
     {
-        return $this->id;
+        return $this->userId;
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      */
-    public function setId(int $id): void
+    public function setUserId(int $userId): void
     {
-        $this->id = $id;
+        $this->userId = $userId;
     }
 
     /**
@@ -127,15 +127,15 @@ class IrcUser
      */
     public function getIrcAccount(): string
     {
-        return $this->irc_account;
+        return $this->ircAccount;
     }
 
     /**
-     * @param string $irc_account
+     * @param string $ircAccount
      */
-    public function setIrcAccount(string $irc_account): void
+    public function setIrcAccount(string $ircAccount): void
     {
-        $this->irc_account = $irc_account;
+        $this->ircAccount = $ircAccount;
     }
 
 
@@ -145,7 +145,7 @@ class IrcUser
     public function toArray(): array
     {
         return [
-            'id' => $this->getId(),
+            'id' => $this->getUserId(),
             'nickname' => $this->getNickname(),
             'hostname' => $this->getHostname(),
             'username' => $this->getUsername(),
@@ -163,7 +163,7 @@ class IrcUser
         $id = $previousState['id'] ?? '';
         $hostname = $previousState['hostname'] ?? '';
         $username = $previousState['username'] ?? '';
-        $irc_account = $previousState['irc_account'] ?? '';
-        return new IrcUser($nickname, $id, $hostname, $username, $irc_account);
+        $ircAccount = $previousState['irc_account'] ?? '';
+        return new IrcUser($nickname, $id, $hostname, $username, $ircAccount);
     }
 }

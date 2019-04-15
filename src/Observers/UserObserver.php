@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Observers;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -68,7 +67,6 @@ class UserObserver
         IrcUserStorageInterface $userStorage,
         IrcChannelStorageInterface $channelStorage
     ) {
-
         $eventEmitter->on('irc.msg.in.join', [$this, 'processUserJoin']);
         $eventEmitter->on('irc.msg.in.nick', [$this, 'processUserNickChange']);
 
@@ -106,7 +104,7 @@ class UserObserver
 
         $this->logger->debug('Updated user', [
             'reason' => 'join',
-            'id' => $user->getId(),
+            'id' => $user->getUserId(),
             'nickname' => $joinMessage->getNickname(),
             'username' => $prefix->getUsername(),
             'hostname' => $prefix->getHostname(),
@@ -140,8 +138,10 @@ class UserObserver
                 $userChannelMode->save();
             }*/
 
-            $this->logger->debug('Modified or created user',
-                ['reason' => 'rpl_namreply', 'nickname' => $nickname, 'modes' => $modes]);
+            $this->logger->debug(
+                'Modified or created user',
+                ['reason' => 'rpl_namreply', 'nickname' => $nickname, 'modes' => $modes]
+            );
         }
     }
 
@@ -172,8 +172,10 @@ class UserObserver
         $user->setIrcAccount($ircMessage->getAccountname());
         $this->userStorage->store($user);
 
-        $this->logger->debug('Modified user',
-            array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray()));
+        $this->logger->debug(
+            'Modified user',
+            array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray())
+        );
     }
 
     /**

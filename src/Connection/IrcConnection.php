@@ -67,10 +67,12 @@ class IrcConnection implements IrcConnectionInterface
         if (substr_count($data, "\r") > 1 || substr_count($data, "\n") > 1) {
             $pieces = explode("\r", str_replace("\n", "\r", $data));
 
-            $this->logger->warning('Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
+            $this->logger->warning(
+                'Multiline message caught! Only sending first line. Please file a bug report, this should not happen.',
                 [
                     'pieces' => $pieces
-                ]);
+                ]
+            );
 
             $data = $pieces[0] . "\r\n";
         }
@@ -105,10 +107,12 @@ class IrcConnection implements IrcConnectionInterface
             ->then(function (ConnectionInterface $connection) use ($connectionString) {
                 $this->eventEmitter->emit('stream.created');
 
-                $connection->on('error',
+                $connection->on(
+                    'error',
                     static function ($error) use ($connectionString) {
                         throw new ConnectionException('Connection to ' . $connectionString . ' failed: ' . $error);
-                    });
+                    }
+                );
 
                 $connection->on('data', [$this, 'incomingData']);
 

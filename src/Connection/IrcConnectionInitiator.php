@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;

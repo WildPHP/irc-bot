@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Storage;
 
-
 class StoredEntity implements StoredEntityInterface
 {
 
@@ -21,17 +20,17 @@ class StoredEntity implements StoredEntityInterface
     /**
      * @var int
      */
-    private $id;
+    private $entityId;
 
     /**
      * StoredEntity constructor.
      * @param array $data
-     * @param int $id
+     * @param int $entityId
      */
-    public function __construct(array $data, int $id = 0)
+    public function __construct(array $data, int $entityId = 0)
     {
         $this->data = $data;
-        $this->id = $id;
+        $this->id = $entityId;
     }
 
     /**
@@ -55,14 +54,14 @@ class StoredEntity implements StoredEntityInterface
      */
     public function getId(): int
     {
-        return $this->id;
+        return $this->entityId;
     }
 
     /**
-     * @param int $id
+     * @param int $entityId
      */
-    public function setId(int $id): void
+    public function setId(int $entityId): void
     {
-        $this->id = $id;
+        $this->id = $entityId;
     }
 }

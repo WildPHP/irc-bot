@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Events;
 
-
 use WildPHP\Core\Entities\IrcUser;
 
 class NicknameChangedEvent implements EventInterface

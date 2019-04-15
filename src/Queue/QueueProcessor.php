@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
-
 use Evenement\EventEmitterInterface;
 use React\EventLoop\LoopInterface;
 use WildPHP\Core\Connection\IrcConnectionInterface;

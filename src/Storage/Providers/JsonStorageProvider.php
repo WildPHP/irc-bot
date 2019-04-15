@@ -64,8 +64,8 @@ class JsonStorageProvider implements StorageProviderInterface
         $cache = &$this->cache[$database];
 
         $ids = array_keys($entries);
-        $id = reset($ids);
-        unset($cache[$id]);
+        $entryId = reset($ids);
+        unset($cache[$entryId]);
 
         $this->syncDatabase($database);
     }
@@ -83,8 +83,8 @@ class JsonStorageProvider implements StorageProviderInterface
 
         $cache = &$this->cache[$database];
 
-        foreach ($entries as $id => $entry) {
-            unset($cache[$id]);
+        foreach (array_keys($entries) as $entryId) {
+            unset($cache[$entryId]);
         }
 
         $this->syncDatabase($database);

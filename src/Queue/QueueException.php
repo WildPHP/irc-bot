@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
-
 use Exception;
 
 class QueueException extends Exception
 {
-
 }

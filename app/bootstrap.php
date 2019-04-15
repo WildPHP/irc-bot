@@ -16,8 +16,6 @@ use WildPHP\Core\Modules\ModuleFactory;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
 
 require '../vendor/autoload.php';
-define('WPHP_ROOT_DIR', dirname(__DIR__));
-define('WPHP_VERSION', '3.0.0');
 
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions(__DIR__ . '/container_configuration.php');

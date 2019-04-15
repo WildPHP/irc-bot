@@ -93,6 +93,7 @@ class CommandRunner
 
     /**
      * @param PRIVMSG $privmsg
+     *
      * @throws ValidationException
      */
     public function parseAndRunCommand(PRIVMSG $privmsg): void
@@ -109,7 +110,9 @@ class CommandRunner
             $parameters = $parsedMessage->getArguments();
             $command = $commandProcessor->findCommand($parsedMessage->getCommand());
             $strategy = CommandParser::findApplicableStrategy($command, $parameters);
-            $parsedMessage->setArguments($strategy->remapNumericParameterIndexes($parameters));
+            $parsedMessage->setArguments(
+                $strategy->remapNumericParameterIndexes($parameters)
+            );
 
             $processedCommand = $commandProcessor->process($parsedMessage);
         } catch (CommandNotFoundException | ParseException $e) {

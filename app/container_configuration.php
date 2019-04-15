@@ -24,32 +24,37 @@ use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\EventEmitter;
 use function DI\create;
 use function DI\autowire;
+use WildPHP\Core\Storage\IrcChannelStorage;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
+use WildPHP\Core\Storage\IrcUserStorage;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
+
+define('WPHP_ROOT_DIR', dirname(__DIR__));
+define('WPHP_VERSION', '3.0.0');
 
 return [
     EventEmitterInterface::class => create(EventEmitter::class),
 
-    StorageProviderInterface::class => function (Configuration $configuration) {
+    StorageProviderInterface::class => static function (Configuration $configuration) {
         return $configuration['storage']['provider'];
     },
 
-    IrcUserStorageInterface::class => autowire(\WildPHP\Core\Storage\IrcUserStorage::class),
-    IrcChannelStorageInterface::class => autowire(\WildPHP\Core\Storage\IrcChannelStorage::class),
+    IrcUserStorageInterface::class => autowire(IrcUserStorage::class),
+    IrcChannelStorageInterface::class => autowire(IrcChannelStorage::class),
 
-    LoggerInterface::class => function () {
+    LoggerInterface::class => static function () {
         $logger = new Logger('wildphp');
         $logger->pushHandler(new StreamHandler('php://stdout'));
         $logger->pushHandler(new RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log'));
         return $logger;
     },
 
-    LoopInterface::class => function () {
+    LoopInterface::class => static function () {
         return Factory::create();
     },
 
-    Configuration::class => function (LoggerInterface $logger) {
+    Configuration::class => static function (LoggerInterface $logger) {
         $file = WPHP_ROOT_DIR . '/config/config.php';
         $logger->info('Reading configuration file ' . $file);
         $phpBackend = new PhpBackend($file);
@@ -64,7 +69,11 @@ return [
         return $configuration;
     },
 
-    IrcConnectionInterface::class => function (EventEmitterInterface $eventEmitter, LoggerInterface $logger, ContainerInterface $container) {
+    IrcConnectionInterface::class => static function (
+        EventEmitterInterface $eventEmitter,
+        LoggerInterface $logger,
+        ContainerInterface $container
+    ) {
         $configuration = $container->get(Configuration::class);
         $connectionDetails = ConnectionDetails::fromConfiguration($configuration);
         $logger->info('Creating connection', [
@@ -73,5 +82,5 @@ return [
         ]);
 
         return new IrcConnection($eventEmitter, $logger, $connectionDetails);
-    },
+    }
 ];

@@ -186,10 +186,12 @@ class CapabilityHandler
     {
         $this->availableCapabilities = $capabilities;
 
-        $this->logger->debug('Updated list of available capabilities.',
+        $this->logger->debug(
+            'Updated list of available capabilities.',
             [
                 'availableCapabilities' => $capabilities
-            ]);
+            ]
+        );
 
         $event = new CapabilityEvent($capabilities);
         $this->eventEmitter->emit('irc.cap.ls', [$event]);

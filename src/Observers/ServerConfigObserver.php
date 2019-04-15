@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Observers;
 
-
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
@@ -68,8 +67,10 @@ class ServerConfigObserver
         $currentSettings = $this->configuration['serverConfig'] ?? [];
         $this->configuration['serverConfig'] = array_merge($currentSettings, $variables);
 
-        $this->logger->debug('Set new server configuration to configuration serverConfig.',
-            [$this->configuration['serverConfig']]);
+        $this->logger->debug(
+            'Set new server configuration to configuration serverConfig.',
+            [$this->configuration['serverConfig']]
+        );
 
         $this->eventEmitter->emit(
             'irc.config.updated',

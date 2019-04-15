@@ -24,10 +24,10 @@ interface IrcUserStorageInterface
     public function delete(IrcUser $user): void;
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return bool
      */
-    public function has(int $id): bool;
+    public function has(int $userId): bool;
 
     /**
      * @param IrcUser $user
@@ -36,10 +36,10 @@ interface IrcUserStorageInterface
     public function contains(IrcUser $user): bool;
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return null|IrcUser
      */
-    public function getOne(int $id): ?IrcUser;
+    public function getOne(int $userId): ?IrcUser;
 
     /**
      * @param string $nickname
