@@ -47,7 +47,7 @@ class IrcUser
      */
     public function __construct(
         string $nickname,
-        $userId = 0,
+        int $userId = 0,
         string $hostname = '',
         string $username = '',
         string $ircAccount = ''
@@ -155,16 +155,16 @@ class IrcUser
     }
 
     /**
-     * @param array $previousState
+     * @param string[] $previousState
      * @return IrcUser
      */
     public static function fromArray(array $previousState): IrcUser
     {
         $nickname = $previousState['nickname'] ?? '';
-        $id = $previousState['id'] ?? '';
+        $userId = (int)($previousState['id'] ?? 0);
         $hostname = $previousState['hostname'] ?? '';
         $username = $previousState['username'] ?? '';
         $ircAccount = $previousState['irc_account'] ?? '';
-        return new IrcUser($nickname, $id, $hostname, $username, $ircAccount);
+        return new IrcUser($nickname, $userId, $hostname, $username, $ircAccount);
     }
 }

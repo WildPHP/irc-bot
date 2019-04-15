@@ -35,16 +35,16 @@ class IrcChannel
     /**
      * IrcChannel constructor.
      * @param string $name
-     * @param int $id
+     * @param int $channelId
      * @param string $topic
      * @param array $modes
      */
-    public function __construct(string $name, int $id = 0, string $topic = '', array $modes = [])
+    public function __construct(string $name, int $channelId = 0, string $topic = '', array $modes = [])
     {
         $this->name = $name;
         $this->topic = $topic;
         $this->modes = $modes;
-        $this->channelId = $id;
+        $this->channelId = $channelId;
     }
 
     /**
@@ -131,9 +131,9 @@ class IrcChannel
     public static function fromArray(array $previousState): IrcChannel
     {
         $name = $previousState['name'] ?? '';
-        $id = $previousState['id'] ?? 0;
+        $channelId = (int)($previousState['id'] ?? 0);
         $topic = $previousState['topic'] ?? '';
         $modes = (array)($previousState['modes'] ?? []);
-        return new IrcChannel($name, $id, $topic, $modes);
+        return new IrcChannel($name, $channelId, $topic, $modes);
     }
 }

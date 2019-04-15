@@ -35,7 +35,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     public function store(IrcChannel $channel): void
     {
-        if (empty($channel->getChannelId())) {
+        if (empty($channel->getChannelId()) || $channel->getChannelId() < 1) {
             $this->giveId($channel);
         }
 

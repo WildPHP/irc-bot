@@ -36,7 +36,7 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     public function store(IrcUser $user): void
     {
-        if (empty($user->getUserId())) {
+        if (empty($user->getUserId()) || $user->getUserId() < 1) {
             $this->giveId($user);
         }
 
