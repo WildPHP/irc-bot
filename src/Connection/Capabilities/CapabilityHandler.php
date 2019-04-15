@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright 2019 The WildPHP Team
+ *
+ * You should have received a copy of the MIT license with the project.
+ * See the LICENSE file for more information.
+ */
+
 declare(strict_types=1);
 
 /**
@@ -102,7 +109,11 @@ class CapabilityHandler
     {
         foreach ($this->capabilityHandlers as $capability => $handler) {
             if (!in_array($capability, $this->availableCapabilities, true)) {
-                $this->logger->debug('Skipping handler for capability ' . $capability . ' because it is not available.');
+                $this->logger->debug(sprintf(
+                    'Skipping handler for capability %s because it is not available.',
+                    $capability
+                ));
+
                 unset($this->capabilityHandlers[$capability]);
                 continue;
             }
