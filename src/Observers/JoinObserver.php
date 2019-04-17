@@ -35,6 +35,7 @@ class JoinObserver
      * @var IrcUserStorageInterface
      */
     private $userStorage;
+
     /**
      * @var IrcUserChannelRelationStorageInterface
      */
