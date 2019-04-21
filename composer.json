@@ -14,7 +14,7 @@
     "monolog/monolog": "^1.23.0",
     "php-di/php-di": "^6.0",
     "wildphp/command-parser": "^0.1",
-    "wildphp/irc-messages": "dev-master",
+    "wildphp/irc-messages": "^0.2",
 
     "ext-pdo": "*",
     "ext-posix": "*",
