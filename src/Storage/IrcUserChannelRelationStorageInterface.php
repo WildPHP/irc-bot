@@ -45,10 +45,9 @@ interface IrcUserChannelRelationStorageInterface
     /**
      * @param int $userId
      * @param int $channelId
-     * @param array $modes
      * @return IrcUserChannelRelation
      */
-    public function getOrCreateOne(int $userId, int $channelId, array $modes = []): IrcUserChannelRelation;
+    public function getOrCreateOne(int $userId, int $channelId): IrcUserChannelRelation;
 
     /**
      * @param int $userId

@@ -38,6 +38,11 @@ class IrcUser
     private $ircAccount;
 
     /**
+     * @var EntityModes
+     */
+    private $modes;
+
+    /**
      * IrcUser constructor.
      * @param string $nickname
      * @param int $userId
@@ -50,13 +55,15 @@ class IrcUser
         int $userId = 0,
         string $hostname = '',
         string $username = '',
-        string $ircAccount = ''
+        string $ircAccount = '',
+        EntityModes $modes = null
     ) {
         $this->nickname = $nickname;
         $this->hostname = $hostname;
         $this->username = $username;
         $this->ircAccount = $ircAccount;
         $this->userId = $userId;
+        $this->modes = $modes ?? new EntityModes();
     }
 
     /**
@@ -139,6 +146,21 @@ class IrcUser
         $this->ircAccount = $ircAccount;
     }
 
+    /**
+     * @return EntityModes
+     */
+    public function getModes(): EntityModes
+    {
+        return $this->modes;
+    }
+
+    /**
+     * @param EntityModes $modes
+     */
+    public function setModes(EntityModes $modes): void
+    {
+        $this->modes = $modes;
+    }
 
     /**
      * @return array
@@ -150,7 +172,8 @@ class IrcUser
             'nickname' => $this->getNickname(),
             'hostname' => $this->getHostname(),
             'username' => $this->getUsername(),
-            'irc_account' => $this->getIrcAccount()
+            'irc_account' => $this->getIrcAccount(),
+            'modes' => $this->getModes()->toArray()
         ];
     }
 
@@ -165,6 +188,7 @@ class IrcUser
         $hostname = $previousState['hostname'] ?? '';
         $username = $previousState['username'] ?? '';
         $ircAccount = $previousState['irc_account'] ?? '';
-        return new IrcUser($nickname, $userId, $hostname, $username, $ircAccount);
+        $modes = new EntityModes((array)($previousState['modes'] ?? []));
+        return new IrcUser($nickname, $userId, $hostname, $username, $ircAccount, $modes);
     }
 }

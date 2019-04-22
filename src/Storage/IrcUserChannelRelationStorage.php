@@ -89,10 +89,9 @@ class IrcUserChannelRelationStorage implements IrcUserChannelRelationStorageInte
     /**
      * @param int $userId
      * @param int $channelId
-     * @param array $modes
      * @return IrcUserChannelRelation
      */
-    public function getOrCreateOne(int $userId, int $channelId, array $modes = []): IrcUserChannelRelation
+    public function getOrCreateOne(int $userId, int $channelId): IrcUserChannelRelation
     {
         $entity = $this->getOne($userId, $channelId);
 
@@ -103,7 +102,6 @@ class IrcUserChannelRelationStorage implements IrcUserChannelRelationStorageInte
         $relation = new IrcUserChannelRelation();
         $relation->setIrcChannelId($channelId);
         $relation->setIrcUserId($userId);
-        $relation->setModes($modes);
         $this->store($relation);
         return $relation;
     }

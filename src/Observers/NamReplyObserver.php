@@ -86,6 +86,15 @@ class NamReplyObserver
             $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
             $user = $this->userStorage->getOrCreateOneByNickname($nickname);
 
+            foreach ($modes as $mode) {
+                $this->logger->debug('Added user to mode', [
+                    'userID' => $user->getUserId(),
+                    'nickname' => $user->getNickname(),
+                    'mode' => $mode
+                ]);
+                $user->getModes()->addMode($mode);
+            }
+
             // userhost-in-names support
             if (array_key_exists($nickname, $prefixes)) {
                 $prefix = $prefixes[$nickname];
@@ -96,8 +105,7 @@ class NamReplyObserver
 
             $relation = $this->relationStorage->getOrCreateOne(
                 $user->getUserId(),
-                $channel->getChannelId(),
-                $modes
+                $channel->getChannelId()
             );
 
             $this->logger->debug('Creating user-channel relationship', [

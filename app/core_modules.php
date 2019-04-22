@@ -24,9 +24,11 @@ use WildPHP\Core\Connection\MessageParser;
 use WildPHP\Core\Observers\BotNicknameObserver;
 use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
 use WildPHP\Core\Observers\EndOfNamesObserver;
+use WildPHP\Core\Observers\InitialBotUserCreator;
 use WildPHP\Core\Observers\InitialJoinObserver;
 use WildPHP\Core\Observers\JoinObserver;
 use WildPHP\Core\Observers\KickObserver;
+use WildPHP\Core\Observers\ModeObserver;
 use WildPHP\Core\Observers\NamReplyObserver;
 use WildPHP\Core\Observers\NickObserver;
 use WildPHP\Core\Observers\PartObserver;
@@ -35,6 +37,7 @@ use WildPHP\Core\Observers\ServerConfigObserver;
 use WildPHP\Core\Observers\TopicObserver;
 use WildPHP\Core\Observers\WhosPcRplObserver;
 use WildPHP\Core\Queue\QueueProcessor;
+use WildPHP\Core\Storage\StorageCleaner;
 
 return [
     MessageParser::class,
@@ -53,6 +56,7 @@ return [
     InitialJoinObserver::class,
     JoinObserver::class,
     KickObserver::class,
+    ModeObserver::class,
     NamReplyObserver::class,
     NickObserver::class,
     PartObserver::class,

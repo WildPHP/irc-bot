@@ -23,11 +23,6 @@ class IrcUserChannelRelation
     private $ircChannelId;
 
     /**
-     * @var string[]
-     */
-    private $modes = [];
-
-    /**
      * @return int
      */
     public function getIrcUserId(): int
@@ -60,30 +55,13 @@ class IrcUserChannelRelation
     }
 
     /**
-     * @return string[]
-     */
-    public function getModes(): array
-    {
-        return $this->modes;
-    }
-
-    /**
-     * @param string[] $modes
-     */
-    public function setModes(array $modes): void
-    {
-        $this->modes = $modes;
-    }
-
-    /**
      * @return array
      */
     public function toArray(): array
     {
         return [
             'user_id' => $this->getIrcUserId(),
-            'channel_id' => $this->getIrcChannelId(),
-            'modes' => $this->getModes()
+            'channel_id' => $this->getIrcChannelId()
         ];
     }
 
@@ -96,7 +74,6 @@ class IrcUserChannelRelation
         $relation = new self();
         $relation->setIrcChannelId($previousState['channel_id'] ?? 0);
         $relation->setIrcUserId($previousState['user_id'] ?? 0);
-        $relation->setModes($previousState['modes'] ?? []);
         return $relation;
     }
 }
