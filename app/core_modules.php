@@ -53,6 +53,7 @@ return [
     BotNicknameObserver::class,
     ConnectionHeartbeatObserver::class,
     EndOfNamesObserver::class,
+    InitialBotUserCreator::class,
     InitialJoinObserver::class,
     JoinObserver::class,
     KickObserver::class,
