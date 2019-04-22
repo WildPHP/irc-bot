@@ -19,11 +19,13 @@ class StorageCleaner
      * StorageCleaner constructor.
      * @param IrcUserStorageInterface $userStorage
      * @param IrcChannelStorageInterface $channelStorage
+     * @param IrcUserChannelRelationStorageInterface $relationStorage
      * @param LoggerInterface $logger
      */
     public function __construct(
         IrcUserStorageInterface $userStorage,
         IrcChannelStorageInterface $channelStorage,
+        IrcUserChannelRelationStorageInterface $relationStorage,
         LoggerInterface $logger
     ) {
         $logger->debug('Running cleanup tasks for the storage subsystem...');
@@ -52,6 +54,15 @@ class StorageCleaner
             ]);
             $channel->setUserModes([]);
             $channelStorage->store($channel);
+        }
+
+        $logger->debug('Removing all prior user-channel relationships...');
+        foreach ($relationStorage->getAll() as $relation) {
+            $logger->debug('Deleting relation', [
+                'userId' => $relation->getIrcUserId(),
+                'channelId' => $relation->getIrcChannelId()
+            ]);
+            $relationStorage->delete($relation);
         }
     }
 }
