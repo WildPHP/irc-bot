@@ -19,35 +19,35 @@ class MessageParser
      */
     public static function parseLine(string $line): ParsedIrcMessage
     {
-        $parv = self::split($line);
+        $lines = self::split($line);
         $index = 0;
-        $parv_count = count($parv);
-        $self = new ParsedIrcMessage();
+        $amountOfPieces = count($lines);
+        $object = new ParsedIrcMessage();
 
-        if ($index < $parv_count && $parv[$index][0] === '@') {
-            $tags = _substr($parv[$index], 1);
+        if ($index < $amountOfPieces && $lines[$index][0] === '@') {
+            $tags = _substr($lines[$index], 1);
             $index++;
             foreach (explode(';', $tags) as $item) {
                 [$k, $v] = explode('=', $item, 2);
                 if ($v === null) {
-                    $self->tags[$k] = true;
+                    $object->tags[$k] = true;
                 } else {
-                    $self->tags[$k] = $v;
+                    $object->tags[$k] = $v;
                 }
             }
         }
 
-        if ($index < $parv_count && $parv[$index][0] === ':') {
-            $self->prefix = _substr($parv[$index], 1);
+        if ($index < $amountOfPieces && $lines[$index][0] === ':') {
+            $object->prefix = _substr($lines[$index], 1);
             $index++;
         }
 
-        if ($index < $parv_count) {
-            $self->verb = strtoupper($parv[$index]);
-            $self->args = array_slice($parv, $index);
+        if ($index < $amountOfPieces) {
+            $object->verb = strtoupper($lines[$index]);
+            $object->args = array_slice($lines, $index);
         }
 
-        return $self;
+        return $object;
     }
 
     /**
@@ -58,48 +58,53 @@ class MessageParser
     public static function split(string $messageLine): array
     {
         $messageLine = rtrim($messageLine, "\r\n");
-        $line = explode(' ', $messageLine);
+        $linePieces = explode(' ', $messageLine);
         $index = 0;
-        $arvCount = count($line);
-        $parv = [];
+        $amountOfPieces = count($linePieces);
+        $usablePieces = [];
 
-        while ($index < $arvCount && $line[$index] === '') {
+        while ($index < $amountOfPieces && $linePieces[$index] === '') {
             $index++;
         }
 
-        if ($index < $arvCount && $line[$index][0] === '@') {
-            $parv[] = $line[$index];
+        if ($index < $amountOfPieces && $linePieces[$index][0] === '@') {
+            $usablePieces[] = $linePieces[$index];
             $index++;
-            while ($index < $arvCount && $line[$index] === '') {
+            while ($index < $amountOfPieces && $linePieces[$index] === '') {
                 $index++;
             }
         }
 
-        if ($index < $arvCount && $line[$index][0] === ':') {
-            $parv[] = $line[$index];
+        if ($index < $amountOfPieces && $linePieces[$index][0] === ':') {
+            $usablePieces[] = $linePieces[$index];
             $index++;
-            while ($index < $arvCount && $line[$index] === '') {
+            while ($index < $amountOfPieces && $linePieces[$index] === '') {
                 $index++;
             }
         }
 
-        while ($index < $arvCount) {
-            if ($line[$index][0] === ':') {
+        while ($index < $amountOfPieces) {
+            if ($linePieces[$index] === '') {
+                $index++;
+                continue;
+            }
+
+            if ($linePieces[$index][0] === ':') {
                 break;
             }
 
-            if ($line[$index] !== '') {
-                $parv[] = $line[$index];
+            if ($linePieces[$index] !== '') {
+                $usablePieces[] = $linePieces[$index];
             }
             $index++;
         }
 
-        if ($index < $arvCount) {
-            $trailing = implode(' ', array_slice($line, $index));
-            $parv[] = _substr($trailing, 1);
+        if ($index < $amountOfPieces) {
+            $trailing = implode(' ', array_slice($linePieces, $index));
+            $usablePieces[] = _substr($trailing, 1);
         }
 
-        return $parv;
+        return $usablePieces;
     }
 }
 
