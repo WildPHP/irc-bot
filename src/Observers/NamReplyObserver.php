@@ -17,6 +17,7 @@ use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
+use WildPHP\Messages\Generics\Prefix;
 use WildPHP\Messages\RPL\NamReply;
 
 class NamReplyObserver
@@ -74,12 +75,23 @@ class NamReplyObserver
         $ircMessage = $ircMessageEvent->getIncomingMessage();
         $nicknames = $ircMessage->getNicknames();
 
+        /** @var Prefix[] $prefixes */
+        $prefixes = $ircMessage->getPrefixes();
+
         $channel = $this->channelStorage->getOrCreateOneByName($ircMessage->getChannel());
 
         foreach ($nicknames as $nicknameWithMode) {
             $nickname = '';
             $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
             $user = $this->userStorage->getOrCreateOneByNickname($nickname);
+
+            // userhost-in-names support
+            if (array_key_exists($nickname, $prefixes)) {
+                $prefix = $prefixes[$nickname];
+                $user->setHostname($prefix->getHostname());
+                $user->setUsername($prefix->getUsername());
+                $this->userStorage->store($user);
+            }
 
             $relation = $this->relationStorage->getOrCreateOne(
                 $user->getUserId(),
