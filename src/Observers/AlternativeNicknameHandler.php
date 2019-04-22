@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;

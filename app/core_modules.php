@@ -15,11 +15,10 @@ declare(strict_types=1);
  */
 
 use WildPHP\Core\Commands\CommandRunner;
-use WildPHP\Core\Connection\AlternativeNicknameHandler;
-use WildPHP\Core\Connection\Capabilities\AccountNotifyHandler;
 use WildPHP\Core\Connection\Capabilities\CapabilityHandler;
 use WildPHP\Core\Connection\IncomingMessageParser;
 use WildPHP\Core\Connection\MessageParser;
+use WildPHP\Core\Observers\AlternativeNicknameHandler;
 use WildPHP\Core\Observers\BotNicknameObserver;
 use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
 use WildPHP\Core\Observers\EndOfNamesObserver;
