@@ -12,6 +12,7 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\RPL\WhosPcRpl;
@@ -55,7 +56,8 @@ class WhosPcRplObserver
         /** @var WhosPcRpl $ircMessage */
         $ircMessage = $ircMessageEvent->getIncomingMessage();
 
-        $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
+        /** @var IrcUser $user */
+        $user = $this->userStorage->getOneByNickname($ircMessage->getNickname());
         $user->setNickname($ircMessage->getNickname());
         $user->setUsername($ircMessage->getUsername());
         $user->setHostname($ircMessage->getHostname());
@@ -63,7 +65,7 @@ class WhosPcRplObserver
         $this->userStorage->store($user);
 
         $this->logger->debug(
-            'Modified user',
+            'Updated user details',
             array_merge(['reason' => 'rpl_whospcrpl'], $user->toArray())
         );
     }

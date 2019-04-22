@@ -13,6 +13,7 @@ namespace WildPHP\Core\Observers;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Messages\RPL\ISupport;
 
 class ServerConfigObserver
@@ -43,17 +44,19 @@ class ServerConfigObserver
         LoggerInterface $logger,
         Configuration $configuration
     ) {
-        $eventEmitter->on('irc.line.in.005', [$this, 'updateServerInformation']);
+        $eventEmitter->on('irc.msg.in.005', [$this, 'updateServerInformation']);
         $this->logger = $logger;
         $this->configuration = $configuration;
         $this->eventEmitter = $eventEmitter;
     }
 
     /**
-     * @param ISupport $incomingIrcMessage
+     * @param IncomingIrcMessageEvent $event
      */
-    public function updateServerInformation(ISupport $incomingIrcMessage): void
+    public function updateServerInformation(IncomingIrcMessageEvent $event): void
     {
+        /** @var ISupport $incomingIrcMessage */
+        $incomingIrcMessage = $event->getIncomingMessage();
         $hostname = $incomingIrcMessage->getServer();
         $this->configuration['serverConfig']['hostname'] = $hostname;
 

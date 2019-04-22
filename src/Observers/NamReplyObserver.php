@@ -36,6 +36,7 @@ class NamReplyObserver
      * @var IrcUserStorageInterface
      */
     private $userStorage;
+
     /**
      * @var IrcUserChannelRelationStorageInterface
      */
@@ -58,7 +59,7 @@ class NamReplyObserver
         IrcUserChannelRelationStorageInterface $relationStorage
     ) {
         // 353: RPL_NAMREPLY
-        $eventEmitter->on('irc.line.in.353', [$this, 'processNamesReply']);
+        $eventEmitter->on('irc.msg.in.353', [$this, 'processNamesReply']);
 
         $this->logger = $logger;
         $this->channelStorage = $channelStorage;
