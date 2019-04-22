@@ -40,6 +40,7 @@ use WildPHP\Core\Queue\QueueProcessor;
 use WildPHP\Core\Storage\StorageCleaner;
 
 return [
+    StorageCleaner::class,
     MessageParser::class,
     AlternativeNicknameHandler::class,
     MessageLogger::class,
