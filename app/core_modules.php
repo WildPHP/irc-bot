@@ -19,7 +19,6 @@ use WildPHP\Core\Connection\AlternativeNicknameHandler;
 use WildPHP\Core\Connection\Capabilities\AccountNotifyHandler;
 use WildPHP\Core\Connection\Capabilities\CapabilityHandler;
 use WildPHP\Core\Connection\IncomingMessageParser;
-use WildPHP\Core\Connection\MessageLogger;
 use WildPHP\Core\Connection\MessageParser;
 use WildPHP\Core\Observers\BotNicknameObserver;
 use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
@@ -28,6 +27,7 @@ use WildPHP\Core\Observers\InitialBotUserCreator;
 use WildPHP\Core\Observers\InitialJoinObserver;
 use WildPHP\Core\Observers\JoinObserver;
 use WildPHP\Core\Observers\KickObserver;
+use WildPHP\Core\Observers\MessageLogger;
 use WildPHP\Core\Observers\ModeObserver;
 use WildPHP\Core\Observers\NamReplyObserver;
 use WildPHP\Core\Observers\NickObserver;
@@ -43,7 +43,6 @@ return [
     StorageCleaner::class,
     MessageParser::class,
     AlternativeNicknameHandler::class,
-    MessageLogger::class,
     AccountNotifyHandler::class,
     CommandRunner::class,
     QueueProcessor::class,
@@ -58,6 +57,7 @@ return [
     InitialJoinObserver::class,
     JoinObserver::class,
     KickObserver::class,
+    MessageLogger::class,
     ModeObserver::class,
     NamReplyObserver::class,
     NickObserver::class,

@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace WildPHP\Core\Connection;
+namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
@@ -28,7 +28,7 @@ class MessageLogger
      */
     public function __construct(EventEmitterInterface $eventEmitter, LoggerInterface $logger)
     {
-        $eventEmitter->on('irc.line.in.privmsg', [$this, 'logIncomingPrivmsg']);
+        $eventEmitter->on('irc.msg.in.privmsg', [$this, 'logIncomingPrivmsg']);
         $eventEmitter->on('irc.msg.out.privmsg', [$this, 'logOutgoingPrivmsg']);
 
         $this->logger = $logger;
