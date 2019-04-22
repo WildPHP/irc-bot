@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright 2019 The WildPHP Team
+ *
+ * You should have received a copy of the MIT license with the project.
+ * See the LICENSE file for more information.
+ */
+
 declare(strict_types=1);
 
 /**
@@ -22,8 +29,6 @@ use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\EventEmitter;
-use function DI\create;
-use function DI\autowire;
 use WildPHP\Core\Storage\IrcChannelStorage;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserChannelRelationStorage;
@@ -31,6 +36,8 @@ use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorage;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
+use function DI\autowire;
+use function DI\create;
 
 define('WPHP_ROOT_DIR', dirname(__DIR__));
 define('WPHP_VERSION', '3.0.0');
@@ -47,10 +54,10 @@ return [
     IrcUserChannelRelationStorageInterface::class => autowire(IrcUserChannelRelationStorage::class),
 
     LoggerInterface::class => static function () {
-        $logger = new Logger('wildphp');
-        $logger->pushHandler(new StreamHandler('php://stdout'));
-        $logger->pushHandler(new RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log'));
-        return $logger;
+        return new Logger('wildphp', [
+            new StreamHandler('php://stdout'),
+            new RotatingFileHandler(WPHP_ROOT_DIR . '/logs/log.log')
+        ]);
     },
 
     LoopInterface::class => static function () {
