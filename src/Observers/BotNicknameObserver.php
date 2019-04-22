@@ -56,7 +56,7 @@ class BotNicknameObserver
 
         $this->configuration['currentNickname'] = $event->getNewNickname();
 
-        $this->logger->debug('Updated current nickname for bot', [
+        $this->logger->debug('Updated current nickname configuration for bot', [
             'oldNickname' => $event->getOldNickname(),
             'newNickname' => $event->getNewNickname()
         ]);
