@@ -13,6 +13,7 @@ namespace WildPHP\Core\Observers;
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Queue\IrcMessageQueue;
 
 class AlternativeNicknameHandler
