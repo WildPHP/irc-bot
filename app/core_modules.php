@@ -41,14 +41,13 @@ use WildPHP\Core\Storage\StorageCleaner;
 return [
     StorageCleaner::class,
     MessageParser::class,
-    AlternativeNicknameHandler::class,
-    AccountNotifyHandler::class,
     CommandRunner::class,
     QueueProcessor::class,
     IncomingMessageParser::class,
     CapabilityHandler::class,
 
     // observers; please keep in alphabetical order
+    AlternativeNicknameHandler::class,
     BotNicknameObserver::class,
     ConnectionHeartbeatObserver::class,
     EndOfNamesObserver::class,
