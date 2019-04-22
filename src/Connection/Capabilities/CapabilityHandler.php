@@ -31,7 +31,8 @@ class CapabilityHandler
         'account-notify' => AccountNotifyHandler::class,
         'extended-join' => ExtendedJoinHandler::class,
         'multi-prefix' => MultiPrefixHandler::class,
-        'sasl' => Sasl::class
+        'sasl' => Sasl::class,
+        'userhost-in-names' => UserhostInNamesHandler::class
     ];
 
     /**
