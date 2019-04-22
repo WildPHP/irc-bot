@@ -101,7 +101,7 @@ class Sasl implements CapabilityInterface
         $this->eventEmitter->on('irc.msg.in.authenticate', [$this, 'sendCredentials']);
 
         // Map all numeric SASL responses to either the success or error handler:
-        $this->eventEmitter->on('irc.msg.in.unsupported', [$this, 'handleResponse']);
+        $this->eventEmitter->on('irc.msg.in', [$this, 'handleResponse']);
 
         $this->queue->authenticate('PLAIN');
         $this->logger->debug('[SASL] Authentication mechanism requested, awaiting server response.');
@@ -141,12 +141,12 @@ class Sasl implements CapabilityInterface
     /**
      * @param UnsupportedIncomingIrcMessageEvent $event
      */
-    public function handleResponse(UnsupportedIncomingIrcMessageEvent $event): void
+    public function handleResponse(IncomingIrcMessageEvent $event): void
     {
-        $message = $event->getMessage();
-        $code = $message->getVerb();
+        $message = $event->getIncomingMessage();
+        $code = $message::getVerb();
 
-        if (!array_key_exists($code, self::$saslCodes)) {
+        if (!array_key_exists((int)$code, self::$saslCodes)) {
             return;
         }
 
@@ -162,7 +162,7 @@ class Sasl implements CapabilityInterface
     public function completeSasl(): void
     {
         $this->logger->info('[SASL] Ended.');
-        $this->eventEmitter->removeListener('irc.msg.in.unsupported', [$this, 'handleResponse']);
+        $this->eventEmitter->removeListener('irc.msg.in', [$this, 'handleResponse']);
         $this->complete = true;
         ($this->callback)();
     }
