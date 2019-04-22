@@ -12,6 +12,7 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
+use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Events\OutgoingIrcMessageEvent;
 use WildPHP\Messages\Privmsg;
 
@@ -35,10 +36,12 @@ class MessageLogger
     }
 
     /**
-     * @param PRIVMSG $incoming
+     * @param IncomingIrcMessageEvent $event
      */
-    public function logIncomingPrivmsg(PRIVMSG $incoming): void
+    public function logIncomingPrivmsg(IncomingIrcMessageEvent $event): void
     {
+        /** @var Privmsg $incoming */
+        $incoming = $event->getIncomingMessage();
         $nickname = $incoming->getNickname();
         $channel = $incoming->getChannel();
         $message = $incoming->getMessage();
