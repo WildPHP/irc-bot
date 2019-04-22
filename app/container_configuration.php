@@ -8,13 +8,6 @@
 
 declare(strict_types=1);
 
-/**
- * Copyright 2018 The WildPHP Team
- *
- * You should have received a copy of the MIT license with the project.
- * See the LICENSE file for more information.
- */
-
 use Evenement\EventEmitterInterface;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
