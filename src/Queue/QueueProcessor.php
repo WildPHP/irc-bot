@@ -20,24 +20,35 @@ class QueueProcessor
     private $queue;
 
     /**
+     * The amount of messages allowed per burst.
      * @var int
      */
     private $burstAmount = 5;
 
     /**
+     * The amount of messages after which to trigger a burst.
      * @var int
      */
     private $burstTrigger = 3;
 
     /**
+     * The state of the burst mode. Do not change.
      * @var bool
      */
     private $usedBurst = false;
 
     /**
+     * The amount of messages to send per second.
+     * Note that this value does *not* apply to burst mode.
      * @var int
      */
-    private $messagesPerSecondAfterBurst = 1;
+    private $messagesPerSecond = 1;
+
+    /**
+     * The interval (per second) at which to run the processor.
+     * @var int
+     */
+    private $interval = 1;
 
     /**
      * QueueProcessor constructor.
@@ -46,7 +57,7 @@ class QueueProcessor
      */
     public function __construct(QueueInterface $queue, LoopInterface $loop)
     {
-        $loop->addPeriodicTimer(1, [$this, 'processDueItems']);
+        $loop->addPeriodicTimer($this->interval, [$this, 'processDueItems']);
         $this->queue = $queue;
     }
 
@@ -54,7 +65,7 @@ class QueueProcessor
     {
         /** @var QueueItemInterface[] $items */
         $items = $this->queue->toArray();
-        $amountToProcess = $this->messagesPerSecondAfterBurst;
+        $amountToProcess = $this->messagesPerSecond;
 
         // Use up our burst if we haven't used it and
         if (!$this->usedBurst && count($items) > $this->burstTrigger) {
