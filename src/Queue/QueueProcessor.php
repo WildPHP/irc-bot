@@ -12,6 +12,10 @@ namespace WildPHP\Core\Queue;
 
 use React\EventLoop\LoopInterface;
 
+/**
+ * Class QueueProcessor
+ * @package WildPHP\Core\Queue
+ */
 class QueueProcessor
 {
     /**
@@ -63,7 +67,6 @@ class QueueProcessor
 
     public function processDueItems(): void
     {
-        /** @var QueueItemInterface[] $items */
         $items = $this->queue->toArray();
         $amountToProcess = $this->messagesPerSecond;
 
@@ -86,7 +89,7 @@ class QueueProcessor
 
         foreach ($itemsToProcess as $queueItem) {
             $queueItem->getDeferred()->resolve($queueItem);
-            $this->queue->dequeue($queueItem);
+            $this->queue->remove($queueItem);
         }
     }
 }

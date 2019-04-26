@@ -25,9 +25,23 @@ interface QueueInterface
     public function enqueue(QueueItemInterface $queueItem): PromiseInterface;
 
     /**
+     * Removes an item from the queue while not rejecting the associated promise.
+     * @param QueueItemInterface $queueItem
+     * @throws QueueException when the item is not found
+     */
+    public function remove(QueueItemInterface $queueItem): void;
+
+    /**
+     * Removes an item from the queue while also rejecting the associated promise.
      * @param QueueItemInterface $queueItem
      */
     public function dequeue(QueueItemInterface $queueItem): void;
+
+    /**
+     * @param QueueItemInterface $queueItem
+     * @return bool
+     */
+    public function has(QueueItemInterface $queueItem): bool;
 
     /**
      * @return void

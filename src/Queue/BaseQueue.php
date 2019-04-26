@@ -13,6 +13,10 @@ namespace WildPHP\Core\Queue;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
+/**
+ * Class BaseQueue
+ * @package WildPHP\Core\Queue
+ */
 class BaseQueue implements QueueInterface
 {
     /**
@@ -33,16 +37,38 @@ class BaseQueue implements QueueInterface
 
     /**
      * @param QueueItemInterface $queueItem
+     * @return bool
+     */
+    public function has(QueueItemInterface $queueItem): bool
+    {
+        return in_array($queueItem, $this->messageQueue, true);
+    }
+
+    /**
+     * @param QueueItemInterface $queueItem
+     * @throws QueueException
+     */
+    public function remove(QueueItemInterface $queueItem): void
+    {
+        if (!$this->has($queueItem)) {
+            throw new QueueException('Given queue item is not found in this queue.');
+        }
+
+        unset($this->messageQueue[array_search($queueItem, $this->messageQueue, true)]);
+    }
+
+    /**
+     * @param QueueItemInterface $queueItem
      * @throws QueueException
      */
     public function dequeue(QueueItemInterface $queueItem): void
     {
-        if (!in_array($queueItem, $this->messageQueue, true)) {
+        if (!$this->has($queueItem)) {
             throw new QueueException('Given queue item is not found in this queue.');
         }
 
         $queueItem->getDeferred()->reject();
-        unset($this->messageQueue[array_search($queueItem, $this->messageQueue, true)]);
+        $this->remove($queueItem);
     }
 
     /**
