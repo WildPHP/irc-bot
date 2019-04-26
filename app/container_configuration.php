@@ -22,6 +22,8 @@ use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\EventEmitter;
+use WildPHP\Core\Queue\IrcMessageQueue;
+use WildPHP\Core\Queue\QueueProcessor;
 use WildPHP\Core\Storage\IrcChannelStorage;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserChannelRelationStorage;
@@ -70,6 +72,10 @@ return [
         $configuration['version'] = WPHP_VERSION;
 
         return $configuration;
+    },
+
+    QueueProcessor::class => static function (LoopInterface $loop, IrcMessageQueue $ircMessageQueue) {
+        return new QueueProcessor($ircMessageQueue, $loop);
     },
 
     IrcConnectionInterface::class => static function (

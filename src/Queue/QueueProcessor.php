@@ -10,15 +10,12 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
-use Evenement\EventEmitterInterface;
 use React\EventLoop\LoopInterface;
-use WildPHP\Core\Connection\IrcConnectionInterface;
-use WildPHP\Core\Events\OutgoingIrcMessageEvent;
 
 class QueueProcessor
 {
     /**
-     * @var IrcMessageQueue
+     * @var QueueInterface
      */
     private $queue;
 
@@ -43,31 +40,14 @@ class QueueProcessor
     private $messagesPerSecondAfterBurst = 1;
 
     /**
-     * @var IrcConnectionInterface
-     */
-    private $ircConnection;
-    /**
-     * @var EventEmitterInterface
-     */
-    private $eventEmitter;
-
-    /**
      * QueueProcessor constructor.
-     * @param IrcMessageQueue $queue
+     * @param QueueInterface $queue
      * @param LoopInterface $loop
-     * @param IrcConnectionInterface $ircConnection
-     * @param EventEmitterInterface $eventEmitter
      */
-    public function __construct(
-        IrcMessageQueue $queue,
-        LoopInterface $loop,
-        IrcConnectionInterface $ircConnection,
-        EventEmitterInterface $eventEmitter
-    ) {
+    public function __construct(QueueInterface $queue, LoopInterface $loop)
+    {
         $loop->addPeriodicTimer(1, [$this, 'processDueItems']);
         $this->queue = $queue;
-        $this->ircConnection = $ircConnection;
-        $this->eventEmitter = $eventEmitter;
     }
 
     public function processDueItems(): void
@@ -77,8 +57,7 @@ class QueueProcessor
         $amountToProcess = $this->messagesPerSecondAfterBurst;
 
         // Use up our burst if we haven't used it and
-        /** @noinspection NotOptimalIfConditionsInspection */
-        if (count($items) > $this->burstTrigger && !$this->usedBurst) {
+        if (!$this->usedBurst && count($items) > $this->burstTrigger) {
             $amountToProcess = $this->burstAmount;
             $this->usedBurst = true;
         }
@@ -86,8 +65,7 @@ class QueueProcessor
         $itemsToProcess = array_slice($items, 0, $amountToProcess);
 
         // Reset the burst flag when the queue is now empty
-        /** @noinspection NotOptimalIfConditionsInspection */
-        if (count($items) === 0 && $this->usedBurst) {
+        if ($this->usedBurst && count($items) === 0) {
             $this->usedBurst = false;
         }
 
@@ -96,13 +74,8 @@ class QueueProcessor
         }
 
         foreach ($itemsToProcess as $queueItem) {
+            $queueItem->getDeferred()->resolve($queueItem);
             $this->queue->dequeue($queueItem);
-            $outgoingMessage = $queueItem->getOutgoingMessage();
-            $this->ircConnection->write($outgoingMessage->__toString());
-
-            $event = new OutgoingIrcMessageEvent($outgoingMessage);
-            $this->eventEmitter->emit('irc.msg.out', [$event]);
-            $this->eventEmitter->emit('irc.msg.out.' . strtolower($outgoingMessage::getVerb()), [$event]);
         }
     }
 }

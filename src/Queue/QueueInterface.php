@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
+use React\Promise\PromiseInterface;
+
 /**
  * Interface QueueInterface
  * @package WildPHP\Core\Queue
@@ -18,8 +20,9 @@ interface QueueInterface
 {
     /**
      * @param QueueItemInterface $queueItem
+     * @return PromiseInterface
      */
-    public function enqueue(QueueItemInterface $queueItem): void;
+    public function enqueue(QueueItemInterface $queueItem): PromiseInterface;
 
     /**
      * @param QueueItemInterface $queueItem

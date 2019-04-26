@@ -10,13 +10,17 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
-use RuntimeException;
+use Evenement\EventEmitterInterface;
+use WildPHP\Core\Connection\IrcConnectionInterface;
+use WildPHP\Core\Events\OutgoingIrcMessageEvent;
+use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
 /**
  * Class Queue
  * @package WildPHP\Core\Observers
  *
  * Magic methods below
+ * TODO: Update this list.
  * @method IrcMessageQueueItem authenticate(string $response)
  * @method IrcMessageQueueItem away(string $message)
  * @method IrcMessageQueueItem cap(string $command, array $capabilities = [])
@@ -41,55 +45,27 @@ use RuntimeException;
  * @method IrcMessageQueueItem whowas(string[] | string $nicknames, int $count = 0, string $server = '')
  *
  */
-class IrcMessageQueue implements QueueInterface
+class IrcMessageQueue extends BaseQueue
 {
     /**
-     * An explanation of how this works.
-     *
-     * Messages are to be 'scheduled'. That means, they will be assigned a time. This time will indicate
-     * when the message is allowed to be sent.
-     * This means, that when the message is set to be sent in time() + 10 seconds, the following statement is applied:
-     * if (current_time() >= time() + 10) send_the_message();
-     *
-     * Note greater than, because the bot may have been lagging for a second which would otherwise cause the message to
-     * get lost in the queue.
+     * @var IrcConnectionInterface
      */
+    private $ircConnection;
 
     /**
-     * @var IrcMessageQueueItem[]
+     * @var EventEmitterInterface
      */
-    protected $messageQueue = [];
+    private $eventEmitter;
 
     /**
-     * @param QueueItemInterface $queueItem
+     * IrcMessageQueue constructor.
+     * @param IrcConnectionInterface $ircConnection
+     * @param EventEmitterInterface $eventEmitter
      */
-    public function enqueue(QueueItemInterface $queueItem): void
+    public function __construct(IrcConnectionInterface $ircConnection, EventEmitterInterface $eventEmitter)
     {
-        $this->messageQueue[] = $queueItem;
-    }
-
-    /**
-     * @param QueueItemInterface $queueItem
-     */
-    public function dequeue(QueueItemInterface $queueItem): void
-    {
-        unset($this->messageQueue[array_search($queueItem, $this->messageQueue, true)]);
-    }
-
-    /**
-     * @return QueueItemInterface[]
-     */
-    public function toArray(): array
-    {
-        return $this->messageQueue;
-    }
-
-    /**
-     * @return void
-     */
-    public function clear(): void
-    {
-        $this->messageQueue = [];
+        $this->ircConnection = $ircConnection;
+        $this->eventEmitter = $eventEmitter;
     }
 
     /**
@@ -97,18 +73,36 @@ class IrcMessageQueue implements QueueInterface
      * @param array $arguments
      *
      * @return IrcMessageQueueItem
+     * @throws QueueException
      */
     public function __call(string $name, array $arguments): IrcMessageQueueItem
     {
         $class = '\\WildPHP\\Messages\\' . ucfirst($name);
 
         if (!class_exists($class)) {
-            throw new RuntimeException('Cannot send message of type ' . $class . '; no message of such type found.');
+            throw new QueueException('Cannot send message of type ' . $class . '; no message of such type found.');
         }
 
         $object = new $class(...$arguments);
         $queueItem = new IrcMessageQueueItem($object);
-        $this->enqueue($queueItem);
+        $promise = $this->enqueue($queueItem);
+
+        $promise->then(function (IrcMessageQueueItem $queueItem) {
+            $this->writeMessage($queueItem->getOutgoingMessage());
+        });
+
         return $queueItem;
+    }
+
+    /**
+     * @param OutgoingMessageInterface $outgoingMessage
+     */
+    public function writeMessage(OutgoingMessageInterface $outgoingMessage): void
+    {
+        $this->ircConnection->write($outgoingMessage->__toString());
+
+        $event = new OutgoingIrcMessageEvent($outgoingMessage);
+        $this->eventEmitter->emit('irc.msg.out', [$event]);
+        $this->eventEmitter->emit('irc.msg.out.' . strtolower($outgoingMessage::getVerb()), [$event]);
     }
 }

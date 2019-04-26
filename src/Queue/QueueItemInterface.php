@@ -10,22 +10,23 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Queue;
 
-use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
 
 interface QueueItemInterface
 {
     /**
-     * @return bool
+     * @param Deferred $deferred
      */
-    public function isCancelled(): bool;
+    public function setDeferred(Deferred $deferred): void;
 
     /**
-     * @return void
+     * @return Deferred
      */
-    public function cancel(): void;
+    public function getDeferred(): Deferred;
 
     /**
-     * @return OutgoingMessageInterface
+     * @return PromiseInterface
      */
-    public function getOutgoingMessage(): OutgoingMessageInterface;
+    public function getPromise(): PromiseInterface;
 }
