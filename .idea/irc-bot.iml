@@ -53,6 +53,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/command-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/irc-messages" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wildphp/queue" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/collections" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/yoshi2889/validation-closures" />
     </content>
