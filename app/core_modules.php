@@ -35,8 +35,8 @@ use WildPHP\Core\Observers\QuitObserver;
 use WildPHP\Core\Observers\ServerConfigObserver;
 use WildPHP\Core\Observers\TopicObserver;
 use WildPHP\Core\Observers\WhosPcRplObserver;
-use WildPHP\Core\Queue\QueueProcessor;
 use WildPHP\Core\Storage\StorageCleaner;
+use WildPHP\Queue\QueueProcessor;
 
 return [
     StorageCleaner::class,

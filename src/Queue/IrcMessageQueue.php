@@ -14,6 +14,8 @@ use Evenement\EventEmitterInterface;
 use WildPHP\Core\Connection\IrcConnectionInterface;
 use WildPHP\Core\Events\OutgoingIrcMessageEvent;
 use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
+use WildPHP\Queue\BaseQueue;
+use WildPHP\Queue\QueueException;
 
 /**
  * Class Queue
