@@ -1,17 +1,19 @@
 build:
-  environment:
-    php:
-      version: "7.1"
+  tests:
+    override:
+      - command: vendor/bin/phpunit
+        coverage:
+          file: /tmp/coverage.xml
+          format: clover
 
   nodes:
-    tests-and-coverage:
-      tests:
-        override:
-        -
-          command: vendor/bin/phpunit --coverage-clover /tmp/coverage.xml
-          coverage:
-            file: /tmp/coverage.xml
-            format: clover
+    tests-php72:
+      environment:
+        php: 7.2
+
+    tests-php73:
+      environment:
+        php: 7.3
 
     analysis:
       tests:
@@ -20,9 +22,4 @@ build:
 
 filter:
   excluded_paths:
-    - "app/"
-    - "config/"
-    - "bin/"
     - "storage/"
-    - "tests/"
-    - "vendor/"

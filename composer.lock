@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac449104c7b84948aa6ab2d352248756",
+    "content-hash": "bbb19327bc50853bfb9c3914ac9ac64b",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -901,6 +901,45 @@
                 "shim"
             ],
             "time": "2019-02-08T14:16:39+00:00"
+        },
+        {
+            "name": "wildphp/authenticator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WildPHP/authenticator.git",
+                "reference": "fde54db84c69b96deee543f49937eac774eaaeea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WildPHP/authenticator/zipball/fde54db84c69b96deee543f49937eac774eaaeea",
+                "reference": "fde54db84c69b96deee543f49937eac774eaaeea",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WildPHP\\Authenticator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rick Kerkhof",
+                    "email": "rick.2889@gmail.com"
+                }
+            ],
+            "description": "Tiny RBAC library written in PHP",
+            "time": "2019-04-23T12:49:39+00:00"
         },
         {
             "name": "wildphp/command-parser",
@@ -2853,6 +2892,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "wildphp/authenticator": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,

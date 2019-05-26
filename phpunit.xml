@@ -1,16 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php">
+<!--
+  ~ Copyright 2019 The WildPHP Team
+  ~
+  ~ You should have received a copy of the MIT license with the project.
+  ~ See the LICENSE file for more information.
+  -->
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.1/phpunit.xsd"
+         bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite name="wildphp">
+        <testsuite name="container-testsuite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src/</directory>
-            <exclude>
-                <file>src/bootstrap.php</file>
-            </exclude>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-clover" target="/tmp/coverage.xml"/>
+    </logging>
 </phpunit>
