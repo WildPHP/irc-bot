@@ -3,12 +3,6 @@
   "description": "A modular IRC bot written in PHP",
   "type": "project",
   "license": "MIT",
-  "authors": [
-    {
-      "name": "NanoSector",
-      "email": "rick@nanosector.nl"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "WildPHP\\Core\\": "src/",
