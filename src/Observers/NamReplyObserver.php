@@ -12,7 +12,6 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Connection\UserModeParser;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
@@ -81,18 +80,17 @@ class NamReplyObserver
 
         $channel = $this->channelStorage->getOrCreateOneByName($ircMessage->getChannel());
 
-        foreach ($nicknames as $nicknameWithMode) {
-            $nickname = '';
-            $modes = UserModeParser::extractFromNickname($nicknameWithMode, $nickname);
+        foreach ($nicknames as $nickname) {
             $user = $this->userStorage->getOrCreateOneByNickname($nickname);
 
+            $modes = $ircMessage->getModes()[$nickname];
             foreach ($modes as $mode) {
                 $this->logger->debug('Added user to mode', [
                     'userID' => $user->getUserId(),
                     'nickname' => $user->getNickname(),
                     'mode' => $mode
                 ]);
-                $user->getModes()->addMode($mode);
+                $channel->getModesForUserId($user->getUserId())->addMode($mode);
             }
 
             // userhost-in-names support
@@ -116,5 +114,7 @@ class NamReplyObserver
                 'channel' => $channel->getName()
             ]);
         }
+
+        $this->channelStorage->store($channel);
     }
 }
