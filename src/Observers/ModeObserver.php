@@ -140,6 +140,16 @@ class ModeObserver
                     $entityModes->removeMode($flag);
                 }
 
+                $this->logger->debug('Changed mode for user inside channel', [
+                    'channelID' => $channel->getChannelId(),
+                    'name' => $channel->getName(),
+                    'userID' => $userInChannel->getUserId(),
+                    'nickname' => $userInChannel->getNickname(),
+                    'flag' => $flag,
+                    'added' => $add
+                ]);
+
+                $parameterIndex++;
                 continue;
             }
 
@@ -148,16 +158,15 @@ class ModeObserver
             } elseif ($channel->getModes()->hasMode($flag)) {
                 $channel->getModes()->removeMode($flag);
             }
+
+            $this->logger->debug('Changed mode for channel', [
+                'channelID' => $channel->getChannelId(),
+                'name' => $channel->getName(),
+                'modes' => $flag,
+                'added' => $add
+            ]);
         }
         $this->channelStorage->store($channel);
-        $this->logger->debug('Changed modes for channel', [
-            'channelID' => $channel->getChannelId(),
-            'name' => $channel->getName(),
-            'modes' => $flags,
-            'added' => $add,
-            'currentModes' => $channel->getModes()->toArray(),
-            'userModes' => $channel->getUserModes()
-        ]);
     }
 
     public function createModeDefinitions(IncomingIrcMessageEvent $event): void
