@@ -51,6 +51,7 @@ class StorageCleaner
             }
 
             $user->setModes(new EntityModes());
+            $user->setOnline(false);
             $userStorage->store($user);
             $nicknames[] = $user->getNickname();
         }

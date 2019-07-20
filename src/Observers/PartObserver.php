@@ -90,5 +90,17 @@ class PartObserver
                 'channel' => $channelName
             ]);
         }
+
+        if (empty($this->relationStorage->getByUserId($user->getUserId()))) {
+            $user->setOnline(false);
+            $this->userStorage->store($user);
+
+            $this->logger->debug('This user has left all mutual channels; assuming offline. Updated online flag', [
+                'reason' => 'part',
+                'id' => $user->getUserId(),
+                'nickname' => $user->getNickname(),
+                'newValue' => $user->isOnline()
+            ]);
+        }
     }
 }

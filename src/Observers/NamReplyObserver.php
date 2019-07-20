@@ -83,6 +83,18 @@ class NamReplyObserver
         foreach ($nicknames as $nickname) {
             $user = $this->userStorage->getOrCreateOneByNickname($nickname);
 
+            if (!$user->isOnline()) {
+                $user->setOnline(true);
+                $this->userStorage->store($user);
+
+                $this->logger->debug('Set online flag for user', [
+                    'reason' => 'RPL_NAMREPLY',
+                    'id' => $user->getUserId(),
+                    'nickname' => $user->getNickname(),
+                    'newValue' => $user->isOnline()
+                ]);
+            }
+
             $modes = $ircMessage->getModes()[$nickname];
             foreach ($modes as $mode) {
                 $this->logger->debug('Added user to mode', [

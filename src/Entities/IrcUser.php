@@ -43,12 +43,19 @@ class IrcUser
     private $modes;
 
     /**
+     * @var boolean
+     */
+    private $online;
+
+    /**
      * IrcUser constructor.
      * @param string $nickname
      * @param int $userId
      * @param string $hostname
      * @param string $username
      * @param string $ircAccount
+     * @param EntityModes|null $modes
+     * @param bool $online
      */
     public function __construct(
         string $nickname,
@@ -56,7 +63,8 @@ class IrcUser
         string $hostname = '',
         string $username = '',
         string $ircAccount = '',
-        EntityModes $modes = null
+        EntityModes $modes = null,
+        bool $online = false
     ) {
         $this->nickname = $nickname;
         $this->hostname = $hostname;
@@ -64,6 +72,7 @@ class IrcUser
         $this->ircAccount = $ircAccount;
         $this->userId = $userId;
         $this->modes = $modes ?? new EntityModes();
+        $this->online = $online;
     }
 
     /**
@@ -163,6 +172,22 @@ class IrcUser
     }
 
     /**
+     * @return bool
+     */
+    public function isOnline(): bool
+    {
+        return $this->online;
+    }
+
+    /**
+     * @param bool $online
+     */
+    public function setOnline(bool $online): void
+    {
+        $this->online = $online;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -173,7 +198,8 @@ class IrcUser
             'hostname' => $this->getHostname(),
             'username' => $this->getUsername(),
             'irc_account' => $this->getIrcAccount(),
-            'modes' => $this->getModes()->toArray()
+            'modes' => $this->getModes()->toArray(),
+            'online' => $this->isOnline() ? 1 : 0
         ];
     }
 
@@ -189,6 +215,7 @@ class IrcUser
         $username = $previousState['username'] ?? '';
         $ircAccount = $previousState['irc_account'] ?? '';
         $modes = new EntityModes((array)($previousState['modes'] ?? []));
-        return new IrcUser($nickname, $userId, $hostname, $username, $ircAccount, $modes);
+        $online = $previousState['online'] === 1;
+        return new IrcUser($nickname, $userId, $hostname, $username, $ircAccount, $modes, $online);
     }
 }

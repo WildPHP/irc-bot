@@ -75,5 +75,15 @@ class QuitObserver
             'reason' => 'quit',
             'nickname' => $quitMessage->getNickname()
         ]);
+
+        $user->setOnline(false);
+        $this->userStorage->store($user);
+
+        $this->logger->debug('Set online flag for user', [
+            'reason' => 'quit',
+            'id' => $user->getUserId(),
+            'nickname' => $user->getNickname(),
+            'newValue' => $user->isOnline()
+        ]);
     }
 }

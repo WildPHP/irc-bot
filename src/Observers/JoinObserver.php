@@ -108,7 +108,6 @@ class JoinObserver
         $user->setUsername($prefix->getUsername());
         $user->setHostname($prefix->getHostname());
         $user->setIrcAccount($joinMessage->getIrcAccount());
-        $this->userStorage->store($user);
 
         $this->logger->debug('Updated user', [
             'reason' => 'join',
@@ -117,6 +116,16 @@ class JoinObserver
             'username' => $prefix->getUsername(),
             'hostname' => $prefix->getHostname(),
             'irc_account' => $joinMessage->getIrcAccount()
+        ]);
+
+        $user->setOnline(true);
+        $this->userStorage->store($user);
+
+        $this->logger->debug('Set online flag for user', [
+            'reason' => 'join',
+            'id' => $user->getUserId(),
+            'nickname' => $user->getNickname(),
+            'newValue' => $user->isOnline()
         ]);
     }
 }
