@@ -62,13 +62,25 @@ class NickObserver
         $nickMessage = $ircMessageEvent->getIncomingMessage();
 
         $user = $this->userStorage->getOneByNickname($nickMessage->getNickname());
+        $existingUser = $this->userStorage->getOneByNickname($nickMessage->getNewNickname());
 
         if ($user === null) {
             throw new RuntimeException('No user found while one was expected');
         }
 
+        if ($existingUser !== null) {
+            $this->logger->debug('Found existing user with the same nickname; dropping duplicate user.');
+            $this->userStorage->delete($user);
+            $user = $existingUser;
+        }
+
         $user->setNickname($nickMessage->getNewNickname());
         $this->userStorage->store($user);
+
+        $this->logger->debug('Updated user nickname', [
+            'oldNickname' => $nickMessage->getNickname(),
+            'nickname' => $nickMessage->getNewNickname()
+        ]);
 
         $this->eventEmitter->emit('user.nick', [
             new NicknameChangedEvent(
@@ -76,11 +88,6 @@ class NickObserver
                 $nickMessage->getNickname(),
                 $nickMessage->getNewNickname()
             )
-        ]);
-
-        $this->logger->debug('Updated user nickname', [
-            'oldNickname' => $nickMessage->getNickname(),
-            'nickname' => $nickMessage->getNewNickname()
         ]);
     }
 }
