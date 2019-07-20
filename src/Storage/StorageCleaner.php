@@ -30,14 +30,29 @@ class StorageCleaner
     ) {
         $logger->debug('Running cleanup tasks for the storage subsystem...');
 
-        $logger->debug('Removing set modes for users...');
+        $logger->debug('Removing set modes for users and setting online flags...');
+        $nicknames = [];
         foreach ($userStorage->getAll() as $user) {
             $logger->debug('Processing user...', [
                 'id' => $user->getUserId(),
                 'nickname' => $user->getNickname()
             ]);
+
+            if (in_array($user->getNickname(), $nicknames, true)) {
+                $logger->error('Found duplicate nickname. Removing duplicate user.');
+                $userStorage->delete($user);
+                continue;
+            }
+
+            if (empty($user->getHostname()) || empty($user->getUsername())) {
+                $logger->error('Found user without hostname or username. Removing invalid user.');
+                $userStorage->delete($user);
+                continue;
+            }
+
             $user->setModes(new EntityModes());
             $userStorage->store($user);
+            $nicknames[] = $user->getNickname();
         }
 
         $logger->debug('Removing set modes & topics for channels...');
