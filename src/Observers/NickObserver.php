@@ -70,8 +70,7 @@ class NickObserver
 
         if ($existingUser !== null) {
             $this->logger->debug('Found existing user with the same nickname; dropping duplicate user.');
-            $this->userStorage->delete($user);
-            $user = $existingUser;
+            $this->userStorage->delete($existingUser);
         }
 
         $user->setNickname($nickMessage->getNewNickname());
