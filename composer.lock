@@ -908,12 +908,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/authenticator.git",
-                "reference": "ea76b160e8fd6b9438fbed23aa58f7ee750ec19d"
+                "reference": "5a3d1f28a0e7c5573dbd472553ef73c369201594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/authenticator/zipball/ea76b160e8fd6b9438fbed23aa58f7ee750ec19d",
-                "reference": "ea76b160e8fd6b9438fbed23aa58f7ee750ec19d",
+                "url": "https://api.github.com/repos/WildPHP/authenticator/zipball/5a3d1f28a0e7c5573dbd472553ef73c369201594",
+                "reference": "5a3d1f28a0e7c5573dbd472553ef73c369201594",
                 "shasum": ""
             },
             "require": {
@@ -936,7 +936,7 @@
                 "MIT"
             ],
             "description": "Tiny RBAC library written in PHP",
-            "time": "2019-07-22T17:06:41+00:00"
+            "time": "2019-08-02T23:05:27+00:00"
         },
         {
             "name": "wildphp/command-parser",
@@ -1676,8 +1676,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "FilterIterator implementation that filters files based on a list of suffixes.",
@@ -1718,8 +1718,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Simple template engine.",
@@ -1767,8 +1767,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Utility class for timing",
@@ -1829,16 +1829,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.3.0",
+            "version": "8.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c5153162ec8f31d632ad72eb99a7c3c1e69f87e9"
+                "reference": "c319d08ebd31e137034c84ad7339054709491485"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c5153162ec8f31d632ad72eb99a7c3c1e69f87e9",
-                "reference": "c5153162ec8f31d632ad72eb99a7c3c1e69f87e9",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c319d08ebd31e137034c84ad7339054709491485",
+                "reference": "c319d08ebd31e137034c84ad7339054709491485",
                 "shasum": ""
             },
             "require": {
@@ -1908,7 +1908,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-08-02T05:00:37+00:00"
+            "time": "2019-08-03T15:41:47+00:00"
         },
         {
             "name": "roave/security-advisories",
@@ -2689,8 +2689,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Collection of value objects that represent the types of the PHP type system",
@@ -2732,8 +2732,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
