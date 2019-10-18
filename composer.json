@@ -20,7 +20,7 @@
     "monolog/monolog": "^2",
     "php-di/php-di": "^6.0",
     "wildphp/command-parser": "^0.1",
-    "wildphp/irc-messages": "^0.2",
+    "wildphp/irc-messages": "^0.3",
     "wildphp/queue": "^0.1",
     "wildphp/authenticator": "dev-master",
 
