@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40c148c6c37d453d320255f40bdd27a9",
+    "content-hash": "b4cc16839ed3fe35e38113860ed8b411",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -987,20 +987,23 @@
         },
         {
             "name": "wildphp/irc-messages",
-            "version": "v0.2.2",
+            "version": "v0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/irc-messages.git",
-                "reference": "a626acfad17edb77a22c24ff825c42d950f5893a"
+                "reference": "ec9f1956d77ce9702e6c11336272960b91a81012"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/irc-messages/zipball/a626acfad17edb77a22c24ff825c42d950f5893a",
-                "reference": "a626acfad17edb77a22c24ff825c42d950f5893a",
+                "url": "https://api.github.com/repos/WildPHP/irc-messages/zipball/ec9f1956d77ce9702e6c11336272960b91a81012",
+                "reference": "ec9f1956d77ce9702e6c11336272960b91a81012",
                 "shasum": ""
             },
+            "require": {
+                "php": ">=7.2.0"
+            },
             "require-dev": {
-                "phpunit/phpunit": "^7",
+                "phpunit/phpunit": "^8",
                 "squizlabs/php_codesniffer": "^3.0"
             },
             "type": "library",
@@ -1013,14 +1016,8 @@
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Yoshi2889",
-                    "email": "rick@nanosector.nl"
-                }
-            ],
             "description": "IRC messages implementation for WildPHP",
-            "time": "2019-04-22T19:20:05+00:00"
+            "time": "2019-10-18T11:51:31+00:00"
         },
         {
             "name": "wildphp/queue",
