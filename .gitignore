@@ -65,3 +65,5 @@ php_errors
 !/storage/.empty
 cloverCoverage.xml
 .php_cs.cache
+.idea/discord.xml
+.phpunit.result.cache
