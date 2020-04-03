@@ -173,7 +173,7 @@ class ConnectionDetails
      */
     public static function fromConfiguration(Configuration $configuration): ConnectionDetails
     {
-        if (!array_key_exists('connection', $configuration)) {
+        if (!array_key_exists('connection', (array) $configuration)) {
             throw new InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
         }
 

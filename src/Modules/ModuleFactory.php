@@ -40,13 +40,16 @@ class ModuleFactory
 
     /**
      * @param array $entryClassNames
+     * @return array list of initialized modules
      * @throws ModuleInitializationException
      */
-    public function initializeModules(array $entryClassNames): void
+    public function initializeModules(array $entryClassNames): array
     {
+        $initialized = [];
         foreach ($entryClassNames as $entryClassName) {
-            $this->initializeModule($entryClassName);
+            $initialized[] = $this->initializeModule($entryClassName);
         }
+        return $initialized;
     }
 
     /**
