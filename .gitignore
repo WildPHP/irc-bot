@@ -67,3 +67,4 @@ cloverCoverage.xml
 .php_cs.cache
 .idea/discord.xml
 .phpunit.result.cache
+.DS_Store
