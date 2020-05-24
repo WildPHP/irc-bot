@@ -13,7 +13,7 @@ namespace WildPHP\Core\Events;
 use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Entities\IrcUser;
 
-class CommandEvent
+class CommandEvent implements EventInterface
 {
     /**
      * @var string
