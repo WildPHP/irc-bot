@@ -22,4 +22,5 @@ build:
 
 filter:
   excluded_paths:
+    - "tests/"
     - "storage/"
