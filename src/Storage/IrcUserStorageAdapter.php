@@ -20,7 +20,7 @@ class IrcUserStorageAdapter
      */
     public static function convertToStoredEntity(IrcUser $user): StoredEntity
     {
-        return new StoredEntity($user->toArray(), $user->getUserId());
+        return new StoredEntity($user->toArray(), $user->userId);
     }
 
     /**
@@ -29,6 +29,6 @@ class IrcUserStorageAdapter
      */
     public static function convertToIrcUser(StoredEntityInterface $entity): IrcUser
     {
-        return IrcUser::fromArray($entity->getData());
+        return new IrcUser($entity->getData());
     }
 }

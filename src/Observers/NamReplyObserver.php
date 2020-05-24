@@ -83,47 +83,47 @@ class NamReplyObserver
         foreach ($nicknames as $nickname) {
             $user = $this->userStorage->getOrCreateOneByNickname($nickname);
 
-            if (!$user->isOnline()) {
-                $user->setOnline(true);
+            if (!$user->online) {
+                $user->online = true;
                 $this->userStorage->store($user);
 
                 $this->logger->debug('Set online flag for user', [
                     'reason' => 'RPL_NAMREPLY',
-                    'id' => $user->getUserId(),
-                    'nickname' => $user->getNickname(),
-                    'newValue' => $user->isOnline()
+                    'id' => $user->userId,
+                    'nickname' => $user->nickname,
+                    'newValue' => $user->online
                 ]);
             }
 
             $modes = $ircMessage->getModes()[$nickname];
             foreach ($modes as $mode) {
                 $this->logger->debug('Added user to mode', [
-                    'userID' => $user->getUserId(),
-                    'nickname' => $user->getNickname(),
+                    'userID' => $user->userId,
+                    'nickname' => $user->nickname,
                     'mode' => $mode
                 ]);
-                $channel->getModesForUserId($user->getUserId())->addMode($mode);
+                $channel->getModesForUserId($user->userId)->addMode($mode);
             }
 
             // userhost-in-names support
             if (array_key_exists($nickname, $prefixes)) {
                 $prefix = $prefixes[$nickname];
-                $user->setHostname($prefix->getHostname());
-                $user->setUsername($prefix->getUsername());
+                $user->hostname = $prefix->getHostname();
+                $user->username = $prefix->getUsername();
                 $this->userStorage->store($user);
             }
 
             $relation = $this->relationStorage->getOrCreateOne(
-                $user->getUserId(),
-                $channel->getChannelId()
+                $user->userId,
+                $channel->channelId
             );
 
             $this->logger->debug('Creating user-channel relationship', [
                 'reason' => 'rpl_namreply',
-                'userID' => $relation->getIrcUserId(),
-                'nickname' => $user->getNickname(),
-                'channelID' => $relation->getIrcChannelId(),
-                'channel' => $channel->getName()
+                'userID' => $relation->ircUserId,
+                'nickname' => $user->nickname,
+                'channelID' => $relation->ircChannelId,
+                'channel' => $channel->name
             ]);
         }
 

@@ -73,7 +73,7 @@ class NickObserver
             $this->userStorage->delete($existingUser);
         }
 
-        $user->setNickname($nickMessage->getNewNickname());
+        $user->nickname = $nickMessage->getNewNickname();
         $this->userStorage->store($user);
 
         $this->logger->debug('Updated user nickname', [

@@ -61,7 +61,7 @@ class TopicObserver
             throw new RuntimeException('No channel found while one was expected');
         }
 
-        $channel->setTopic($topicMessage->getMessage());
+        $channel->topic = $topicMessage->getMessage();
         $this->channelStorage->store($channel);
 
         $this->logger->debug('Updated topic', [

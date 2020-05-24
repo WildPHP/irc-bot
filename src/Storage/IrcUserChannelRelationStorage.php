@@ -99,9 +99,12 @@ class IrcUserChannelRelationStorage implements IrcUserChannelRelationStorageInte
             return $entity;
         }
 
-        $relation = new IrcUserChannelRelation();
-        $relation->setIrcChannelId($channelId);
-        $relation->setIrcUserId($userId);
+        $relation = new IrcUserChannelRelation(
+            [
+                'ircUserId' => $userId,
+                'ircChannelId' => $channelId
+            ]
+        );
         $this->store($relation);
         return $relation;
     }

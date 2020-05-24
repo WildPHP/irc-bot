@@ -64,14 +64,14 @@ class AccountNotifyHandler extends RequestOnlyHandler
             throw new RuntimeException('No user found while one was expected');
         }
 
-        $user->setIrcAccount($ircMessage->getAccountName());
+        $user->ircAccount = $ircMessage->getAccountName();
         $this->userStorage->store($user);
 
         $this->logger->debug('Updated IRC account', [
             'reason' => 'account_notify',
-            'userID' => $user->getUserId(),
-            'nickname' => $user->getNickname(),
-            'new_ircAccount' => $user->getIrcAccount()
+            'userID' => $user->userId,
+            'nickname' => $user->nickname,
+            'new_ircAccount' => $user->ircAccount
         ]);
     }
 

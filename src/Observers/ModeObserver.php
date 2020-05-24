@@ -101,18 +101,18 @@ class ModeObserver
         if ($user !== null) {
             foreach ($flags as $mode) {
                 if ($add) {
-                    $user->getModes()->addMode($mode);
-                } elseif ($user->getModes()->hasMode($mode)) {
-                    $user->getModes()->removeMode($mode);
+                    $user->modes->addMode($mode);
+                } elseif ($user->modes->hasMode($mode)) {
+                    $user->modes->removeMode($mode);
                 }
             }
 
             $this->logger->debug('Changed modes for user', [
-                'userID' => $user->getUserId(),
-                'nickname' => $user->getNickname(),
+                'userID' => $user->userId,
+                'nickname' => $user->nickname,
                 'modes' => $flags,
                 'added' => $add,
-                'currentModes' => $user->getModes()->toArray()
+                'currentModes' => $user->modes->toArray()
             ]);
             $this->userStorage->store($user);
 
@@ -131,8 +131,8 @@ class ModeObserver
                 $userInChannel = $this->userStorage->getOneByNickname($args[$parameterIndex]);
 
                 $entityModes = $userInChannel !== null
-                    ? $channel->getModesForUserId($userInChannel->getUserId())
-                    : $channel->getModes();
+                    ? $channel->getModesForUserId($userInChannel->userId)
+                    : $channel->modes;
 
                 if ($add) {
                     $entityModes->addMode($flag, ($userInChannel !== null ? true : $args[$parameterIndex]));
@@ -141,10 +141,10 @@ class ModeObserver
                 }
 
                 $this->logger->debug('Changed mode for user inside channel', [
-                    'channelID' => $channel->getChannelId(),
-                    'name' => $channel->getName(),
-                    'userID' => $userInChannel->getUserId(),
-                    'nickname' => $userInChannel->getNickname(),
+                    'channelID' => $channel->channelId,
+                    'name' => $channel->name,
+                    'userID' => $userInChannel->userId,
+                    'nickname' => $userInChannel->nickname,
                     'flag' => $flag,
                     'added' => $add
                 ]);
@@ -154,14 +154,14 @@ class ModeObserver
             }
 
             if ($add) {
-                $channel->getModes()->addMode($flag);
-            } elseif ($channel->getModes()->hasMode($flag)) {
-                $channel->getModes()->removeMode($flag);
+                $channel->modes->addMode($flag);
+            } elseif ($channel->modes->hasMode($flag)) {
+                $channel->modes->removeMode($flag);
             }
 
             $this->logger->debug('Changed mode for channel', [
-                'channelID' => $channel->getChannelId(),
-                'name' => $channel->getName(),
+                'channelID' => $channel->channelId,
+                'name' => $channel->name,
                 'modes' => $flag,
                 'added' => $add
             ]);

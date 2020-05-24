@@ -34,49 +34,49 @@ class StorageCleaner
         $nicknames = [];
         foreach ($userStorage->getAll() as $user) {
             $logger->debug('Processing user...', [
-                'id' => $user->getUserId(),
-                'nickname' => $user->getNickname()
+                'id' => $user->userId,
+                'nickname' => $user->nickname
             ]);
 
-            if (in_array($user->getNickname(), $nicknames, true)) {
+            if (in_array($user->nickname, $nicknames, true)) {
                 $logger->error('Found duplicate nickname. Removing duplicate user.');
                 $userStorage->delete($user);
                 continue;
             }
 
-            if (empty($user->getHostname()) || empty($user->getUsername())) {
+            if (empty($user->hostname) || empty($user->username)) {
                 $logger->error('Found user without hostname or username. Removing invalid user.');
                 $userStorage->delete($user);
                 continue;
             }
 
-            $user->setModes(new EntityModes());
-            $user->setOnline(false);
+            $user->modes = new EntityModes();
+            $user->online = false;
             $userStorage->store($user);
-            $nicknames[] = $user->getNickname();
+            $nicknames[] = $user->nickname;
         }
 
         $logger->debug('Removing set modes & topics for channels...');
         foreach ($channelStorage->getAll() as $channel) {
             $logger->debug('Processing channel...', [
-                'id' => $channel->getChannelId(),
-                'name' => $channel->getName()
+                'id' => $channel->channelId,
+                'name' => $channel->name
             ]);
-            $channel->setTopic('');
-            $channel->setModes(new EntityModes());
+            $channel->topic = '';
+            $channel->modes = new EntityModes();
 
             $logger->debug('Removing user modes for this channel...', [
-                'currentModeSetAmount' => count($channel->getUserModes())
+                'currentModeSetAmount' => count($channel->userModes)
             ]);
-            $channel->setUserModes([]);
+            $channel->userModes = [];
             $channelStorage->store($channel);
         }
 
         $logger->debug('Removing all prior user-channel relationships...');
         foreach ($relationStorage->getAll() as $relation) {
             $logger->debug('Deleting relation', [
-                'userId' => $relation->getIrcUserId(),
-                'channelId' => $relation->getIrcChannelId()
+                'userId' => $relation->ircUserId,
+                'channelId' => $relation->ircChannelId
             ]);
             $relationStorage->delete($relation);
         }

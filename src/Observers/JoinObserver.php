@@ -80,15 +80,15 @@ class JoinObserver
             $channelObject = $this->channelStorage->getOrCreateOneByName($channel);
 
             $relation = $this->relationStorage->getOrCreateOne(
-                $user->getUserId(),
-                $channelObject->getChannelId()
+                $user->userId,
+                $channelObject->channelId
             );
 
             $this->logger->debug('Creating user-channel relationship', [
                 'reason' => 'join',
-                'userID' => $relation->getIrcUserId(),
-                'nickname' => $user->getNickname(),
-                'channelID' => $relation->getIrcChannelId(),
+                'userID' => $relation->ircUserId,
+                'nickname' => $user->nickname,
+                'channelID' => $relation->ircChannelId,
                 'channel' => $channel
             ]);
         }
@@ -105,27 +105,27 @@ class JoinObserver
         $user = $this->userStorage->getOrCreateOneByNickname($joinMessage->getNickname());
 
         $prefix = $joinMessage->getPrefix();
-        $user->setUsername($prefix->getUsername());
-        $user->setHostname($prefix->getHostname());
-        $user->setIrcAccount($joinMessage->getIrcAccount());
+        $user->username = $prefix->getUsername();
+        $user->hostname = $prefix->getHostname();
+        $user->ircAccount = $joinMessage->getIrcAccount();
+        $user->online = true;
 
         $this->logger->debug('Updated user', [
             'reason' => 'join',
-            'id' => $user->getUserId(),
+            'id' => $user->userId,
             'nickname' => $joinMessage->getNickname(),
             'username' => $prefix->getUsername(),
             'hostname' => $prefix->getHostname(),
             'irc_account' => $joinMessage->getIrcAccount()
         ]);
 
-        $user->setOnline(true);
         $this->userStorage->store($user);
 
         $this->logger->debug('Set online flag for user', [
             'reason' => 'join',
-            'id' => $user->getUserId(),
-            'nickname' => $user->getNickname(),
-            'newValue' => $user->isOnline()
+            'id' => $user->userId,
+            'nickname' => $user->nickname,
+            'newValue' => $user->online
         ]);
     }
 }

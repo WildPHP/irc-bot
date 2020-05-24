@@ -110,7 +110,7 @@ class ManagementCommands
      */
     public function quitCommand(CommandEvent $event): void
     {
-        $message = $event->getParameters()['message'] ?? 'Quit command given by ' . $event->getUser()->getNickname();
+        $message = $event->getParameters()['message'] ?? 'Quit command given by ' . $event->getUser()->nickname;
         $this->queue->quit($message);
     }
 
@@ -132,7 +132,7 @@ class ManagementCommands
 
         if (!empty($diff)) {
             $this->queue->privmsg(
-                $event->getUser()->getNickname(),
+                $event->getUser()->nickname,
                 'Did not join the following channels because they do not follow proper formatting: ' . implode(
                     ', ',
                     $diff
@@ -189,7 +189,7 @@ class ManagementCommands
         if (!empty($diff)) {
             $this->queue
                 ->privmsg(
-                    $event->getUser()->getNickname(),
+                    $event->getUser()->nickname,
                     'Did not part the following channels because they do not follow proper formatting: ' . implode(
                         ', ',
                         $diff
@@ -218,8 +218,8 @@ class ManagementCommands
     {
         $this->queue->clear();
         $this->queue->privmsg(
-            $event->getChannel()->getName(),
-            $event->getUser()->getNickname() . ': Message queue cleared.'
+            $event->getChannel()->name,
+            $event->getUser()->nickname . ': Message queue cleared.'
         );
     }
 }
