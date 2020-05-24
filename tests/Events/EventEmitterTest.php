@@ -29,6 +29,9 @@ class EventEmitterTest extends TestCase
         $listeners = $eventEmitter->listeners('ing');
         self::assertEquals([[$this, 'foo']], $listeners);
         self::assertEquals([$this, 'foo'], array_shift($listeners));
+
+        $eventEmitter->first('tester', [$this, 'ing']);
+        self::assertEquals([[$this, 'ing']], $eventEmitter->listeners('tester'));
     }
 
     public function ing()

@@ -12,7 +12,7 @@ namespace WildPHP\Core\Events;
 
 use WildPHP\Messages\Interfaces\OutgoingMessageInterface;
 
-class OutgoingIrcMessageEvent
+class OutgoingIrcMessageEvent implements EventInterface
 {
     /**
      * @var OutgoingMessageInterface
