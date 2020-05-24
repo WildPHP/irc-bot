@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Events;
 
-class ConnectionEvent
+class ConnectionEvent implements EventInterface
 {
     /**
      * @var null|string
