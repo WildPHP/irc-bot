@@ -233,12 +233,12 @@ class Model
      * @param string $name
      *
      * @return mixed|null
+     * @throws InvalidArgumentException when accessing an unknown property.
      */
     public function &__get(string $name)
     {
         if (!$this->propertyExists($name)) {
-            // https://stackoverflow.com/a/19749730
-            $this->properties[$name] = null;
+            throw new InvalidArgumentException('Property not found on this model instance');
         }
 
         return $this->properties[$name];

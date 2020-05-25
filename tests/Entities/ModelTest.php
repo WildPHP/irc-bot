@@ -19,10 +19,12 @@ class ModelTest extends TestCase
 
         $this->assertTrue(isset($model->string));
         $this->assertEquals('Test!', $model->string);
-        $this->assertNull($model->nonExistantProperty);
         $this->assertIsArray($model->array);
         $this->assertIsArray($model->simpleArray);
         $this->assertInstanceOf(\DateTime::class, $model->date);
+
+        $this->expectException(InvalidArgumentException::class);
+        $model->nonExistantProperty;
     }
 
     public function testValidateArray()
@@ -74,20 +76,38 @@ class ModelTest extends TestCase
         $this->assertIsString($model->string);
     }
 
-    public function testAddNonExistantProperty()
+    public function testAddNonExistantPropertyViaConstructor()
     {
         $model = new SimpleTestModel(
             [
                 'test' => 'Tester'
             ]
         );
-        $this->assertNull($model->test);
+        $this->assertFalse($model->propertyExists('test'));
+    }
+
+    public function testAddNonExistantPropertyViaFill()
+    {
+        $model = new SimpleTestModel();
 
         $model->fill(['test' => 'Tester']);
-        $this->assertNull($model->test);
+        $this->assertFalse($model->propertyExists('test'));
+    }
+
+    public function testAddNonExistantPropertyViaSet()
+    {
+        $model = new SimpleTestModel();
 
         $model->test = 'tester';
-        $this->assertNull($model->test);
+        $this->assertFalse($model->propertyExists('test'));
+    }
+
+    public function testGetNonExistantProperty()
+    {
+        $model = new SimpleTestModel();
+
+        $this->expectException(InvalidArgumentException::class);
+        $model->test;
     }
 
     public function testModelFill()
