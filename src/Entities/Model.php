@@ -236,7 +236,7 @@ class Model
      */
     public function &__get(string $name)
     {
-        if (!array_key_exists($name, $this->properties)) {
+        if (!$this->propertyExists($name)) {
             // https://stackoverflow.com/a/19749730
             $this->properties[$name] = null;
         }
@@ -256,7 +256,7 @@ class Model
             throw new InvalidArgumentException('Trying to set value on an immutable model or immutable property.');
         }
 
-        if ($this->propertyExists($name) && $this->canAssignValue($name, $value)) {
+        if ($this->isPropertySettable($name) && $this->canAssignValue($name, $value)) {
             $this->properties[$name] = $value;
         }
     }
@@ -273,12 +273,23 @@ class Model
     }
 
     /**
-     * Checks whether the given property should exist on this model.
+     * Checks whether a given property currently exists.
      *
      * @param string $key
      * @return bool
      */
     public function propertyExists(string $key): bool
+    {
+        return array_key_exists($key, $this->properties) && $this->properties[$key] !== null;
+    }
+
+    /**
+     * Checks whether the given property should exist on this model.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function isPropertySettable(string $key): bool
     {
         return in_array($key, $this->settable, true) || array_key_exists($key, $this->settable);
     }
@@ -292,7 +303,7 @@ class Model
      */
     public function __isset(string $name)
     {
-        return array_key_exists($name, $this->properties);
+        return $this->propertyExists($name);
     }
 
     /**
