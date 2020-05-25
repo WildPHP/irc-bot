@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2020 The WildPHP Team
  *
@@ -6,22 +7,25 @@
  * See the LICENSE file for more information.
  */
 
+declare(strict_types=1);
+
 namespace WildPHP\Core\Helpers;
 
 class Validation
 {
+    /**
+     * Validates an array based on its values and optionally keys.
+     *
+     * @param array       $array   the array to validate
+     * @param string      $type    the type to check for
+     * @param string|null $keyType the key type to check for, or null to not check keys
+     * @return bool
+     * @see is()
+     */
     public static function array(array $array, string $type, string $keyType = null): bool
     {
-        if (!is_array($array)) {
-            return false;
-        }
-
         foreach ($array as $key => $value) {
-            if ($keyType !== null && !self::is($key, $keyType)) {
-                return false;
-            }
-
-            if (!self::is($value, $type)) {
+            if (!self::is($value, $type) || ($keyType !== null && !self::is($key, $keyType))) {
                 return false;
             }
         }
@@ -29,7 +33,15 @@ class Validation
         return true;
     }
 
-    public static function is($value, string $type)
+    /**
+     * Checks if the given value is of the specified type.
+     *
+     * @param mixed  $value the value to check
+     * @param string $type  the type of the value according to gettype(), or a class name.
+     * @return bool
+     * @see gettype()
+     */
+    public static function is($value, string $type): bool
     {
         if (class_exists($type)) {
             return $value instanceof $type;
@@ -41,9 +53,9 @@ class Validation
     /**
      * Gets the default value for a type.
      *
-     * @see gettype()
      * @param string $type
      * @return mixed
+     * @see gettype()
      */
     public static function defaultTypeValue(string $type)
     {
@@ -73,6 +85,7 @@ class Validation
      *
      * @param $value
      * @param $default
+     * @return mixed
      */
     public static function default($value, $default)
     {
