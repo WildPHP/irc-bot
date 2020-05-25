@@ -23,7 +23,7 @@ class ArgumentedString
      * Extracts an argumented string.
      *
      * @param string $stringWithArguments
-     * @return array
+     * @return Argumented
      */
     public static function extract(string $stringWithArguments): Argumented
     {
@@ -47,6 +47,12 @@ class ArgumentedString
         return count(self::extract($stringToTest)->getArguments()) > $minimumArguments + 1;
     }
 
+    /**
+     * Creates an Argumented instance from an array.
+     *
+     * @param array $array
+     * @return Argumented
+     */
     public static function fromArray(array $array): Argumented
     {
         return new Argumented($array[0], count($array) > 2 ? array_slice($array, 1) : []);

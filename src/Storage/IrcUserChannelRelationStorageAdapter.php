@@ -27,6 +27,6 @@ class IrcUserChannelRelationStorageAdapter
      */
     public static function convertToIrcUserChannelRelation(StoredEntityInterface $entity): IrcUserChannelRelation
     {
-        return IrcUserChannelRelation::fromArray($entity->getData());
+        return new IrcUserChannelRelation($entity->getData());
     }
 }
