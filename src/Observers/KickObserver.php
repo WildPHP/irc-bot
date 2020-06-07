@@ -80,7 +80,7 @@ class KickObserver
         $channel = $this->channelStorage->getOneByName($kickMessage->getChannel());
 
         $this->relationStorage->delete(
-            $this->relationStorage->getOne($user->getUserId(), $channel->getChannelId())
+            $this->relationStorage->getOne($user->userId, $channel->channelId)
         );
 
         $this->logger->debug('Removed user-channel relationship', [

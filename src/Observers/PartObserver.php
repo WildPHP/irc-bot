@@ -81,7 +81,7 @@ class PartObserver
             $channel = $this->channelStorage->getOneByName($channelName);
 
             $this->relationStorage->delete(
-                $this->relationStorage->getOne($user->getUserId(), $channel->getChannelId())
+                $this->relationStorage->getOne($user->userId, $channel->channelId)
             );
 
             $this->logger->debug('Removed user-channel relationship', [
@@ -91,15 +91,15 @@ class PartObserver
             ]);
         }
 
-        if (empty($this->relationStorage->getByUserId($user->getUserId()))) {
-            $user->setOnline(false);
+        if (empty($this->relationStorage->getByUserId($user->userId))) {
+            $user->online = false;
             $this->userStorage->store($user);
 
             $this->logger->debug('This user has left all mutual channels; assuming offline. Updated online flag', [
                 'reason' => 'part',
-                'id' => $user->getUserId(),
-                'nickname' => $user->getNickname(),
-                'newValue' => $user->isOnline()
+                'id' => $user->userId,
+                'nickname' => $user->nickname,
+                'newValue' => $user->online
             ]);
         }
     }

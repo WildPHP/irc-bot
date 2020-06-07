@@ -35,7 +35,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     public function store(IrcChannel $channel): void
     {
-        if (empty($channel->getChannelId()) || $channel->getChannelId() < 1) {
+        if (empty($channel->channelId) || $channel->channelId < 1) {
             $this->giveId($channel);
         }
 
@@ -48,11 +48,11 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     public function delete(IrcChannel $channel): void
     {
-        if (empty($channel->getChannelId()) || !$this->has($channel->getChannelId())) {
+        if (empty($channel->channelId) || !$this->has($channel->channelId)) {
             throw new StorageException('Cannot delete channel without ID or channel which is not stored');
         }
 
-        $this->storageProvider->delete($this->database, ['id' => $channel->getChannelId()]);
+        $this->storageProvider->delete($this->database, ['id' => $channel->channelId]);
     }
 
     /**
@@ -112,7 +112,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
         $entity = $this->storageProvider->retrieve($this->database, ['name' => $name]);
 
         if ($entity === null) {
-            $ircChannel = new IrcChannel($name);
+            $ircChannel = new IrcChannel(['name' => $name]);
             $this->store($ircChannel);
             return $ircChannel;
         }
@@ -144,10 +144,10 @@ class IrcChannelStorage implements IrcChannelStorageInterface
      */
     protected function giveId(IrcChannel $channel): void
     {
-        if (!empty($channel->getChannelId())) {
+        if (!empty($channel->channelId)) {
             return;
         }
 
-        $channel->setChannelId((int)@max(array_keys($this->getAll())) + 1);
+        $channel->channelId = (int)@max(array_keys($this->getAll())) + 1;
     }
 }
