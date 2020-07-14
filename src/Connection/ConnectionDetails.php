@@ -168,12 +168,12 @@ class ConnectionDetails
     }
 
     /**
-     * @param Configuration $configuration
+     * @param array $configuration
      * @return ConnectionDetails
      */
-    public static function fromConfiguration(Configuration $configuration): ConnectionDetails
+    public static function fromArray(array $configuration): ConnectionDetails
     {
-        if (!array_key_exists('connection', (array) $configuration)) {
+        if (!array_key_exists('connection', $configuration)) {
             throw new InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
         }
 
