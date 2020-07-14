@@ -87,8 +87,6 @@ class AlternativeNicknameHandler
         $this->eventEmitter->removeListener('irc.line.in.436', [$this, 'chooseAlternateNickname']);
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
      * @return void
      */

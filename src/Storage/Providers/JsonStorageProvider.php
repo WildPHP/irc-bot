@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace WildPHP\Core\Storage\Providers;
 
 use WildPHP\Core\Storage\StorageException;
-use WildPHP\Core\Storage\StoredEntity;
 use WildPHP\Core\Storage\StoredEntityInterface;
 
 class JsonStorageProvider extends BaseStorageProvider

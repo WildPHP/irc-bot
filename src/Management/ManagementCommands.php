@@ -198,8 +198,6 @@ class ManagementCommands
         }
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
      * @param CommandEvent $event
      */
@@ -208,8 +206,6 @@ class ManagementCommands
         // TODO: Validate
         $this->queue->nick($event->getParameters()['newNickname']);
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param CommandEvent $event

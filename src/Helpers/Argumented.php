@@ -6,9 +6,9 @@
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Helpers;
+declare(strict_types=1);
 
-use WildPHP\Core\Entities\Model;
+namespace WildPHP\Core\Helpers;
 
 /**
  * Class Argumented

@@ -6,6 +6,8 @@
  * See the LICENSE file for more information.
  */
 
+declare(strict_types=1);
+
 namespace WildPHP\Core\Storage\Providers;
 
 use WildPHP\Core\Storage\StoredEntityInterface;

@@ -139,7 +139,7 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @param UnsupportedIncomingIrcMessageEvent $event
+     * @param IncomingIrcMessageEvent $event
      */
     public function handleResponse(IncomingIrcMessageEvent $event): void
     {
