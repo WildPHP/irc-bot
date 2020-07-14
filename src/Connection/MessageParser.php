@@ -28,7 +28,7 @@ class MessageParser
             $tags = _substr($lines[$index], 1);
             $index++;
             foreach (explode(';', $tags) as $item) {
-                [$k, $v] = explode('=', $item, 2);
+                [$k, $v] = array_pad(explode('=', $item, 2), 2, null);
                 if ($v === null) {
                     $object->tags[$k] = true;
                 } else {
