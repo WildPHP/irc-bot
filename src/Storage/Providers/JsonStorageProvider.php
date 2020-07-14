@@ -14,7 +14,7 @@ use WildPHP\Core\Storage\StorageException;
 use WildPHP\Core\Storage\StoredEntity;
 use WildPHP\Core\Storage\StoredEntityInterface;
 
-class JsonStorageProvider implements StorageProviderInterface
+class JsonStorageProvider extends BaseStorageProvider
 {
     /**
      * @var string
@@ -149,61 +149,12 @@ class JsonStorageProvider implements StorageProviderInterface
      * @return array
      * @throws StorageException
      */
-    private function getEntriesWithCriteria(string $database, array $criteria): array
+    public function getEntriesWithCriteria(string $database, array $criteria): array
     {
         $this->openDatabase($database);
 
         $entries = (array)$this->cache[$database];
-        $matches = [];
-
-        foreach ($entries as $id => $entry) {
-            if (!is_array($entry)) {
-                continue;
-            }
-
-            $matchCount = 0;
-            foreach ($criteria as $key => $value) {
-                if (array_key_exists($key, $entry) && $entry[$key] === $value) {
-                    $matchCount++;
-                }
-            }
-
-            if ($matchCount === count($criteria)) {
-                $matches[$id] = $entry;
-            }
-        }
-
-        return $matches;
-    }
-
-    /**
-     * @param array $entry
-     * @return StoredEntity
-     */
-    private function prepareEntry(array $entry): StoredEntity
-    {
-        $preparedEntry = new StoredEntity($entry);
-
-        if (!empty($entry['id'])) {
-            $preparedEntry->setId($entry['id']);
-        }
-
-        return $preparedEntry;
-    }
-
-    /**
-     * @param array $entries
-     * @return StoredEntity[]
-     */
-    private function prepareEntries(array $entries): array
-    {
-        $prepared = [];
-
-        foreach ($entries as $entry) {
-            $prepared[] = $this->prepareEntry($entry);
-        }
-
-        return $prepared;
+        return self::matchEntries($entries, $criteria);
     }
 
     /**
