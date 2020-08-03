@@ -46,7 +46,7 @@ class ArgumentedString
      */
     public static function is(string $stringToTest, int $minimumArguments = 1): bool
     {
-        return count(self::extract($stringToTest)->getArguments()) > $minimumArguments + 1;
+        return count(self::extract($stringToTest)->getArguments()) >= $minimumArguments;
     }
 
     /**
@@ -57,6 +57,6 @@ class ArgumentedString
      */
     public static function fromArray(array $array): Argumented
     {
-        return new Argumented($array[0], count($array) > 2 ? array_slice($array, 1) : []);
+        return new Argumented($array[0], count($array) > 1 ? array_slice($array, 1) : []);
     }
 }
