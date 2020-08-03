@@ -62,6 +62,14 @@ class ConnectionDetailsTest extends TestCase
         self::assertEquals($address, $connectionDetails->getAddress());
     }
 
+    public function testGetConnectionString()
+    {
+        $expected = 'Test:9999';
+
+        $connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test');
+        self::assertEquals($expected, $connectionDetails->getConnectionString());
+    }
+
     public function testGetSetWantedNickname()
     {
         $wantedNickname = 'Test';
