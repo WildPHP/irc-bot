@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection\Capabilities;
 
+/** @noinspection EmptyClassInspection */
 class MultiPrefixHandler extends RequestOnlyHandler
 {
 }

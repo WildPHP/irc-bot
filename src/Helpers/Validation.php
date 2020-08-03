@@ -56,6 +56,7 @@ class Validation
      * @param string $type
      * @return mixed
      * @see gettype()
+     * @noinspection MultipleReturnStatementsInspection
      */
     public static function defaultTypeValue(string $type)
     {

@@ -173,7 +173,11 @@ class JsonStorageProvider extends BaseStorageProvider
             throw new StorageException('The given file could not be read.');
         }
 
-        $data = json_decode($jsonData, true);
+        try {
+            $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new StorageException('Unable to decode JSON data from storage');
+        }
 
         if ($data === null) {
             throw new StorageException('The data in this file is not valid JSON');
@@ -232,8 +236,15 @@ class JsonStorageProvider extends BaseStorageProvider
      */
     private function writeFile(string $fileName, $data): void
     {
-        if (!is_writable($fileName) || file_put_contents($fileName, json_encode($data)) === false) {
-            throw new StorageException('Failed to store user data to file; is it writable?');
+        try {
+            if (!is_writable($fileName) || file_put_contents(
+                    $fileName,
+                    json_encode($data, JSON_THROW_ON_ERROR)
+                ) === false) {
+                throw new StorageException('Failed to store user data to file; is it writable?');
+            }
+        } catch (\JsonException $e) {
+            throw new StorageException('Unable to convert data to be saved to JSON for storage');
         }
     }
 }

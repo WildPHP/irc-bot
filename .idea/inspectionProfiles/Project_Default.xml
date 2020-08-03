@@ -31,7 +31,6 @@
     <inspection_tool class="BashWrapFunction" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="BashWrapWord" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="CallableInLoopTerminationConditionInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="ClassOverridesFieldOfSuperClassInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ConstantIfStatementJS" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DuplicateCaseLabelJS" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ES6ModulesDependencies" enabled="true" level="WEAK WARNING" enabled_by_default="true" />

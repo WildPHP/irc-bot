@@ -12,7 +12,6 @@ namespace WildPHP\Core\Observers;
 
 use Evenement\EventEmitterInterface;
 use Psr\Log\LoggerInterface;
-use WildPHP\Core\Entities\IrcChannel;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
 use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;

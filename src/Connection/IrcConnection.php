@@ -106,7 +106,7 @@ class IrcConnection implements IrcConnectionInterface
 
                 $connection->on(
                     'error',
-                    static function ($error) {
+                    function ($error) {
                         throw new ConnectionException(
                             sprintf(
                                 'Connection to %s failed: %s',
