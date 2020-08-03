@@ -55,7 +55,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
      * @param ACCOUNT $ircMessage
      * @throws RuntimeException
      */
-    public function updateUserIrcAccount(ACCOUNT $ircMessage): void
+    public function updateUserIrcAccount(Account $ircMessage): void
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
         $user = $this->userStorage->getOneByNickname($nickname);

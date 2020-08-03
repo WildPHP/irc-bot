@@ -75,7 +75,7 @@ class ConnectionDetailsTest extends TestCase
         $secure = true;
 
         $connectionDetails = new ConnectionDetails('Test', 'Test', 'Test', 9999, 'Test', 'Test', 'Test', true);
-        self::assertEquals($secure, $connectionDetails->getSecure());
+        self::assertEquals($secure, $connectionDetails->isSecure());
     }
 
     public function testGetSetContextOptions()
@@ -109,7 +109,7 @@ class ConnectionDetailsTest extends TestCase
 
         self::assertEquals('irc.freenode.net', $connectionDetails->getAddress());
         self::assertEquals(6697, $connectionDetails->getPort());
-        self::assertTrue($connectionDetails->getSecure());
+        self::assertTrue($connectionDetails->isSecure());
         self::assertEquals('MyBot', $connectionDetails->getWantedNickname());
         self::assertEquals('MyBot', $connectionDetails->getUsername());
         self::assertEquals('A WildPHP Bot', $connectionDetails->getRealname());

@@ -56,7 +56,7 @@ class MessageLogger
     {
         $command = $event->getOutgoingMessage();
 
-        if (!($command instanceof PRIVMSG)) {
+        if (!($command instanceof Privmsg)) {
             return;
         }
 

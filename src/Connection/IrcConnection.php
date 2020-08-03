@@ -77,14 +77,12 @@ class IrcConnection implements IrcConnectionInterface
             $data = $pieces[0] . "\r\n";
         }
 
-        $promise = $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data) {
+        return $this->connectorPromise->then(function (ConnectionInterface $stream) use ($data) {
             $this->eventEmitter->emit('stream.data.out', [$data]);
 
             $this->logger->debug('>> ' . $data);
             $stream->write($data);
         });
-
-        return $promise;
     }
 
     /**
@@ -102,15 +100,20 @@ class IrcConnection implements IrcConnectionInterface
      */
     public function connect(ConnectorInterface $connectorInterface): PromiseInterface
     {
-        $connectionString = $this->getConnectionDetails()->getAddress() . ':' . $this->getConnectionDetails()->getPort();
-        $promise = $connectorInterface->connect($connectionString)
-            ->then(function (ConnectionInterface $connection) use ($connectionString) {
+        $promise = $connectorInterface->connect($this->connectionDetails->getConnectionString())
+            ->then(function (ConnectionInterface $connection) {
                 $this->eventEmitter->emit('stream.created');
 
                 $connection->on(
                     'error',
-                    static function ($error) use ($connectionString) {
-                        throw new ConnectionException('Connection to ' . $connectionString . ' failed: ' . $error);
+                    static function ($error) {
+                        throw new ConnectionException(
+                            sprintf(
+                                'Connection to %s failed: %s',
+                                $this->connectionDetails->getConnectionString(),
+                                $error
+                            )
+                        );
                     }
                 );
 
@@ -128,13 +131,11 @@ class IrcConnection implements IrcConnectionInterface
      */
     public function close(): PromiseInterface
     {
-        $promise = $this->connectorPromise->then(function (ConnectionInterface $connection) {
+        return $this->connectorPromise->then(function (ConnectionInterface $connection) {
             $this->logger->warning('Closing connection...');
             $connection->close();
             $this->eventEmitter->emit('stream.closed');
         });
-
-        return $promise;
     }
 
     /**

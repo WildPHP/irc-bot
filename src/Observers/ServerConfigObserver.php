@@ -55,18 +55,18 @@ class ServerConfigObserver
      */
     public function updateServerInformation(IncomingIrcMessageEvent $event): void
     {
-        /** @var ISupport $incomingIrcMessage */
-        $incomingIrcMessage = $event->getIncomingMessage();
-        $hostname = $incomingIrcMessage->getServer();
+        /** @var ISupport $message */
+        $message = $event->getIncomingMessage();
+        $hostname = $message->getServer();
         $this->configuration['serverConfig']['hostname'] = $hostname;
 
         // The first argument is the nickname set.
-        $currentNickname = $incomingIrcMessage->getNickname();
+        $currentNickname = $message->getNickname();
         $this->configuration['currentNickname'] = $currentNickname;
 
         $this->logger->debug('Set current nickname to configuration key currentNickname', [$currentNickname]);
 
-        $variables = $incomingIrcMessage->getVariables();
+        $variables = $message->getVariables();
         $currentSettings = $this->configuration['serverConfig'] ?? [];
         $this->configuration['serverConfig'] = array_merge($currentSettings, $variables);
 

@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use React\Promise\PromiseInterface;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
-use WildPHP\Core\Events\UnsupportedIncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Authenticate;
 

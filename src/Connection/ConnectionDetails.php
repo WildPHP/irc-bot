@@ -50,7 +50,7 @@ class ConnectionDetails
     protected $wantedNickname;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $secure = false;
 
@@ -129,6 +129,14 @@ class ConnectionDetails
     /**
      * @return string
      */
+    public function getConnectionString(): string
+    {
+        return $this->getAddress() . ':' . $this->getPort();
+    }
+
+    /**
+     * @return string
+     */
     public function getRealname(): string
     {
         return $this->realname;
@@ -153,7 +161,7 @@ class ConnectionDetails
     /**
      * @return bool
      */
-    public function getSecure(): bool
+    public function isSecure(): bool
     {
         return $this->secure;
     }

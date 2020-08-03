@@ -76,7 +76,7 @@ class IrcConnectionInitiator
         $promise = $ircConnection->connect(
             ConnectorFactory::create(
                 $this->loop,
-                $connectionDetails->getSecure(),
+                $connectionDetails->isSecure(),
                 $connectionDetails->getContextOptions()
             )
         );

@@ -96,25 +96,24 @@ class CommandRunner
      *
      * @throws ValidationException
      */
-    public function parseAndRunCommand(PRIVMSG $privmsg): void
+    public function parseAndRunCommand(Privmsg $privmsg): void
     {
         $prefix = $this->configuration['prefix'];
-        $commandProcessor = $this->commandProcessor;
 
         $message = $privmsg->getMessage();
 
         try {
-            $parsedMessage = CommandParser::parseFromString($message, $prefix);
+            $parsed = CommandParser::parseFromString($message, $prefix);
 
             // TODO: Fix this workaround.
-            $parameters = $parsedMessage->getArguments();
-            $command = $commandProcessor->findCommand($parsedMessage->getCommand());
+            $parameters = $parsed->getArguments();
+            $command = $this->commandProcessor->findCommand($parsed->getCommand());
             $strategy = CommandParser::findApplicableStrategy($command, $parameters);
-            $parsedMessage->setArguments(
+            $parsed->setArguments(
                 $strategy->remapNumericParameterIndexes($parameters)
             );
 
-            $processedCommand = $commandProcessor->process($parsedMessage);
+            $processed = $this->commandProcessor->process($parsed);
         } catch (CommandNotFoundException | ParseException $e) {
             $this->logger->debug('Message not a command');
             return;
@@ -129,13 +128,13 @@ class CommandRunner
         $user = $this->userStorage->getOneByNickname($privmsg->getNickname());
 
         $event = new CommandEvent(
-            $processedCommand->getCommand(),
+            $processed->getCommand(),
             $channel,
             $user,
-            $processedCommand->getArguments()
+            $processed->getArguments()
         );
 
         $this->eventEmitter->emit('irc.command', [$event]);
-        call_user_func($processedCommand->getCallback(), $event);
+        call_user_func($processed->getCallback(), $event);
     }
 }

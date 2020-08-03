@@ -75,13 +75,12 @@ class JoinObserver
         $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
         $channels = $ircMessage->getChannels();
 
-        foreach ($channels as $channel) {
-            /** @var IrcChannel $channelObject */
-            $channelObject = $this->channelStorage->getOrCreateOneByName($channel);
+        foreach ($channels as $channelName) {
+            $channel = $this->channelStorage->getOrCreateOneByName($channelName);
 
             $relation = $this->relationStorage->getOrCreateOne(
                 $user->userId,
-                $channelObject->channelId
+                $channel->channelId
             );
 
             $this->logger->debug('Creating user-channel relationship', [
@@ -89,7 +88,7 @@ class JoinObserver
                 'userID' => $relation->ircUserId,
                 'nickname' => $user->nickname,
                 'channelID' => $relation->ircChannelId,
-                'channel' => $channel
+                'channel' => $channel->name
             ]);
         }
     }

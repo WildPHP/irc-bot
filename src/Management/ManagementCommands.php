@@ -149,10 +149,10 @@ class ManagementCommands
     protected function validateChannels(array $channels): array
     {
         $validChannels = [];
-        $serverChannelPrefix = $this->configuration['serverConfig']['chantypes'];
+        $channelPrefix = $this->configuration['serverConfig']['chantypes'];
 
         foreach ($channels as $channel) {
-            if (strpos($channel, $serverChannelPrefix) !== 0) {
+            if (strpos($channel, $channelPrefix) !== 0) {
                 continue;
             }
 
