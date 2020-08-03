@@ -15,13 +15,6 @@ class ArgumentedString
     public const DELIMITER = ':';
 
     /**
-     * Cached Argumented instances.
-     *
-     * @var Argumented[]
-     */
-    private static $cached = [];
-
-    /**
      * Extracts an argumented string.
      *
      * @param string $stringWithArguments
@@ -29,12 +22,7 @@ class ArgumentedString
      */
     public static function extract(string $stringWithArguments): Argumented
     {
-        if (array_key_exists($stringWithArguments, self::$cached)) {
-            return self::$cached[$stringWithArguments];
-        }
-
-        $parts = explode(self::DELIMITER, $stringWithArguments);
-        return self::fromArray($parts);
+        return self::fromArray(explode(self::DELIMITER, $stringWithArguments));
     }
 
     /**
