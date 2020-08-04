@@ -38,12 +38,4 @@ class CommandRegistrar
     {
         return $this->processor->registerCommand($command, $commandObject);
     }
-
-    /**
-     * @return CommandProcessor
-     */
-    public function getProcessor(): CommandProcessor
-    {
-        return $this->processor;
-    }
 }

@@ -19,7 +19,10 @@ use WildPHP\Commands\Exceptions\InvalidParameterCountException;
 use WildPHP\Commands\Exceptions\NoApplicableStrategiesException;
 use WildPHP\Commands\Exceptions\ParseException;
 use WildPHP\Commands\Exceptions\ValidationException;
+use WildPHP\Commands\ProcessedCommand;
 use WildPHP\Core\Configuration\Configuration;
+use WildPHP\Core\Entities\IrcChannel;
+use WildPHP\Core\Entities\IrcUser;
 use WildPHP\Core\Events\CommandEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
@@ -47,18 +50,21 @@ class CommandRunner
      * @var CommandProcessor
      */
     private $commandProcessor;
-    /**
-     * @var IrcMessageQueue
-     */
-    private $queue;
+
     /**
      * @var IrcChannelStorageInterface
      */
     private $channelStorage;
+
     /**
      * @var IrcUserStorageInterface
      */
     private $userStorage;
+    
+    /**
+     * @var IrcMessageQueue
+     */
+    private $queue;
 
     /**
      * CommandRunner constructor.
@@ -67,66 +73,66 @@ class CommandRunner
      * @param Configuration $configuration
      * @param CommandProcessor $commandProcessor
      * @param LoggerInterface $logger
-     * @param IrcMessageQueue $queue
      * @param IrcChannelStorageInterface $channelStorage
      * @param IrcUserStorageInterface $userStorage
+     * @param IrcMessageQueue $queue
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         Configuration $configuration,
         CommandProcessor $commandProcessor,
         LoggerInterface $logger,
-        IrcMessageQueue $queue,
         IrcChannelStorageInterface $channelStorage,
-        IrcUserStorageInterface $userStorage
+        IrcUserStorageInterface $userStorage,
+        IrcMessageQueue $queue
     ) {
-        $eventEmitter->on('irc.line.in.privmsg', [$this, 'parseAndRunCommand']);
+        $eventEmitter->on('irc.line.in.privmsg', [$this, 'processPrivmsg']);
 
         $this->eventEmitter = $eventEmitter;
         $this->configuration = $configuration;
         $this->logger = $logger;
         $this->commandProcessor = $commandProcessor;
-        $this->queue = $queue;
         $this->channelStorage = $channelStorage;
         $this->userStorage = $userStorage;
+        $this->queue = $queue;
     }
 
     /**
-     * @param PRIVMSG $privmsg
-     *
-     * @throws ValidationException
+     * @param Privmsg $privmsg
      */
-    public function parseAndRunCommand(Privmsg $privmsg): void
+    public function processPrivmsg(Privmsg $privmsg): void
     {
-        $prefix = $this->configuration['prefix'];
-
-        $message = $privmsg->getMessage();
-
         try {
-            $parsed = CommandParser::parseFromString($message, $prefix);
+            $processed = $this->processCommandLine($privmsg->getMessage(), $this->configuration['prefix']);
+        }
 
-            // TODO: Fix this workaround.
-            $parameters = $parsed->getArguments();
-            $command = $this->commandProcessor->findCommand($parsed->getCommand());
-            $strategy = CommandParser::findApplicableStrategy($command, $parameters);
-            $parsed->setArguments(
-                $strategy->remapNumericParameterIndexes($parameters)
-            );
-
-            $processed = $this->commandProcessor->process($parsed);
-        } catch (CommandNotFoundException | ParseException $e) {
-            $this->logger->debug('Message not a command');
-            return;
-        } catch (NoApplicableStrategiesException | InvalidParameterCountException $e) {
-            $this->logger->debug('No valid strategies found.');
-            $this->queue->privmsg($privmsg->getChannel(), 'Invalid arguments.');
-
+        // Do not process messages without command or malformed ones.
+        catch (CommandNotFoundException | ParseException $e) {
+            $this->logger->debug('[CommandRunner] Dropping message without command.');
             return;
         }
 
-        $channel = $this->channelStorage->getOneByName($privmsg->getChannel());
-        $user = $this->userStorage->getOneByNickname($privmsg->getNickname());
+        // When a validation error occurs or parameters do not match, send a message to the user.
+        catch (InvalidParameterCountException | NoApplicableStrategiesException | ValidationException $e) {
+            $this->logger->debug('[CommandRunner] Dropping message with malformed parameters.');
+            $this->queue->privmsg($privmsg->getChannel(), 'Invalid parameters.');
+            return;
+        }
 
+        $this->runProcessedCommand(
+            $processed,
+            $this->userStorage->getOneByNickname($privmsg->getNickname()),
+            $this->channelStorage->getOneByName($privmsg->getChannel())
+        );
+    }
+
+    /**
+     * @param ProcessedCommand $processed
+     * @param IrcUser $user
+     * @param IrcChannel $channel
+     */
+    public function runProcessedCommand(ProcessedCommand $processed, IrcUser $user, IrcChannel $channel): void
+    {
         $event = new CommandEvent(
             $processed->getCommand(),
             $channel,
@@ -136,5 +142,31 @@ class CommandRunner
 
         $this->eventEmitter->emit('irc.command', [$event]);
         call_user_func($processed->getCallback(), $event);
+    }
+
+    /**
+     * @param string $line
+     * @param string $prefix
+     * @return ProcessedCommand
+     *
+     * @throws CommandNotFoundException
+     * @throws InvalidParameterCountException
+     * @throws NoApplicableStrategiesException
+     * @throws ParseException
+     * @throws ValidationException
+     */
+    public function processCommandLine(string $line, string $prefix): ProcessedCommand
+    {
+        $parsed = CommandParser::parseFromString($line, $prefix);
+
+        // TODO: Fix this workaround that fixes parameter indexes.
+        $parameters = $parsed->getArguments();
+        $command = $this->commandProcessor->findCommand($parsed->getCommand());
+        $strategy = CommandParser::findApplicableStrategy($command, $parameters);
+        $parsed->setArguments(
+            $strategy->remapNumericParameterIndexes($parameters)
+        );
+
+        return $this->commandProcessor->process($parsed);
     }
 }
