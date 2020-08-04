@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2020 The WildPHP Team
  *
@@ -7,63 +8,34 @@
  */
 
 declare(strict_types=1);
-/**
- * Copyright 2018 The WildPHP Team
- *
- * You should have received a copy of the MIT license with the project.
- * See the LICENSE file for more information.
- */
 
-use WildPHP\Core\Commands\CommandRunner;
-use WildPHP\Core\Connection\Capabilities\CapabilityHandler;
-use WildPHP\Core\Connection\IncomingMessageParser;
-use WildPHP\Core\Connection\MessageParser;
-use WildPHP\Core\Observers\AlternativeNicknameHandler;
-use WildPHP\Core\Observers\BotNicknameObserver;
-use WildPHP\Core\Observers\ConnectionHeartbeatObserver;
-use WildPHP\Core\Observers\EndOfNamesObserver;
-use WildPHP\Core\Observers\InitialBotUserCreator;
-use WildPHP\Core\Observers\InitialJoinObserver;
-use WildPHP\Core\Observers\JoinObserver;
-use WildPHP\Core\Observers\KickObserver;
-use WildPHP\Core\Observers\MessageLogger;
-use WildPHP\Core\Observers\ModeObserver;
-use WildPHP\Core\Observers\NamReplyObserver;
-use WildPHP\Core\Observers\NickObserver;
-use WildPHP\Core\Observers\PartObserver;
-use WildPHP\Core\Observers\QuitObserver;
-use WildPHP\Core\Observers\ServerConfigObserver;
-use WildPHP\Core\Observers\TopicObserver;
-use WildPHP\Core\Observers\WhosPcRplObserver;
-use WildPHP\Core\Storage\StorageCleaner;
-use WildPHP\Queue\QueueProcessor;
-
+/** @noinspection PhpFullyQualifiedNameUsageInspection */
 return [
-    StorageCleaner::class,
-    MessageParser::class,
-    CommandRunner::class,
-    QueueProcessor::class,
-    IncomingMessageParser::class,
-    CapabilityHandler::class,
+    \WildPHP\Core\Storage\StorageCleaner::class,
+    \WildPHP\Core\Connection\MessageParser::class,
+    \WildPHP\Core\Commands\CommandRunner::class,
+    \WildPHP\Queue\QueueProcessor::class,
+    \WildPHP\Core\Connection\IncomingMessageParser::class,
+    \WildPHP\Core\Connection\Capabilities\CapabilityHandler::class,
 
     // observers; please keep in alphabetical order
-    AlternativeNicknameHandler::class,
-    BotNicknameObserver::class,
-    ConnectionHeartbeatObserver::class,
-    EndOfNamesObserver::class,
-    InitialBotUserCreator::class,
-    InitialJoinObserver::class,
-    JoinObserver::class,
-    KickObserver::class,
-    MessageLogger::class,
-    ModeObserver::class,
-    NamReplyObserver::class,
-    NickObserver::class,
-    PartObserver::class,
-    QuitObserver::class,
-    ServerConfigObserver::class,
-    TopicObserver::class,
-    WhosPcRplObserver::class,
+    \WildPHP\Core\Observers\AlternativeNicknameHandler::class,
+    \WildPHP\Core\Observers\BotNicknameObserver::class,
+    \WildPHP\Core\Observers\ConnectionHeartbeatObserver::class,
+    \WildPHP\Core\Observers\EndOfNamesObserver::class,
+    \WildPHP\Core\Observers\InitialBotUserCreator::class,
+    \WildPHP\Core\Observers\InitialJoinObserver::class,
+    \WildPHP\Core\Observers\JoinObserver::class,
+    \WildPHP\Core\Observers\KickObserver::class,
+    \WildPHP\Core\Observers\MessageLogger::class,
+    \WildPHP\Core\Observers\ModeObserver::class,
+    \WildPHP\Core\Observers\NamReplyObserver::class,
+    \WildPHP\Core\Observers\NickObserver::class,
+    \WildPHP\Core\Observers\PartObserver::class,
+    \WildPHP\Core\Observers\QuitObserver::class,
+    \WildPHP\Core\Observers\ServerConfigObserver::class,
+    \WildPHP\Core\Observers\TopicObserver::class,
+    \WildPHP\Core\Observers\WhosPcRplObserver::class,
 
     // commands; please keep in alphabetical order
     //\WildPHP\Core\Commands\HelpCommand::class,
