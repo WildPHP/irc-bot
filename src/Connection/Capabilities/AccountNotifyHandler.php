@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -55,7 +55,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
      * @param ACCOUNT $ircMessage
      * @throws RuntimeException
      */
-    public function updateUserIrcAccount(ACCOUNT $ircMessage): void
+    public function updateUserIrcAccount(Account $ircMessage): void
     {
         $nickname = $ircMessage->getPrefix()->getNickname();
         $user = $this->userStorage->getOneByNickname($nickname);

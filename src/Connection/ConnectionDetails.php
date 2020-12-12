@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace WildPHP\Core\Connection;
 
 use InvalidArgumentException;
-use WildPHP\Core\Configuration\Configuration;
 
 class ConnectionDetails
 {
@@ -51,7 +50,7 @@ class ConnectionDetails
     protected $wantedNickname;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $secure = false;
 
@@ -130,6 +129,14 @@ class ConnectionDetails
     /**
      * @return string
      */
+    public function getConnectionString(): string
+    {
+        return $this->getAddress() . ':' . $this->getPort();
+    }
+
+    /**
+     * @return string
+     */
     public function getRealname(): string
     {
         return $this->realname;
@@ -154,7 +161,7 @@ class ConnectionDetails
     /**
      * @return bool
      */
-    public function getSecure(): bool
+    public function isSecure(): bool
     {
         return $this->secure;
     }
@@ -168,12 +175,12 @@ class ConnectionDetails
     }
 
     /**
-     * @param Configuration $configuration
+     * @param array $configuration
      * @return ConnectionDetails
      */
-    public static function fromConfiguration(Configuration $configuration): ConnectionDetails
+    public static function fromArray(array $configuration): ConnectionDetails
     {
-        if (!array_key_exists('connection', (array) $configuration)) {
+        if (!array_key_exists('connection', $configuration)) {
             throw new InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
         }
 

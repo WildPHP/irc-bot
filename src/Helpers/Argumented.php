@@ -1,14 +1,14 @@
 <?php
-/**
+/*
  * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
  */
 
-namespace WildPHP\Core\Helpers;
+declare(strict_types=1);
 
-use WildPHP\Core\Entities\Model;
+namespace WildPHP\Core\Helpers;
 
 /**
  * Class Argumented

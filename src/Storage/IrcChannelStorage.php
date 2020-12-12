@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -148,6 +148,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
             return;
         }
 
-        $channel->channelId = (int)@max(array_keys($this->getAll())) + 1;
+        $channels = $this->getAll();
+        $channel->channelId = count($channels) > 0 ? (int) max(array_keys($channels)) + 1 : 1;
     }
 }

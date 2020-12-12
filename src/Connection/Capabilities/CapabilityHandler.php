@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -100,7 +100,7 @@ class CapabilityHandler
      */
     public function initializeCapabilityHandlers(): void
     {
-        foreach ($this->capabilityHandlers as $capability => $handler) {
+        foreach ($this->capabilityHandlers as $capability => $handlerClass) {
             if (!$this->isCapabilityAvailable($capability)) {
                 $this->logger->debug(sprintf(
                     '[CapabilityHandler] Skipping handler for capability %s because it is not available.',
@@ -113,11 +113,11 @@ class CapabilityHandler
 
             $promise = $this->requestCapability($capability);
 
-            /** @var CapabilityInterface $handlerObject */
-            $handlerObject = $this->container->get($handler);
-            $handlerObject->setRequestPromise($promise);
-            $handlerObject->onFinished([$this, 'tryEndNegotiation']);
-            $this->capabilityHandlers[$capability] = $handlerObject;
+            /** @var CapabilityInterface $handler */
+            $handler = $this->container->get($handlerClass);
+            $handler->setRequestPromise($promise);
+            $handler->onFinished([$this, 'tryEndNegotiation']);
+            $this->capabilityHandlers[$capability] = $handler;
         }
     }
 
@@ -151,15 +151,15 @@ class CapabilityHandler
      */
     public function responseRouter(IncomingIrcMessageEvent $event): void
     {
-        /** @var Cap $incomingIrcMessage */
-        $incomingIrcMessage = $event->getIncomingMessage();
+        /** @var Cap $message */
+        $message = $event->getIncomingMessage();
 
-        $command = $incomingIrcMessage->getCommand();
-        $capabilities = $incomingIrcMessage->getCapabilities();
+        $command = $message->getCommand();
+        $capabilities = $message->getCapabilities();
 
         switch ($command) {
             case 'LS':
-                $this->updateAvailableCapabilities($capabilities, $incomingIrcMessage->isFinalMessage());
+                $this->updateAvailableCapabilities($capabilities, $message->isFinalMessage());
                 break;
 
             case 'ACK':

@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -149,10 +149,10 @@ class ManagementCommands
     protected function validateChannels(array $channels): array
     {
         $validChannels = [];
-        $serverChannelPrefix = $this->configuration['serverConfig']['chantypes'];
+        $channelPrefix = $this->configuration['serverConfig']['chantypes'];
 
         foreach ($channels as $channel) {
-            if (strpos($channel, $serverChannelPrefix) !== 0) {
+            if (strpos($channel, $channelPrefix) !== 0) {
                 continue;
             }
 
@@ -198,8 +198,6 @@ class ManagementCommands
         }
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
     /**
      * @param CommandEvent $event
      */
@@ -208,8 +206,6 @@ class ManagementCommands
         // TODO: Validate
         $this->queue->nick($event->getParameters()['newNickname']);
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param CommandEvent $event

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
@@ -56,6 +56,7 @@ class Validation
      * @param string $type
      * @return mixed
      * @see gettype()
+     * @noinspection MultipleReturnStatementsInspection
      */
     public static function defaultTypeValue(string $type)
     {

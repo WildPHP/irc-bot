@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -194,6 +194,7 @@ class IrcUserStorage implements IrcUserStorageInterface
             return;
         }
 
-        $user->userId = (int)@max(array_keys($this->getAll())) + 1;
+        $users = $this->getAll();
+        $user->userId = count($users) > 0 ? (int)max(array_keys($users)) + 1 : 1;
     }
 }

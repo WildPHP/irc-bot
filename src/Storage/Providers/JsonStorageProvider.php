@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -11,10 +11,9 @@ declare(strict_types=1);
 namespace WildPHP\Core\Storage\Providers;
 
 use WildPHP\Core\Storage\StorageException;
-use WildPHP\Core\Storage\StoredEntity;
 use WildPHP\Core\Storage\StoredEntityInterface;
 
-class JsonStorageProvider implements StorageProviderInterface
+class JsonStorageProvider extends BaseStorageProvider
 {
     /**
      * @var string
@@ -149,61 +148,12 @@ class JsonStorageProvider implements StorageProviderInterface
      * @return array
      * @throws StorageException
      */
-    private function getEntriesWithCriteria(string $database, array $criteria): array
+    public function getEntriesWithCriteria(string $database, array $criteria): array
     {
         $this->openDatabase($database);
 
         $entries = (array)$this->cache[$database];
-        $matches = [];
-
-        foreach ($entries as $id => $entry) {
-            if (!is_array($entry)) {
-                continue;
-            }
-
-            $matchCount = 0;
-            foreach ($criteria as $key => $value) {
-                if (array_key_exists($key, $entry) && $entry[$key] === $value) {
-                    $matchCount++;
-                }
-            }
-
-            if ($matchCount === count($criteria)) {
-                $matches[$id] = $entry;
-            }
-        }
-
-        return $matches;
-    }
-
-    /**
-     * @param array $entry
-     * @return StoredEntity
-     */
-    private function prepareEntry(array $entry): StoredEntity
-    {
-        $preparedEntry = new StoredEntity($entry);
-
-        if (!empty($entry['id'])) {
-            $preparedEntry->setId($entry['id']);
-        }
-
-        return $preparedEntry;
-    }
-
-    /**
-     * @param array $entries
-     * @return StoredEntity[]
-     */
-    private function prepareEntries(array $entries): array
-    {
-        $prepared = [];
-
-        foreach ($entries as $entry) {
-            $prepared[] = $this->prepareEntry($entry);
-        }
-
-        return $prepared;
+        return self::matchEntries($entries, $criteria);
     }
 
     /**
@@ -223,7 +173,11 @@ class JsonStorageProvider implements StorageProviderInterface
             throw new StorageException('The given file could not be read.');
         }
 
-        $data = json_decode($jsonData, true);
+        try {
+            $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new StorageException('Unable to decode JSON data from storage');
+        }
 
         if ($data === null) {
             throw new StorageException('The data in this file is not valid JSON');
@@ -282,8 +236,15 @@ class JsonStorageProvider implements StorageProviderInterface
      */
     private function writeFile(string $fileName, $data): void
     {
-        if (!is_writable($fileName) || file_put_contents($fileName, json_encode($data)) === false) {
-            throw new StorageException('Failed to store user data to file; is it writable?');
+        try {
+            if (!is_writable($fileName) || file_put_contents(
+                    $fileName,
+                    json_encode($data, JSON_THROW_ON_ERROR)
+                ) === false) {
+                throw new StorageException('Failed to store user data to file; is it writable?');
+            }
+        } catch (\JsonException $e) {
+            throw new StorageException('Unable to convert data to be saved to JSON for storage');
         }
     }
 }

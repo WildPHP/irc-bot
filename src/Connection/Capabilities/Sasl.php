@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use React\Promise\PromiseInterface;
 use WildPHP\Core\Configuration\Configuration;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
-use WildPHP\Core\Events\UnsupportedIncomingIrcMessageEvent;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Messages\Authenticate;
 
@@ -139,7 +138,7 @@ class Sasl implements CapabilityInterface
     }
 
     /**
-     * @param UnsupportedIncomingIrcMessageEvent $event
+     * @param IncomingIrcMessageEvent $event
      */
     public function handleResponse(IncomingIrcMessageEvent $event): void
     {

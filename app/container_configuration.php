@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -84,7 +84,7 @@ return [
         ContainerInterface $container
     ) {
         $configuration = $container->get(Configuration::class);
-        $connectionDetails = ConnectionDetails::fromConfiguration($configuration);
+        $connectionDetails = ConnectionDetails::fromArray($configuration);
         $logger->info('Creating connection', [
             'server' => $connectionDetails->getAddress(),
             'port' => $connectionDetails->getPort()

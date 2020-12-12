@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2019 The WildPHP Team
+/*
+ * Copyright 2020 The WildPHP Team
  *
  * You should have received a copy of the MIT license with the project.
  * See the LICENSE file for more information.
@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use WildPHP\Core\Events\IncomingIrcMessageEvent;
 use WildPHP\Core\Storage\IrcChannelStorageInterface;
-use WildPHP\Core\Storage\IrcUserChannelRelationStorageInterface;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Messages\Mode;
 use WildPHP\Messages\RPL\MyInfo;
@@ -38,11 +37,6 @@ class ModeObserver
     private $userStorage;
 
     /**
-     * @var IrcUserChannelRelationStorageInterface
-     */
-    private $relationStorage;
-
-    /**
      * @var array
      */
     private $userModes = [];
@@ -63,14 +57,12 @@ class ModeObserver
      * @param LoggerInterface $logger
      * @param IrcChannelStorageInterface $channelStorage
      * @param IrcUserStorageInterface $userStorage
-     * @param IrcUserChannelRelationStorageInterface $relationStorage
      */
     public function __construct(
         EventEmitterInterface $eventEmitter,
         LoggerInterface $logger,
         IrcChannelStorageInterface $channelStorage,
-        IrcUserStorageInterface $userStorage,
-        IrcUserChannelRelationStorageInterface $relationStorage
+        IrcUserStorageInterface $userStorage
     ) {
         $eventEmitter->on('irc.msg.in.004', [$this, 'createModeDefinitions']);
         $eventEmitter->on('irc.msg.in.mode', [$this, 'handleModeMessage']);
@@ -78,7 +70,6 @@ class ModeObserver
         $this->logger = $logger;
         $this->channelStorage = $channelStorage;
         $this->userStorage = $userStorage;
-        $this->relationStorage = $relationStorage;
     }
 
     /**
