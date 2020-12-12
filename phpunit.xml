@@ -1,24 +1,23 @@
+<?xml version="1.0"?>
 <!--
   ~ Copyright 2019 The WildPHP Team
   ~
   ~ You should have received a copy of the MIT license with the project.
   ~ See the LICENSE file for more information.
   -->
-
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.1/phpunit.xsd"
-         bootstrap="vendor/autoload.php">
-    <testsuites>
-        <testsuite name="irc-bot-testsuite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-clover" target="/tmp/coverage.xml"/>
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="vendor/autoload.php">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">src/</directory>
+    </include>
+    <report>
+      <clover outputFile="/tmp/coverage.xml"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="irc-bot-testsuite">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
 </phpunit>
