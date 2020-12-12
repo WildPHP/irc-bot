@@ -148,6 +148,7 @@ class IrcChannelStorage implements IrcChannelStorageInterface
             return;
         }
 
-        $channel->channelId = (int)@max(array_keys($this->getAll())) + 1;
+        $channels = $this->getAll();
+        $channel->channelId = count($channels) > 0 ? (int) max(array_keys($channels)) + 1 : 1;
     }
 }
