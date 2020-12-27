@@ -71,6 +71,11 @@ class PrimitiveReplayServer
         $structure->addReply(new RegexReply('/^WHO [#a-zA-Z]+ %nuhaf$/', function () use ($connection, $connectionDetails) {
             $connection->incomingData(":{$connectionDetails->getAddress()} 354 {$connectionDetails->getWantedNickname()} {$connectionDetails->getWantedNickname()} {$connectionDetails->getHostname()} {$connectionDetails->getWantedNickname()} Hs 0\r\n");
         }));
+
+        $structure->addReply(new RegexReply('/^PING .+/', function (ParsedIrcMessage $msg) use ($connection, $connectionDetails) {
+            $connection->incomingData(":{$connectionDetails->getAddress()} PONG {$msg->args[1]}\r\n");
+        }));
+
         $connection->setStructure($structure);
 
         $this->connection = $connection;
