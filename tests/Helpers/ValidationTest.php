@@ -54,4 +54,22 @@ class ValidationTest extends TestCase
         self::assertNull(Validation::defaultTypeValue('null'));
         self::assertNull(Validation::defaultTypeValue('AAAAAAAAAA'));
     }
+
+    public function testArrayHasKeys()
+    {
+        $array = [
+            'test' => 'ing',
+            0 => 1
+        ];
+
+        self::assertTrue(Validation::arrayHasKeys($array, ['test']));
+        self::assertTrue(Validation::arrayHasKeys($array, [0]));
+
+        // order should not matter
+        self::assertTrue(Validation::arrayHasKeys($array, ['test', 0]));
+        self::assertTrue(Validation::arrayHasKeys($array, [0, 'test']));
+
+        self::assertFalse(Validation::arrayHasKeys($array, ['testing']));
+        self::assertFalse(Validation::arrayHasKeys($array, ['test', 0, 'testing']));
+    }
 }

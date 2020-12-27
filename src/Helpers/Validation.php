@@ -92,4 +92,22 @@ class Validation
     {
         return $value ?? $default;
     }
+
+    /**
+     * Determines if the given array has the specified keys.
+     *
+     * @param array $array the array to check
+     * @param array $mandatoryKeys the keys that the array must contain
+     * @return bool
+     */
+    public static function arrayHasKeys(array $array, array $mandatoryKeys): bool
+    {
+        foreach ($mandatoryKeys as $key) {
+            if (!array_key_exists($key, $array)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

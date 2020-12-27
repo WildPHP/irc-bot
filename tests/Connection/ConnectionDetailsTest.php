@@ -100,17 +100,15 @@ class ConnectionDetailsTest extends TestCase
     public function testFromArray()
     {
         $details = [
-            'connection' => [
-                'server' => 'irc.freenode.net',
-                'port' => 6697,
-                'secure' => true,
-                'nickname' => [
-                    'MyBot'
-                ],
-                'username' => 'MyBot',
-                'realname' => 'A WildPHP Bot',
-                'password' => 'tester'
+            'server' => 'irc.freenode.net',
+            'port' => 6697,
+            'secure' => true,
+            'nickname' => [
+                'MyBot'
             ],
+            'username' => 'MyBot',
+            'realname' => 'A WildPHP Bot',
+            'password' => 'tester'
         ];
 
         $connectionDetails = ConnectionDetails::fromArray($details);
@@ -124,11 +122,10 @@ class ConnectionDetailsTest extends TestCase
         self::assertEquals('tester', $connectionDetails->getPassword());
     }
 
-    public function testFromArrayMissingRootKey()
+    public function testFromArrayMissingMandatoryKeys()
     {
         $details = [
-            'server' => 'irc.freenode.net',
-            'port' => 6697,
+            // server and port are missing
             'secure' => true,
             'nickname' => [
                 'MyBot'
@@ -136,25 +133,6 @@ class ConnectionDetailsTest extends TestCase
             'username' => 'MyBot',
             'realname' => 'A WildPHP Bot',
             'password' => 'tester'
-        ];
-
-        $this->expectException(\InvalidArgumentException::class);
-        ConnectionDetails::fromArray($details);
-    }
-
-    public function testFromArrayMissingMandatoryKeys()
-    {
-        $details = [
-            'connection' => [
-                // server and port are missing
-                'secure' => true,
-                'nickname' => [
-                    'MyBot'
-                ],
-                'username' => 'MyBot',
-                'realname' => 'A WildPHP Bot',
-                'password' => 'tester'
-            ],
         ];
 
         $this->expectException(\InvalidArgumentException::class);

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace WildPHP\Core\Connection;
 
 use InvalidArgumentException;
+use WildPHP\Core\Helpers\Validation;
 
 class ConnectionDetails
 {
@@ -180,29 +181,20 @@ class ConnectionDetails
      */
     public static function fromArray(array $configuration): ConnectionDetails
     {
-        if (!array_key_exists('connection', $configuration)) {
-            throw new InvalidArgumentException('Invalid configuration given to ConnectionDetails::fromConfiguration');
-        }
-
-        $connectionInfo = $configuration['connection'];
-        $mandatoryKeys = ['username', 'server', 'port', 'realname', 'nickname'];
-
-        foreach ($mandatoryKeys as $key) {
-            if (!array_key_exists($key, $connectionInfo)) {
-                throw new InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromConfiguration');
-            }
+        if (!Validation::arrayHasKeys($configuration, ['username', 'server', 'port', 'realname', 'nickname'])) {
+            throw new InvalidArgumentException('Missing keys in configuration given to ConnectionDetails::fromArray');
         }
 
         return new ConnectionDetails(
-            $connectionInfo['username'],
+            $configuration['username'],
             gethostname(),
-            $connectionInfo['server'],
-            $connectionInfo['port'],
-            $connectionInfo['realname'],
-            $connectionInfo['password'] ?? '',
-            $connectionInfo['nickname'][0],
-            $connectionInfo['secure'] ?? false,
-            $connectionInfo['options'] ?? []
+            $configuration['server'],
+            $configuration['port'],
+            $configuration['realname'],
+            $configuration['password'] ?? '',
+            $configuration['nickname'][0],
+            $configuration['secure'] ?? false,
+            $configuration['options'] ?? []
         );
     }
 }

@@ -84,7 +84,7 @@ return [
         ContainerInterface $container
     ) {
         $configuration = $container->get(Configuration::class);
-        $connectionDetails = ConnectionDetails::fromArray($configuration);
+        $connectionDetails = ConnectionDetails::fromArray($configuration['connection']);
         $logger->info('Creating connection', [
             'server' => $connectionDetails->getAddress(),
             'port' => $connectionDetails->getPort()
