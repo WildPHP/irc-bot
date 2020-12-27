@@ -55,7 +55,10 @@ return [
         //    'tcp' => [
         //        'bindto' => '192.168.1.11'
         //    ]
-        //]
+        //],
+
+        # Uncomment the following line to simulate a local server for debugging purposes.
+        //'simulate_server' => true
     ],
 
     # Storage driver used for persistent storage

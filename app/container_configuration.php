@@ -21,6 +21,7 @@ use WildPHP\Core\Configuration\PhpBackend;
 use WildPHP\Core\Connection\ConnectionDetails;
 use WildPHP\Core\Connection\IrcConnection;
 use WildPHP\Core\Connection\IrcConnectionInterface;
+use WildPHP\Core\Connection\Replay\PrimitiveReplayServer;
 use WildPHP\Core\Events\EventEmitter;
 use WildPHP\Core\Queue\IrcMessageQueue;
 use WildPHP\Core\Storage\IrcChannelStorage;
@@ -31,6 +32,7 @@ use WildPHP\Core\Storage\IrcUserStorage;
 use WildPHP\Core\Storage\IrcUserStorageInterface;
 use WildPHP\Core\Storage\Providers\StorageProviderInterface;
 use WildPHP\Queue\QueueProcessor;
+
 use function DI\autowire;
 use function DI\create;
 
@@ -85,6 +87,15 @@ return [
     ) {
         $configuration = $container->get(Configuration::class);
         $connectionDetails = ConnectionDetails::fromArray($configuration['connection']);
+
+        if (!empty($configuration['connection']['simulate_server'])) {
+            $logger->warning('Creating primitive replay connection (simulate_server is set in config)');
+            $logger->warning('No real connection will be made.');
+            $server = new PrimitiveReplayServer($eventEmitter, $logger, $connectionDetails);
+
+            return $server->getConnection();
+        }
+
         $logger->info('Creating connection', [
             'server' => $connectionDetails->getAddress(),
             'port' => $connectionDetails->getPort()
