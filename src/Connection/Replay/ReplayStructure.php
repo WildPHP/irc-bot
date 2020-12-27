@@ -24,23 +24,25 @@ class ReplayStructure
      *
      * @param ReplyInterface $reply
      */
-    public function addReply(ReplyInterface $reply)
+    public function addReply(ReplyInterface $reply): void
     {
         $this->replies[] = $reply;
     }
 
     /**
-     * Gets the first reply that matches the given message.
+     * Gets the first reply that matches the given message, or null if none exists.
      *
      * @param string $msg
-     * @return ReplyInterface
+     * @return ReplyInterface|null
      */
-    public function getReply(string $msg): ReplyInterface
+    public function getReply(string $msg): ?ReplyInterface
     {
         foreach ($this->replies as $reply) {
             if ($reply->messageMatches($msg)) {
                 return $reply;
             }
         }
+
+        return null;
     }
 }
