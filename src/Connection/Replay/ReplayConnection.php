@@ -100,7 +100,7 @@ class ReplayConnection implements IrcConnectionInterface
             if ($reply !== null) {
                 $this->logger->debug('REPLAY: Got reply, executing.');
 
-                $reply($this);
+                $reply->process($data);
             }
 
         });

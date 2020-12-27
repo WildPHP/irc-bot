@@ -9,20 +9,37 @@
 namespace WildPHP\Core\Connection\Replay;
 
 
+use WildPHP\Core\Connection\Replay\Replies\ReplyInterface;
+
 class ReplayStructure
 {
     /**
-     * @var callable[]
+     * @var ReplyInterface[]
      */
     private $replies = [];
 
-    public function reply(string $msg, callable $callback)
+    /**
+     * Adds a reply to the reply stack.
+     *
+     * @param ReplyInterface $reply
+     */
+    public function addReply(ReplyInterface $reply)
     {
-        $this->replies[$msg] = $callback;
+        $this->replies[] = $reply;
     }
 
-    public function getReply(string $msg): ?callable
+    /**
+     * Gets the first reply that matches the given message.
+     *
+     * @param string $msg
+     * @return ReplyInterface
+     */
+    public function getReply(string $msg): ReplyInterface
     {
-        return $this->replies[$msg] ?? null;
+        foreach ($this->replies as $reply) {
+            if ($reply->messageMatches($msg)) {
+                return $reply;
+            }
+        }
     }
 }
