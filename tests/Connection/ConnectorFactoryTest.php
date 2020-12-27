@@ -23,12 +23,4 @@ class ConnectorFactoryTest extends TestCase
 
         self::assertInstanceOf(Connector::class, $connector);
     }
-
-    public function testGetSecureConnector()
-    {
-        $loop = Factory::create();
-        $connector = ConnectorFactory::create($loop, true);
-
-        self::assertInstanceOf(SecureConnector::class, $connector);
-    }
 }
