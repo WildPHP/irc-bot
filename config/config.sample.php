@@ -50,11 +50,13 @@ return [
         # You can set additional connection options here.
         # Please see https://github.com/reactphp/socket#connector for more details.
         # Example options below:
-        //'options'  => [
-        //    'dns' => false,
-        //    'tcp' => [
-        //        'bindto' => '192.168.1.11'
-        //    ]
+        //'options'  => 
+        //    'dns' => false, // Disables DNS lookups
+
+        //    'tls' => [ // Allows self-signed certificates
+        //        'verify_peer' => false,
+        //        'verify_peer_name' => false
+        //    ],
         //],
 
         # Uncomment the following line to simulate a local server for debugging purposes.

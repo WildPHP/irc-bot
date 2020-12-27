@@ -27,12 +27,10 @@ class ConnectorFactory
      */
     public static function create(LoopInterface $loop, bool $secure = false, array $options = []): ConnectorInterface
     {
-        $connector = new Connector($loop, $options);
-
-        if ($secure) {
-            return new SecureConnector($connector, $loop);
+        if ($secure && empty($options['tls'])) {
+            $options['tls'] = true;
         }
 
-        return $connector;
+        return new Connector($loop, $options);
     }
 }
