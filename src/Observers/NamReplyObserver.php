@@ -89,7 +89,7 @@ class NamReplyObserver
 
                 $this->logger->debug('Set online flag for user', [
                     'reason' => 'RPL_NAMREPLY',
-                    'id' => $user->userId,
+                    'id' => $user->id,
                     'nickname' => $user->nickname,
                     'newValue' => $user->online
                 ]);
@@ -98,11 +98,11 @@ class NamReplyObserver
             $modes = $ircMessage->getModes()[$nickname];
             foreach ($modes as $mode) {
                 $this->logger->debug('Added user to mode', [
-                    'userID' => $user->userId,
+                    'userID' => $user->id,
                     'nickname' => $user->nickname,
                     'mode' => $mode
                 ]);
-                $channel->getModesForUserId($user->userId)->addMode($mode);
+                $channel->getModesForUserId($user->id)->addMode($mode);
             }
 
             // userhost-in-names support
@@ -114,8 +114,8 @@ class NamReplyObserver
             }
 
             $relation = $this->relationStorage->getOrCreateOne(
-                $user->userId,
-                $channel->channelId
+                $user->id,
+                $channel->id
             );
 
             $this->logger->debug('Creating user-channel relationship', [

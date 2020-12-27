@@ -36,7 +36,7 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     public function store(IrcUser $user): void
     {
-        if (empty($user->userId) || $user->userId < 1) {
+        if (empty($user->id) || $user->id < 1) {
             $this->giveId($user);
         }
 
@@ -49,11 +49,11 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     public function delete(IrcUser $user): void
     {
-        if (empty($user->userId) || !$this->has($user->userId)) {
+        if (empty($user->id) || !$this->has($user->id)) {
             throw new StorageException('Cannot delete user without ID or channel which is not stored');
         }
 
-        $this->storageProvider->delete($this->database, ['id' => $user->userId]);
+        $this->storageProvider->delete($this->database, ['id' => $user->id]);
     }
 
     /**
@@ -190,11 +190,11 @@ class IrcUserStorage implements IrcUserStorageInterface
      */
     protected function giveId(IrcUser $user): void
     {
-        if (!empty($user->userId)) {
+        if (!empty($user->id)) {
             return;
         }
 
         $users = $this->getAll();
-        $user->userId = count($users) > 0 ? (int)max(array_keys($users)) + 1 : 1;
+        $user->id = count($users) > 0 ? (int)max(array_keys($users)) + 1 : 1;
     }
 }

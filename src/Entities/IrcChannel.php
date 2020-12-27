@@ -14,7 +14,7 @@ namespace WildPHP\Core\Entities;
  * Class IrcChannel
  * @package WildPHP\Core\Entities
  *
- * @property int $channelId
+ * @property int $id
  * @property string $name
  * @property string $topic
  * @property EntityModes $modes
@@ -23,7 +23,7 @@ namespace WildPHP\Core\Entities;
 class IrcChannel extends Model
 {
     protected $settable = [
-        'channelId' => 'integer',
+        'id' => 'integer',
         'name' => 'string',
         'topic' => 'string',
         'modes' => EntityModes::class,

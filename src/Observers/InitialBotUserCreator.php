@@ -54,7 +54,7 @@ class InitialBotUserCreator
         $nickname = $message->getNickname();
         $user = $this->userStorage->getOrCreateOneByNickname($nickname);
         $this->logger->debug('Created initial user; my job is done', [
-            'id' => $user->userId,
+            'id' => $user->id,
             'nickname' => $nickname
         ]);
     }
