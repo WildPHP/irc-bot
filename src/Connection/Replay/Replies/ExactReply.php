@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace WildPHP\Core\Connection\Replay\Replies;
 
-use WildPHP\Core\Connection\MessageParser;
-
 class ExactReply extends BaseReply
 {
     /**
