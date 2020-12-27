@@ -51,10 +51,12 @@ return [
         # Please see https://github.com/reactphp/socket#connector for more details.
         # Example options below:
         //'options'  => [
-        //    'dns' => false,
-        //    'tcp' => [
-        //        'bindto' => '192.168.1.11'
-        //    ]
+        //    'dns' => false, // Disables DNS lookups
+
+        //    'tls' => [ // Allows self-signed certificates
+        //        'verify_peer' => false,
+        //        'verify_peer_name' => false
+        //    ],
         //]
     ],
 
