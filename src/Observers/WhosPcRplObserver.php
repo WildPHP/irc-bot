@@ -56,8 +56,7 @@ class WhosPcRplObserver
         /** @var WhosPcRpl $ircMessage */
         $ircMessage = $ircMessageEvent->getIncomingMessage();
 
-        /** @var IrcUser $user */
-        $user = $this->userStorage->getOneByNickname($ircMessage->getNickname());
+        $user = $this->userStorage->getOrCreateOneByNickname($ircMessage->getNickname());
         $user->nickname = $ircMessage->getNickname();
         $user->username = $ircMessage->getUsername();
         $user->hostname = $ircMessage->getHostname();
