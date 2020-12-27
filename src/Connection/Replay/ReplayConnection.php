@@ -76,6 +76,10 @@ class ReplayConnection implements IrcConnectionInterface
         $deferred = new Deferred();
 
         $promise = $deferred->promise();
+        $promise->then(function () {
+            $this->logger->warning('Replay connection close called; emitting close event');
+            $this->eventEmitter->emit('stream.closed');
+        });
         $deferred->resolve();
 
         return $promise;
