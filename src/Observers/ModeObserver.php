@@ -99,7 +99,7 @@ class ModeObserver
             }
 
             $this->logger->debug('Changed modes for user', [
-                'userID' => $user->userId,
+                'userID' => $user->id,
                 'nickname' => $user->nickname,
                 'modes' => $flags,
                 'added' => $add,
@@ -122,7 +122,7 @@ class ModeObserver
                 $userInChannel = $this->userStorage->getOneByNickname($args[$parameterIndex]);
 
                 $entityModes = $userInChannel !== null
-                    ? $channel->getModesForUserId($userInChannel->userId)
+                    ? $channel->getModesForUserId($userInChannel->id)
                     : $channel->modes;
 
                 if ($add) {
@@ -132,9 +132,9 @@ class ModeObserver
                 }
 
                 $this->logger->debug('Changed mode for user inside channel', [
-                    'channelID' => $channel->channelId,
+                    'channelID' => $channel->id,
                     'name' => $channel->name,
-                    'userID' => $userInChannel->userId,
+                    'userID' => $userInChannel->id,
                     'nickname' => $userInChannel->nickname,
                     'flag' => $flag,
                     'added' => $add
@@ -151,7 +151,7 @@ class ModeObserver
             }
 
             $this->logger->debug('Changed mode for channel', [
-                'channelID' => $channel->channelId,
+                'channelID' => $channel->id,
                 'name' => $channel->name,
                 'modes' => $flag,
                 'added' => $add

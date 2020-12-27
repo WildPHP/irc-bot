@@ -34,7 +34,7 @@ class StorageCleaner
         $nicknames = [];
         foreach ($userStorage->getAll() as $user) {
             $logger->debug('Processing user...', [
-                'id' => $user->userId,
+                'id' => $user->id,
                 'nickname' => $user->nickname
             ]);
 
@@ -59,7 +59,7 @@ class StorageCleaner
         $logger->debug('Removing set modes & topics for channels...');
         foreach ($channelStorage->getAll() as $channel) {
             $logger->debug('Processing channel...', [
-                'id' => $channel->channelId,
+                'id' => $channel->id,
                 'name' => $channel->name
             ]);
             $channel->topic = '';

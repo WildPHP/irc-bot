@@ -69,7 +69,7 @@ class AccountNotifyHandler extends RequestOnlyHandler
 
         $this->logger->debug('Updated IRC account', [
             'reason' => 'account_notify',
-            'userID' => $user->userId,
+            'userID' => $user->id,
             'nickname' => $user->nickname,
             'new_ircAccount' => $user->ircAccount
         ]);

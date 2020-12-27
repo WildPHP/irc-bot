@@ -78,8 +78,8 @@ class JoinObserver
             $channel = $this->channelStorage->getOrCreateOneByName($channelName);
 
             $relation = $this->relationStorage->getOrCreateOne(
-                $user->userId,
-                $channel->channelId
+                $user->id,
+                $channel->id
             );
 
             $this->logger->debug('Creating user-channel relationship', [
@@ -110,7 +110,7 @@ class JoinObserver
 
         $this->logger->debug('Updated user', [
             'reason' => 'join',
-            'id' => $user->userId,
+            'id' => $user->id,
             'nickname' => $joinMessage->getNickname(),
             'username' => $prefix->getUsername(),
             'hostname' => $prefix->getHostname(),
@@ -121,7 +121,7 @@ class JoinObserver
 
         $this->logger->debug('Set online flag for user', [
             'reason' => 'join',
-            'id' => $user->userId,
+            'id' => $user->id,
             'nickname' => $user->nickname,
             'newValue' => $user->online
         ]);
