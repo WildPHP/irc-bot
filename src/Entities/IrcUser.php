@@ -14,7 +14,7 @@ namespace WildPHP\Core\Entities;
  * Class IrcUser
  * @package WildPHP\Core\Entities
  *
- * @property int $userId
+ * @property int $id
  * @property string $nickname
  * @property string $hostname
  * @property string $username
@@ -25,7 +25,7 @@ namespace WildPHP\Core\Entities;
 class IrcUser extends Model
 {
     protected $settable = [
-        'userId' => 'integer',
+        'id' => 'integer',
         'nickname' => 'string',
         'hostname' => 'string',
         'username' => 'string',

@@ -20,7 +20,7 @@ class IrcChannelStorageAdapter
      */
     public static function convertToStoredEntity(IrcChannel $channel): StoredEntity
     {
-        return new StoredEntity($channel->toArray(), $channel->channelId);
+        return new StoredEntity($channel->toArray(), $channel->id);
     }
 
     /**

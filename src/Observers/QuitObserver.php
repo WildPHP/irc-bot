@@ -67,7 +67,7 @@ class QuitObserver
         /** @var IrcUser $user */
         $user = $this->userStorage->getOneByNickname($quitMessage->getNickname());
 
-        foreach ($this->relationStorage->getByUserId($user->userId) as $relation) {
+        foreach ($this->relationStorage->getByUserId($user->id) as $relation) {
             $this->relationStorage->delete($relation);
         }
 
@@ -81,7 +81,7 @@ class QuitObserver
 
         $this->logger->debug('Set online flag for user', [
             'reason' => 'quit',
-            'id' => $user->userId,
+            'id' => $user->id,
             'nickname' => $user->nickname,
             'newValue' => $user->online
         ]);
