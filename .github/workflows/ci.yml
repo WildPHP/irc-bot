@@ -14,7 +14,7 @@ jobs:
       matrix:
         operating-system: [ ubuntu-latest, windows-latest ]
         php: [ '7.3', '7.4', '8.0' ]
-    name: PHP ${{ matrix.php }} tests
+    name: PHP ${{ matrix.php }} tests (${{ matrix.operating-system }})
     steps:
       - uses: actions/checkout@v2
       - name: Setup PHP
