@@ -22,9 +22,9 @@ if (function_exists('posix_getuid') && posix_getuid() === 0) {
     exit(128);
 }
 
-if (PHP_VERSION_ID < 70100) {
+if (PHP_VERSION_ID < 70300) {
     echo 'The PHP version you are running (' . PHP_VERSION . ') is not sufficient for WildPHP. Sorry.';
-    echo 'Please use PHP 7.1.0 or later.';
+    echo 'Please use PHP 7.3.0 or later.';
     exit(129);
 }
 include dirname(__DIR__) . '/app/bootstrap.php';
