@@ -17,7 +17,7 @@ build:
 
     tests-php80:
       environment:
-        php: 8.0
+        php: 8.0.0
 
     analysis:
       tests:
