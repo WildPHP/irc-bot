@@ -15,6 +15,10 @@ build:
       environment:
         php: 7.4
 
+    tests-php80:
+      environment:
+        php: 8.0
+
     analysis:
       tests:
         override:
