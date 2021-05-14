@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "96a3780c5340a1d75e6faf65d3a1821a",
+    "content-hash": "fd2a0a1ba134c9336c6e78ea80230c59",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -1024,16 +1024,16 @@
         },
         {
             "name": "wildphp/irc-messages",
-            "version": "v0.3",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WildPHP/irc-messages.git",
-                "reference": "ec9f1956d77ce9702e6c11336272960b91a81012"
+                "reference": "46f19aff384039a698b9658e84cd13b33731ebc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WildPHP/irc-messages/zipball/ec9f1956d77ce9702e6c11336272960b91a81012",
-                "reference": "ec9f1956d77ce9702e6c11336272960b91a81012",
+                "url": "https://api.github.com/repos/WildPHP/irc-messages/zipball/46f19aff384039a698b9658e84cd13b33731ebc9",
+                "reference": "46f19aff384039a698b9658e84cd13b33731ebc9",
                 "shasum": ""
             },
             "require": {
@@ -1056,9 +1056,9 @@
             "description": "IRC messages implementation for WildPHP",
             "support": {
                 "issues": "https://github.com/WildPHP/irc-messages/issues",
-                "source": "https://github.com/WildPHP/irc-messages/tree/v0.3"
+                "source": "https://github.com/WildPHP/irc-messages/tree/v0.3.1"
             },
-            "time": "2019-10-18T11:51:31+00:00"
+            "time": "2020-12-27T11:02:25+00:00"
         },
         {
             "name": "wildphp/queue",
@@ -3624,8 +3624,6 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.3.0",
-        "ext-pdo": "*",
-        "ext-posix": "*",
         "ext-json": "*"
     },
     "platform-dev": [],
