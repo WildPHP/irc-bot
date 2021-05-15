@@ -50,14 +50,17 @@ return [
         # You can set additional connection options here.
         # Please see https://github.com/reactphp/socket#connector for more details.
         # Example options below:
-        //'options'  => [
+        //'options'  => 
         //    'dns' => false, // Disables DNS lookups
 
         //    'tls' => [ // Allows self-signed certificates
         //        'verify_peer' => false,
         //        'verify_peer_name' => false
         //    ],
-        //]
+        //],
+
+        # Uncomment the following line to simulate a local server for debugging purposes.
+        //'simulate_server' => true
     ],
 
     # Storage driver used for persistent storage
